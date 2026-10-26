@@ -76,10 +76,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -254,34 +257,84 @@ private fun SyncLayout(
         val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         val bottomBarClearance = if (isLandscape) 0.dp else 64.dp
 
-        Column(
-            modifier =
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(SpacingTokens.Large)
-                    .padding(bottom = bottomBarClearance),
-            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
-        ) {
-            ThisDeviceSection(uiState = uiState, onAction = onAction)
+        if (isLandscape) {
+            Row(
+                modifier =
+                    Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Large),
+                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+            ) {
+                Column(
+                    modifier =
+                        Modifier
+                            .weight(1.15f)
+                            .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+                ) {
+                    ThisDeviceSection(uiState = uiState, onAction = onAction)
 
-            RelaySettingsCard(
-                relaySettings = uiState.relaySettings,
-                irohServicesTicketError = uiState.irohServicesTicketError,
-                allowMobileDataSync = allowMobileDataSync,
-                onToggleAllowMobileDataSync = onToggleAllowMobileDataSync,
-                onAction = onAction,
-            )
+                    RelaySettingsCard(
+                        relaySettings = uiState.relaySettings,
+                        irohServicesTicketError = uiState.irohServicesTicketError,
+                        allowMobileDataSync = allowMobileDataSync,
+                        onToggleAllowMobileDataSync = onToggleAllowMobileDataSync,
+                        onAction = onAction,
+                    )
 
-            PeersSection(
-                uiState = uiState,
-                onAction = onAction,
-                onAddDeviceClick = { showAddDeviceSheet = true },
-                onRemoveClick = { peerPendingRemoval = it },
-            )
+                    PeersSection(
+                        uiState = uiState,
+                        onAction = onAction,
+                        onAddDeviceClick = { showAddDeviceSheet = true },
+                        onRemoveClick = { peerPendingRemoval = it },
+                    )
 
-            ActivityLogCard(uiState = uiState)
+                    ActivityLogCard(uiState = uiState)
+                }
+
+                Column(
+                    modifier =
+                        Modifier
+                            .weight(0.85f)
+                            .verticalScroll(rememberScrollState()),
+                ) {
+                    PairingSideCard(
+                        uiState = uiState,
+                        onScanClick = { startScan { value -> onAction(SyncAction.ProposeConnect(value)) } },
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier =
+                    Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(SpacingTokens.Large)
+                        .padding(bottom = bottomBarClearance),
+                verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+            ) {
+                ThisDeviceSection(uiState = uiState, onAction = onAction)
+
+                RelaySettingsCard(
+                    relaySettings = uiState.relaySettings,
+                    irohServicesTicketError = uiState.irohServicesTicketError,
+                    allowMobileDataSync = allowMobileDataSync,
+                    onToggleAllowMobileDataSync = onToggleAllowMobileDataSync,
+                    onAction = onAction,
+                )
+
+                PeersSection(
+                    uiState = uiState,
+                    onAction = onAction,
+                    onAddDeviceClick = { showAddDeviceSheet = true },
+                    onRemoveClick = { peerPendingRemoval = it },
+                )
+
+                ActivityLogCard(uiState = uiState)
+            }
         }
 
         if (uiState.pendingConnect != null) {
@@ -349,10 +402,19 @@ private fun ThisDeviceSection(
     onAction: (SyncAction) -> Unit,
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHostState.current
     val copiedMessage = stringResource(id = R.string.label_sync_copied)
     val renamedMessage = stringResource(id = R.string.label_sync_rename_success)
+
+    var idCopiedRecently by remember { mutableStateOf(false) }
+    LaunchedEffect(idCopiedRecently) {
+        if (idCopiedRecently) {
+            delay(2000)
+            idCopiedRecently = false
+        }
+    }
 
     // Apelido custom estilo LocalSend — edição inline em vez de um dialog separado, já que é
     // um campo único e essa tela já é o lugar natural pra mexer nisso (mesma abordagem do
@@ -420,17 +482,27 @@ private fun ThisDeviceSection(
                     },
                     contentDescription = stringResource(id = R.string.action_sync_rename_device),
                 )
-                OutlinedButton(onClick = {
-                    clipboardManager.setText(AnnotatedString(uiState.localId))
-                    scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
-                }) {
+                OutlinedButton(
+                    onClick = {
+                        clipboardManager.setText(AnnotatedString(uiState.localId))
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        idCopiedRecently = true
+                        scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
+                    },
+                    shape = ShapeTokens.Medium,
+                ) {
                     Icon(
-                        imageVector = Icons.Default.ContentCopy,
+                        imageVector = if (idCopiedRecently) Icons.Default.Check else Icons.Default.ContentCopy,
                         contentDescription = null,
                         modifier = Modifier.size(SizeTokens.IconExtraSmall),
                     )
                     Spacer(modifier = Modifier.width(SpacingTokens.ExtraSmall))
-                    Text(text = stringResource(id = R.string.action_sync_copy_id))
+                    Text(
+                        text =
+                            stringResource(
+                                id = if (idCopiedRecently) R.string.label_sync_copied else R.string.action_sync_copy_id,
+                            ),
+                    )
                 }
             }
         },
@@ -1091,8 +1163,11 @@ private fun PeerRow(
 
     Acerola.Component.HeroButton(
         title = peer.nickname ?: peer.deviceName ?: PairingCode.shortId(peer.peerId),
-        description = description,
+        icon = Icons.Default.PhoneAndroid,
         modifier = Modifier.fillMaxWidth(),
+        description = description,
+        iconTint = if (isOnline) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+        iconBackground = if (isOnline) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         bottomContent =
             if (isErrorIdle) {
                 {
@@ -1324,12 +1399,63 @@ private fun AddDeviceSheetContent(
 }
 
 @Composable
+private fun PairingSideCard(
+    uiState: SyncUiState,
+    onScanClick: () -> Unit,
+) {
+    Card(
+        shape = ShapeTokens.Huge,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier.padding(SpacingTokens.Large),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = stringResource(id = R.string.title_sync_pairing),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                OutlinedButton(
+                    onClick = onScanClick,
+                    shape = ShapeTokens.Medium,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.QrCodeScanner,
+                        contentDescription = null,
+                        modifier = Modifier.size(SizeTokens.IconExtraSmall),
+                    )
+                    Spacer(modifier = Modifier.width(SpacingTokens.ExtraSmall))
+                    Text(text = stringResource(id = R.string.action_sync_scan_code))
+                }
+            }
+
+            MyCodeTabContent(uiState = uiState)
+        }
+    }
+}
+
+@Composable
 private fun MyCodeTabContent(uiState: SyncUiState) {
     val clipboardManager = LocalClipboardManager.current
+    val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHostState.current
     val copiedMessage = stringResource(id = R.string.label_sync_copied)
     var showRawCode by remember { mutableStateOf(false) }
+    var codeCopiedRecently by remember { mutableStateOf(false) }
+
+    LaunchedEffect(codeCopiedRecently) {
+        if (codeCopiedRecently) {
+            delay(2000)
+            codeCopiedRecently = false
+        }
+    }
 
     Text(
         text = stringResource(id = R.string.description_sync_pairing),
@@ -1341,16 +1467,30 @@ private fun MyCodeTabContent(uiState: SyncUiState) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
         val code = uiState.pairingCode
-        if (code != null) {
-            val bitmap = remember(code) { QrBitmapGenerator.generate(code) }
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = stringResource(id = R.string.title_sync_pairing),
-                modifier = Modifier.size(220.dp),
-            )
-        } else {
-            Box(modifier = Modifier.size(220.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        Surface(
+            shape = ShapeTokens.Large,
+            color = Color.White,
+            tonalElevation = 2.dp,
+            shadowElevation = 2.dp,
+            modifier = Modifier.size(240.dp),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(SpacingTokens.Medium),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (code != null) {
+                    val bitmap = remember(code) { QrBitmapGenerator.generate(code) }
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = stringResource(id = R.string.title_sync_pairing),
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
             }
         }
 
@@ -1360,14 +1500,26 @@ private fun MyCodeTabContent(uiState: SyncUiState) {
             onClick = {
                 code?.let {
                     clipboardManager.setText(AnnotatedString(it))
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    codeCopiedRecently = true
                     scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
                 }
             },
             enabled = code != null,
+            shape = ShapeTokens.Medium,
         ) {
-            Icon(imageVector = Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(SizeTokens.IconExtraSmall))
+            Icon(
+                imageVector = if (codeCopiedRecently) Icons.Default.Check else Icons.Default.ContentCopy,
+                contentDescription = null,
+                modifier = Modifier.size(SizeTokens.IconExtraSmall),
+            )
             Spacer(modifier = Modifier.width(SpacingTokens.ExtraSmall))
-            Text(text = stringResource(id = R.string.action_sync_copy_code))
+            Text(
+                text =
+                    stringResource(
+                        id = if (codeCopiedRecently) R.string.label_sync_copied else R.string.action_sync_copy_code,
+                    ),
+            )
         }
 
         Spacer(modifier = Modifier.height(SpacingTokens.Small))
