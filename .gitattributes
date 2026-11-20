@@ -1,12 +1,9 @@
-# Força LF em todo arquivo de texto, em qualquer SO — sem isso, checkouts no
-# Windows com core.autocrlf=true (padrão do instalador do Git for Windows)
-# convertem tudo pra CRLF no disco, gerando ruído no Prettier/git status sem
-# nenhuma mudança de conteúdo real. `eol=lf` tem precedência sobre
-# core.autocrlf pra qualquer arquivo que bater aqui, então isso vale
-# independente da configuração local de quem clonar o repo.
+# Acerola standard: LF in every text file, on any OS. Without it, Windows checkouts with
+# core.autocrlf=true (the Git for Windows default) turn everything into CRLF on disk and flood
+# Prettier and git status with noise. `eol=lf` wins over core.autocrlf for every matching file.
 * text=auto eol=lf
 
-# Binários — nunca passam por normalização de fim de linha.
+# Binaries: never normalized.
 *.png binary
 *.jpg binary
 *.jpeg binary
