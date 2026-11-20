@@ -19,12 +19,12 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { shortId } from '$lib/utils/connection-code.utils';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { shortId } from '#lib/utils/connection-code.util.ts';
 
 	let { data, events }: NetworkMyDeviceCardProps = $props();
 

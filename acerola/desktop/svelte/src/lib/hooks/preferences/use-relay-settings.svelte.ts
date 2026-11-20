@@ -1,8 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import type { RelayInfo } from '$lib/contracts/network/network.payloads';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import type { RelayInfo } from '#lib/contracts/network/network.payloads.ts';
 
 export function useRelaySettings() {
 	let relayInfo = $state<RelayInfo | undefined>(undefined);

@@ -21,8 +21,8 @@
 </script>
 
 <script>
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
 </script>
 
 <Story name="Default" args={{ data: { title: 'Berserk' } }} />

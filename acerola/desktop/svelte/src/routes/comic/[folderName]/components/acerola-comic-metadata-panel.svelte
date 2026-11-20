@@ -23,14 +23,14 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import Play from '@lucide/svelte/icons/play';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events, state }: ComicMetadataPanelProps = $props();
 </script>

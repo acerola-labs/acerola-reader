@@ -1,4 +1,4 @@
-import type { ChapterFilePayload } from '$lib/contracts/library/chapter.payloads';
+import type { ChapterFilePayload } from '#lib/contracts/library/chapter.payloads.ts';
 
 export type ReaderChapterPayload = ChapterFilePayload;
 

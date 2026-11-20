@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { describe, expect, it } from 'vitest';
-import type { ComicSummaryItemPayload } from '$lib/contracts/home/home.payloads';
+import type { ComicSummaryItemPayload } from '#lib/contracts/home/home.payloads.ts';
 import { ActiveComicState } from './comic-context.svelte';
 import ProviderHarness from '../../../tests/harness/state/comic-context-provider.svelte';
 import MissingHarness from '../../../tests/harness/state/comic-context-missing.svelte';

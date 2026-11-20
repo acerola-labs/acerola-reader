@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { extractErrorMessage } from './error.utils';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { m } from '$lib/paraglide/messages';
+import { extractErrorMessage } from './error.util';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { m } from '#lib/paraglide/messages.js';
 
 describe('extractErrorMessage', () => {
 	it('returns a fallback message for null', () => {

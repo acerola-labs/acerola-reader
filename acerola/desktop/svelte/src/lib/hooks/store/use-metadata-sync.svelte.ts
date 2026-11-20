@@ -1,10 +1,10 @@
 import { invoke } from '@tauri-apps/api/core';
 import { error } from '@tauri-apps/plugin-log';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
-import type { ComicMetadataEvent } from '$lib/contracts/metadata/metadata.payloads';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
+import type { ComicMetadataEvent } from '#lib/contracts/metadata/metadata.payloads.ts';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { isSyncingAll } from '$lib/state/metadata-sync-all.svelte';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { isSyncingAll } from '#lib/state/metadata-sync-all.svelte.ts';
 
 export function useMetadataSync() {
 	let isSyncing = $state(false);

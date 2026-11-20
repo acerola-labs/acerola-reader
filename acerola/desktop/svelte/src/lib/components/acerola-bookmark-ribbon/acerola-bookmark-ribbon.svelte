@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
-	import { m } from '$lib/paraglide/messages';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	/**
 	 * Props for the BookmarkRibbon component.

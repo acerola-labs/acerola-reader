@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import AcerolaErrorScreen from '$lib/components/acerola-error-screen/acerola-error-screen.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { errorKind } from '$lib/utils/error.utils';
+	import AcerolaErrorScreen from '#lib/components/acerola-error-screen/acerola-error-screen.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { errorKind } from '#lib/utils/error.util.ts';
 
 	// Any status lands here: 404 from the router, 5xx from a load. The mascot is a local asset:
 	// the app is open source and does not depend on the brand CDN.

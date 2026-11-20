@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { load, LazyStore } from '@tauri-apps/plugin-store';
-import { STORE_KEYS } from '$lib/constants/store-plugin';
+import { STORE_KEYS } from '#lib/constants/store-plugin.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 
 const mockStoreMethods = vi.hoisted(() => ({

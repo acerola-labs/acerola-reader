@@ -3,8 +3,8 @@ import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { useComicChapters } from './use-comic-chapters.svelte';
 import ComicChaptersHarness from '../../../../tests/harness/hooks/comic-chapters-store.svelte';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
 import { mockIPC, mockWindows } from '@tauri-apps/api/mocks';
 import { listen } from '@tauri-apps/api/event';
 

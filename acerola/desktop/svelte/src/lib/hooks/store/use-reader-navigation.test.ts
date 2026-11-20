@@ -5,11 +5,11 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { replaceState } from '$app/navigation';
 import { page } from '$app/state';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-import { SESSION_KEYS } from '$lib/constants/session-keys';
-import type { ChapterFilePayload } from '$lib/contracts/library/chapter.payloads';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+import { SESSION_KEYS } from '#lib/constants/session-keys.ts';
+import type { ChapterFilePayload } from '#lib/contracts/library/chapter.payloads.ts';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 import ReaderNavigationHarness from '../../../../tests/harness/hooks/reader-navigation-store.svelte';
 import { useReaderNavigation, type ReaderNavigationState } from './use-reader-navigation.svelte';
 

@@ -2,9 +2,9 @@
 	import type { Command as CommandPrimitive, Dialog as DialogPrimitive } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 	import Command from './command.svelte';
-	import * as Dialog from '$lib/components/ui/dialog/index';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils/cn.utils';
-	import { m } from '$lib/paraglide/messages';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { cn, type WithoutChildrenOrChild } from '#lib/utils/cn.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		open = $bindable(false),

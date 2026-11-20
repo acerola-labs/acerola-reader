@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Button } from '$lib/components/ui/button';
+	import { m } from '#lib/paraglide/messages.js';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import CheckCircleIcon from '@lucide/svelte/icons/check-circle';
 	import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';

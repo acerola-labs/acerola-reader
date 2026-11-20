@@ -2,8 +2,8 @@ import { render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
 import RootLayout from '../+layout.svelte';
 
 const { mockGoto } = vi.hoisted(() => ({ mockGoto: vi.fn() }));

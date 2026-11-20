@@ -51,11 +51,11 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import { slide } from 'svelte/transition';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 	import ComicVolumeButton from './acerola-comic-volume-button.svelte';
 	import Folder from '@lucide/svelte/icons/folder';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
@@ -66,7 +66,7 @@
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import { onMount, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events }: ComicVolumeListProps = $props();
 

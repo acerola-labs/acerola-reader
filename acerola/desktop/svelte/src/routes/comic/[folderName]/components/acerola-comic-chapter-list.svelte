@@ -41,16 +41,16 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import Check from '@lucide/svelte/icons/check';
 	import CheckSquare from '@lucide/svelte/icons/check-square';
 	import MoreVertical from '@lucide/svelte/icons/more-vertical';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events }: ComicChapterListProps = $props();
 

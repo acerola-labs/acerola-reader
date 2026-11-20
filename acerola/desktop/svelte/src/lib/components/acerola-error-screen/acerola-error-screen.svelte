@@ -1,8 +1,8 @@
 <script lang="ts">
 	import gsap from 'gsap';
 	import { onMount } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { errorAction, type ErrorKind } from '$lib/utils/error.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { errorAction, type ErrorKind } from '#lib/utils/error.util.ts';
 
 	type Props = {
 		data: { status: number; kind: ErrorKind; mascot: string; homeHref: string };

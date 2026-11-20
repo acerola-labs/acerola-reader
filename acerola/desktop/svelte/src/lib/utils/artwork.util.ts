@@ -1,5 +1,5 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
-import { getArtworkVersion } from '$lib/state/artwork-version.svelte';
+import { getArtworkVersion } from '#lib/state/artwork-version.svelte.ts';
 
 /**
  * Resolves a file path to a URL suitable for display in the UI.

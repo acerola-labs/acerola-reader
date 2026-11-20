@@ -24,9 +24,9 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import { Select, SelectContent, SelectItem, SelectTrigger } from '#lib/components/ui/select/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { data, state: control, events, ui }: AcerolaSelectProps = $props();
 

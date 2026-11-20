@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 import HistoryPage from '../+page.svelte';
 
 vi.mock('$app/navigation', () => ({
@@ -42,7 +42,7 @@ vi.mock('@tauri-apps/plugin-log', () => ({
 	error: vi.fn()
 }));
 
-vi.mock('$lib/assets/placeholder/placeholder_manga.svg?component', () => ({
+vi.mock('#lib/assets/placeholder/placeholder_manga.svg?component', () => ({
 	default: () => ''
 }));
 

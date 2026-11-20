@@ -1,6 +1,6 @@
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { m } from '$lib/paraglide/messages';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { m } from '#lib/paraglide/messages.js';
 
 /**
  * Turns any error status into one of the error screen variants (acerola-brand reference). The

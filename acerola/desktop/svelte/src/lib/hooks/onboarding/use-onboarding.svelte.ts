@@ -1,4 +1,4 @@
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
 import { LazyStore } from '@tauri-apps/plugin-store';
 
 const store = new LazyStore(STORE_FILE);

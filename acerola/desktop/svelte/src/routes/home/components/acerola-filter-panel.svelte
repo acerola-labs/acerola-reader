@@ -1,6 +1,6 @@
 <script module lang="ts">
-	import type { MetadataSource, SortBy, SortOrder } from '$lib/contracts/home/home.payloads';
-	import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+	import type { MetadataSource, SortBy, SortOrder } from '#lib/contracts/home/home.payloads.ts';
+	import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 	/** 'all' shows every comic, 'none' shows comics without a bookmark, a number filters by category id. */
 	export type BookmarkFilter = 'all' | 'none' | number;
@@ -38,9 +38,9 @@
 	import Check from '@lucide/svelte/icons/check';
 	import Eye from '@lucide/svelte/icons/eye';
 	import Bookmark from '@lucide/svelte/icons/bookmark';
-	import AcerolaSwitch from '$lib/components/acerola-switch/acerola-switch.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaSwitch from '#lib/components/acerola-switch/acerola-switch.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { state: controlState, data, events }: FilterPanelProps = $props();
 

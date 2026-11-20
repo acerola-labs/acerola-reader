@@ -1,17 +1,17 @@
 <script lang="ts" module>
-	import type { AcerolaSelectOption } from '$lib/components/acerola-select/acerola-select.svelte';
-	import type { SidebarItem } from '$lib/components/acerola-sidebar/acerola-sidebar.svelte';
-	import type { Locale } from '$lib/paraglide/runtime';
+	import type { AcerolaSelectOption } from '#lib/components/acerola-select/acerola-select.svelte';
+	import type { SidebarItem } from '#lib/components/acerola-sidebar/acerola-sidebar.svelte';
+	import type { Locale } from '#lib/paraglide/runtime.js';
 
-	import { m } from '$lib/paraglide/messages';
-	import { locales } from '$lib/paraglide/runtime';
+	import { m } from '#lib/paraglide/messages.js';
+	import { locales } from '#lib/paraglide/runtime.js';
 
 	import HistoryIcon from '@lucide/svelte/icons/history';
 	import HouseIcon from '@lucide/svelte/icons/house';
 	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 
-	import AcerolaLogo from '$lib/assets/icons/acerola.svg?component';
+	import AcerolaLogo from '#lib/assets/icons/acerola.svg?component';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import SquareIcon from '@lucide/svelte/icons/square';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -35,36 +35,36 @@
 </script>
 
 <script lang="ts">
-	import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-	import { useLibraryScanner } from '$lib/hooks/store/use-comic-scanner.svelte';
-	import { useComicSummary } from '$lib/hooks/store/use-comic-summary.svelte';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import { useOnboarding } from '$lib/hooks/onboarding/use-onboarding.svelte';
-	import { setComicContext } from '$lib/state/comic-context.svelte';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
-	import { getLocale, setLocale } from '$lib/paraglide/runtime';
+	import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+	import { useLibraryScanner } from '#lib/hooks/store/use-comic-scanner.svelte.ts';
+	import { useComicSummary } from '#lib/hooks/store/use-comic-summary.svelte.ts';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import { useOnboarding } from '#lib/hooks/onboarding/use-onboarding.svelte.ts';
+	import { setComicContext } from '#lib/state/comic-context.svelte.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
+	import { getLocale, setLocale } from '#lib/paraglide/runtime.js';
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { resolveCover } from '$lib/utils/artwork.utils';
+	import { resolveCover } from '#lib/utils/artwork.util.ts';
 
-	import AcerolaModePicker from '$lib/components/acerola-mode-picker/acerola-mode-picker.svelte';
-	import AcerolaSelect from '$lib/components/acerola-select/acerola-select.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
-	import AcerolaSidebar from '$lib/components/acerola-sidebar/acerola-sidebar.svelte';
-	import AcerolaSonner from '$lib/components/acerola-sonner/acerola-sonner.svelte';
-	import AcerolaDialog from '$lib/components/acerola-dialog/acerola-dialog.svelte';
-	import AcerolaCommand from '$lib/components/acerola-command/acerola-command.svelte';
-	import * as Command from '$lib/components/ui/command/index';
+	import AcerolaModePicker from '#lib/components/acerola-mode-picker/acerola-mode-picker.svelte';
+	import AcerolaSelect from '#lib/components/acerola-select/acerola-select.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaSidebar from '#lib/components/acerola-sidebar/acerola-sidebar.svelte';
+	import AcerolaSonner from '#lib/components/acerola-sonner/acerola-sonner.svelte';
+	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
+	import AcerolaCommand from '#lib/components/acerola-command/acerola-command.svelte';
+	import * as Command from '#lib/components/ui/command/index.ts';
 	import { Command as CommandPrimitive } from 'bits-ui';
 
-	import AcerolaNotification from '$lib/components/acerola-notification/acerola-notification.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaNotification from '#lib/components/acerola-notification/acerola-notification.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
 	import AcerolaOnboarding from './(onboarding)/acerola-onboarding.svelte';
 	import '$theme/layout.css';
 	import Search from '@lucide/svelte/icons/search';

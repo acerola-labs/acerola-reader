@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import * as Command from '$lib/components/ui/command/index';
+	import * as Command from '#lib/components/ui/command/index.ts';
 	import AcerolaCommand from './acerola-command.svelte';
 
 	const { Story } = defineMeta({

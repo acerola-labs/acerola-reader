@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 
 	let { data, events }: AcerolaSettingsHeaderProps = $props();

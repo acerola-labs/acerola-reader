@@ -2,19 +2,19 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import { toast } from 'svelte-sonner';
-import { HOME_COMMANDS } from '$lib/contracts/home/home.commands';
-import { HOME_EVENTS } from '$lib/contracts/home/home.events';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
+import { HOME_COMMANDS } from '#lib/contracts/home/home.commands.ts';
+import { HOME_EVENTS } from '#lib/contracts/home/home.events.ts';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
 import type {
 	ComicSummaryPayload,
 	MetadataSource,
 	SortBy,
 	SortOrder
-} from '$lib/contracts/home/home.payloads';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { m } from '$lib/paraglide/messages';
+} from '#lib/contracts/home/home.payloads.ts';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { m } from '#lib/paraglide/messages.js';
 import { error } from '@tauri-apps/plugin-log';
 
 const { notify } = notificationStore;

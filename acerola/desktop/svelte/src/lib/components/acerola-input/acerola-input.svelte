@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { Input, type InputProps } from '$lib/components/ui/input';
+	import { Input, type InputProps } from '#lib/components/ui/input/index.ts';
 
 	export type AcerolaInputProps = {
 		state?: {
@@ -22,7 +22,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { state: control, events, ui }: AcerolaInputProps = $props();
 

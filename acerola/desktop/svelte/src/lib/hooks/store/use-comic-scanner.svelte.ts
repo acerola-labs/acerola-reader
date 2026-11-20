@@ -1,12 +1,12 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { toast } from 'svelte-sonner';
-import * as m from '$lib/paraglide/messages';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/library.events';
-import { type DirectoryScanCommand } from '$lib/contracts/library/library.commands';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
+import * as m from '#lib/paraglide/messages.js';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/library.events.ts';
+import { type DirectoryScanCommand } from '#lib/contracts/library/library.commands.ts';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
 
 const { notify, pop } = notificationStore;
 

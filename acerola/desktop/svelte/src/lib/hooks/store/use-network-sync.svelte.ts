@@ -2,10 +2,10 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { error } from '@tauri-apps/plugin-log';
 import { SvelteSet } from 'svelte/reactivity';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import { translateSyncMessage } from '$lib/contracts/errors/sync-error.i18n';
-import { m } from '$lib/paraglide/messages';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import { translateSyncMessage } from '#lib/contracts/errors/sync-error.i18n.ts';
+import { m } from '#lib/paraglide/messages.js';
 
 export type TransferLogEntry = {
 	id: number;

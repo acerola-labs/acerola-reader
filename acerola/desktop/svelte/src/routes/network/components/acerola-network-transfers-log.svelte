@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type { TransferLogEntry } from '$lib/hooks/store/use-network-sync.svelte';
+	import type { TransferLogEntry } from '#lib/hooks/store/use-network-sync.svelte.ts';
 
 	export type NetworkTransfersLogProps = {
 		data: {
@@ -20,11 +20,11 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import ArrowLeftRightIcon from '@lucide/svelte/icons/arrow-left-right';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
-	import { m } from '$lib/paraglide/messages';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaAccordionCard from '$lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
 
 	let { data, events }: NetworkTransfersLogProps = $props();
 

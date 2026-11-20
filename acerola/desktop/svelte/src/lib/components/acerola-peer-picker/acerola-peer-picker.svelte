@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 
 	export type AcerolaPeerPickerProps = {
 		state: {
@@ -19,9 +19,9 @@
 </script>
 
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import AcerolaDialog from '$lib/components/acerola-dialog/acerola-dialog.svelte';
-	import { shortId } from '$lib/utils/connection-code.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
+	import { shortId } from '#lib/utils/connection-code.util.ts';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 
 	let { state, data, events }: AcerolaPeerPickerProps = $props();

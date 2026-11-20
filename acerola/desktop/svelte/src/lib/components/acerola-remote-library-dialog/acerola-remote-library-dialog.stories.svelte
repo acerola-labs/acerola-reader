@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaRemoteLibraryDialog from './acerola-remote-library-dialog.svelte';
-	import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+	import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 
 	const comics: ComicSummary[] = [
 		{ comicName: 'One Piece', chapterCount: 1090, coverVersion: 1 },

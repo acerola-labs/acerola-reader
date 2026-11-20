@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaToggleGroup from './acerola-toggle-group.svelte';
 	import type { AcerolaToggleGroupProps } from './acerola-toggle-group.svelte';
-	import { ToggleGroupItem } from '$lib/components/ui/toggle-group/index';
+	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
 
 	const { Story } = defineMeta({
 		title: 'Primitivos/AcerolaToggleGroup',

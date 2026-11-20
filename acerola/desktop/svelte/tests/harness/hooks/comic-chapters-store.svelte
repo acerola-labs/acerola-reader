@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { useComicChapters } from '$lib/hooks/store/use-comic-chapters.svelte';
+	import { useComicChapters } from '#lib/hooks/store/use-comic-chapters.svelte.ts';
 
 	let {
 		onReady

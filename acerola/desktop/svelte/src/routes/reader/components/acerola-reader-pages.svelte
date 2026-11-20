@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type { ReaderCachedPagePayload } from '$lib/contracts/reader/reader.payloads';
+	import type { ReaderCachedPagePayload } from '#lib/contracts/reader/reader.payloads.ts';
 	import type { Action } from 'svelte/action';
 	import type { ReaderMode } from '../hooks/use-reader-zoom.svelte';
 
@@ -27,13 +27,13 @@
 </script>
 
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
 	import { fade } from 'svelte/transition';
-	import { PREFETCH_RADIUS } from '$lib/hooks/store/use-reader.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
+	import { PREFETCH_RADIUS } from '#lib/hooks/store/use-reader.svelte.ts';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 
 	let { data, services, events }: ReaderPagesProps = $props();
 

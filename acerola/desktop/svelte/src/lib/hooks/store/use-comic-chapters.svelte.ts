@@ -1,19 +1,19 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { toast } from 'svelte-sonner';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
 import type {
 	ChapterPayload,
 	ChapterFilePayload,
 	ChapterPagePayload
-} from '$lib/contracts/library/chapter.payloads';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { LRUService } from '$lib/services/lru.service';
+} from '#lib/contracts/library/chapter.payloads.ts';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { LRUService } from '#lib/services/lru.service.ts';
 import { onMount } from 'svelte';
-import { m } from '$lib/paraglide/messages';
+import { m } from '#lib/paraglide/messages.js';
 
 const { notify } = notificationStore;
 

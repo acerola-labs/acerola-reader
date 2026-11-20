@@ -1,13 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { READER_COMMANDS } from '$lib/contracts/reader/reader.commands';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
+import { READER_COMMANDS } from '#lib/contracts/reader/reader.commands.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
 import type {
 	ReaderSessionPayload,
 	ReaderPagePayload
-} from '$lib/contracts/reader/reader.payloads';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+} from '#lib/contracts/reader/reader.payloads.ts';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 import ReaderPage from '../+page.svelte';
 
 const { mockGoto, mockReplaceState } = vi.hoisted(() => ({

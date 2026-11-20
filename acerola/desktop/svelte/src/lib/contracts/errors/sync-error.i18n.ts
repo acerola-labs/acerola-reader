@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages';
+import { m } from '#lib/paraglide/messages.js';
 
 // Contrato com o `code` opcional que os protocolos de sync P2P (sync-files, sync-comic,
 // sync-history, browse-library, browse-cover) anexam ao payload de `*:error` quando a causa

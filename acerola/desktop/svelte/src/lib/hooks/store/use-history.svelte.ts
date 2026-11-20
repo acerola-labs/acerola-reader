@@ -1,9 +1,9 @@
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'svelte-sonner';
-import { HISTORY_COMMANDS } from '$lib/contracts/history/history.commands';
-import type { ReadingHistoryPayload } from '$lib/contracts/history/history.payloads';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { m } from '$lib/paraglide/messages';
+import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
+import type { ReadingHistoryPayload } from '#lib/contracts/history/history.payloads.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { m } from '#lib/paraglide/messages.js';
 
 const { notify } = notificationStore;
 

@@ -5,29 +5,29 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { getContext, onDestroy, onMount } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { toast } from 'svelte-sonner';
 
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
-	import { buttonVariants } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils/cn.utils';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import { buttonVariants } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 
-	import { resolveArtworkPath } from '$lib/utils/artwork.utils';
-	import type { ReadingHistoryPayload } from '$lib/contracts/history/history.payloads';
-	import { useHistory } from '$lib/hooks/store/use-history.svelte';
-	import { usePeerConnection, shortId } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import { resolveArtworkPath } from '#lib/utils/artwork.util.ts';
+	import type { ReadingHistoryPayload } from '#lib/contracts/history/history.payloads.ts';
+	import { useHistory } from '#lib/hooks/store/use-history.svelte.ts';
+	import { usePeerConnection, shortId } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 
 	const history = useHistory();
 	const bookmarkStore = useBookmarks();

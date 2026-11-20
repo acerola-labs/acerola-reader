@@ -1,10 +1,10 @@
 import { render } from 'vitest-browser-svelte';
 import { expect, it, describe, vi, beforeEach, afterEach } from 'vitest';
 import ComicPage from '../+page.svelte';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 
@@ -26,7 +26,7 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 	})
 }));
 
-vi.mock('$lib/state/comic-context.svelte', () => ({
+vi.mock('#lib/state/comic-context.svelte.ts', () => ({
 	useComicContext: vi.fn(() => ({
 		item: null,
 		coverUrl: null,
@@ -35,7 +35,7 @@ vi.mock('$lib/state/comic-context.svelte', () => ({
 	}))
 }));
 
-vi.mock('$lib/hooks/store/use-bookmarks.svelte', () => ({
+vi.mock('#lib/hooks/store/use-bookmarks.svelte.ts', () => ({
 	useBookmarks: vi.fn(() => ({
 		bookmarks: [],
 		assignments: [],
@@ -50,7 +50,7 @@ vi.mock('$lib/hooks/store/use-bookmarks.svelte', () => ({
 	}))
 }));
 
-vi.mock('$lib/assets/placeholder/placeholder_manga.svg?component', () => ({
+vi.mock('#lib/assets/placeholder/placeholder_manga.svg?component', () => ({
 	default: vi.fn(() => null)
 }));
 

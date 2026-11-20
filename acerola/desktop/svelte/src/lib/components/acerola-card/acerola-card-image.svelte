@@ -31,8 +31,8 @@
 
 <script lang="ts">
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
-	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
-	import { cn } from '$lib/utils/cn.utils';
+	import { AspectRatio } from '#lib/components/ui/aspect-ratio/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		ui,

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { useOnboarding } from '$lib/hooks/onboarding/use-onboarding.svelte';
-	import { useLibraryScanner } from '$lib/hooks/store/use-comic-scanner.svelte';
-	import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { useOnboarding } from '#lib/hooks/onboarding/use-onboarding.svelte.ts';
+	import { useLibraryScanner } from '#lib/hooks/store/use-comic-scanner.svelte.ts';
+	import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
 	import StepWelcome from './steps/acerola-step-welcome.svelte';
 	import StepLanguage from './steps/acerola-step-language.svelte';
 	import StepFormats from './steps/acerola-step-formats.svelte';

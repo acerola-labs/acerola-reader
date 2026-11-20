@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	import type { ReaderCachedPagePayload } from '$lib/contracts/reader/reader.payloads';
+	import type { ReaderCachedPagePayload } from '#lib/contracts/reader/reader.payloads.ts';
 	import type { ReaderMode } from '../hooks/use-reader-zoom.svelte';
 	import type { ReaderPageTracker } from './acerola-reader-pages.svelte';
 

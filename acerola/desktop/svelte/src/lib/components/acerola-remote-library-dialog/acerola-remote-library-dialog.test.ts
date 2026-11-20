@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import AcerolaRemoteLibraryDialog, {
 	type AcerolaRemoteLibraryDialogProps
 } from './acerola-remote-library-dialog.svelte';
-import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 
 type DialogData = AcerolaRemoteLibraryDialogProps['data'];
 
