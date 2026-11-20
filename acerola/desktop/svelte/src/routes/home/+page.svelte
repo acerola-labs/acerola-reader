@@ -48,6 +48,7 @@
 		SortOrder
 	} from '#lib/contracts/home/home.payloads.ts';
 	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 	const summary = useComicSummary();
 	const activeComic = useComicContext();
@@ -187,7 +188,7 @@
 		// only pick a comic they don't have yet, so it is always a pull.
 		sync
 			.syncComic(browsingPeerId, addrs, comicName, 'pull')
-			.catch((err) => toast.error(String(err)));
+			.catch((err) => toast.error(extractErrorMessage(err)));
 	}
 
 	async function handleHide(ids: (string | number)[]) {

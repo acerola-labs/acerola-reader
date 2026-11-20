@@ -570,7 +570,13 @@
 				"desc": "Essa ação não pode ser desfeita. Todo o histórico de leitura será apagado permanentemente.",
 				"cancel": "Cancelar",
 				"confirm": "Sim, limpar tudo"
-			}
+			},
+			"error": {
+				"text": "Não deu para carregar o seu histórico. Tente de novo.",
+				"retry": "Tentar de novo"
+			},
+			"emptyHint": "O que você ler aparece aqui, pronto para continuar.",
+			"emptyAction": "Ir para a biblioteca"
 		},
 		"config": {
 			"title": "Configurações",

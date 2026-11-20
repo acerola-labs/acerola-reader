@@ -14,6 +14,7 @@ import { notificationStore } from '#lib/components/acerola-notification/acerola-
 import { LRUService } from '#lib/services/lru.service.ts';
 import { onMount } from 'svelte';
 import { m } from '#lib/paraglide/messages.js';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 const { notify } = notificationStore;
 
@@ -158,7 +159,7 @@ export function useComicChapters() {
 				searchQuery: searchQuery || null
 			});
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.comicChapters.error.request'](), {
 				description: errorMessage

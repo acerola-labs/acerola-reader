@@ -10,6 +10,8 @@
 
 	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
 	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
 	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
@@ -97,7 +99,7 @@
 		try {
 			await sync.syncHistory(peerId, addrs);
 		} catch (err) {
-			toast.error(String(err));
+			toast.error(extractErrorMessage(err));
 		}
 	}
 
@@ -285,8 +287,22 @@
 	</div>
 
 	{#if history.loading}
-		<div class="flex flex-1 items-center justify-center p-8 text-muted-foreground">
-			{m['pages.history.loading']()}
+		<!-- Loading: skeleton in the shape of the hero and the list. -->
+		<div class="flex-1 space-y-6 p-8" role="status" aria-label={m['pages.history.loading']()}>
+			<div class="h-100 w-full animate-pulse rounded-b-tile bg-surface"></div>
+			{#each Array.from({ length: 4 }, (_, i) => i) as i (i)}
+				<div class="h-20 w-full animate-pulse rounded-tile bg-surface"></div>
+			{/each}
+		</div>
+	{:else if history.failed && history.items.length === 0}
+		<!-- Error: what happened and what to do. -->
+		<div class="p-8">
+			<div class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive">
+				<p class="flex-1 text-sm font-semibold">{m['pages.history.error.text']()}</p>
+				<AcerolaButton ui={{ variant: 'secondary' }} events={{ onClick: () => history.fetch() }}>
+					{m['pages.history.error.retry']()}
+				</AcerolaButton>
+			</div>
 		</div>
 	{:else if history.items.length > 0}
 		{@const heroItem = history.items[0]}
@@ -413,8 +429,16 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="flex flex-1 items-center justify-center p-8 text-muted-foreground">
-			{m['pages.history.noEvents']()}
-		</div>
+		<!-- Empty: mascot + title + one phrase + one action. -->
+		<AcerolaEmptyState
+			data={{ title: m['pages.history.noEvents'](), hint: m['pages.history.emptyHint']() }}
+			ui={{ class: 'flex-1 justify-center p-8' }}
+		>
+			{#snippet action()}
+				<AcerolaButton ui={{ variant: 'default', class: 'h-12' }} events={{ onClick: () => goto('/home') }}>
+					{m['pages.history.emptyAction']()}
+				</AcerolaButton>
+			{/snippet}
+		</AcerolaEmptyState>
 	{/if}
 </div>

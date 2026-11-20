@@ -30,7 +30,6 @@
 	import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
 
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
-	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import ArrowUpDown from '@lucide/svelte/icons/arrow-up-down';
 	import Check from '@lucide/svelte/icons/check';
 	import Share2 from '@lucide/svelte/icons/share-2';
@@ -988,7 +987,18 @@
 		</div>
 	</div>
 {:else}
-	<div class="text-overlay flex h-screen items-center justify-center bg-base">
-		<RefreshCw size={48} class="animate-spin text-primary" />
+	<!-- Loading: skeleton in the shape of the hero and the chapter list, never a loose spinner. -->
+	<div class="space-y-6 p-8" role="status" aria-label={m['pages.comic.loading']()}>
+		<div class="flex gap-8">
+			<div class="aspect-2/3 w-48 animate-pulse rounded-tile bg-surface"></div>
+			<div class="flex-1 space-y-4 pt-8">
+				<div class="h-12 w-2/3 animate-pulse rounded-full bg-surface"></div>
+				<div class="h-5 w-1/3 animate-pulse rounded-full bg-surface"></div>
+				<div class="h-20 w-full animate-pulse rounded-tile bg-surface"></div>
+			</div>
+		</div>
+		{#each Array.from({ length: 6 }, (_, i) => i) as i (i)}
+			<div class="h-16 w-full animate-pulse rounded-tile bg-surface"></div>
+		{/each}
 	</div>
 {/if}

@@ -570,7 +570,13 @@
 				"desc": "This action cannot be undone. All reading history will be permanently deleted.",
 				"cancel": "Cancel",
 				"confirm": "Yes, clear all"
-			}
+			},
+			"error": {
+				"text": "We could not load your history. Try again.",
+				"retry": "Try again"
+			},
+			"emptyHint": "What you read shows up here, ready to continue.",
+			"emptyAction": "Go to the library"
 		},
 		"config": {
 			"title": "Settings",

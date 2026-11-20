@@ -19,6 +19,7 @@
 	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 	export type ComicActionDialogProps = {
 		state?: { open?: boolean };
@@ -70,7 +71,7 @@
 			showHideDialog = false;
 			events.onClose();
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to hide comics: ${msg}`);
 			toast.error(m['pages.home.toast.error.hide']());
 		} finally {
@@ -88,7 +89,7 @@
 			showDeleteDialog = false;
 			events.onClose();
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to delete comics: ${msg}`);
 			toast.error(m['pages.home.toast.error.delete']());
 		} finally {
@@ -106,7 +107,7 @@
 			showClearMetadataDialog = false;
 			events.onClose();
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to clear comics metadata: ${msg}`);
 			toast.error(m['pages.home.toast.error.clearMetadata']());
 		} finally {
@@ -125,7 +126,7 @@
 			showBookmarkMenu = false;
 			events.onClose();
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to bookmark comics: ${msg}`);
 			toast.error(m['pages.home.toast.error.bookmark']());
 		} finally {

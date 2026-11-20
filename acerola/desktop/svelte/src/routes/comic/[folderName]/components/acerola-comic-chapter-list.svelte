@@ -369,9 +369,11 @@
 			{/each}
 		{/each}
 	{:else}
-		<div class="space-y-4 py-20 text-center opacity-50">
-			<RefreshCw size={48} class="mx-auto animate-spin text-primary" />
-			<p class="text-sm font-black tracking-widest uppercase">{m['pages.comic.loading']()}</p>
+		<!-- Loading: chapter-row skeleton, never a loose spinner. -->
+		<div class="space-y-3 py-4" role="status" aria-label={m['pages.comic.loading']()}>
+			{#each Array.from({ length: 6 }, (_, i) => i) as i (i)}
+				<div class="h-16 w-full animate-pulse rounded-tile bg-surface"></div>
+			{/each}
 		</div>
 	{/if}
 </div>
