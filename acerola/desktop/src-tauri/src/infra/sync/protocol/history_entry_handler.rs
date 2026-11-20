@@ -211,8 +211,7 @@ mod tests {
 
     use acerola_p2p::api::peer::PeerIdentity;
 
-    use super::super::history_entry_registry::HistoryEntryScope;
-    use super::*;
+    use super::{super::history_entry_registry::HistoryEntryScope, *};
     use crate::{
         data::repositories::history::reading_history_repo::ReadingHistoryRepository,
         tests::utils::setup_test_db::setup_test_db_with_comic,
@@ -363,7 +362,8 @@ mod tests {
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
 
         assert!(outbound_result.is_err());
-        inbound_result.expect("inbound must still complete the session (the error is on the outbound)");
+        inbound_result
+            .expect("inbound must still complete the session (the error is on the outbound)");
     }
 
     #[tokio::test]

@@ -35,8 +35,7 @@ impl PendingComicSyncRegistry {
     }
 
     pub fn set(
-        &self, peer_id: String, comic_name: String, direction: SyncDirection,
-        chapter_ids: Vec<i64>,
+        &self, peer_id: String, comic_name: String, direction: SyncDirection, chapter_ids: Vec<i64>,
     ) {
         self.pending
             .lock()

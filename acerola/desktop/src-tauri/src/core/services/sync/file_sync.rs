@@ -265,9 +265,9 @@ impl FileSyncService {
                     None => None,
                 };
 
-                let already_have = local_chapter
-                    .as_ref()
-                    .is_some_and(|local| local.checksum.is_some() && local.checksum == chapter.checksum);
+                let already_have = local_chapter.as_ref().is_some_and(|local| {
+                    local.checksum.is_some() && local.checksum == chapter.checksum
+                });
 
                 if already_have {
                     continue;
