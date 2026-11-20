@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generates the Android theme (Color.kt and Shape.kt) from the acerola-brand tokens.json, as the
+// Generates the Android theme (AcerolaColors.kt and Shape.kt) from the acerola-brand tokens.json, as the
 // acerola-design skill asks (section 11): same role names on every platform.
 //
 //   node scripts/design/android-theme.mjs                  → reads https://cdn.acerola.app/brand/tokens.json
@@ -101,6 +101,6 @@ object AcerolaDimens {
 }
 `;
 
-await writeFile(join(OUT, 'Color.kt'), colorKt);
+await writeFile(join(OUT, 'AcerolaColors.kt'), colorKt);
 await writeFile(join(OUT, 'Shape.kt'), shapeKt);
-console.log(`tema Android gerado de ${SOURCE}: Color.kt e Shape.kt`);
+console.log(`tema Android gerado de ${SOURCE}: AcerolaColors.kt e Shape.kt`);
