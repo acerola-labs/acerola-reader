@@ -3,6 +3,7 @@
 	import AcerolaNavControls from '#lib/components/acerola-nav-controls/acerola-nav-controls.svelte';
 	import AcerolaSidebar from '#lib/components/acerola-sidebar/acerola-sidebar.svelte';
 	import type { SidebarGroup } from '#lib/content/docs.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		open = $bindable(false),
@@ -14,8 +15,8 @@
 <Sheet.Root bind:open>
 	<Sheet.Content side="left" class="flex w-72 flex-col gap-0 p-0 md:hidden">
 		<Sheet.Header class="sr-only">
-			<Sheet.Title>Menu</Sheet.Title>
-			<Sheet.Description>Navegação da documentação</Sheet.Description>
+			<Sheet.Title>{m['nav.menuTitle']()}</Sheet.Title>
+			<Sheet.Description>{m['nav.menuDescription']()}</Sheet.Description>
 		</Sheet.Header>
 		<div class="min-h-0 flex-1 overflow-y-auto p-4">
 			<AcerolaSidebar {groups} {activeSlug} />

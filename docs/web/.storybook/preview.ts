@@ -3,10 +3,10 @@ import type { Preview } from '@storybook/sveltekit';
 import { overwriteSetLocale } from '#lib/paraglide/runtime.js';
 import './storybook.css';
 
-// setLocale() real navega/recarrega a página (ver src/lib/paraglide/runtime.js) — dentro do
-// preview do Storybook isso navega o iframe pra uma URL que não existe no build estático,
-// quebrando a página (AcerolaNavControls/AcerolaTopNav). overwriteSetLocale é o hook oficial
-// do paraglide pra isso, então nenhum componente precisa saber que está rodando no Storybook.
+// The real setLocale() navigates/reloads the page (see src/lib/paraglide/runtime.js) — inside
+// the Storybook preview that navigates the iframe to a URL that doesn't exist in the static
+// build, breaking the page (AcerolaNavControls/AcerolaTopNav). overwriteSetLocale is paraglide's
+// official hook for this, so no component needs to know it's running in Storybook.
 overwriteSetLocale(() => {});
 
 export const globalTypes = {

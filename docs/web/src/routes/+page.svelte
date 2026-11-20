@@ -242,7 +242,7 @@ relay.reader.acerola.app {
 	</div>
 
 	<div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-		<!-- Hero: centralizado com indicador de scroll -->
+		<!-- Hero: centered with a scroll indicator -->
 		<section
 			bind:this={heroEl}
 			class="relative flex min-h-[calc(100vh-4.5rem)] flex-col items-center justify-center py-12 text-center sm:py-16 lg:py-20"
@@ -323,7 +323,7 @@ relay.reader.acerola.app {
 			</a>
 		</section>
 
-		<!-- Seções em coluna única -->
+		<!-- Single-column sections -->
 		<div class="flex flex-col gap-28 pb-24 sm:pb-32">
 			<section id="features" use:scrollReveal>
 				<div class="mb-10 text-center">

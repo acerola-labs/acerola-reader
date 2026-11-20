@@ -3,20 +3,20 @@
 	import AcerolaToc from './acerola-toc.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaToc',
+		title: 'Composites/AcerolaToc',
 		component: AcerolaToc,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Tabela de conteudos (table of contents) gerada a partir dos titulos `h2`/`h3` com `id` encontrados dentro de `containerSelector` (por padrao `.doc-content`). Destaca o titulo atualmente visivel usando um `IntersectionObserver`. Nao renderiza nada quando nenhum titulo e encontrado.'
+						'Table of contents generated from the `h2`/`h3` headings with an `id` found inside `containerSelector` (`.doc-content` by default). Highlights the currently visible heading using an `IntersectionObserver`. Renders nothing when no heading is found.'
 				}
 			}
 		},
 		argTypes: {
 			containerSelector: {
-				description: 'Seletor CSS do container onde os titulos sao procurados.',
+				description: 'CSS selector of the container where headings are looked up.',
 				control: 'text'
 			}
 		}
@@ -42,7 +42,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Titulos de exemplo dentro do container padrao `.doc-content`, renderizado ao lado.'
+				story: 'Sample headings inside the default `.doc-content` container, rendered alongside.'
 			}
 		}
 	}}

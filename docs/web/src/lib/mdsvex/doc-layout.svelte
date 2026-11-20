@@ -42,13 +42,12 @@
 		return button;
 	}
 
-	// Os diagramas são HTML puro vindo do pipeline de markdown (ver rehypeMermaid em
-	// mdsvex.config.js), não templates Svelte — os controles precisam ser enxertados
-	// em cada nó `.mermaid` de forma imperativa em vez de declarados no template.
-	// Move/escala o diagrama no próprio lugar (como o visualizador de mermaid do
-	// GitHub, que este espelha) em vez de abrir um dialog — um SVG clonado brigando
-	// com o próprio layout de um dialog por espaço se mostrou bem mais frágil do que
-	// transformar o SVG original.
+	// The diagrams are plain HTML coming from the markdown pipeline (see rehypeMermaid in
+	// mdsvex.config.js), not Svelte templates — the controls have to be grafted onto each
+	// `.mermaid` node imperatively instead of declared in the template.
+	// Pans/scales the diagram in place (like GitHub's mermaid viewer, which this mirrors)
+	// instead of opening a dialog — a cloned SVG fighting a dialog's own layout for space
+	// proved far more fragile than transforming the original SVG.
 	function addZoomControls(node: HTMLElement) {
 		if (node.querySelector('[data-mermaid-controls]')) return;
 
@@ -133,9 +132,9 @@
 		node.appendChild(toolbar);
 	}
 
-	// mermaid.run() substitui o conteúdo de cada nó por um <svg> renderizado, então
-	// o fonte original do diagrama é capturado aqui na primeira passagem e reusado
-	// para resetar o nó antes de cada nova renderização (troca de paleta/modo).
+	// mermaid.run() replaces each node's content with a rendered <svg>, so the
+	// diagram's original source is captured here on the first pass and reused to
+	// reset the node before each new render (palette/mode change).
 	const sources = new Map<HTMLElement, string>();
 
 	async function renderMermaid() {
@@ -186,10 +185,10 @@
 			const btn = document.createElement('button');
 			btn.type = 'button';
 			btn.dataset.codeCopyButton = '';
-			btn.setAttribute('aria-label', m['marketingCode.copyAria']?.() ?? 'Copiar');
-			btn.title = m['marketingCode.copy']?.() ?? 'Copiar';
+			btn.setAttribute('aria-label', m['marketingCode.copyAria']());
+			btn.title = m['marketingCode.copy']();
 			btn.className =
-				'absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-inner border border-border/80 bg-card/90 px-2.5 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-card hover:text-foreground active:scale-95 cursor-pointer';
+				'absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full border border-border/80 bg-card/90 px-2.5 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-card hover:text-foreground active:scale-95 cursor-pointer';
 
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'flex items-center justify-center';
@@ -197,7 +196,7 @@
 
 			const labelSpan = document.createElement('span');
 			labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-			labelSpan.textContent = m['marketingCode.copy']?.() ?? 'Copiar';
+			labelSpan.textContent = m['marketingCode.copy']();
 
 			btn.append(iconSpan, labelSpan);
 
@@ -211,17 +210,17 @@
 
 				iconSpan.innerHTML = '';
 				mount(CheckIcon, { target: iconSpan, props: { size: 14, class: 'text-success' } });
-				labelSpan.textContent = m['marketingCode.copied']?.() ?? 'Copiado!';
+				labelSpan.textContent = m['marketingCode.copied']();
 				labelSpan.className = 'text-[11px] font-mono text-success select-none hidden sm:inline';
-				btn.classList.add('', 'bg-success-soft');
+				btn.classList.add('bg-success-soft');
 
 				clearTimeout(resetTimeout);
 				resetTimeout = setTimeout(() => {
 					iconSpan.innerHTML = '';
 					mount(CopyIcon, { target: iconSpan, props: { size: 14 } });
-					labelSpan.textContent = m['marketingCode.copy']?.() ?? 'Copiar';
+					labelSpan.textContent = m['marketingCode.copy']();
 					labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-					btn.classList.remove('', 'bg-success-soft');
+					btn.classList.remove('bg-success-soft');
 				}, 2000);
 			});
 
