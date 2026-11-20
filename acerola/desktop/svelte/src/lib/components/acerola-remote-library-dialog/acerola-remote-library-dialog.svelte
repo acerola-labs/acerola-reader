@@ -29,17 +29,17 @@
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 
-	// Renomeado de `state` na desestruturação — um binding local chamado `state` no mesmo
-	// escopo da rune `$state(...)` abaixo colide com o açúcar de auto-subscribe de store do
-	// Svelte (`$nome`), e o compilador tenta tratar `state` como uma store.
+	// Renamed from `state` in the destructuring — a local binding named `state` in the same
+	// scope as the `$state(...)` rune below collides with Svelte's store auto-subscribe sugar
+	// (`$name`), and the compiler tries to treat `state` as a store.
 	let { state: dialogState, data, events }: AcerolaRemoteLibraryDialogProps = $props();
 
 	let searchQuery = $state('');
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `data`/`events` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba a
-	// suíte mesmo com todos os asserts passando (mesmo padrão de
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `data`/`events` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings down
+	// the suite even with every assert passing (same pattern as
 	// acerola-network-my-device-card.svelte).
 	let safeData = $derived(
 		data ?? {
@@ -53,9 +53,9 @@
 	);
 	let safeEvents = $derived(events ?? { onOpenChange: () => {}, onSelectComic: () => {} });
 
-	// O dialog é reaproveitado entre peers diferentes (não remontado a cada abertura) — sem
-	// isso, o filtro de uma sessão anterior vazaria pra próxima vez que o usuário abrir pra
-	// outro peer.
+	// The dialog is reused across different peers (not remounted on every open) — without
+	// this, a previous session's filter would leak into the next time the user opens it for
+	// another peer.
 	$effect(() => {
 		if (dialogState?.open) searchQuery = '';
 	});

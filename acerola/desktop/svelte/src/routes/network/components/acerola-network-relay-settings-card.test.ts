@@ -28,15 +28,15 @@ function events() {
 }
 
 async function expandCard() {
-	// Precisa do filtro por nome desde que o card passou a renderizar um `AcerolaAlertDialog`
-	// (confirmação antes de trocar de relay) — o trigger dele também é um <button
-	// aria-expanded="false">, então `{ expanded: false }` sozinho virou ambíguo.
+	// Needs the name filter since the card started rendering an `AcerolaAlertDialog`
+	// (confirmation before switching relays) — its trigger is also a <button
+	// aria-expanded="false">, so `{ expanded: false }` alone became ambiguous.
 	await fireEvent.click(screen.getByRole('button', { name: /Connection|Conexão/i }));
 }
 
-/// Toggle da fonte de relay ativa (Acerola / Iroh público) agora abre um `AcerolaAlertDialog`
-/// de confirmação em vez de aplicar direto — precisa desse passo extra antes de checar o
-/// handler.
+/// Toggling the active relay source (Acerola / public Iroh) now opens a confirmation
+/// `AcerolaAlertDialog` instead of applying directly — this extra step is needed before
+/// checking the handler.
 async function confirmSwitch() {
 	await fireEvent.click(screen.getByRole('button', { name: /Switch relay|Trocar relay/i }));
 }
@@ -55,8 +55,8 @@ function irohCardButton() {
 	});
 }
 
-/// O gerenciamento de ticket fica atrás de um toggle próprio dentro do card 3 (ver
-/// `ticketExpanded` no componente) — pré-expandido só quando ainda não há ticket salvo.
+/// Ticket management sits behind its own toggle inside card 3 (see `ticketExpanded` in the
+/// component) — pre-expanded only while no ticket is saved yet.
 async function expandTicketSection() {
 	await fireEvent.click(
 		screen.getByRole('button', {
@@ -153,14 +153,14 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 
 		expect(handlers.onToggleAcerolaRelay).toHaveBeenCalledTimes(1);
 		expect(acerolaRelayCardButton()).toBeDisabled();
-		// O card Iroh só ficaria habilitado aqui se não fosse pelo guard de `restarting`
-		// (ticket já configurado, então não é a razão de estar desabilitado).
+		// The Iroh card would only be enabled here if not for the `restarting` guard
+		// (ticket already configured, so that isn't why it is disabled).
 		expect(irohCardButton()).toBeDisabled();
 
-		// Um segundo clique enquanto a primeira mudança ainda não terminou (clique duplo, ou
-		// mexer em outra fonte de relay) não pode disparar uma segunda restart em paralelo —
-		// nem pelo atributo `disabled` (bloqueado nativamente), nem pela guarda em
-		// `runRestartingAction` se o clique chegasse a acontecer de outra forma.
+		// A second click while the first change hasn't finished (double click, or touching
+		// another relay source) must not fire a second restart in parallel — neither through
+		// the `disabled` attribute (natively blocked), nor through the guard in
+		// `runRestartingAction` if the click got through some other way.
 		await fireEvent.click(acerolaRelayCardButton());
 		expect(handlers.onToggleAcerolaRelay).toHaveBeenCalledTimes(1);
 
@@ -181,7 +181,7 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
 		await expandCard();
 
-		// Sem ticket configurado, a seção já vem pré-expandida — não precisa clicar pra abrir.
+		// Without a configured ticket, the section comes pre-expanded — no click needed to open it.
 		const input = screen.getByPlaceholderText(/services\.iroh\.computer/i);
 		await fireEvent.input(input, { target: { value: 'services-fake-ticket' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Save ticket|Salvar ticket/i }));
@@ -208,7 +208,7 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 			props: { data: data({ hasIrohServicesTicket: true }), events: handlers }
 		});
 		await expandCard();
-		// Ticket já configurado — a seção vem recolhida por padrão, precisa expandir primeiro.
+		// Ticket already configured — the section comes collapsed by default, expand it first.
 		await expandTicketSection();
 
 		await fireEvent.click(screen.getByRole('button', { name: /Remove ticket|Remover ticket/i }));

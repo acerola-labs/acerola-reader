@@ -13,9 +13,9 @@
 
 	const bookmarkStore = useBookmarks();
 
-	// A criação de marcador fica atrás de uma "gaveta" colapsada por padrão — 19 opções de cor
-	// sempre visíveis eram o maior peso de texto/UI da tela de Config antes de existir aqui. A
-	// lista de marcadores já criados continua sempre visível logo abaixo, sem precisar expandir.
+	// Bookmark creation sits behind a "drawer" collapsed by default — 19 always-visible color
+	// options were the heaviest text/UI weight on the Config screen before this existed. The
+	// list of already created bookmarks stays always visible right below, no expanding needed.
 	let createExpanded = $state(false);
 
 	const CATEGORY_COLORS = [

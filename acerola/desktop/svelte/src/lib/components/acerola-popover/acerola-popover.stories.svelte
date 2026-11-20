@@ -3,14 +3,14 @@
 	import AcerolaPopover from './acerola-popover.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaPopover',
+		title: 'Primitives/AcerolaPopover',
 		component: AcerolaPopover,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Wrapper para exibicao de conteudo flutuante ancorado em um gatilho. O componente recebe dois snippets obrigatorios, `trigger` e `content`, e controla internamente a abertura com `bind:open`, permitindo uso controlado ou nao controlado conforme a necessidade.'
+						'Wrapper for showing floating content anchored to a trigger. The component takes two required snippets, `trigger` and `content`, and controls opening internally with `bind:open`, allowing controlled or uncontrolled use as needed.'
 				}
 			},
 			controls: {
@@ -19,17 +19,17 @@
 		},
 		argTypes: {
 			state: {
-				description: 'Define se o popover inicia aberto ou fechado.',
+				description: 'Sets whether the popover starts open or closed.',
 				control: 'object'
 			},
-			events: { description: 'Callbacks de abertura do popover.', control: 'object' },
-			ui: { description: 'Configuração visual do conteúdo.', control: 'object' },
+			events: { description: 'Popover open callbacks.', control: 'object' },
+			ui: { description: 'Content visual configuration.', control: 'object' },
 			trigger: {
-				description: 'Snippet que renderiza o elemento usado como gatilho do popover.',
+				description: 'Snippet that renders the element used as the popover trigger.',
 				control: false
 			},
 			content: {
-				description: 'Snippet com o conteudo exibido dentro da camada flutuante.',
+				description: 'Snippet with the content shown inside the floating layer.',
 				control: false
 			}
 		}
@@ -58,7 +58,7 @@
 		docs: {
 			description: {
 				story:
-					'Estado inicial fechado. Este e o comportamento padrao para menus contextuais, dicas expandidas e acoes secundarias reveladas sob demanda.'
+					'Initially closed. This is the default behavior for context menus, expanded hints and secondary actions revealed on demand.'
 			}
 		}
 	}}
@@ -72,7 +72,7 @@
 		docs: {
 			description: {
 				story:
-					'Estado inicial aberto. E util para inspecao visual, validacao de layout e casos em que o conteudo precisa aparecer imediatamente por regra de negocio ou onboarding.'
+					'Initially open. Useful for visual inspection, layout validation and cases where the content must show immediately due to a business rule or onboarding.'
 			}
 		}
 	}}

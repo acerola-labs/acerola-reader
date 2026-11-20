@@ -99,8 +99,8 @@ export function useComicSummary() {
 
 	async function updateVisibility(ids: (string | number)[], hidden: boolean): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e atualizaria o quadrinho errado).
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and update the wrong comic).
 			const count = await invoke<number>(HOME_COMMANDS.updateComicsVisibility, {
 				ids: ids.map(String),
 				hidden
@@ -124,9 +124,9 @@ export function useComicSummary() {
 
 	async function deleteComics(ids: (string | number)[]): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e não bateria com nenhum
-			// registro real, era exatamente o bug: "0 quadrinho(s) excluído(s)").
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and match no real record, which
+			// was exactly the bug: "0 quadrinho(s) excluído(s)").
 			const count = await invoke<number>(HOME_COMMANDS.deleteComics, {
 				ids: ids.map(String)
 			});
@@ -148,8 +148,8 @@ export function useComicSummary() {
 
 	async function clearMetadata(ids: (string | number)[]): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e apagaria o quadrinho errado).
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and wipe the wrong comic).
 			const count = await invoke<number>(METADATA_COMMANDS.clearComicsMetadataBatch, {
 				comicIds: ids.map(String)
 			});

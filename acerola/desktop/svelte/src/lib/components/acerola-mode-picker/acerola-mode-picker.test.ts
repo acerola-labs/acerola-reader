@@ -33,7 +33,7 @@ describe('AcerolaModePicker', () => {
 
 		render(AcerolaModePicker);
 		await fireEvent.click(screen.getByRole('button'));
-		// O componente usa o singleton — verificamos que não quebrou
+		// The component uses the singleton — we check that it didn't break
 		expect(screen.getByRole('button')).toBeInTheDocument();
 	});
 });

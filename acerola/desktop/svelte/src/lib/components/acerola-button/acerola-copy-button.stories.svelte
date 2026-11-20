@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaCopyButton,
-		title: 'Primitivos/AcerolaCopyButton',
+		title: 'Primitives/AcerolaCopyButton',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Botão de cópia elegante inspirado no Cult UI com suporte a feedback animado, transição check e estados desabilitados.'
+						'Elegant copy button inspired by Cult UI, with animated feedback, check transition and disabled states.'
 				}
 			}
 		}

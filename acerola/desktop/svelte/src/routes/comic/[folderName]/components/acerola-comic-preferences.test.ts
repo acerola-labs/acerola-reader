@@ -27,9 +27,9 @@ describe('AcerolaComicPreferences', () => {
 		return screen.getByText(name).closest('button')!;
 	}
 
-	// Sincronização fica sempre aberta (flat) — é a categoria mais usada (metadados, arquivos e
-	// dispositivos pareados); Leitura e Avançado continuam colapsadas por padrão. Mesmo mix de
-	// UI/UX do root de config/ (Aparência/Marcadores flat, o resto colapsado).
+	// Sync is always open (flat) — it is the most used category (metadata, files and paired
+	// devices); Reading and Advanced stay collapsed by default. Same UI/UX mix as the config/
+	// root (Appearance/Bookmarks flat, the rest collapsed).
 	it('renders the flat sync category already open and the others collapsed by default', () => {
 		render(AcerolaComicPreferences, { props: defaultProps() });
 
@@ -37,9 +37,9 @@ describe('AcerolaComicPreferences', () => {
 		expect(screen.getByText(/^sincronização$/i)).toBeInTheDocument();
 		expect(screen.getByText(/^avançado$/i)).toBeInTheDocument();
 
-		// Sincronização é flat — o conteúdo já vem visível, sem precisar clicar.
+		// Sync is flat — the content is already visible, no click needed.
 		expect(screen.getByText(/sincronização externa/i)).toBeInTheDocument();
-		// Leitura e Avançado continuam colapsadas.
+		// Reading and Advanced stay collapsed.
 		expect(screen.queryByText(/atribua um marcador/i)).not.toBeInTheDocument();
 	});
 
@@ -53,9 +53,9 @@ describe('AcerolaComicPreferences', () => {
 	});
 
 	it('collapses the category again on a second click', async () => {
-		// aria-expanded no botão do cabeçalho muda de forma síncrona — a remoção do conteúdo em
-		// si passa por transition:slide, cujo outro pode não completar em jsdom (sem layout
-		// real), então o sinal confiável aqui é o atributo, não o conteúdo.
+		// aria-expanded on the header button changes synchronously — removing the content
+		// itself goes through transition:slide, whose outro may not complete in jsdom (no real
+		// layout), so the reliable signal here is the attribute, not the content.
 		const user = userEvent.setup();
 		render(AcerolaComicPreferences, { props: defaultProps() });
 

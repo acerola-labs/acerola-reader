@@ -14,7 +14,7 @@ const cbzFile = path.join(cbzFolder, 'witchcraft.cbz');
 const cbzChapter2 = path.join(cbzFolder, 'witchcraft2.cbz');
 const cbzChapter3 = path.join(cbzFolder, 'witchcraft3.cbz');
 
-// Garante limpeza mesmo se o teste falhar
+// Ensure cleanup even if the test fails
 after(() => {
 	if (fs.existsSync(cbzChapter2)) fs.rmSync(cbzChapter2);
 	if (fs.existsSync(cbzChapter3)) fs.rmSync(cbzChapter3);
@@ -33,21 +33,21 @@ describe('Reader Navigation E2E', () => {
 
 		await waitForAppReady();
 		await navigateTo('/home');
-		// Aguarda o onMount registrar o listener scan:complete
+		// Wait for onMount to register the scan:complete listener
 		await browser.pause(500);
 
 		// 1. Scan the library
 		await invokeTauriCommand('refresh_library', { path: cbzFolder });
 
-		// Espera o card 'cbz' aparecer — confirma que o scan terminou
+		// Wait for the 'cbz' card to appear — confirms the scan finished
 		await firstDisplayed('//main//h3[normalize-space()="cbz"]', 15_000);
 
-		// Obtem o directoryId do comic para o estado do reader
+		// Get the comic's directoryId for the reader state
 		const comic = await invokeTauriCommand<any>('get_comic_by_folder_name', {
 			folderName: 'cbz'
 		});
 
-		// 2. Navega direto para o reader com o capitulo 1
+		// 2. Navigate straight to the reader with chapter 1
 		await navigateToWithState('/reader', {
 			chapter: {
 				id: 'cbz-witchcraft-ch1',
@@ -65,32 +65,32 @@ describe('Reader Navigation E2E', () => {
 			chapterScope: 'cbz'
 		});
 
-		// Confirma que a página 1 abriu no capitulo 1
+		// Confirm page 1 opened in chapter 1
 		const image = await firstDisplayed('img[alt="Página 1"], img[alt="Page 1"]', 20_000);
 		expect(await image.getAttribute('src')).toMatch(/^blob:|asset:\/\/|tauri:\/\//i);
 
-		// 3. Navega para o próximo capítulo
+		// 3. Navigate to the next chapter
 		const nextBtn = await firstDisplayed('//*[normalize-space()="Próximo capítulo"]', 5_000);
 		await nextBtn.click();
 
-		// Aguarda o botao de capitulo anterior aparecer (confirma que esta no cap 2)
+		// Wait for the previous-chapter button to appear (confirms we are on ch. 2)
 		await firstDisplayed('//*[normalize-space()="Capítulo anterior"]', 10_000);
 
-		// 4. Volta via o botao Voltar
+		// 4. Go back via the Back button
 		const backBtn = await firstDisplayed('button[title="Voltar"]', 5_000);
 		await backBtn.click();
 
 		await browser.waitUntil(async () => !(await getPathname()).startsWith('/reader'), {
 			timeout: 5_000,
-			timeoutMsg: 'Nao saiu do reader.'
+			timeoutMsg: 'Did not leave the reader.'
 		});
 
-		// 5. Vai para o historico e verifica que a entrada existe
+		// 5. Go to the history and check the entry exists
 		await navigateTo('/history');
 		const resumeBtn = await firstDisplayed('//*[contains(normalize-space(), "Continuar")]', 10_000);
 		expect(await resumeBtn.isExisting()).toBe(true);
 
-		// Simula o resume navegando direto para o capitulo 2
+		// Simulate resuming by navigating straight to chapter 2
 		await navigateToWithState('/reader', {
 			chapter: {
 				id: 'cbz-witchcraft-ch2',
@@ -108,11 +108,11 @@ describe('Reader Navigation E2E', () => {
 			chapterScope: 'cbz'
 		});
 
-		// 6. Verifica que esta no capitulo 2 (tem ambos os botoes)
+		// 6. Check we are on chapter 2 (both buttons present)
 		await firstDisplayed('//*[normalize-space()="Próximo capítulo"]', 5_000);
 		await firstDisplayed('//*[normalize-space()="Capítulo anterior"]', 5_000);
 
-		// 7. Volta ao capitulo 1 via state — verifica que botao anterior nao aparece no capitulo 1
+		// 7. Go back to chapter 1 via state — check the previous button does not show on chapter 1
 		await navigateToWithState('/reader', {
 			chapter: {
 				id: 'cbz-witchcraft-ch1',
@@ -130,7 +130,7 @@ describe('Reader Navigation E2E', () => {
 			chapterScope: 'cbz'
 		});
 
-		// No capitulo 1 (index 0), hasPreviousChapter = false — botao deve ser removido do DOM
+		// On chapter 1 (index 0), hasPreviousChapter = false — the button must be removed from the DOM
 		await browser.waitUntil(
 			async () => {
 				const btn = await browser.$('//*[normalize-space()="Capítulo anterior"]');
@@ -139,7 +139,7 @@ describe('Reader Navigation E2E', () => {
 			{
 				timeout: 5_000,
 				interval: 100,
-				timeoutMsg: '"Capítulo anterior" aparece indevidamente no capitulo 1.'
+				timeoutMsg: '"Capítulo anterior" wrongly shows on chapter 1.'
 			}
 		);
 	});

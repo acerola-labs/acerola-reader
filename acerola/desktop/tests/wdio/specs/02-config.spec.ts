@@ -43,8 +43,8 @@ describe('native config', () => {
 	it('opens sidebar language selector without changing route', async () => {
 		await openConfig();
 
-		// O select fica dentro do popover do ícone de globo no header — só
-		// existe no DOM depois do popover aberto (ver +layout.svelte).
+		// The select lives inside the globe icon popover in the header — it only
+		// exists in the DOM after the popover opens (see +layout.svelte).
 		await (await firstDisplayed('[title="Mudar idioma"]')).click();
 
 		const localeTrigger = await firstDisplayed('[data-slot="select-trigger"]');

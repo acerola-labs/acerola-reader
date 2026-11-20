@@ -17,12 +17,12 @@
 		ui?: Pick<ToggleGroupPrimitive.RootProps, 'class'> & {
 			variant?: 'default' | 'outline';
 			size?: 'default' | 'sm' | 'lg';
-			/// Espaço (na escala do Tailwind, ex.: `4` = 1rem) entre os itens — default `0`
-			/// (itens colados, cantos arredondados só nas pontas do grupo, como um segmented
-			/// control). Qualquer valor > 0 desliga esse visual "colado" e cada item volta a
-			/// ter cantos totalmente arredondados (ver `group-data-[spacing=0]` nas classes de
-			/// `toggle-group-item.svelte`) — necessário sempre que os itens têm um gap visual
-			/// real entre si, senão o item nasce com um lado sem arredondar.
+			/// Space (on the Tailwind scale, e.g. `4` = 1rem) between items — default `0`
+			/// (items joined, round corners only at the group's ends, like a segmented
+			/// control). Any value > 0 turns off this "joined" look and each item gets fully
+			/// round corners again (see `group-data-[spacing=0]` in the
+			/// `toggle-group-item.svelte` classes) — needed whenever items have a real visual gap
+			/// between them, otherwise an item is born with one side unrounded.
 			spacing?: number;
 		};
 		children: Snippet;

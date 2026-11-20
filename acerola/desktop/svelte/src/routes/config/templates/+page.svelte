@@ -29,12 +29,12 @@
 
 	const templateStore = useArchiveTemplates();
 
-	// Macros e exemplos são sintaxe técnica, não texto de idioma — ficam fixos aqui
-	// em vez de nas mensagens i18n, para não colidir com a interpolação do paraglide.
+	// Macros and examples are technical syntax, not language text — they stay fixed here
+	// instead of in the i18n messages, so they don't collide with paraglide interpolation.
 	const CHAPTER_EXAMPLE = 'Ch. {chapter}{decimal}.*.{extension}';
 	const VOLUME_EXAMPLE = 'Vol. {volume}{decimal}';
-	// {extension} nunca é digitado pelo usuário: é sempre o último token de um
-	// template de capítulo, então o formulário anexa automaticamente na hora de criar.
+	// {extension} is never typed by the user: it is always the last token of a chapter
+	// template, so the form appends it automatically on creation.
 	const CHAPTER_BODY_PLACEHOLDER = 'Ch. {chapter}{decimal}.*.';
 
 	let newLabel = $state('');
@@ -60,8 +60,8 @@
 
 	function selectSortType(value: ArchiveTemplateSortType) {
 		newSortType = value;
-		// Troca de tipo limpa o padrão: uma macro de capítulo dentro de um template
-		// de volume (ou vice-versa) não é barrada pelo parser e gera extração errada.
+		// Switching type clears the pattern: a chapter macro inside a volume template (or vice
+		// versa) isn't blocked by the parser and produces a wrong extraction.
 		newPattern = '';
 	}
 
@@ -116,7 +116,7 @@
 		</p>
 	</div>
 
-	<!-- Referência: como montar um template -->
+	<!-- Reference: how to build a template -->
 	<AcerolaAccordionCard
 		data={{
 			title: m['pages.config.templates.help.title'](),
@@ -186,7 +186,7 @@
 		{/snippet}
 	</AcerolaAccordionCard>
 
-	<!-- Criar novo template -->
+	<!-- Create a new template -->
 	<AcerolaCard data={{ title: m['pages.config.templates.form.title']() }}>
 		<div class="space-y-4">
 			<div class="space-y-1">
@@ -306,7 +306,7 @@
 		</div>
 	</AcerolaCard>
 
-	<!-- Listagem -->
+	<!-- Listing -->
 	<section class="grid gap-8 sm:grid-cols-2">
 		{#each [{ title: m['pages.config.templates.list.chapterTitle'](), items: chapterTemplates, empty: m['pages.config.templates.list.emptyChapter']() }, { title: m['pages.config.templates.list.volumeTitle'](), items: volumeTemplates, empty: m['pages.config.templates.list.emptyVolume']() }] as group (group.title)}
 			<div class="space-y-3">

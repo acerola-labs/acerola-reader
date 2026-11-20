@@ -24,10 +24,10 @@
 	let showRawCode = $state(false);
 
 	$effect(() => {
-		// No teardown da story (Storybook + vitest browser mode), este efeito roda mais
-		// uma vez com `data` já undefined antes do componente ser destruído de fato —
-		// sem o optional chaining aqui isso vaza como unhandled error e derruba a suíte
-		// mesmo com todos os asserts passando.
+		// On story teardown (Storybook + vitest browser mode), this effect runs once more
+		// with `data` already undefined before the component is actually destroyed —
+		// without the optional chaining here this leaks as an unhandled error and brings
+		// down the suite even with every assert passing.
 		const code = data?.code;
 		if (!code) {
 			qrDataUrl = undefined;

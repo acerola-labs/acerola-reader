@@ -4,7 +4,7 @@
 	import AcerolaReaderViewport from './acerola-reader-viewport.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderViewport',
+		title: 'Pages/Reader/AcerolaReaderViewport',
 		component: AcerolaReaderViewport,
 		tags: ['autodocs'],
 		argTypes: {

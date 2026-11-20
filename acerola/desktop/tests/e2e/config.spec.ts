@@ -34,8 +34,8 @@ test.describe('library configuration', () => {
 
 		await page.goto('/config');
 
-		// Categorias vêm colapsadas por padrão (accordion) — precisa expandir antes de
-		// conseguir clicar em itens que ficam dentro do corpo de cada card.
+		// Categories come collapsed by default (accordion) — they must be expanded before
+		// items inside each card's body can be clicked.
 		await page.getByText('Configuração dos Arquivos').click();
 		await page.getByText('Pasta dos quadrinhos').click();
 		await expect(page).not.toHaveURL(/\/home$/);

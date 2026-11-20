@@ -16,9 +16,9 @@ function entry(overrides: Partial<TransferLogEntry> = {}): TransferLogEntry {
 	};
 }
 
-// Expande o accordion clicando no cabeçalho — o mesmo gatilho que o usuário usa na tela de
-// Rede (ver acerola-network-transfers-log.svelte e acerola-network-relay-settings-card.test.ts,
-// mesmo padrão pro card vizinho de Configurações de Relay).
+// Expands the accordion by clicking the header — the same trigger the user uses on the
+// Network screen (see acerola-network-transfers-log.svelte and
+// acerola-network-relay-settings-card.test.ts, same pattern for the neighboring Relay Settings card).
 async function expandCard(user: ReturnType<typeof userEvent.setup>) {
 	await user.click(screen.getByRole('button', { expanded: false }));
 }
@@ -61,7 +61,7 @@ describe('AcerolaNetworkTransfersLog', () => {
 	});
 
 	it('falls back to the raw message when a kind has no formatter for that status', () => {
-		// 'history' não tem status 'progress' definido — describeEntry deve cair no fallback.
+		// 'history' has no 'progress' status defined — describeEntry must fall back.
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
@@ -164,9 +164,9 @@ describe('AcerolaNetworkTransfersLog', () => {
 
 		await expandCard(user);
 
-		// bits-ui AlertDialog.Trigger envolve o elemento filho em seu próprio <button>, então dois
-		// botões com o mesmo nome acessível existem — o gatilho externo é o índice 0 (mesmo padrão
-		// de `routes/history/__tests__/history.test.ts`).
+		// bits-ui AlertDialog.Trigger wraps the child element in its own <button>, so two buttons
+		// with the same accessible name exist — the outer trigger is index 0 (same pattern as
+		// `routes/history/__tests__/history.test.ts`).
 		const clearButtons = screen.getAllByRole('button', { name: /Clear|Limpar/i });
 		await user.click(clearButtons[0]);
 

@@ -32,13 +32,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaNetworkTransfersLog,
-		title: 'Páginas/Network/AcerolaNetworkTransfersLog',
+		title: 'Pages/Network/AcerolaNetworkTransfersLog',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Log de transferências de rede em andamento e concluídas, com status por entrada (progresso, completo ou erro).'
+						'Log of in-progress and finished network transfers, with per-entry status (progress, complete or error).'
 				}
 			}
 		}

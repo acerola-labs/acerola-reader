@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaNetworkConnectCard,
-		title: 'Páginas/Network/AcerolaNetworkConnectCard',
+		title: 'Pages/Network/AcerolaNetworkConnectCard',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Cartão para iniciar a conexão com um peer a partir de um código de pareamento.'
+						'Card to start a connection with a peer from a pairing code.'
 				}
 			}
 		}

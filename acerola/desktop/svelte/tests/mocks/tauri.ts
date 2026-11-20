@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 
 /**
- * Cria um mock do LazyStore com valores iniciais customizados.
- * Use em testes que precisam simular um estado salvo no store.
+ * Creates a LazyStore mock with custom initial values.
+ * Use in tests that need to simulate a state saved in the store.
  *
  * @example
  * vi.mock("@tauri-apps/plugin-store", () => ({

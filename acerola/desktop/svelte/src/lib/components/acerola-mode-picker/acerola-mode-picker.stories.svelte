@@ -3,14 +3,14 @@
 	import AcerolaModePicker from './acerola-mode-picker.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaModePicker',
+		title: 'Composites/AcerolaModePicker',
 		component: AcerolaModePicker,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Botão que alterna entre modo claro e escuro. Exibe ícone de lua no modo escuro e sol no modo claro.'
+						'Button that toggles between light and dark mode. Shows a moon icon in dark mode and a sun in light mode.'
 				}
 			}
 		}

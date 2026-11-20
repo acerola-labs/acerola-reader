@@ -3,7 +3,7 @@
 	import AcerolaReaderPages from './acerola-reader-pages.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderPages',
+		title: 'Pages/Reader/AcerolaReaderPages',
 		component: AcerolaReaderPages,
 		tags: ['autodocs'],
 		argTypes: {

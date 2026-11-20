@@ -81,8 +81,8 @@
 
 	let expandedVolumeId = $state<string | null>(null);
 
-	// INFO: Reativo de propósito — decide o que fica montado no DOM, não só o
-	// que dispara fetch. Ver o mesmo raciocínio em acerola-comic-chapter-list.svelte.
+	// INFO: Reactive on purpose — decides what stays mounted in the DOM, not just what
+	// fires a fetch. See the same reasoning in acerola-comic-chapter-list.svelte.
 	let visiblePages = new SvelteSet<number>();
 
 	const ITEM_HEIGHT = 112;
@@ -112,10 +112,10 @@
 	};
 
 	/**
-	 * Criado de forma eager (não em onMount): as actions `use:trackPage` dos
-	 * blocos do {#each} rodam durante a montagem inicial, antes do onMount do
-	 * componente disparar — se o observer fosse criado em onMount, as páginas
-	 * já montadas nunca seriam observadas.
+	 * Created eagerly (not in onMount): the `use:trackPage` actions of the
+	 * {#each} blocks run during the initial mount, before the component's
+	 * onMount fires — if the observer were created in onMount, the pages
+	 * already mounted would never be observed.
 	 */
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -150,9 +150,9 @@
 	}
 
 	/**
-	 * Reciclagem de nós de DOM — mesmo raciocínio de acerola-comic-chapter-list.svelte.
-	 * Só um volume fica expandido por vez, então um único pool compartilhado
-	 * serve pra qualquer volume que esteja aberto no momento.
+	 * DOM node recycling — same reasoning as acerola-comic-chapter-list.svelte.
+	 * Only one volume is expanded at a time, so a single shared pool serves
+	 * whichever volume is currently open.
 	 */
 	const POOL_SIZE = 6;
 
@@ -213,8 +213,8 @@
 								<!-- prettier-ignore -->
 								{@const itemsInThisPage = pageIndex === totalPages - 1? volume.totalChapters % pageSize || pageSize: pageSize}
 
-								<!-- Espaçador: só reserva a altura no fluxo do documento e dispara o
-								     IntersectionObserver — o conteúdo real vem do pool reciclado abaixo. -->
+								<!-- Spacer: only reserves the height in the document flow and triggers the
+								     IntersectionObserver — the real content comes from the recycled pool below. -->
 								<div
 									use:trackPage={pageIndex}
 									style:height="{itemsInThisPage * ITEM_HEIGHT}px"

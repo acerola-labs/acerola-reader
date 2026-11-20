@@ -3,9 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-// Guarda estrutural: garante que todo `invoke()` do Svelte aponta para um
-// #[tauri::command] realmente registrado em bios::build(). Sem isso, renomear
-// ou remover um command no Rust só quebra em runtime.
+// Structural guard: ensures every Svelte `invoke()` points to a
+// #[tauri::command] actually registered in bios::build(). Without it, renaming
+// or removing a command in Rust only breaks at runtime.
 
 const contractsDir = path.dirname(fileURLToPath(import.meta.url));
 const svelteSrcDir = path.resolve(contractsDir, '../..');
@@ -23,7 +23,7 @@ function extractRustCommands(): Set<string> {
 	const source = readFileSync(rustHandlerFile, 'utf-8');
 	const handlerBlock = source.match(/invoke_handler\(tauri::generate_handler!\[([\s\S]*?)\]\)/);
 	if (!handlerBlock) {
-		throw new Error(`Não foi possível localizar o bloco invoke_handler em ${rustHandlerFile}`);
+		throw new Error(`Could not find the invoke_handler block in ${rustHandlerFile}`);
 	}
 
 	const commands = new Set<string>();
@@ -33,9 +33,9 @@ function extractRustCommands(): Set<string> {
 	return commands;
 }
 
-// Assume pares "Const.prop" globalmente únicos entre os arquivos *.commands.ts,
-// o que é verdade hoje mesmo havendo nomes de const duplicados (ex.: LIBRARY_COMMANDS
-// em módulos distintos), pois suas propriedades não se sobrepõem.
+// Assumes "Const.prop" pairs are globally unique across the *.commands.ts files,
+// which holds today even with duplicated const names (e.g. LIBRARY_COMMANDS
+// in different modules), since their properties do not overlap.
 function extractContractCommandMap(): Map<string, string> {
 	const map = new Map<string, string>();
 
@@ -90,12 +90,12 @@ describe('IPC contract sync (Svelte contracts vs. Rust commands)', () => {
 				: contractMap.get(commandRef);
 
 			if (commandName === undefined) {
-				return [`${file}: referência não resolvida "${commandRef}"`];
+				return [`${file}: unresolved reference "${commandRef}"`];
 			}
 
 			if (!rustCommands.has(commandName)) {
 				return [
-					`${file}: "${commandRef}" -> "${commandName}" sem #[tauri::command] correspondente`
+					`${file}: "${commandRef}" -> "${commandName}" without a matching #[tauri::command]`
 				];
 			}
 

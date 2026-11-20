@@ -3,7 +3,7 @@
 	import AcerolaReaderCommandPalette from './acerola-reader-command-palette.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderCommandPalette',
+		title: 'Pages/Reader/AcerolaReaderCommandPalette',
 		component: AcerolaReaderCommandPalette,
 		tags: ['autodocs'],
 		argTypes: {
@@ -15,9 +15,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaReaderCommandPalette e totalmente controlado (state.open + events.onOpenChange) e
-	// nao tem trigger proprio — cada story precisa do seu proprio estado local e de um botao
-	// real pra abrir, senao a aba Docs mostra as variantes com a palette aberta ao mesmo tempo.
+	// AcerolaReaderCommandPalette is fully controlled (state.open + events.onOpenChange) and has
+	// no trigger of its own — each story needs its own local state and a real button to open
+	// it, otherwise the Docs tab shows the variants with the palette open at the same time.
 	let value = $state('');
 	let openDefault = $state(false);
 	let readingMode = $state<'vertical' | 'horizontal' | 'webtoon'>('vertical');

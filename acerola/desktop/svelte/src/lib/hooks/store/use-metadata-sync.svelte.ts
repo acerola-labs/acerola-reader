@@ -80,9 +80,9 @@ export function useMetadataSync() {
 
 	return {
 		get isSyncing() {
-			// Também desabilita enquanto um sync em lote (tela de Config) estiver rodando —
-			// o lock de verdade é no backend (`SyncGuard`), isso só evita o usuário clicar e
-			// levar um toast de `SyncInProgress` por um comando que já sabíamos que ia falhar.
+			// Also disabled while a batch sync (Config screen) is running — the real lock is
+			// in the backend (`SyncGuard`), this just keeps the user from clicking and getting a
+			// `SyncInProgress` toast for a command we already knew would fail.
 			return isSyncing || isSyncingAll();
 		},
 		syncMangadex,

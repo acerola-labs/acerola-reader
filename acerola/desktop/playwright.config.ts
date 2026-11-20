@@ -4,9 +4,9 @@ export default defineConfig({
 	testDir: './tests/e2e',
 	timeout: 10_000,
 	workers: 1,
-	// NOTE: a primeira spec a bater numa rota nova sofre a compilação sob-demanda do Vite
-	// (dev server frio) e pode estourar o timeout de `expect` só nessa primeira tentativa —
-	// retry no CI resolve sem mascarar falhas reais (reportadas como "flaky", não silenciosas).
+	// NOTE: the first spec to hit a new route pays for Vite's on-demand compilation
+	// (cold dev server) and may exceed the `expect` timeout on that first attempt only —
+	// retrying on CI fixes it without masking real failures (reported as "flaky", not silent).
 	retries: process.env.CI ? 2 : 0,
 	expect: {
 		timeout: 5_000

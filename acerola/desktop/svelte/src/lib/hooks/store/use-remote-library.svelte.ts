@@ -13,22 +13,23 @@ import type {
 
 const coverKey = (peerId: string, comicName: string) => `${peerId}:${comicName}`;
 
-/// Espelha o payload de erro dos outros eventos `sync:*:error` (ver
-/// `use-network-sync.svelte.ts::parseErrorPayload`) — `library:query:error` carrega
-/// `{ peerId, message, code? }` no mesmo formato.
+/// Mirrors the error payload of the other `sync:*:error` events (see
+/// `use-network-sync.svelte.ts::parseErrorPayload`) — `library:query:error` carries
+/// `{ peerId, message, code? }` in the same shape.
 function parseErrorPayload(payload: string): { peerId?: string; message: string; code?: string } {
 	try {
 		const parsed = JSON.parse(payload);
 		// Stryker disable next-line ConditionalExpression,LogicalOperator: `typeof parsed.message
-		// === 'string'` só é verdadeiro quando `parsed` já É um objeto de fato — nenhum primitivo
-		// vindo de `JSON.parse` (number, string, boolean) expõe uma propriedade `.message` do tipo
-		// string, então remover o check `typeof parsed === 'object'` nunca muda o resultado pra
-		// esses casos. Trocar o `&&` antes dele por `||` (LogicalOperator) também é equivalente:
-		// o único valor onde isso importaria é `parsed = null` (typeof null === 'object', mas
-		// falsy) — aí o mutante avalia `null.message`, que lança TypeError, capturado pelo catch
-		// logo abaixo, caindo no MESMO `return { message: payload }` do fallback normal. A saída
-		// observável é idêntica nos dois casos, só o caminho (exceção vs. curto-circuito) muda.
-		// Verificado empiricamente: aplicando cada mutante isoladamente, nenhum teste falha.
+		// === 'string'` is only true when `parsed` already IS an actual object — no primitive
+		// from `JSON.parse` (number, string, boolean) exposes a string `.message` property, so
+		// removing the `typeof parsed === 'object'` check never changes the result for these
+		// cases. Swapping the `&&` before it for `||` (LogicalOperator) is also equivalent: the
+		// only value where it would matter is `parsed = null` (typeof null === 'object', but
+		// falsy) — then the mutant evaluates `null.message`, which throws a TypeError, caught by
+		// the catch right below, landing on the SAME `return { message: payload }` as the normal
+		// fallback. The observable output is identical in both cases, only the path (exception
+		// vs. short-circuit) changes. Verified empirically: applying each mutant in isolation,
+		// no test fails.
 		if (parsed && typeof parsed === 'object' && typeof parsed.message === 'string') {
 			return {
 				peerId: parsed.peerId,
@@ -37,20 +38,20 @@ function parseErrorPayload(payload: string): { peerId?: string; message: string;
 			};
 		}
 	} catch {
-		// payload inesperado sem JSON — trata como mensagem crua.
+		// unexpected payload without JSON — treat it as a raw message.
 	}
-	// Stryker disable next-line ObjectLiteral: este fallback nunca inclui `peerId` — o objeto
-	// retornado só tem a chave `message`. O único consumidor (`libraryQueryError`) descarta o
-	// evento inteiro via `if (!peerId) return;` antes de ler `message` nesse caminho, então
-	// trocar `{ message: payload }` por `{}` não muda nenhum comportamento observável.
+	// Stryker disable next-line ObjectLiteral: this fallback never includes `peerId` — the
+	// returned object only has the `message` key. The only consumer (`libraryQueryError`) drops
+	// the whole event via `if (!peerId) return;` before reading `message` on this path, so
+	// swapping `{ message: payload }` for `{}` changes no observable behavior.
 	return { message: payload };
 }
 
-/// Consulta e mantém em cache (por `peerId`) a lista de quadrinhos de bibliotecas remotas —
-/// usado pra "puxar" um quadrinho individual que só existe em outro dispositivo (ver
-/// `sync_comic` em `use-network-sync.svelte.ts`). A consulta é única por clique (não
-/// re-dispara a cada tecla do campo de busca): o filtro por título é reativo no frontend sobre
-/// o resultado já em cache, mesmo padrão do "Buscar quadrinhos por título" da Home.
+/// Queries and caches (per `peerId`) the comic list of remote libraries — used to "pull" an
+/// individual comic that only exists on another device (see `sync_comic` in
+/// `use-network-sync.svelte.ts`). The query happens once per click (it doesn't refire on
+/// every keystroke in the search field): the title filter is reactive on the frontend over
+/// the already cached result, same pattern as the Home's "Search comics by title".
 export function useRemoteLibrary() {
 	const libraries = new SvelteMap<string, ComicSummary[]>();
 	const loading = new SvelteSet<string>();
@@ -58,10 +59,10 @@ export function useRemoteLibrary() {
 	const coverPaths = new SvelteMap<string, string>();
 	const unlisten: UnlistenFn[] = [];
 
-	// `addrs` do último `queryRemoteLibrary` por peer — reaproveitado pra disparar
-	// `queryRemoteCover` em paralelo assim que a lista chega, sem o chamador precisar guardar
-	// isso de novo. Versão já confirmada (cacheada ou "não mudou") por `"$peerId:$comicName"` —
-	// nunca rebaixa a mesma versão duas vezes na mesma sessão do app.
+	// `addrs` of the last `queryRemoteLibrary` per peer — reused to fire `queryRemoteCover` in
+	// parallel as soon as the list arrives, without the caller having to keep it again.
+	// Already confirmed version (cached or "unchanged") per `"$peerId:$comicName"` — never
+	// downloads the same version twice in the same app session.
 	const addrsByPeer = new Map<string, number[]>();
 	const knownCoverVersions = new Map<string, number>();
 
@@ -90,7 +91,7 @@ export function useRemoteLibrary() {
 				}
 			}),
 			await listen<string>(NETWORK_EVENTS.coverQueryError, () => {
-				// best-effort — a lista continua sem thumb pra esse item, sem bloquear o resto.
+				// best-effort — the list stays without a thumb for this item, without blocking the rest.
 			})
 		);
 	}
@@ -113,8 +114,8 @@ export function useRemoteLibrary() {
 		}
 	}
 
-	/// Dispara `acerola/browse-cover/1` em paralelo pra cada quadrinho da lista — streams são
-	/// baratas numa conexão já pooled por `(peer, alpn)`, sem necessidade de serializar.
+	/// Fires `acerola/browse-cover/1` in parallel for each comic in the list — streams are
+	/// cheap on a connection already pooled by `(peer, alpn)`, no need to serialize.
 	async function fetchCoversFor(peerId: string, comics: ComicSummary[]) {
 		const addrs = addrsByPeer.get(peerId);
 		if (!addrs) return;
@@ -129,7 +130,7 @@ export function useRemoteLibrary() {
 					comicName: comic.comicName,
 					knownVersion: knownCoverVersions.get(key) ?? null
 				}).catch(() => {
-					// best-effort, mesmo espírito de coverQueryError acima.
+					// best-effort, same spirit as coverQueryError above.
 				});
 			})
 		);

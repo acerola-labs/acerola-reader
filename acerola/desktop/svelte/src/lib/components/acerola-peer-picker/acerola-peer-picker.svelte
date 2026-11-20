@@ -7,8 +7,8 @@
 		};
 		data: {
 			peers: PairedPeerPayload[];
-			/** Apelido local (definido pelo usuário neste dispositivo) pra sobrepor o
-			 *  `deviceName` default — mesma prioridade de `usePeerConnection().peerLabel`. */
+			/** Local nickname (set by the user on this device) to override the default
+			 *  `deviceName` — same priority as `usePeerConnection().peerLabel`. */
 			nicknameFor?: (peerId: string) => string | null | undefined;
 		};
 		events: {
@@ -26,10 +26,10 @@
 
 	let { state, data, events }: AcerolaPeerPickerProps = $props();
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `events` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba
-	// a suíte mesmo com todos os asserts passando (mesmo padrão de
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `events` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings down
+	// the suite even with every assert passing (same pattern as
 	// acerola-network-my-device-card.svelte).
 	let safeEvents = $derived(events ?? { onOpenChange: () => {}, onSelect: () => {} });
 	let safeData = $derived(data ?? { peers: [] });

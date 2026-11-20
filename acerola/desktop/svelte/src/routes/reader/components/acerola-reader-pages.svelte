@@ -42,11 +42,11 @@
 	const trackPageImage = $derived(services.trackPageImage ?? noopImageTracker);
 
 	/**
-	 * Todas as `pageCount` seções montam de uma vez (sem virtualização), então
-	 * sem esse raio essa action dispararia loadPage para o capítulo inteiro
-	 * assim que o leitor abre. O IntersectionObserver em +page.svelte já cobre
-	 * o carregamento conforme o usuário rola — isso aqui é só o fallback pro
-	 * primeiro paint ao redor da página atual.
+	 * All `pageCount` sections mount at once (no virtualization), so without this
+	 * radius the action would fire loadPage for the whole chapter as soon as the
+	 * reader opens. The IntersectionObserver in +page.svelte already covers loading
+	 * as the user scrolls — this is only the fallback for the first paint around
+	 * the current page.
 	 */
 	function loadIfMissing(node: HTMLElement, pageIndex: number) {
 		if (!services.pageAt(pageIndex) && Math.abs(pageIndex - data.currentPage) <= PREFETCH_RADIUS) {

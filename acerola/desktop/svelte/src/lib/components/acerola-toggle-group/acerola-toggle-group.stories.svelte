@@ -5,7 +5,7 @@
 	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaToggleGroup',
+		title: 'Primitives/AcerolaToggleGroup',
 		component: AcerolaToggleGroup,
 		tags: ['autodocs'],
 		parameters: {
@@ -14,9 +14,9 @@
 			}
 		},
 		argTypes: {
-			config: { description: 'Configuração de seleção do grupo', control: 'object' },
-			ui: { description: 'Configuração visual do grupo', control: 'object' },
-			state: { description: 'Valor selecionado', control: 'object' }
+			config: { description: 'Group selection configuration', control: 'object' },
+			ui: { description: 'Group visual configuration', control: 'object' },
+			state: { description: 'Selected value', control: 'object' }
 		}
 	});
 </script>

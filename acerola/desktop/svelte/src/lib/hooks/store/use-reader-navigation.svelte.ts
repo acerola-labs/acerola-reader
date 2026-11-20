@@ -23,7 +23,7 @@ export type ReaderNavigationState = {
 export function useReaderNavigation() {
 	let initializing = $state(false);
 
-	// Mantém o rastro da navegação pendente para que o listener saiba o que fazer
+	// Keeps track of the pending navigation so the listener knows what to do
 	let pendingAction = $state<'load' | 'navigate' | null>(null);
 	let pendingTargetIndex = $state<number | null>(null);
 
@@ -58,20 +58,19 @@ export function useReaderNavigation() {
 
 	const chapterIndex = $derived.by(() => {
 		const value = state.chapterIndex;
-		// Stryker disable next-line ConditionalExpression: forçar `typeof value === 'number'` pra
-		// `true` é equivalente — `Number.isFinite` nunca retorna `true` pra um argumento que não é
-		// number (ele não faz coerção), então pra qualquer `value` não-number o operando da direita
-		// já avalia pra `false` sozinho. Os dois branches são comportamentalmente idênticos pra
-		// qualquer entrada possível.
+		// Stryker disable next-line ConditionalExpression: forcing `typeof value === 'number'` to
+		// `true` is equivalent — `Number.isFinite` never returns `true` for a non-number argument
+		// (it doesn't coerce), so for any non-number `value` the right operand already evaluates
+		// to `false` on its own. Both branches behave identically for any possible input.
 		return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : undefined;
 	});
 
 	const totalChapters = $derived.by(() => {
 		const value = state.totalChapters;
-		// Stryker disable next-line ConditionalExpression: mesma equivalência do clamp de
-		// `chapterIndex` acima — `Number.isFinite` nunca retorna `true` pra um argumento que
-		// não é number, então forçar `typeof value === 'number'` pra `true` não muda o
-		// resultado pra nenhuma entrada.
+		// Stryker disable next-line ConditionalExpression: same equivalence as the
+		// `chapterIndex` clamp above — `Number.isFinite` never returns `true` for a non-number
+		// argument, so forcing `typeof value === 'number'` to `true` doesn't change the
+		// result for any input.
 		return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : undefined;
 	});
 
@@ -80,14 +79,14 @@ export function useReaderNavigation() {
 		return Math.max(0, totalChapters - chapterIndex - 1);
 	});
 
-	// Stryker disable next-line ConditionalExpression: forçar `chaptersRemaining !== undefined` pra
-	// `true` é equivalente — quando `chaptersRemaining` é realmente `undefined`,
-	// `chaptersRemaining > 0` vira `undefined > 0`, que já é `false`, então os dois branches
-	// concordam pra qualquer entrada.
+	// Stryker disable next-line ConditionalExpression: forcing `chaptersRemaining !== undefined` to
+	// `true` is equivalent — when `chaptersRemaining` really is `undefined`,
+	// `chaptersRemaining > 0` becomes `undefined > 0`, which is already `false`, so both branches
+	// agree for any input.
 	const hasNextChapter = $derived(chaptersRemaining !== undefined && chaptersRemaining > 0);
-	// Stryker disable next-line ConditionalExpression: mesma equivalência de cima — `chapterIndex > 0`
-	// já é `false` sempre que `chapterIndex` é `undefined`, então forçar o operando da esquerda pra
-	// `true` não muda o resultado pra nenhuma entrada.
+	// Stryker disable next-line ConditionalExpression: same equivalence as above — `chapterIndex > 0`
+	// is already `false` whenever `chapterIndex` is `undefined`, so forcing the left operand to
+	// `true` doesn't change the result for any input.
 	const hasPreviousChapter = $derived(chapterIndex !== undefined && chapterIndex > 0);
 
 	onMount(() => {
@@ -114,20 +113,20 @@ export function useReaderNavigation() {
 
 				const isPendingNavigate = pendingAction === 'navigate';
 
-				// `pendingTargetIndex` fica inline na condição (em vez de extraído pra uma
-				// variável nomeada como `isPendingNavigate`) de propósito: o TypeScript só
-				// estreita `pendingTargetIndex` de `number | null` pra `number` dentro deste
-				// bloco através do `!== null` inline aqui — indiretar por um boolean separado
-				// quebra esse narrowing e `chapterIndex: pendingTargetIndex` mais abaixo (que
-				// espera `number | undefined`) para de compilar.
+				// `pendingTargetIndex` stays inline in the condition (instead of extracted into a
+				// named variable like `isPendingNavigate`) on purpose: TypeScript only narrows
+				// `pendingTargetIndex` from `number | null` to `number` inside this block through
+				// the inline `!== null` here — going through a separate boolean breaks that
+				// narrowing and `chapterIndex: pendingTargetIndex` further down (which expects
+				// `number | undefined`) stops compiling.
 				//
-				// Stryker disable next-line ConditionalExpression: `pendingTargetIndex` só é
-				// setado pra um número não-nulo na mesma instrução que seta `pendingAction =
-				// 'navigate'` (ver `navigateToRelativeChapter` abaixo), e todo caminho de
-				// conclusão reseta os dois juntos. Então sempre que `isPendingNavigate` é true,
-				// `pendingTargetIndex !== null` já é garantidamente true também — não existe
-				// estado alcançável onde `isPendingNavigate` é true e o valor real dessa
-				// checagem é false, então forçá-la pra `true` nunca muda o resultado.
+				// Stryker disable next-line ConditionalExpression: `pendingTargetIndex` is only
+				// set to a non-null number in the same statement that sets `pendingAction =
+				// 'navigate'` (see `navigateToRelativeChapter` below), and every completion path
+				// resets both together. So whenever `isPendingNavigate` is true,
+				// `pendingTargetIndex !== null` is guaranteed true as well — there is no reachable
+				// state where `isPendingNavigate` is true and this check's real value is false,
+				// so forcing it to `true` never changes the result.
 				if (isPendingNavigate && pendingTargetIndex !== null) {
 					const nextChapterData = payload.archive.items[0];
 
@@ -204,11 +203,11 @@ export function useReaderNavigation() {
 	}
 
 	async function goToNextChapter() {
-		// Stryker disable next-line ConditionalExpression: `hasNextChapter` é `$derived` de
-		// `chaptersRemaining`, que só é definido quando `chapterIndex` também é — então
-		// `hasNextChapter === true` já garante `chapterIndex !== undefined`. Não existe estado
-		// alcançável onde `hasNextChapter` é true e `chapterIndex` é undefined, então forçar essa
-		// checagem pra `false` nunca muda o resultado.
+		// Stryker disable next-line ConditionalExpression: `hasNextChapter` is `$derived` from
+		// `chaptersRemaining`, which is only defined when `chapterIndex` is too — so
+		// `hasNextChapter === true` already guarantees `chapterIndex !== undefined`. There is no
+		// reachable state where `hasNextChapter` is true and `chapterIndex` is undefined, so
+		// forcing this check to `false` never changes the result.
 		const chapterIndexIsMissing = chapterIndex === undefined;
 
 		if (!hasNextChapter || chapterIndexIsMissing || !state.comicDirectoryId) return;
@@ -216,11 +215,11 @@ export function useReaderNavigation() {
 	}
 
 	async function goToPreviousChapter() {
-		// Stryker disable next-line ConditionalExpression: `hasPreviousChapter` é `$derived` de
-		// `chapterIndex !== undefined && chapterIndex > 0`, então `hasPreviousChapter === true` já
-		// garante `chapterIndex !== undefined`. Não existe estado alcançável onde `hasPreviousChapter`
-		// é true e `chapterIndex` é undefined, então forçar essa checagem pra `false` nunca muda o
-		// resultado.
+		// Stryker disable next-line ConditionalExpression: `hasPreviousChapter` is `$derived` from
+		// `chapterIndex !== undefined && chapterIndex > 0`, so `hasPreviousChapter === true` already
+		// guarantees `chapterIndex !== undefined`. There is no reachable state where
+		// `hasPreviousChapter` is true and `chapterIndex` is undefined, so forcing this check to
+		// `false` never changes the result.
 		const chapterIndexIsMissing = chapterIndex === undefined;
 
 		if (!hasPreviousChapter || chapterIndexIsMissing || !state.comicDirectoryId) return;

@@ -11,13 +11,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaFilterPanel,
-		title: 'Páginas/Home/AcerolaFilterPanel',
+		title: 'Pages/Home/AcerolaFilterPanel',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Painel de filtros e ordenação da biblioteca: ordem, exibição de ocultos, fonte de metadados e categoria de marcação.'
+						'Library filter and sort panel: order, hidden items display, metadata source and bookmark category.'
 				}
 			}
 		}
@@ -25,9 +25,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaFilterPanel e totalmente controlado (state.open + events.onClose) e nao tem
-	// trigger proprio — cada story precisa do seu proprio estado local e de um botao real pra
-	// abrir, senao a aba Docs mostra as variantes com o painel aberto ao mesmo tempo.
+	// AcerolaFilterPanel is fully controlled (state.open + events.onClose) and has no trigger
+	// of its own — each story needs its own local state and a real button to open it,
+	// otherwise the Docs tab shows the variants with the panel open at the same time.
 	let openDefault = $state(false);
 	let openActiveFilters = $state(false);
 	let openNoBookmarks = $state(false);

@@ -56,11 +56,10 @@ describe('useArchiveTemplates', () => {
 	});
 
 	it('starts with an empty template list, not loading, and not initialized', async () => {
-		// O state é um singleton a nível de módulo, resetado pra valores conhecidos por
-		// `_resetArchiveTemplatesState()` no `beforeEach`, o que esconderia os valores
-		// iniciais de verdade. Forçamos uma instância nova do módulo (e um mock de `invoke`
-		// atrelado a ela) pra observar os valores como estão declarados no source, antes de
-		// qualquer reset ou load rodar.
+		// The state is a module-level singleton, reset to known values by
+		// `_resetArchiveTemplatesState()` in `beforeEach`, which would hide the real initial
+		// values. We force a fresh module instance (and an `invoke` mock tied to it) to
+		// observe the values as declared in the source, before any reset or load runs.
 		vi.resetModules();
 		const freshCore = await import('@tauri-apps/api/core');
 		const freshInvoke = vi.mocked(freshCore.invoke);
@@ -80,8 +79,8 @@ describe('useArchiveTemplates', () => {
 		expect(hook!.templates).toEqual([]);
 		expect(hook!.isLoading).toBe(false);
 
-		// Prova que `isInitialized` começa `false` de verdade: se começasse `true`,
-		// `loadTemplates()` sairia mais cedo e nunca chamaria o backend.
+		// Proves `isInitialized` really starts `false`: if it started `true`,
+		// `loadTemplates()` would return early and never call the backend.
 		freshInvoke.mockResolvedValueOnce([template()]);
 		await hook!.loadTemplates();
 

@@ -5,24 +5,24 @@
 	import { toastAsync } from '#lib/utils/toast-async.util.ts';
 
 	function fakeInstantAction(): Promise<void> {
-		// Resolve na hora de propósito — é o caso que `toastAsync` protege (`minDurationMs`),
-		// pra sempre dar tempo da animação de loading -> check ser percebida.
+		// Resolves immediately on purpose — the case `toastAsync` guards against (`minDurationMs`),
+		// so there's always time for the loading -> check animation to be noticed.
 		return Promise.resolve();
 	}
 
 	function fakeFailingAction(): Promise<void> {
-		return Promise.reject(new Error('Falha simulada'));
+		return Promise.reject(new Error('Simulated failure'));
 	}
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaSonner',
+		title: 'Primitives/AcerolaSonner',
 		component: AcerolaSonner,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Wrapper do sistema de notificacoes da aplicacao baseado em Sonner. Este componente deve ser montado uma vez na arvore para permitir a exibicao de toasts globais de sucesso, erro, aviso e informacao disparados de qualquer ponto da interface.'
+						'Wrapper of the application notification system based on Sonner. This component must be mounted once in the tree to allow showing global success, error, warning and info toasts fired from anywhere in the interface.'
 				}
 			}
 		}
@@ -74,7 +74,7 @@
 		docs: {
 			description: {
 				story:
-					'Este exemplo monta o toaster e expoe um botao para disparar um toast de sucesso. Em uso real, o `AcerolaSonner` deve permanecer montado em um layout ou shell principal, enquanto os toasts podem ser chamados com `toast.success(...)`, `toast.error(...)` e variacoes semelhantes em eventos de acao, feedback de formulario e operacoes assincronas.'
+					'This example mounts the toaster and exposes a button to fire a success toast. In real use, `AcerolaSonner` must stay mounted in a main layout or shell, while toasts can be called with `toast.success(...)`, `toast.error(...)` and similar variants on action events, form feedback and async operations.'
 			}
 		}
 	}}

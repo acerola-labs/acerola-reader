@@ -47,9 +47,9 @@ describe('useOnboarding', () => {
 	});
 
 	it('resolves the onboarding status at module load (checkStatus already ran)', async () => {
-		// `checkStatus()` roda uma única vez no import do módulo, com `store.get()`
-		// resolvendo `null` por padrão (mock global) — por isso `isCompleted` cai no
-		// fallback `?? false`, e `isLoading` termina em `false` depois de resolver.
+		// `checkStatus()` runs a single time on module import, with `store.get()`
+		// resolving `null` by default (global mock) — that's why `isCompleted` falls to the
+		// `?? false` fallback, and `isLoading` ends at `false` after resolving.
 		const hook = await renderHook();
 
 		expect(hook.isLoading).toBe(false);
@@ -57,11 +57,11 @@ describe('useOnboarding', () => {
 	});
 
 	it('starts with isLoading=true and isCompleted=false before checkStatus resolves', async () => {
-		// Faz `store.get()` retornar uma Promise que só resolve quando mandarmos,
-		// segurando `checkStatus()` no meio do `await`. Com `vi.resetModules()` +
-		// import dinâmico, pegamos uma instância nova do módulo (o state de
-		// `isLoading`/`isCompleted` é module-level), então lemos os valores
-		// iniciais do hook antes de qualquer microtask de `checkStatus` rodar.
+		// Makes `store.get()` return a Promise that only resolves when we say so,
+		// holding `checkStatus()` in the middle of the `await`. With `vi.resetModules()` +
+		// a dynamic import, we get a fresh module instance (the `isLoading`/`isCompleted`
+		// state is module-level), so we read the hook's initial values before any
+		// `checkStatus` microtask runs.
 		let resolveGet!: (value: boolean | null) => void;
 		mockStoreMethods.get.mockImplementationOnce(
 			() =>
