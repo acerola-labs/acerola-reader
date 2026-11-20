@@ -24,7 +24,12 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '#lib/components/ui/select/index.ts';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '#lib/components/ui/select/index.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { cn } from '#lib/utils/cn.util.ts';
 
@@ -90,8 +95,13 @@
 							class="flex items-center gap-2 rounded-inner px-2 py-0.5 transition-colors"
 							style="background-color: #{hex}15; color: #{hex}"
 						>
-							<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>
-							<span class="text-xs font-bold tracking-widest uppercase">{option.label}</span>
+							<div
+								class="h-2 w-2 rounded-full"
+								style="background-color: #{hex}"
+							></div>
+							<span class="text-xs font-bold tracking-widest uppercase"
+								>{option.label}</span
+							>
 						</div>
 					{:else}
 						<span class="text-sm font-medium">{option.label}</span>

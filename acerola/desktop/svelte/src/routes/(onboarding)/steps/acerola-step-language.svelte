@@ -110,7 +110,10 @@
 			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
 				{m['onboarding.back']()}
 			</Button>
-			<Button onclick={onNext} class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift">
+			<Button
+				onclick={onNext}
+				class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift"
+			>
 				{m['onboarding.next']()}
 			</Button>
 		</div>

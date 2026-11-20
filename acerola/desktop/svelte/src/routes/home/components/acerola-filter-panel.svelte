@@ -148,7 +148,9 @@
 		<!-- Header -->
 		<div class="flex items-center justify-between border-b border-border/40 px-6 py-5">
 			<div class="flex items-center gap-3">
-				<div class="flex h-8 w-8 items-center justify-center rounded-inner bg-primary/15 text-primary">
+				<div
+					class="flex h-8 w-8 items-center justify-center rounded-inner bg-primary/15 text-primary"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="16"
@@ -176,7 +178,8 @@
 						{m['pages.home.filterPanel.ariaLabel']()}
 					</h2>
 					{#if hasActiveFilters}
-						<span class="text-[10px] font-semibold tracking-wider text-primary uppercase"
+						<span
+							class="text-[10px] font-semibold tracking-wider text-primary uppercase"
 							>{m['pages.home.filterPanel.activeFilters']()}</span
 						>
 					{/if}
@@ -340,7 +343,8 @@
 					</button>
 					{#each data.bookmarks as category (category.id)}
 						{@const isSelected = localBookmarkFilter === category.id}
-						{@const hexColor = '#' + (category.color & 0xffffff).toString(16).padStart(6, '0')}
+						{@const hexColor =
+							'#' + (category.color & 0xffffff).toString(16).padStart(6, '0')}
 						<button
 							type="button"
 							aria-pressed={isSelected}
@@ -349,7 +353,9 @@
 								: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
 							onclick={() => (localBookmarkFilter = category.id)}
 						>
-							<span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background-color: {hexColor};"
+							<span
+								class="h-2.5 w-2.5 shrink-0 rounded-full"
+								style="background-color: {hexColor};"
 							></span>
 							{category.name}
 						</button>

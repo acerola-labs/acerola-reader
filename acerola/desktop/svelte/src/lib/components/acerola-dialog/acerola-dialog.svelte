@@ -42,7 +42,9 @@
 		{#if data?.title || data?.description}
 			<Dialog.Header>
 				{#if data?.title}
-					<Dialog.Title class="text-xl font-bold tracking-tight">{data.title}</Dialog.Title>
+					<Dialog.Title class="text-xl font-bold tracking-tight"
+						>{data.title}</Dialog.Title
+					>
 				{/if}
 				{#if data?.description}
 					<Dialog.Description class="opacity-80">

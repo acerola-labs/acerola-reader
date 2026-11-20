@@ -271,7 +271,10 @@ describe('usePeerConnection', () => {
 			InvalidConnectionCodeError
 		);
 		expect(hook.connecting).toBe(false);
-		expect(invokeMock).not.toHaveBeenCalledWith(NETWORK_COMMANDS.connectToPeer, expect.anything());
+		expect(invokeMock).not.toHaveBeenCalledWith(
+			NETWORK_COMMANDS.connectToPeer,
+			expect.anything()
+		);
 	});
 
 	it('resets connecting to false when the connect command fails', async () => {
@@ -361,7 +364,13 @@ describe('usePeerConnection', () => {
 		callbacks.get(NETWORK_EVENTS.status)?.({
 			payload: {
 				mode: 'local',
-				peers: [{ peerId: 'peer-4', alpn: 'x', device: { name: 'Live Name', os: '', version: '' } }]
+				peers: [
+					{
+						peerId: 'peer-4',
+						alpn: 'x',
+						device: { name: 'Live Name', os: '', version: '' }
+					}
+				]
 			}
 		});
 
@@ -381,7 +390,11 @@ describe('usePeerConnection', () => {
 			payload: {
 				mode: 'local',
 				peers: [
-					{ peerId: 'someone-else', alpn: 'x', device: { name: 'Other', os: '', version: '' } }
+					{
+						peerId: 'someone-else',
+						alpn: 'x',
+						device: { name: 'Other', os: '', version: '' }
+					}
 				]
 			}
 		});
@@ -427,7 +440,9 @@ describe('usePeerConnection', () => {
 
 		expect(hook.peerNicknames).toEqual({ 'peer-7': 'Meu Notebook' });
 		expect(hook.peerLabel('peer-7')).toBe('Meu Notebook');
-		expect(store.set).toHaveBeenCalledWith(STORE_KEYS.peerNicknames, { 'peer-7': 'Meu Notebook' });
+		expect(store.set).toHaveBeenCalledWith(STORE_KEYS.peerNicknames, {
+			'peer-7': 'Meu Notebook'
+		});
 		expect(store.save).toHaveBeenCalledOnce();
 	});
 

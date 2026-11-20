@@ -9,8 +9,7 @@
 		parameters: {
 			docs: {
 				description: {
-					component:
-						'Card to start a connection with a peer from a pairing code.'
+					component: 'Card to start a connection with a peer from a pairing code.'
 				}
 			}
 		}

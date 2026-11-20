@@ -177,7 +177,9 @@ describe('root +layout', () => {
 		// having already awaited `loadPersistedLog()` — without this, firing the event right
 		// after `findByTestId('page-content')` risks the callback not being in the Map yet,
 		// and the test would wait for a text that never arrives.
-		await waitFor(() => expect(mockListenCallbacks.has(NETWORK_EVENTS.filesStarted)).toBe(true));
+		await waitFor(() =>
+			expect(mockListenCallbacks.has(NETWORK_EVENTS.filesStarted)).toBe(true)
+		);
 		mockListenCallbacks.get(NETWORK_EVENTS.filesStarted)?.({ payload: 'peer-1' });
 
 		expect(await screen.findByText(/sincronizando|syncing/i)).toBeInTheDocument();
@@ -194,7 +196,9 @@ describe('root +layout', () => {
 		render(RootLayout, { props: { children: childrenSnippet() } });
 		await screen.findByTestId('page-content');
 
-		await waitFor(() => expect(mockListenCallbacks.has(NETWORK_EVENTS.comicStarted)).toBe(true));
+		await waitFor(() =>
+			expect(mockListenCallbacks.has(NETWORK_EVENTS.comicStarted)).toBe(true)
+		);
 		mockListenCallbacks.get(NETWORK_EVENTS.comicStarted)?.({ payload: 'peer-2' });
 		const indicator = await screen.findByRole('button', { name: /sincronizando|syncing/i });
 

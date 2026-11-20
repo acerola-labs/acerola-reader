@@ -21,7 +21,8 @@
 	const title = 'Manga Title';
 	const author = 'Autor Desconhecido';
 	const chaptersCount = 10;
-	const description = 'Uma jornada épica espera por você. Sinopse muito longa para testar o clamp.';
+	const description =
+		'Uma jornada épica espera por você. Sinopse muito longa para testar o clamp.';
 	const cover = 'https://placehold.co/400x600/2a2a35/a6accd?text=Cover';
 	const onBack = () => console.log('Back clicked');
 </script>

@@ -40,7 +40,9 @@
 			class="text-overlay flex items-center justify-between gap-3 text-[10px] font-black tracking-widest uppercase"
 		>
 			<span class="shrink-0"
-				>{m['pages.reader.progress.readPercent']({ percent: data.pageProgressPercent })}</span
+				>{m['pages.reader.progress.readPercent']({
+					percent: data.pageProgressPercent
+				})}</span
 			>
 			<span class="hidden min-w-0 truncate md:inline"
 				>{data.modeLabel} - {data.zoomStatusLabel}</span
@@ -70,7 +72,9 @@
 						onclick={events.onPreviousChapter}
 					>
 						<ChevronLeft size={16} />
-						<span class="hidden md:inline">{m['pages.reader.actions.chapter.previous']()}</span>
+						<span class="hidden md:inline"
+							>{m['pages.reader.actions.chapter.previous']()}</span
+						>
 					</button>
 				{/if}
 

@@ -58,7 +58,9 @@
 				>
 					<MonitorIcon size={18} class="shrink-0 text-muted-foreground" />
 					<span class="truncate text-sm font-medium text-foreground">
-						{safeData.nicknameFor?.(peer.peerId) ?? peer.deviceName ?? shortId(peer.peerId)}
+						{safeData.nicknameFor?.(peer.peerId) ??
+							peer.deviceName ??
+							shortId(peer.peerId)}
 					</span>
 				</button>
 			{/each}

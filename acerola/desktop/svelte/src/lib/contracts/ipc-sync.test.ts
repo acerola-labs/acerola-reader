@@ -41,7 +41,9 @@ function extractContractCommandMap(): Map<string, string> {
 
 	for (const file of listFiles(contractsDir, '.commands.ts')) {
 		const source = readFileSync(file, 'utf-8');
-		for (const constMatch of source.matchAll(/export const (\w+) = \{([\s\S]*?)\} as const;/g)) {
+		for (const constMatch of source.matchAll(
+			/export const (\w+) = \{([\s\S]*?)\} as const;/g
+		)) {
 			const [, constName, body] = constMatch;
 			for (const propMatch of body.matchAll(/(\w+)\s*:\s*'([^']+)'/g)) {
 				const [, propName, value] = propMatch;

@@ -54,7 +54,9 @@
 
 	onMount(() => {
 		templateStore.loadTemplates().catch((err: unknown) => {
-			toast.error(m['pages.config.templates.toast.loadError']({ msg: extractErrorMessage(err) }));
+			toast.error(
+				m['pages.config.templates.toast.loadError']({ msg: extractErrorMessage(err) })
+			);
 		});
 	});
 
@@ -76,7 +78,9 @@
 		try {
 			const fullPattern = newSortType === 'Chapter' ? `${newPattern}{extension}` : newPattern;
 			const created = await templateStore.createTemplate(newLabel, fullPattern, newSortType);
-			toast.success(m['pages.config.templates.toast.createSuccess']({ label: created.label }));
+			toast.success(
+				m['pages.config.templates.toast.createSuccess']({ label: created.label })
+			);
 			newLabel = '';
 			newPattern = '';
 		} catch (err: unknown) {
@@ -155,7 +159,9 @@
 						{m['pages.config.templates.help.macroExtensionDesc']()}
 					</p>
 				</div>
-				<div class="rounded-inner border border-border/40 bg-background/50 p-3 sm:col-span-2">
+				<div
+					class="rounded-inner border border-border/40 bg-background/50 p-3 sm:col-span-2"
+				>
 					<code class="text-sm font-bold text-primary">*</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.wildcardDesc']()}
@@ -168,7 +174,9 @@
 					<p class="text-xs font-semibold text-foreground">
 						{m['pages.config.templates.help.exampleChapterLabel']()}
 					</p>
-					<code class="mt-1 block truncate text-xs text-muted-foreground">{CHAPTER_EXAMPLE}</code>
+					<code class="mt-1 block truncate text-xs text-muted-foreground"
+						>{CHAPTER_EXAMPLE}</code
+					>
 					<p class="mt-1 text-xs text-muted-foreground/80">
 						{m['pages.config.templates.help.exampleChapterMatch']()}
 					</p>
@@ -177,7 +185,9 @@
 					<p class="text-xs font-semibold text-foreground">
 						{m['pages.config.templates.help.exampleVolumeLabel']()}
 					</p>
-					<code class="mt-1 block truncate text-xs text-muted-foreground">{VOLUME_EXAMPLE}</code>
+					<code class="mt-1 block truncate text-xs text-muted-foreground"
+						>{VOLUME_EXAMPLE}</code
+					>
 					<p class="mt-1 text-xs text-muted-foreground/80">
 						{m['pages.config.templates.help.exampleVolumeMatch']()}
 					</p>
@@ -190,7 +200,9 @@
 	<AcerolaCard data={{ title: m['pages.config.templates.form.title']() }}>
 		<div class="space-y-4">
 			<div class="space-y-1">
-				<span class="text-xs font-semibold">{m['pages.config.templates.form.sortType']()}</span>
+				<span class="text-xs font-semibold"
+					>{m['pages.config.templates.form.sortType']()}</span
+				>
 				<AcerolaToggleGroup
 					state={{ value: newSortType }}
 					events={{
@@ -235,7 +247,10 @@
 							events={{ onValueChange: (value) => (newPattern = value) }}
 							ui={{
 								id: 'templatePattern',
-								placeholder: newSortType === 'Chapter' ? CHAPTER_BODY_PLACEHOLDER : VOLUME_EXAMPLE,
+								placeholder:
+									newSortType === 'Chapter'
+										? CHAPTER_BODY_PLACEHOLDER
+										: VOLUME_EXAMPLE,
 								class:
 									newSortType === 'Chapter'
 										? 'w-full bg-background font-mono pr-24'
@@ -255,26 +270,42 @@
 						{#if newSortType === 'Chapter'}
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{chapter}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{chapter}'}
 							</AcerolaButton>
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{decimal}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{decimal}'}
 							</AcerolaButton>
 						{:else}
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{volume}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{volume}'}
 							</AcerolaButton>
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{decimal}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{decimal}'}
 							</AcerolaButton>
@@ -331,7 +362,9 @@
 										<span class="truncate font-medium">{template.label}</span>
 										{#if template.is_default}
 											<span
-												title={m['pages.config.templates.list.defaultHint']()}
+												title={m[
+													'pages.config.templates.list.defaultHint'
+												]()}
 												class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary uppercase"
 											>
 												<LockIcon size={10} />

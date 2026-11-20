@@ -20,7 +20,10 @@
 			icon: FileArchiveIcon,
 			iconColor: 'text-primary bg-primary/10',
 			description: m['onboarding.formats.cbz.desc'](),
-			features: [m['onboarding.formats.cbz.feature1'](), m['onboarding.formats.cbz.feature2']()]
+			features: [
+				m['onboarding.formats.cbz.feature1'](),
+				m['onboarding.formats.cbz.feature2']()
+			]
 		},
 		{
 			extension: 'CBR',
@@ -31,7 +34,10 @@
 			icon: LayersIcon,
 			iconColor: 'text-chart-3 bg-chart-3/10',
 			description: m['onboarding.formats.cbr.desc'](),
-			features: [m['onboarding.formats.cbr.feature1'](), m['onboarding.formats.cbr.feature2']()]
+			features: [
+				m['onboarding.formats.cbr.feature1'](),
+				m['onboarding.formats.cbr.feature2']()
+			]
 		},
 		{
 			extension: 'PDF',
@@ -42,7 +48,10 @@
 			icon: FileTextIcon,
 			iconColor: 'text-chart-1 bg-chart-1/10',
 			description: m['onboarding.formats.pdf.desc'](),
-			features: [m['onboarding.formats.pdf.feature1'](), m['onboarding.formats.pdf.feature2']()]
+			features: [
+				m['onboarding.formats.pdf.feature1'](),
+				m['onboarding.formats.pdf.feature2']()
+			]
 		}
 	]);
 </script>
@@ -59,7 +68,9 @@
 			<h1 class="text-3xl font-bold tracking-tight text-foreground">
 				{m['onboarding.formats.title']()}
 			</h1>
-			<p class="mx-auto max-w-md text-sm text-muted-foreground">{m['onboarding.formats.desc']()}</p>
+			<p class="mx-auto max-w-md text-sm text-muted-foreground">
+				{m['onboarding.formats.desc']()}
+			</p>
 		</div>
 
 		<!-- Grid Formatos -->
@@ -97,18 +108,24 @@
 						<h3 class="mb-1 text-3xl font-black tracking-tight text-foreground">
 							{item.extension}
 						</h3>
-						<p class="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+						<p
+							class="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+						>
 							{item.name}
 						</p>
 
 						<!-- Description -->
-						<p class="text-xs leading-relaxed text-muted-foreground/90">{item.description}</p>
+						<p class="text-xs leading-relaxed text-muted-foreground/90">
+							{item.description}
+						</p>
 					</div>
 
 					<!-- Features list -->
 					<div class="mt-5 space-y-2 border-t border-border/20 pt-4">
 						{#each item.features as feat}
-							<div class="flex items-center gap-2 text-xs font-medium text-foreground/80">
+							<div
+								class="flex items-center gap-2 text-xs font-medium text-foreground/80"
+							>
 								<CheckCircle2Icon size={14} class="shrink-0 text-primary" />
 								<span>{feat}</span>
 							</div>

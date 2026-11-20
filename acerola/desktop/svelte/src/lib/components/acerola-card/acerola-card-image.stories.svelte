@@ -74,7 +74,10 @@
 		{/snippet}
 
 		{#snippet action()}
-			<button type="button" class="p-1 text-muted-foreground transition-colors hover:text-primary">
+			<button
+				type="button"
+				class="p-1 text-muted-foreground transition-colors hover:text-primary"
+			>
 				<MoreVerticalIcon size={16} />
 			</button>
 		{/snippet}

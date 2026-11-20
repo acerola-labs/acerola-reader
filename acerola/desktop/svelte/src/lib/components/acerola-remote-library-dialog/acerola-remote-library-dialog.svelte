@@ -130,7 +130,9 @@
 								class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
 							>
 								<BookOpenIcon size={10} />
-								{m['pages.network.remoteLibrary.chapterCount']({ count: comic.chapterCount })}
+								{m['pages.network.remoteLibrary.chapterCount']({
+									count: comic.chapterCount
+								})}
 							</span>
 						{/snippet}
 
@@ -142,7 +144,9 @@
 
 						{#snippet overlay()}
 							{#if comicSyncing}
-								<div class="absolute inset-0 flex items-center justify-center bg-crust/60">
+								<div
+									class="absolute inset-0 flex items-center justify-center bg-crust/60"
+								>
 									<Loader2Icon size={24} class="animate-spin text-primary" />
 								</div>
 							{/if}

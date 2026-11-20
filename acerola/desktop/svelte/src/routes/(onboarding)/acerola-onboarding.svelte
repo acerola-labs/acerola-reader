@@ -57,7 +57,7 @@
 	}
 
 	let currentStepIndex = $derived(onboarding.currentStep);
-	let progressPercent = $derived(((currentStepIndex) / (STEPS.length - 1)) * 100);
+	let progressPercent = $derived((currentStepIndex / (STEPS.length - 1)) * 100);
 </script>
 
 <div class="relative flex h-full w-full flex-col overflow-hidden bg-background">
@@ -68,11 +68,15 @@
 	></div>
 
 	<!-- Top Stepper Navigation (VibePrompts inspired) -->
-	<div class="relative z-10 border-b border-border/40 bg-background/80 px-6 py-4 backdrop-blur-xl">
+	<div
+		class="relative z-10 border-b border-border/40 bg-background/80 px-6 py-4 backdrop-blur-xl"
+	>
 		<div class="mx-auto flex max-w-4xl flex-col gap-3">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<span class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+					<span
+						class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+					>
 						{m['onboarding.setupTitle']()}
 					</span>
 				</div>

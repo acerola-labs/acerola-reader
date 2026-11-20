@@ -93,7 +93,7 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 
 		await expect(hook.queryRemoteLibrary('peer-1b', [])).rejects.toThrow('peer offline');
-		expect(hook.errorFor('peer-1b')).toBe('Error: peer offline');
+		expect(hook.errorFor('peer-1b')).toBe('peer offline');
 
 		invokeMock.mockResolvedValueOnce(undefined);
 		const pending = hook.queryRemoteLibrary('peer-1b', [1]);
@@ -110,7 +110,7 @@ describe('useRemoteLibrary', () => {
 		await expect(hook.queryRemoteLibrary('peer-2', [])).rejects.toThrow('peer offline');
 
 		expect(hook.isLoading('peer-2')).toBe(false);
-		expect(hook.errorFor('peer-2')).toBe('Error: peer offline');
+		expect(hook.errorFor('peer-2')).toBe('peer offline');
 	});
 
 	it('libraryQueryResult stores comics for the peer and clears loading/errors', async () => {

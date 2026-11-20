@@ -15,6 +15,8 @@ describe('AcerolaEmptyState', () => {
 	it('shows the mascot when there is no icon', () => {
 		const { container } = render(AcerolaEmptyState, { props: { data: { title: 'Empty' } } });
 		expect(screen.getByText('Empty')).toBeInTheDocument();
-		expect(container.querySelector('img')?.getAttribute('src')).toBe('/brand/acerola-mascot.svg');
+		expect(container.querySelector('img')?.getAttribute('src')).toBe(
+			'/brand/acerola-mascot.svg'
+		);
 	});
 });

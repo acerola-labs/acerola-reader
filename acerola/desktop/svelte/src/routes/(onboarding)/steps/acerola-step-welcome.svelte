@@ -14,13 +14,10 @@
 		<!-- Brand moment: the mascot welcomes (local asset, the app does not depend on the CDN). -->
 		<img src="/brand/acerola-mascot.svg" alt="" class="size-36" />
 
-
 		<!-- Title & Subtitle -->
 		<div class="space-y-3">
-			<h1 class="text-4xl font-black tracking-tight text-foreground sm:text-5xl">
-				Acerola
-			</h1>
-			<p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+			<h1 class="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Acerola</h1>
+			<p class="mx-auto max-w-md leading-relaxed text-base text-muted-foreground sm:text-lg">
 				{m['onboarding.welcome']()}
 			</p>
 		</div>
@@ -30,36 +27,54 @@
 			<div
 				class="flex items-center gap-2.5 rounded-inner border border-border/50 bg-card/60 p-3 text-left backdrop-blur-sm transition-all"
 			>
-				<div class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-primary/10 text-primary">
+				<div
+					class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-primary/10 text-primary"
+				>
 					<ZapIcon size={16} />
 				</div>
 				<div class="min-w-0">
-					<p class="text-xs font-semibold text-foreground">{m['onboarding.welcomeBadgeFastTitle']()}</p>
-					<p class="truncate text-[10px] text-muted-foreground">{m['onboarding.welcomeBadgeFastDesc']()}</p>
+					<p class="text-xs font-semibold text-foreground">
+						{m['onboarding.welcomeBadgeFastTitle']()}
+					</p>
+					<p class="truncate text-[10px] text-muted-foreground">
+						{m['onboarding.welcomeBadgeFastDesc']()}
+					</p>
 				</div>
 			</div>
 
 			<div
 				class="flex items-center gap-2.5 rounded-inner border border-border/50 bg-card/60 p-3 text-left backdrop-blur-sm transition-all"
 			>
-				<div class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-chart-3/10 text-chart-3">
+				<div
+					class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-chart-3/10 text-chart-3"
+				>
 					<Share2Icon size={16} />
 				</div>
 				<div class="min-w-0">
-					<p class="text-xs font-semibold text-foreground">{m['onboarding.welcomeBadgeP2pTitle']()}</p>
-					<p class="truncate text-[10px] text-muted-foreground">{m['onboarding.welcomeBadgeP2pDesc']()}</p>
+					<p class="text-xs font-semibold text-foreground">
+						{m['onboarding.welcomeBadgeP2pTitle']()}
+					</p>
+					<p class="truncate text-[10px] text-muted-foreground">
+						{m['onboarding.welcomeBadgeP2pDesc']()}
+					</p>
 				</div>
 			</div>
 
 			<div
 				class="flex items-center gap-2.5 rounded-inner border border-border/50 bg-card/60 p-3 text-left backdrop-blur-sm transition-all"
 			>
-				<div class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-chart-2/10 text-chart-2">
+				<div
+					class="flex size-8 shrink-0 items-center justify-center rounded-inner bg-chart-2/10 text-chart-2"
+				>
 					<ShieldCheckIcon size={16} />
 				</div>
 				<div class="min-w-0">
-					<p class="text-xs font-semibold text-foreground">{m['onboarding.welcomeBadgeLocalTitle']()}</p>
-					<p class="truncate text-[10px] text-muted-foreground">{m['onboarding.welcomeBadgeLocalDesc']()}</p>
+					<p class="text-xs font-semibold text-foreground">
+						{m['onboarding.welcomeBadgeLocalTitle']()}
+					</p>
+					<p class="truncate text-[10px] text-muted-foreground">
+						{m['onboarding.welcomeBadgeLocalDesc']()}
+					</p>
 				</div>
 			</div>
 		</div>
@@ -68,10 +83,13 @@
 		<Button
 			onclick={onNext}
 			size="lg"
-			class="group relative inline-flex items-center gap-2 rounded-inner bg-primary px-9 py-6 text-base font-semibold text-primary-foreground shadow-lift transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+			class="group relative inline-flex items-center gap-2 rounded-inner bg-primary px-9 py-6 font-semibold text-base text-primary-foreground shadow-lift transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
 		>
 			<span>{m['onboarding.start']()}</span>
-			<ArrowRightIcon size={18} class="transition-transform duration-200 group-hover:translate-x-1" />
+			<ArrowRightIcon
+				size={18}
+				class="transition-transform duration-200 group-hover:translate-x-1"
+			/>
 		</Button>
 	</div>
 </div>

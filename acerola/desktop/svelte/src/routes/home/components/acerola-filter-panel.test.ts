@@ -66,7 +66,10 @@ describe('AcerolaFilterPanel', () => {
 		});
 
 		expect(screen.getByRole('dialog')).toBeInTheDocument();
-		expect(screen.getByRole('radio', { name: TITLE_SORT })).toHaveAttribute('aria-checked', 'true');
+		expect(screen.getByRole('radio', { name: TITLE_SORT })).toHaveAttribute(
+			'aria-checked',
+			'true'
+		);
 		expect(screen.getByRole('button', { name: 'Favoritos' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Lendo' })).toBeInTheDocument();
 	});

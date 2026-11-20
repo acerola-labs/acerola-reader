@@ -51,7 +51,9 @@ describe('AcerolaNetworkTransfersLog', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'files', status: 'progress', message: 'chapter1.cbz' })],
+					entries: [
+						entry({ kind: 'files', status: 'progress', message: 'chapter1.cbz' })
+					],
 					peerLabel: () => 'unused'
 				}
 			}
@@ -65,7 +67,9 @@ describe('AcerolaNetworkTransfersLog', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'history', status: 'progress', message: 'raw-fallback-text' })],
+					entries: [
+						entry({ kind: 'history', status: 'progress', message: 'raw-fallback-text' })
+					],
 					peerLabel: () => 'unused'
 				}
 			}
@@ -78,7 +82,14 @@ describe('AcerolaNetworkTransfersLog', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'files', status: 'complete', message: 'peer-1', conflicts: 2 })],
+					entries: [
+						entry({
+							kind: 'files',
+							status: 'complete',
+							message: 'peer-1',
+							conflicts: 2
+						})
+					],
 					peerLabel: () => 'Meu Notebook'
 				}
 			}
@@ -107,7 +118,12 @@ describe('AcerolaNetworkTransfersLog', () => {
 				data: {
 					entries: [
 						entry({ id: 1, status: 'started', message: 'peer-1' }),
-						entry({ id: 2, kind: 'files', status: 'error', message: 'connection reset' })
+						entry({
+							id: 2,
+							kind: 'files',
+							status: 'error',
+							message: 'connection reset'
+						})
 					],
 					peerLabel: () => 'Meu Notebook'
 				}

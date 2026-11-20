@@ -42,7 +42,9 @@ describe('AcerolaNetworkPeerList', () => {
 			}
 		});
 
-		expect(screen.getByText(/No paired devices|Nenhum dispositivo pareado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/No paired devices|Nenhum dispositivo pareado/i)
+		).toBeInTheDocument();
 	});
 
 	it('renders a peer using its device name, falling back to a short id when absent', () => {

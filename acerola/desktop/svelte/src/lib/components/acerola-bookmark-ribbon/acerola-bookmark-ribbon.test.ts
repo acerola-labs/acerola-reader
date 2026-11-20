@@ -21,7 +21,10 @@ describe('AcerolaBookmarkRibbon', () => {
 	});
 
 	it('should apply additional classes passed to the component', () => {
-		const { container } = render(AcerolaBookmarkRibbon, { color: 0xff000000, class: 'test-class' });
+		const { container } = render(AcerolaBookmarkRibbon, {
+			color: 0xff000000,
+			class: 'test-class'
+		});
 
 		const div = container.querySelector('div');
 		expect(div?.classList.contains('test-class')).toBe(true);

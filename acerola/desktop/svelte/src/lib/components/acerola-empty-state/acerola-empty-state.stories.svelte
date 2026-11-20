@@ -11,9 +11,20 @@
 </script>
 
 <Story name="Mascot" asChild>
-	<AcerolaEmptyState data={{ title: 'Sua biblioteca está vazia', hint: 'Escolha uma pasta com seus quadrinhos.' }} />
+	<AcerolaEmptyState
+		data={{
+			title: 'Sua biblioteca está vazia',
+			hint: 'Escolha uma pasta com seus quadrinhos.'
+		}}
+	/>
 </Story>
 
 <Story name="Icon" asChild>
-	<AcerolaEmptyState data={{ title: 'Nenhum aparelho', hint: 'Pareie um aparelho na mesma rede.', icon: InboxIcon }} />
+	<AcerolaEmptyState
+		data={{
+			title: 'Nenhum aparelho',
+			hint: 'Pareie um aparelho na mesma rede.',
+			icon: InboxIcon
+		}}
+	/>
 </Story>

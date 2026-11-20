@@ -99,7 +99,9 @@ describe('AcerolaRemoteLibraryDialog', () => {
 			}
 		});
 
-		expect(screen.getByText(/No comics found|Nenhum quadrinho encontrado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/No comics found|Nenhum quadrinho encontrado/i)
+		).toBeInTheDocument();
 	});
 
 	it('filters the comics grid by the search query', async () => {

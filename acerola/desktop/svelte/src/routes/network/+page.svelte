@@ -157,17 +157,13 @@
 		<h1 class="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
 			{m['pages.network.title']()}
 		</h1>
-		<p
-			class="text-sm leading-relaxed font-normal text-subtext sm:text-base"
-		>
+		<p class="text-sm leading-relaxed font-normal text-subtext sm:text-base">
 			{m['pages.network.subtitle']()}
 		</p>
 	</div>
 
 	{#if keyringUnavailable && !keyringWarningDismissed}
-		<div
-			class="flex items-start gap-3 rounded-card bg-destructive-soft p-4"
-		>
+		<div class="flex items-start gap-3 rounded-card bg-destructive-soft p-4">
 			<ShieldAlertIcon size={18} class="mt-0.5 shrink-0 text-destructive" />
 			<p class="flex-1 text-sm text-foreground">{m['pages.network.keyringUnavailable']()}</p>
 			<AcerolaButtonIcon
@@ -212,8 +208,10 @@
 					isSyncing: (peerId, kind) => sync.isSyncing(peerId, kind)
 				}}
 				events={{
-					onSyncHistory: (peerId) => withSync((id, addrs) => sync.syncHistory(id, addrs), peerId),
-					onSyncFiles: (peerId) => withSync((id, addrs) => sync.syncFiles(id, addrs), peerId),
+					onSyncHistory: (peerId) =>
+						withSync((id, addrs) => sync.syncHistory(id, addrs), peerId),
+					onSyncFiles: (peerId) =>
+						withSync((id, addrs) => sync.syncFiles(id, addrs), peerId),
 					onSyncAll: (peerId) => withSync((id, addrs) => sync.syncAll(id, addrs), peerId),
 					onBrowseLibrary: openRemoteLibrary,
 					onRemove: (peer) => (peerPendingRemoval = peer),

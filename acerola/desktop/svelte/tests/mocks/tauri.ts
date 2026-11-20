@@ -12,7 +12,9 @@ import { vi } from 'vitest';
 export function mockLazyStore(savedValues: Record<string, unknown> = {}) {
 	return vi.fn().mockImplementation(function () {
 		return {
-			get: vi.fn().mockImplementation((key: string) => Promise.resolve(savedValues[key] ?? null)),
+			get: vi
+				.fn()
+				.mockImplementation((key: string) => Promise.resolve(savedValues[key] ?? null)),
 			set: vi.fn().mockResolvedValue(undefined)
 		};
 	});

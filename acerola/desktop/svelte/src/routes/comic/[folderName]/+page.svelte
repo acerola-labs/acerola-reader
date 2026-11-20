@@ -13,7 +13,10 @@
 	import { useChapterSelection } from '#lib/hooks/store/use-chapter-selection.svelte.ts';
 	import { useHistory } from '#lib/hooks/store/use-history.svelte.ts';
 	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
-	import type { useNetworkSync, SyncDirection } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import type {
+		useNetworkSync,
+		SyncDirection
+	} from '#lib/hooks/store/use-network-sync.svelte.ts';
 	import AcerolaPeerPicker from '#lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
 	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
@@ -224,7 +227,9 @@
 					loading: m['pages.comic.selection.sendToPeer.toast.start'](),
 					success: m['pages.comic.selection.sendToPeer.toast.success'](),
 					error: (err) =>
-						m['pages.comic.selection.sendToPeer.toast.error']({ msg: extractErrorMessage(err) })
+						m['pages.comic.selection.sendToPeer.toast.error']({
+							msg: extractErrorMessage(err)
+						})
 				}
 			);
 		} catch {
@@ -239,7 +244,8 @@
 			await toastAsync(() => metadataSync.syncMangadex(manga!.title, id.toString()), {
 				loading: m['pages.comic.toast.sync.startMangadex'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.mangadexError']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.mangadexError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -255,7 +261,8 @@
 			await toastAsync(() => metadataSync.syncAnilist(manga!.title, id.toString()), {
 				loading: m['pages.comic.toast.sync.startAnilist'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.anilistError']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.anilistError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -271,7 +278,8 @@
 			await toastAsync(() => metadataSync.syncComicInfo(id.toString()), {
 				loading: m['pages.comic.toast.sync.startComicInfo'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.comicInfo.error']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.comicInfo.error']({ msg: extractErrorMessage(err) })
 			});
 			await invalidateAll();
 		} catch {
@@ -288,7 +296,8 @@
 			await toastAsync(() => invoke(HOME_COMMANDS.rescanComic, { id: id.toString() }), {
 				loading: m['pages.comic.toast.sync.startRescan'](),
 				success: m['pages.comic.toast.sync.rescanSuccess'](),
-				error: (err) => m['pages.comic.toast.rescanError']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.rescanError']({ msg: extractErrorMessage(err) })
 			});
 			// `invalidateAll()` only reloads SvelteKit's `load()` — the chapter list lives in
 			// `chapterStore` (separate Svelte state, with its own LRU cache), which
@@ -327,12 +336,17 @@
 		if (!id) return;
 		regeneratingCover = true;
 		try {
-			await toastAsync(() => invoke(HOME_COMMANDS.regenerateComicCover, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.startRegenerateCover'](),
-				success: m['pages.comic.toast.sync.regenerateCoverSuccess'](),
-				error: (err) =>
-					m['pages.comic.toast.regenerateCoverError']({ msg: extractErrorMessage(err) })
-			});
+			await toastAsync(
+				() => invoke(HOME_COMMANDS.regenerateComicCover, { id: id.toString() }),
+				{
+					loading: m['pages.comic.toast.sync.startRegenerateCover'](),
+					success: m['pages.comic.toast.sync.regenerateCoverSuccess'](),
+					error: (err) =>
+						m['pages.comic.toast.regenerateCoverError']({
+							msg: extractErrorMessage(err)
+						})
+				}
+			);
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
@@ -347,12 +361,17 @@
 		if (!id) return;
 		regeneratingVolumeCovers = true;
 		try {
-			await toastAsync(() => invoke(HOME_COMMANDS.regenerateVolumeCovers, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.startRegenerateVolumeCovers'](),
-				success: m['pages.comic.toast.sync.regenerateVolumeCoversSuccess'](),
-				error: (err) =>
-					m['pages.comic.toast.regenerateVolumeCoversError']({ msg: extractErrorMessage(err) })
-			});
+			await toastAsync(
+				() => invoke(HOME_COMMANDS.regenerateVolumeCovers, { id: id.toString() }),
+				{
+					loading: m['pages.comic.toast.sync.startRegenerateVolumeCovers'](),
+					success: m['pages.comic.toast.sync.regenerateVolumeCoversSuccess'](),
+					error: (err) =>
+						m['pages.comic.toast.regenerateVolumeCoversError']({
+							msg: extractErrorMessage(err)
+						})
+				}
+			);
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
@@ -367,7 +386,11 @@
 		if (!id) return;
 		try {
 			await toastAsync(
-				() => invoke(HOME_COMMANDS.toggleComicExternalSync, { id: id.toString(), enabled: value }),
+				() =>
+					invoke(HOME_COMMANDS.toggleComicExternalSync, {
+						id: id.toString(),
+						enabled: value
+					}),
 				{
 					loading: m['pages.comic.toast.sync.startToggle'](),
 					success: value
@@ -435,20 +458,22 @@
 
 		untrack(() => {
 			isHistoryLoading = true;
-			const fetchHistory = invoke(HISTORY_COMMANDS.getComic, { comicId: id.toString() }).catch(
-				() => null
-			);
+			const fetchHistory = invoke(HISTORY_COMMANDS.getComic, {
+				comicId: id.toString()
+			}).catch(() => null);
 			const fetchRead = invoke<string[]>(HISTORY_COMMANDS.getReadChapters, {
 				comicId: id.toString()
 			}).catch(() => []);
 			const fetchBookmark = bookmarkStore.getComicBookmark(id);
 
-			Promise.all([fetchHistory, fetchRead, fetchBookmark]).then(([history, read, bookmark]) => {
-				readingHistory = history;
-				readChapters = read;
-				currentBookmarkId = bookmark?.id ?? null;
-				isHistoryLoading = false;
-			});
+			Promise.all([fetchHistory, fetchRead, fetchBookmark]).then(
+				([history, read, bookmark]) => {
+					readingHistory = history;
+					readChapters = read;
+					currentBookmarkId = bookmark?.id ?? null;
+					isHistoryLoading = false;
+				}
+			);
 		});
 	});
 
@@ -548,7 +573,8 @@
 			// `manga.title` is the same value `handleSyncToDevice` sends as `comicName` to the
 			// backend (`p2pSync.syncComic(peerId, addrs, manga.title)`) — a symmetric comparison
 			// with what `comic_handler.rs` echoes back in the completion payload.
-			if (entry.kind === 'comic' && entry.comicName && entry.comicName !== manga?.title) return;
+			if (entry.kind === 'comic' && entry.comicName && entry.comicName !== manga?.title)
+				return;
 
 			syncRefreshTrigger++;
 			bumpArtworkVersion();
@@ -568,7 +594,9 @@
 				name: comic.name,
 				title: comic.name,
 				fileName: comic.name,
-				isRead: Array.isArray(readChapters) ? readChapters.includes(comic.id.toString()) : false,
+				isRead: Array.isArray(readChapters)
+					? readChapters.includes(comic.id.toString())
+					: false,
 				chapterSort: comic.chapterSort,
 				path: comic.path,
 				volumeId: comic.volumeId,
@@ -604,7 +632,9 @@
 				totalChapters: volume.chapterCount,
 				coverUri: volCover || fallbackCover,
 				bannerUri: volBanner || fallbackBanner || fallbackCover,
-				hasMore: expandedVolumeId === volume.id.toString() && allItems.length < volume.chapterCount,
+				hasMore:
+					expandedVolumeId === volume.id.toString() &&
+					allItems.length < volume.chapterCount,
 				chapters: []
 			};
 		});
@@ -623,7 +653,8 @@
 			pageSize: RENDER_CHUNK_SIZE,
 			metadata: {
 				description:
-					item.metadata.description || m['pages.comic.metadata.description.unavailable'](),
+					item.metadata.description ||
+					m['pages.comic.metadata.description.unavailable'](),
 				author: item.metadata.author || m['pages.comic.metadata.unknown.author'](),
 				status: item.metadata.status || m['pages.comic.metadata.unknown.status'](),
 				source: item.metadata.activeSource || 'LOCAL',
@@ -661,7 +692,8 @@
 				chaptersCount: manga.chaptersCount,
 				description: manga.metadata.description,
 				cover: manga.cover,
-				bookmarkColor: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)?.color,
+				bookmarkColor: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)
+					?.color,
 				bookmarkName: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)?.name
 			}}
 			state={{
@@ -764,7 +796,13 @@
 								}}
 							>
 								{#snippet trigger()}
-									<AcerolaButton ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}>
+									<AcerolaButton
+										ui={{
+											variant: 'ghost',
+											size: 'sm',
+											class: 'rounded-inner'
+										}}
+									>
 										<ArrowUpDown size={16} />
 										{m['pages.comic.sort.button']()}
 									</AcerolaButton>
@@ -772,7 +810,10 @@
 
 								{#snippet content()}
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start rounded-inner'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'number_asc';
@@ -785,11 +826,15 @@
 										{:else}
 											<div class="w-4"></div>
 										{/if}
-										<span class="min-w-0 flex-1 truncate">{m['pages.comic.sort.number.asc']()}</span
+										<span class="min-w-0 flex-1 truncate"
+											>{m['pages.comic.sort.number.asc']()}</span
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start rounded-inner'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'number_desc';
@@ -807,7 +852,10 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start rounded-inner'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_desc';
@@ -825,7 +873,10 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start rounded-inner'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_asc';
@@ -851,7 +902,9 @@
 				{#if activeTab === 'content' && chapterSelection.isSelectionMode}
 					<div class="-mx-4 flex items-center gap-2 border-b border-surface/30 px-4 py-3">
 						<span class="text-sm font-medium text-muted-foreground">
-							{m['pages.comic.selection.selected']({ count: chapterSelection.selectedCount })}
+							{m['pages.comic.selection.selected']({
+								count: chapterSelection.selectedCount
+							})}
 						</span>
 						<AcerolaButton
 							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
@@ -872,7 +925,11 @@
 							{m['pages.comic.selection.markUnread']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'gap-1.5 rounded-inner' }}
+							ui={{
+								variant: 'secondary',
+								size: 'sm',
+								class: 'gap-1.5 rounded-inner'
+							}}
 							events={{ onClick: () => (sendToPeerPickerOpen = true) }}
 						>
 							<Share2 size={14} />
@@ -942,7 +999,8 @@
 					{:else if activeTab === 'preferences'}
 						<ComicPreferences
 							data={{
-								hasVolumeStructure: chapterStore.chapters?.hasVolumeStructure ?? false,
+								hasVolumeStructure:
+									chapterStore.chapters?.hasVolumeStructure ?? false,
 								bookmarks: bookmarkStore.bookmarks,
 								pairedPeers: pairedPeersForUi
 							}}
@@ -957,10 +1015,12 @@
 								regeneratingVolumeCovers
 							}}
 							events={{
-								onVolumeViewModeChange: (value) => (volumeViewPreference.volumeViewMode = value),
+								onVolumeViewModeChange: (value) =>
+									(volumeViewPreference.volumeViewMode = value),
 								onBookmarkChange: async (value) => {
 									const id =
-										activeComic.item?.relations.directoryId ?? data.comic?.relations.directoryId;
+										activeComic.item?.relations.directoryId ??
+										data.comic?.relations.directoryId;
 									if (!id) return;
 
 									if (value) {

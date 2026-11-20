@@ -9,7 +9,8 @@
 		parameters: {
 			docs: {
 				description: {
-					component: 'Wrapper of the shadcn/ui Card with a simplified interface via snippets.'
+					component:
+						'Wrapper of the shadcn/ui Card with a simplified interface via snippets.'
 				}
 			}
 		},
@@ -27,7 +28,10 @@
 
 <Story name="Default" args={{ data: { title: 'Berserk' } }} />
 
-<Story name="With description" args={{ data: { title: 'Berserk', description: 'Kentaro Miura' } }} />
+<Story
+	name="With description"
+	args={{ data: { title: 'Berserk', description: 'Kentaro Miura' } }}
+/>
 
 <Story
 	name="Size sm"
@@ -51,7 +55,9 @@
 
 			{#snippet footer()}
 				<div class="flex w-full gap-2">
-					<AcerolaButton ui={{ variant: 'outline', class: 'flex-1' }}>Cancelar</AcerolaButton>
+					<AcerolaButton ui={{ variant: 'outline', class: 'flex-1' }}
+						>Cancelar</AcerolaButton
+					>
 					<AcerolaButton ui={{ class: 'flex-1' }}>Salvar</AcerolaButton>
 				</div>
 			{/snippet}

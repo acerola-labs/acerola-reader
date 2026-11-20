@@ -94,77 +94,80 @@ export function useReaderNavigation() {
 		let unlistenError: (() => void) | undefined;
 
 		const setupListeners = async () => {
-			unlistenChapters = await listen<ChapterPayload>(LIBRARY_EVENTS.comicChapters, (event) => {
-				const payload = event.payload;
+			unlistenChapters = await listen<ChapterPayload>(
+				LIBRARY_EVENTS.comicChapters,
+				(event) => {
+					const payload = event.payload;
 
-				if (pendingAction === 'load') {
-					const items = payload.archive.items;
-					const idx = items.findIndex((item) => item.id === state.chapter?.id);
+					if (pendingAction === 'load') {
+						const items = payload.archive.items;
+						const idx = items.findIndex((item) => item.id === state.chapter?.id);
 
-					if (idx !== -1) {
-						state.chapterIndex = idx;
-						state.totalChapters = payload.archive.total ?? items.length;
-						sessionStorage.setItem(SESSION_KEYS.readerState, JSON.stringify(state));
-					}
+						if (idx !== -1) {
+							state.chapterIndex = idx;
+							state.totalChapters = payload.archive.total ?? items.length;
+							sessionStorage.setItem(SESSION_KEYS.readerState, JSON.stringify(state));
+						}
 
-					pendingAction = null;
-					return;
-				}
-
-				const isPendingNavigate = pendingAction === 'navigate';
-
-				// `pendingTargetIndex` stays inline in the condition (instead of extracted into a
-				// named variable like `isPendingNavigate`) on purpose: TypeScript only narrows
-				// `pendingTargetIndex` from `number | null` to `number` inside this block through
-				// the inline `!== null` here — going through a separate boolean breaks that
-				// narrowing and `chapterIndex: pendingTargetIndex` further down (which expects
-				// `number | undefined`) stops compiling.
-				//
-				// Stryker disable next-line ConditionalExpression: `pendingTargetIndex` is only
-				// set to a non-null number in the same statement that sets `pendingAction =
-				// 'navigate'` (see `navigateToRelativeChapter` below), and every completion path
-				// resets both together. So whenever `isPendingNavigate` is true,
-				// `pendingTargetIndex !== null` is guaranteed true as well — there is no reachable
-				// state where `isPendingNavigate` is true and this check's real value is false,
-				// so forcing it to `true` never changes the result.
-				if (isPendingNavigate && pendingTargetIndex !== null) {
-					const nextChapterData = payload.archive.items[0];
-
-					if (!nextChapterData) {
-						initializing = false;
 						pendingAction = null;
-						pendingTargetIndex = null;
 						return;
 					}
 
-					const readerChapter: ReaderChapterPayload = {
-						id: nextChapterData.id,
-						name: nextChapterData.name,
-						path: nextChapterData.path,
-						chapterSort: nextChapterData.chapterSort ?? '',
-						volumeId: nextChapterData.volumeId ?? null,
-						volumeName: nextChapterData.volumeName ?? null,
-						isSpecial: nextChapterData.isSpecial ?? false,
-						lastModified: nextChapterData.lastModified ?? 0
-					};
+					const isPendingNavigate = pendingAction === 'navigate';
 
-					const newState: ReaderNavigationState = {
-						chapter: readerChapter,
-						comicDirectoryId: state.comicDirectoryId,
-						chapterIndex: pendingTargetIndex,
-						totalChapters: state.totalChapters,
-						chapterScope: state.chapterScope,
-						sortBy: state.sortBy
-					};
+					// `pendingTargetIndex` stays inline in the condition (instead of extracted into a
+					// named variable like `isPendingNavigate`) on purpose: TypeScript only narrows
+					// `pendingTargetIndex` from `number | null` to `number` inside this block through
+					// the inline `!== null` here — going through a separate boolean breaks that
+					// narrowing and `chapterIndex: pendingTargetIndex` further down (which expects
+					// `number | undefined`) stops compiling.
+					//
+					// Stryker disable next-line ConditionalExpression: `pendingTargetIndex` is only
+					// set to a non-null number in the same statement that sets `pendingAction =
+					// 'navigate'` (see `navigateToRelativeChapter` below), and every completion path
+					// resets both together. So whenever `isPendingNavigate` is true,
+					// `pendingTargetIndex !== null` is guaranteed true as well — there is no reachable
+					// state where `isPendingNavigate` is true and this check's real value is false,
+					// so forcing it to `true` never changes the result.
+					if (isPendingNavigate && pendingTargetIndex !== null) {
+						const nextChapterData = payload.archive.items[0];
 
-					state = newState;
-					replaceState(page.url, newState);
+						if (!nextChapterData) {
+							initializing = false;
+							pendingAction = null;
+							pendingTargetIndex = null;
+							return;
+						}
 
-					initializing = false;
-					pendingAction = null;
-					pendingTargetIndex = null;
+						const readerChapter: ReaderChapterPayload = {
+							id: nextChapterData.id,
+							name: nextChapterData.name,
+							path: nextChapterData.path,
+							chapterSort: nextChapterData.chapterSort ?? '',
+							volumeId: nextChapterData.volumeId ?? null,
+							volumeName: nextChapterData.volumeName ?? null,
+							isSpecial: nextChapterData.isSpecial ?? false,
+							lastModified: nextChapterData.lastModified ?? 0
+						};
+
+						const newState: ReaderNavigationState = {
+							chapter: readerChapter,
+							comicDirectoryId: state.comicDirectoryId,
+							chapterIndex: pendingTargetIndex,
+							totalChapters: state.totalChapters,
+							chapterScope: state.chapterScope,
+							sortBy: state.sortBy
+						};
+
+						state = newState;
+						replaceState(page.url, newState);
+
+						initializing = false;
+						pendingAction = null;
+						pendingTargetIndex = null;
+					}
 				}
-			});
+			);
 
 			unlistenError = await listen<any>(LIBRARY_EVENTS.comicChaptersError, () => {
 				initializing = false;

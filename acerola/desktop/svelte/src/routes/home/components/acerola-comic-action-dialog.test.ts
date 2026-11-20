@@ -96,7 +96,7 @@ describe('AcerolaComicActionDialog', () => {
 		expect(screen.getByRole('button', { name: /Hide|Ocultar/i })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Delete|Deletar/i })).toBeInTheDocument();
 		expect(
-			screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i })
+			screen.getByRole('button', { name: /Adicionar marcador/i })
 		).toBeInTheDocument();
 		expect(
 			screen.getByRole('button', { name: /Select all|Selecionar todos/i })
@@ -258,7 +258,7 @@ describe('AcerolaComicActionDialog', () => {
 			}
 		});
 
-		const bookmarkButton = screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i });
+		const bookmarkButton = screen.getByRole('button', { name: /Adicionar marcador/i });
 		await fireEvent.click(bookmarkButton);
 
 		expect(screen.getByText('Favoritos')).toBeInTheDocument();
@@ -285,7 +285,7 @@ describe('AcerolaComicActionDialog', () => {
 			}
 		});
 
-		const bookmarkButton = screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i });
+		const bookmarkButton = screen.getByRole('button', { name: /Adicionar marcador/i });
 		await fireEvent.click(bookmarkButton);
 
 		const favoritosOption = screen.getByText('Favoritos');

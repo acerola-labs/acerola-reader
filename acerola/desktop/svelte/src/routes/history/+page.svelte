@@ -126,7 +126,9 @@
 		if (entry.status === 'started') {
 			lastHandledSyncKey = currentKey;
 			toast.loading(
-				m['pages.network.transfers.historyStarted']({ peer: peers.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyStarted']({
+					peer: peers.peerLabel(entry.message)
+				}),
 				{ id: toastId }
 			);
 			return;
@@ -135,10 +137,13 @@
 		if (entry.status === 'complete') {
 			lastHandledSyncKey = currentKey;
 			handledTerminalSyncLogIds.add(entry.id);
-			toast.success(m['pages.history.sync.success']({ peer: peers.peerLabel(entry.message) }), {
-				id: toastId,
-				duration: 4000
-			});
+			toast.success(
+				m['pages.history.sync.success']({ peer: peers.peerLabel(entry.message) }),
+				{
+					id: toastId,
+					duration: 4000
+				}
+			);
 			history.fetch();
 			return;
 		}
@@ -245,7 +250,9 @@
 									<MonitorIcon size={16} class="shrink-0 text-muted-foreground" />
 									<span class="min-w-0 flex-1">
 										<span class="block truncate text-foreground">
-											{peer.nickname ?? peer.deviceName ?? shortId(peer.peerId)}
+											{peer.nickname ??
+												peer.deviceName ??
+												shortId(peer.peerId)}
 										</span>
 										<span class="block truncate text-xs text-muted-foreground">
 											{peerStatusLabel(peer)}
@@ -253,7 +260,10 @@
 									</span>
 									<RefreshCwIcon
 										size={14}
-										class={cn('shrink-0 text-muted-foreground', syncing && 'animate-spin')}
+										class={cn(
+											'shrink-0 text-muted-foreground',
+											syncing && 'animate-spin'
+										)}
 									/>
 								</button>
 							{/each}
@@ -276,7 +286,11 @@
 					}}
 				>
 					<AcerolaButton
-						ui={{ variant: 'destructive', size: 'sm', class: 'gap-2 font-medium tracking-wide' }}
+						ui={{
+							variant: 'destructive',
+							size: 'sm',
+							class: 'gap-2 font-medium tracking-wide'
+						}}
 					>
 						<Trash2 size={16} />
 						{m['pages.history.clear.button']()}
@@ -297,9 +311,14 @@
 	{:else if history.failed && history.items.length === 0}
 		<!-- Error: what happened and what to do. -->
 		<div class="p-8">
-			<div class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive">
+			<div
+				class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive"
+			>
 				<p class="flex-1 text-sm font-semibold">{m['pages.history.error.text']()}</p>
-				<AcerolaButton ui={{ variant: 'secondary' }} events={{ onClick: () => history.fetch() }}>
+				<AcerolaButton
+					ui={{ variant: 'secondary' }}
+					events={{ onClick: () => history.fetch() }}
+				>
 					{m['pages.history.error.retry']()}
 				</AcerolaButton>
 			</div>
@@ -318,9 +337,13 @@
 						alt=""
 					/>
 				{:else}
-					<div class="absolute inset-0 bg-linear-to-b from-primary/20 via-base/50 to-base"></div>
+					<div
+						class="absolute inset-0 bg-linear-to-b from-primary/20 via-base/50 to-base"
+					></div>
 				{/if}
-				<div class="absolute inset-0 bg-linear-to-t from-scrim/80 via-scrim/40 to-transparent"></div>
+				<div
+					class="absolute inset-0 bg-linear-to-t from-scrim/80 via-scrim/40 to-transparent"
+				></div>
 				<div
 					class="absolute inset-0 hidden bg-linear-to-l from-transparent via-transparent to-scrim/60 lg:block"
 				></div>
@@ -359,16 +382,23 @@
 
 						<div class="flex items-center gap-2 text-lg font-medium text-on-scrim/80">
 							<BookOpen size={20} />
-							<span>{m['pages.history.chapterLabel']({ chapter: heroItem.chapterName })}</span>
+							<span
+								>{m['pages.history.chapterLabel']({
+									chapter: heroItem.chapterName
+								})}</span
+							>
 							<span class="mx-2 opacity-50">•</span>
-							<span>{m['pages.history.pageLabel']({ page: heroItem.lastPage + 1 })}</span>
+							<span
+								>{m['pages.history.pageLabel']({
+									page: heroItem.lastPage + 1
+								})}</span
+							>
 						</div>
 
 						<AcerolaButton
 							events={{ onClick: () => resumeReading(heroItem) }}
 							ui={{
-								class:
-									'mt-4 px-8 py-6 rounded-full font-black tracking-widest text-sm hover:scale-105 transition-all shadow-float'
+								class: 'mt-4 px-8 py-6 rounded-full font-black tracking-widest text-sm hover:scale-105 transition-all shadow-float'
 							}}
 						>
 							{m['pages.history.resume']()}
@@ -385,7 +415,9 @@
 					<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
 						{#each history.items.slice(1) as item (item.comicDirectoryId)}
 							{@const cover = resolveArtworkPath(item.comicCover) || undefined}
-							{@const comicBookmark = bookmarkStore.getBookmarkForComic(item.comicDirectoryId)}
+							{@const comicBookmark = bookmarkStore.getBookmarkForComic(
+								item.comicDirectoryId
+							)}
 							<AcerolaCardImage
 								data={{
 									title: item.comicName,
@@ -401,19 +433,26 @@
 										>
 											<BookOpen size={10} class="shrink-0" />
 											<span class="truncate">
-												{m['pages.history.chapterLabel']({ chapter: item.chapterName })}
+												{m['pages.history.chapterLabel']({
+													chapter: item.chapterName
+												})}
 											</span>
 										</span>
 
 										<span class="text-overlay text-[10px] opacity-80">
-											{m['pages.history.pageLabel']({ page: item.lastPage + 1 })}
+											{m['pages.history.pageLabel']({
+												page: item.lastPage + 1
+											})}
 										</span>
 									</div>
 								{/snippet}
 
 								{#snippet floatingBadge()}
 									{#if comicBookmark != null}
-										<AcerolaBookmarkRibbon color={comicBookmark.color} name={comicBookmark.name} />
+										<AcerolaBookmarkRibbon
+											color={comicBookmark.color}
+											name={comicBookmark.name}
+										/>
 									{/if}
 								{/snippet}
 
@@ -435,7 +474,10 @@
 			ui={{ class: 'flex-1 justify-center p-8' }}
 		>
 			{#snippet action()}
-				<AcerolaButton ui={{ variant: 'default', class: 'h-12' }} events={{ onClick: () => goto('/home') }}>
+				<AcerolaButton
+					ui={{ variant: 'default', class: 'h-12' }}
+					events={{ onClick: () => goto('/home') }}
+				>
 					{m['pages.history.emptyAction']()}
 				</AcerolaButton>
 			{/snippet}

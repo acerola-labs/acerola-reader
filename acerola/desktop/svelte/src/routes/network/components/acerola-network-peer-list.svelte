@@ -99,7 +99,7 @@
 						></span>
 						<RadioIcon size={22} class="relative" />
 					</div>
-					<div class="space-y-1 min-w-0 flex-1">
+					<div class="min-w-0 flex-1 space-y-1">
 						<div class="flex items-center gap-2">
 							<h3 class="text-sm font-bold tracking-tight text-foreground">
 								{m['pages.network.peers.emptyTitle']()}
@@ -107,11 +107,11 @@
 							<span
 								class="inline-flex items-center gap-1.5 rounded-full border bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary"
 							>
-								<span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+								<span class="size-1.5 animate-pulse rounded-full bg-primary"></span>
 								mDNS
 							</span>
 						</div>
-						<p class="text-xs text-muted-foreground leading-relaxed">
+						<p class="text-xs leading-relaxed text-muted-foreground">
 							{m['pages.network.peers.empty']()}
 						</p>
 					</div>
@@ -124,16 +124,20 @@
 					>
 						<div class="flex items-center gap-3">
 							<div
-								class="flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted/60 text-muted-foreground animate-pulse"
+								class="flex size-10 shrink-0 animate-pulse items-center justify-center rounded-inner bg-muted/60 text-muted-foreground"
 							>
 								<MonitorIcon size={18} class="opacity-40" />
 							</div>
 							<div class="space-y-1.5">
-								<div class="h-3.5 w-32 rounded-inner bg-muted/70 animate-pulse"></div>
-								<div class="h-2.5 w-24 rounded-inner bg-muted/40 animate-pulse"></div>
+								<div
+									class="h-3.5 w-32 animate-pulse rounded-inner bg-muted/70"
+								></div>
+								<div
+									class="h-2.5 w-24 animate-pulse rounded-inner bg-muted/40"
+								></div>
 							</div>
 						</div>
-						<div class="h-7 w-20 rounded-inner bg-muted/40 animate-pulse"></div>
+						<div class="h-7 w-20 animate-pulse rounded-inner bg-muted/40"></div>
 					</div>
 
 					<div
@@ -141,16 +145,20 @@
 					>
 						<div class="flex items-center gap-3">
 							<div
-								class="flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted/40 text-muted-foreground animate-pulse"
+								class="flex size-10 shrink-0 animate-pulse items-center justify-center rounded-inner bg-muted/40 text-muted-foreground"
 							>
 								<MonitorIcon size={18} class="opacity-30" />
 							</div>
 							<div class="space-y-1.5">
-								<div class="h-3.5 w-24 rounded-inner bg-muted/50 animate-pulse"></div>
-								<div class="h-2.5 w-36 rounded-inner bg-muted/30 animate-pulse"></div>
+								<div
+									class="h-3.5 w-24 animate-pulse rounded-inner bg-muted/50"
+								></div>
+								<div
+									class="h-2.5 w-36 animate-pulse rounded-inner bg-muted/30"
+								></div>
 							</div>
 						</div>
-						<div class="h-7 w-20 rounded-inner bg-muted/30 animate-pulse"></div>
+						<div class="h-7 w-20 animate-pulse rounded-inner bg-muted/30"></div>
 					</div>
 				</div>
 			</div>
@@ -162,7 +170,9 @@
 				{@const anySyncing = historySyncing || filesSyncing}
 
 				{#if editingPeerId === peer.peerId}
-					<div class="flex items-center gap-3 rounded-tile border border-border bg-card p-6">
+					<div
+						class="flex items-center gap-3 rounded-tile border border-border bg-card p-6"
+					>
 						<div class="flex-1 space-y-1.5">
 							<AcerolaInput
 								state={{ value: nicknameDraft }}
@@ -173,7 +183,10 @@
 								{m['pages.network.peers.rename.hint']()}
 							</p>
 						</div>
-						<AcerolaButton events={{ onClick: confirmEditingNickname }} ui={{ size: 'sm' }}>
+						<AcerolaButton
+							events={{ onClick: confirmEditingNickname }}
+							ui={{ size: 'sm' }}
+						>
 							<CheckIcon size={14} />
 							{m['pages.network.peers.rename.save']()}
 						</AcerolaButton>
@@ -214,7 +227,8 @@
 								<AcerolaPopover
 									state={{ open: openPeerMenuId === peer.peerId }}
 									events={{
-										onOpenChange: (open) => (openPeerMenuId = open ? peer.peerId : null)
+										onOpenChange: (open) =>
+											(openPeerMenuId = open ? peer.peerId : null)
 									}}
 									ui={{
 										align: 'end',
@@ -227,7 +241,9 @@
 											class="flex size-8 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
 										>
 											<MoreVerticalIcon size={16} />
-											<span class="sr-only">{m['pages.network.peers.moreActions']()}</span>
+											<span class="sr-only"
+												>{m['pages.network.peers.moreActions']()}</span
+											>
 										</span>
 									{/snippet}
 
@@ -243,12 +259,14 @@
 												ui={{
 													variant: 'ghost',
 													disabled: !addrs || historySyncing,
-													class:
-														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+													class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												{#if historySyncing}
-													<RefreshCwIcon size={16} class="shrink-0 animate-spin" />
+													<RefreshCwIcon
+														size={16}
+														class="shrink-0 animate-spin"
+													/>
 												{:else}
 													<HistoryIcon size={16} class="shrink-0" />
 												{/if}
@@ -265,12 +283,14 @@
 												ui={{
 													variant: 'ghost',
 													disabled: !addrs || filesSyncing,
-													class:
-														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+													class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												{#if filesSyncing}
-													<RefreshCwIcon size={16} class="shrink-0 animate-spin" />
+													<RefreshCwIcon
+														size={16}
+														class="shrink-0 animate-spin"
+													/>
 												{:else}
 													<FolderSyncIcon size={16} class="shrink-0" />
 												{/if}
@@ -287,8 +307,7 @@
 												ui={{
 													variant: 'ghost',
 													disabled: !addrs,
-													class:
-														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+													class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												<BookOpenIcon size={16} class="shrink-0" />
@@ -304,8 +323,7 @@
 												}}
 												ui={{
 													variant: 'ghost',
-													class:
-														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+													class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												<PencilIcon size={16} class="shrink-0" />
@@ -323,8 +341,7 @@
 												}}
 												ui={{
 													variant: 'ghost',
-													class:
-														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive'
+													class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive'
 												}}
 											>
 												<UserMinusIcon size={16} class="shrink-0" />
@@ -336,9 +353,16 @@
 
 								<AcerolaButton
 									events={{ onClick: () => events.onSyncAll(peer.peerId) }}
-									ui={{ size: 'sm', class: 'gap-2', disabled: !addrs || anySyncing }}
+									ui={{
+										size: 'sm',
+										class: 'gap-2',
+										disabled: !addrs || anySyncing
+									}}
 								>
-									<RefreshCwIcon size={14} class={anySyncing ? 'animate-spin' : ''} />
+									<RefreshCwIcon
+										size={14}
+										class={anySyncing ? 'animate-spin' : ''}
+									/>
 									{m['pages.network.peers.syncAll']()}
 								</AcerolaButton>
 							</div>

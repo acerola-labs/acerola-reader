@@ -75,7 +75,9 @@ describe('native acerola via WebDriverIO', () => {
 			// Windows/WebView2 keeps the size, but moves the minimized window off screen.
 			const movedOffscreen = afterRect.x < -10_000 || afterRect.y < -10_000;
 			const wasMinimized =
-				visibilityState !== 'visible' || afterRect.height < beforeRect.height || movedOffscreen;
+				visibilityState !== 'visible' ||
+				afterRect.height < beforeRect.height ||
+				movedOffscreen;
 			expect(wasMinimized).toBe(true);
 		} finally {
 			await browser

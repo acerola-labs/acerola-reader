@@ -77,7 +77,7 @@
 	aria-label={copied ? defaultCopiedLabel : defaultLabel}
 >
 	{#if copied}
-		<CheckIcon size={14} class="animate-in zoom-in-50 duration-200" strokeWidth={2.5} />
+		<CheckIcon size={14} class="animate-in duration-200 zoom-in-50" strokeWidth={2.5} />
 		{#if copiedLabel}
 			<span class="ml-1.5 text-xs font-semibold">{defaultCopiedLabel}</span>
 		{:else if label}

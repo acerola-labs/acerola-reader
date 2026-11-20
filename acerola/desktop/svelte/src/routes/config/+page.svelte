@@ -195,7 +195,7 @@
 <div in:fade={{ duration: 150 }} class="relative mx-auto w-full max-w-5xl space-y-8 p-6 sm:p-8">
 	<!-- Ambient Background Glow -->
 	<div
-		class="pointer-events-none absolute -top-24 left-1/2 -z-10 -translate-x-1/2 size-96 rounded-full bg-primary/5 blur-3xl"
+		class="pointer-events-none absolute -top-24 left-1/2 -z-10 size-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl"
 	></div>
 
 	<!-- Page Title & Header -->
@@ -223,7 +223,10 @@
 			}}
 			state={{ expanded: expandedCategories.has('files') }}
 			events={{ onToggle: () => toggleCategory('files') }}
-			ui={{ class: CATEGORY_HOVER_BORDER.files, iconClass: 'bg-chart-5 text-primary-foreground' }}
+			ui={{
+				class: CATEGORY_HOVER_BORDER.files,
+				iconClass: 'bg-chart-5 text-primary-foreground'
+			}}
 		>
 			{#snippet icon()}
 				<FolderIcon size={24} />
@@ -290,7 +293,10 @@
 			}}
 			state={{ expanded: expandedCategories.has('library') }}
 			events={{ onToggle: () => toggleCategory('library') }}
-			ui={{ class: CATEGORY_HOVER_BORDER.library, iconClass: 'bg-chart-3 text-primary-foreground' }}
+			ui={{
+				class: CATEGORY_HOVER_BORDER.library,
+				iconClass: 'bg-chart-3 text-primary-foreground'
+			}}
 		>
 			{#snippet icon()}
 				<FolderSync size={24} />
@@ -311,7 +317,11 @@
 
 					{#snippet action()}
 						<AcerolaButtonIcon
-							ui={{ tone: 'accent', class: 'rounded-full', disabled: refreshScanner.scanning }}
+							ui={{
+								tone: 'accent',
+								class: 'rounded-full',
+								disabled: refreshScanner.scanning
+							}}
 						>
 							<RefreshCw class={refreshScanner.scanning ? 'animate-spin' : ''} />
 						</AcerolaButtonIcon>
@@ -332,7 +342,11 @@
 
 					{#snippet action()}
 						<AcerolaButtonIcon
-							ui={{ tone: 'accent', class: 'rounded-full', disabled: rebuildScanner.scanning }}
+							ui={{
+								tone: 'accent',
+								class: 'rounded-full',
+								disabled: rebuildScanner.scanning
+							}}
 						>
 							<RefreshCw class={rebuildScanner.scanning ? 'animate-spin' : ''} />
 						</AcerolaButtonIcon>
@@ -392,7 +406,9 @@
 					{#snippet action()}
 						<AcerolaPopover
 							state={{ open: metadataLanguagePopoverOpen }}
-							events={{ onOpenChange: (open) => (metadataLanguagePopoverOpen = open) }}
+							events={{
+								onOpenChange: (open) => (metadataLanguagePopoverOpen = open)
+							}}
 							ui={{
 								contentClass:
 									'w-80 overflow-hidden rounded-card border-border/40 bg-card/95 p-0 shadow-float backdrop-blur-md'
@@ -403,7 +419,9 @@
 									variant="outline"
 									class="h-10 min-w-24 gap-2 rounded-full border-border/60 bg-background/70 px-3 font-medium transition-all group-hover:bg-primary group-hover:text-primary-foreground"
 								>
-									<span class="max-w-36 truncate text-sm">{selectedMetadataLanguageLabel}</span>
+									<span class="max-w-36 truncate text-sm"
+										>{selectedMetadataLanguageLabel}</span
+									>
 									<ChevronDownIcon class="size-4 opacity-70" />
 								</Button>
 							{/snippet}
@@ -412,14 +430,18 @@
 								<div class="flex flex-col">
 									<div class="border-b border-border/40 bg-muted/20 px-4 py-3">
 										<div class="flex items-start gap-3">
-											<div class="rounded-inner bg-chart-4 p-2 text-primary-foreground">
+											<div
+												class="rounded-inner bg-chart-4 p-2 text-primary-foreground"
+											>
 												<LanguagesIcon size={18} />
 											</div>
 											<div class="min-w-0">
 												<h3 class="text-sm font-bold text-foreground">
 													{m['pages.config.metadata.lang.popoverTitle']()}
 												</h3>
-												<p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+												<p
+													class="mt-0.5 text-xs leading-relaxed text-muted-foreground"
+												>
 													{m['pages.config.metadata.lang.popoverDesc']({
 														language: selectedMetadataLanguageLabel
 													})}
@@ -428,26 +450,41 @@
 										</div>
 									</div>
 
-									<AcerolaCommand state={{ value: metadataLanguageStore.metadataLanguage }}>
+									<AcerolaCommand
+										state={{ value: metadataLanguageStore.metadataLanguage }}
+									>
 										<Command.Input
-											placeholder={m['pages.config.metadata.lang.searchPlaceholder']()}
+											placeholder={m[
+												'pages.config.metadata.lang.searchPlaceholder'
+											]()}
 										/>
 
 										<Command.List class="max-h-72 p-2">
-											<Command.Empty class="px-4 py-8 text-center text-sm text-muted-foreground">
+											<Command.Empty
+												class="px-4 py-8 text-center text-sm text-muted-foreground"
+											>
 												{m['pages.config.metadata.lang.empty']()}
 											</Command.Empty>
 
-											<Command.Group heading={m['pages.config.metadata.lang.groupTitle']()}>
+											<Command.Group
+												heading={m[
+													'pages.config.metadata.lang.groupTitle'
+												]()}
+											>
 												{#each LANGUAGES as lang}
 													<Command.Item
 														value={lang.code}
 														class="group/language cursor-pointer rounded-inner px-3 py-2.5 data-selected:bg-primary/10 data-selected:text-foreground data-[checked=true]:bg-primary/10"
-														onSelect={() => selectMetadataLanguage(lang.code)}
+														onSelect={() =>
+															selectMetadataLanguage(lang.code)}
 													>
 														<div class="min-w-0 flex-1">
-															<p class="truncate font-semibold">{lang.label}</p>
-															<p class="text-xs text-muted-foreground">
+															<p class="truncate font-semibold">
+																{lang.label}
+															</p>
+															<p
+																class="text-xs text-muted-foreground"
+															>
 																{lang.code}
 															</p>
 														</div>
@@ -477,7 +514,11 @@
 
 					{#snippet action()}
 						<AcerolaButtonIcon
-							ui={{ tone: 'accent', class: 'rounded-full', disabled: syncingSource !== null }}
+							ui={{
+								tone: 'accent',
+								class: 'rounded-full',
+								disabled: syncingSource !== null
+							}}
 						>
 							<RefreshCw class={syncingSource === 'mangadex' ? 'animate-spin' : ''} />
 						</AcerolaButtonIcon>
@@ -499,7 +540,11 @@
 
 					{#snippet action()}
 						<AcerolaButtonIcon
-							ui={{ tone: 'accent', class: 'rounded-full', disabled: syncingSource !== null }}
+							ui={{
+								tone: 'accent',
+								class: 'rounded-full',
+								disabled: syncingSource !== null
+							}}
 						>
 							<RefreshCw class={syncingSource === 'anilist' ? 'animate-spin' : ''} />
 						</AcerolaButtonIcon>

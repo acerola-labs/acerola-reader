@@ -49,7 +49,10 @@
 	 * the current page.
 	 */
 	function loadIfMissing(node: HTMLElement, pageIndex: number) {
-		if (!services.pageAt(pageIndex) && Math.abs(pageIndex - data.currentPage) <= PREFETCH_RADIUS) {
+		if (
+			!services.pageAt(pageIndex) &&
+			Math.abs(pageIndex - data.currentPage) <= PREFETCH_RADIUS
+		) {
 			void services.loadPage?.(pageIndex, false);
 		}
 		return {
@@ -91,7 +94,8 @@
 	<div
 		class={cn(
 			data.mode === 'horizontal' && 'flex h-full w-max',
-			data.mode === 'webtoon' && 'mx-auto flex w-full max-w-3xl flex-col items-center gap-0 py-2',
+			data.mode === 'webtoon' &&
+				'mx-auto flex w-full max-w-3xl flex-col items-center gap-0 py-2',
 			data.mode === 'vertical' && 'mx-auto flex h-full w-full max-w-6xl flex-col items-center'
 		)}
 	>
@@ -113,7 +117,8 @@
 					<div
 						class={cn(
 							data.mode === 'webtoon' && 'mx-auto flex w-full justify-center',
-							data.mode !== 'webtoon' && 'flex h-full w-full items-center justify-center'
+							data.mode !== 'webtoon' &&
+								'flex h-full w-full items-center justify-center'
 						)}
 					>
 						<img
@@ -124,7 +129,8 @@
 							class={cn(
 								'bg-base object-contain',
 								data.mode === 'webtoon' && 'w-full',
-								data.mode !== 'webtoon' && 'max-h-full max-w-full shadow-float shadow-base/40'
+								data.mode !== 'webtoon' &&
+									'max-h-full max-w-full shadow-float shadow-base/40'
 							)}
 							loading={Math.abs(pageIndex - data.currentPage) <= 2 ? 'eager' : 'lazy'}
 							draggable="false"

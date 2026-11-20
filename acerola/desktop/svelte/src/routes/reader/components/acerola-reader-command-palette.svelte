@@ -66,7 +66,10 @@
 				events={{ onValueChange: events.onValueChange }}
 			>
 				{#snippet children()}
-					<Command.Input placeholder={m['pages.reader.command.placeholder']()} autofocus />
+					<Command.Input
+						placeholder={m['pages.reader.command.placeholder']()}
+						autofocus
+					/>
 
 					<Command.List class="p-1">
 						<Command.Group heading={m['pages.reader.command.zoomGroup']()}>
@@ -119,7 +122,8 @@
 							<Command.Item
 								value={m['pages.reader.command.search.vertical']()}
 								class="cursor-pointer"
-								onSelect={() => runCommand(() => events.onReadingModeChange('vertical'))}
+								onSelect={() =>
+									runCommand(() => events.onReadingModeChange('vertical'))}
 							>
 								<Rows2 size={16} />
 								<span>{m['pages.reader.modes.vertical.full']()}</span>
@@ -128,7 +132,8 @@
 							<Command.Item
 								value={m['pages.reader.command.search.horizontal']()}
 								class="cursor-pointer"
-								onSelect={() => runCommand(() => events.onReadingModeChange('horizontal'))}
+								onSelect={() =>
+									runCommand(() => events.onReadingModeChange('horizontal'))}
 							>
 								<Columns2 size={16} />
 								<span>{m['pages.reader.modes.horizontal.full']()}</span>
@@ -137,7 +142,8 @@
 							<Command.Item
 								value={m['pages.reader.command.search.webtoon']()}
 								class="cursor-pointer"
-								onSelect={() => runCommand(() => events.onReadingModeChange('webtoon'))}
+								onSelect={() =>
+									runCommand(() => events.onReadingModeChange('webtoon'))}
 							>
 								<ScrollText size={16} />
 								<span>{m['pages.reader.modes.webtoon']()}</span>
