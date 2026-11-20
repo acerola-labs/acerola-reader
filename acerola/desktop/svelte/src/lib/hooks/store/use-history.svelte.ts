@@ -4,12 +4,15 @@ import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
 import type { ReadingHistoryPayload } from '#lib/contracts/history/history.payloads.ts';
 import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
 import { m } from '#lib/paraglide/messages.js';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 const { notify } = notificationStore;
 
 export function useHistory() {
 	let items = $state<ReadingHistoryPayload[]>([]);
 	let loading = $state(false);
+	/** The last load failed: the screen shows the error state with a retry. */
+	let failed = $state(false);
 
 	async function fetch() {
 		if (loading) return;
@@ -17,8 +20,10 @@ export function useHistory() {
 
 		try {
 			items = await invoke<ReadingHistoryPayload[]>(HISTORY_COMMANDS.getAll);
+			failed = false;
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
+			failed = true;
 
 			notify.error(m['hooks.history.error.load'](), {
 				description: errorMessage
@@ -34,7 +39,7 @@ export function useHistory() {
 			await invoke(HISTORY_COMMANDS.clear);
 			items = [];
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.history.error.clear'](), {
 				description: errorMessage
@@ -65,7 +70,7 @@ export function useHistory() {
 		try {
 			await invoke(HISTORY_COMMANDS.markChapterRead, { comicId, chapterId });
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.history.error.markRead'](), {
 				description: errorMessage
@@ -79,7 +84,7 @@ export function useHistory() {
 		try {
 			await invoke(HISTORY_COMMANDS.unmarkChapterRead, { comicId, chapterId });
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.history.error.markUnread'](), {
 				description: errorMessage
@@ -96,7 +101,7 @@ export function useHistory() {
 				chapterIds
 			});
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.history.error.markManyRead'](), {
 				description: errorMessage
@@ -113,7 +118,7 @@ export function useHistory() {
 				chapterIds
 			});
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
 			notify.error(m['hooks.history.error.markManyUnread'](), {
 				description: errorMessage
@@ -136,6 +141,9 @@ export function useHistory() {
 		},
 		get loading() {
 			return loading;
+		},
+		get failed() {
+			return failed;
 		}
 	};
 }

@@ -5,6 +5,7 @@ import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
 import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
 import { translateSyncMessage } from '#lib/contracts/errors/sync-error.i18n.ts';
 import { resolveArtworkPath } from '#lib/utils/artwork.util.ts';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 import type {
 	ComicSummary,
 	CoverQueryResultPayload,
@@ -109,7 +110,7 @@ export function useRemoteLibrary() {
 			await invoke(NETWORK_COMMANDS.queryRemoteLibrary, { peerId, addrs });
 		} catch (err) {
 			loading.delete(peerId);
-			errors.set(peerId, String(err));
+			errors.set(peerId, extractErrorMessage(err));
 			throw err;
 		}
 	}

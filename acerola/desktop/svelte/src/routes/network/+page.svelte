@@ -7,6 +7,7 @@
 
 	import { m } from '#lib/paraglide/messages.js';
 	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
 	import AcerolaRemoteLibraryDialog from '#lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
 	import AcerolaNetworkMyDeviceCard from './components/acerola-network-my-device-card.svelte';
@@ -128,7 +129,7 @@
 		try {
 			await action(peerId, addrs);
 		} catch (err) {
-			toast.error(String(err));
+			toast.error(extractErrorMessage(err));
 		}
 	}
 
@@ -246,14 +247,14 @@
 							try {
 								await sync.refreshLog();
 							} catch (err) {
-								toast.error(String(err));
+								toast.error(extractErrorMessage(err));
 							}
 						},
 						onClear: async () => {
 							try {
 								await sync.clearLog();
 							} catch (err) {
-								toast.error(String(err));
+								toast.error(extractErrorMessage(err));
 							}
 						}
 					}}

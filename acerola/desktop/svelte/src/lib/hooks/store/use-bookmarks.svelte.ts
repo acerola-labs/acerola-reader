@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { error } from '@tauri-apps/plugin-log';
 import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
 import type { Category, MangaCategory } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 let bookmarks = $state<Category[]>([]);
 let assignments = $state<MangaCategory[]>([]);
@@ -81,7 +82,7 @@ export function useBookmarks() {
 			];
 			return assignment;
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to assign bookmark: ${msg}`);
 			throw err;
 		}

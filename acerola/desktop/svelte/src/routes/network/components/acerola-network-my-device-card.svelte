@@ -25,6 +25,7 @@
 	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shortId } from '#lib/utils/connection-code.util.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 	let { data, events }: NetworkMyDeviceCardProps = $props();
 
@@ -77,7 +78,7 @@
 			toast.success(m['pages.network.myDevice.rename.success']());
 			editingName = false;
 		} catch (err) {
-			toast.error(m['pages.network.myDevice.rename.error']({ msg: String(err) }));
+			toast.error(m['pages.network.myDevice.rename.error']({ msg: extractErrorMessage(err) }));
 		} finally {
 			savingName = false;
 		}
