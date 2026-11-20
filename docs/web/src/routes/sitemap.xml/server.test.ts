@@ -57,7 +57,9 @@ describe('GET /sitemap.xml', () => {
 			const defaultAlternate = alternates.find(
 				(link) => link.getAttribute('hreflang') === 'x-default'
 			);
-			expect(defaultAlternate?.getAttribute('href')).toBe(url.querySelector('loc')?.textContent);
+			expect(defaultAlternate?.getAttribute('href')).toBe(
+				url.querySelector('loc')?.textContent
+			);
 		}
 	});
 

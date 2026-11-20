@@ -16,7 +16,10 @@
 		},
 		argTypes: {
 			text: { description: 'Displayed text.', control: 'text' },
-			speed: { description: 'Duration of one animation loop, in seconds.', control: 'number' },
+			speed: {
+				description: 'Duration of one animation loop, in seconds.',
+				control: 'number'
+			},
 			class: { description: 'Extra classes applied to the element.', control: 'text' }
 		}
 	});

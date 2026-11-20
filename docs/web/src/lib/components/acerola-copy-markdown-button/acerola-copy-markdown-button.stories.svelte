@@ -15,13 +15,20 @@
 			}
 		},
 		argTypes: {
-			raw: { description: 'Full Markdown source of the page (with frontmatter).', control: 'text' },
+			raw: {
+				description: 'Full Markdown source of the page (with frontmatter).',
+				control: 'text'
+			},
 			url: {
-				description: 'Canonical URL of the page, included as a comment before the Markdown.',
+				description:
+					'Canonical URL of the page, included as a comment before the Markdown.',
 				control: 'text'
 			},
 			label: { description: 'Accessible button text before copying.', control: 'text' },
-			copiedLabel: { description: 'Accessible button text right after copying.', control: 'text' },
+			copiedLabel: {
+				description: 'Accessible button text right after copying.',
+				control: 'text'
+			},
 			failedLabel: {
 				description: 'Accessible button text when copying fails.',
 				control: 'text'
@@ -56,8 +63,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Custom accessible labels (for example, for use outside the default i18n context).'
+				story: 'Custom accessible labels (for example, for use outside the default i18n context).'
 			}
 		}
 	}}
@@ -73,8 +79,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Custom failure label, shown when the clipboard rejects the copy (e.g. insecure context or permission denied).'
+				story: 'Custom failure label, shown when the clipboard rejects the copy (e.g. insecure context or permission denied).'
 			}
 		}
 	}}

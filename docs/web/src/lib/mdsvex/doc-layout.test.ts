@@ -40,7 +40,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('renders mermaid diagrams found inside the content', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 
@@ -59,7 +61,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('adds inline pan/zoom controls to a rendered diagram, starting at 100%', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 
@@ -76,7 +80,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('zooms the diagram in and out in place, and resets back to 100%', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 
@@ -101,7 +107,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('clamps zoom-in at the 300% maximum instead of growing indefinitely', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 
@@ -119,7 +127,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('clamps zoom-out at the 50% minimum instead of shrinking indefinitely', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 
@@ -188,7 +198,9 @@ describe('DocLayout (mdsvex)', () => {
 	it('pans the diagram with the direction buttons, and resets the position too', async () => {
 		render(DocLayout, {
 			props: {
-				children: bodySnippet('<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>')
+				children: bodySnippet(
+					'<pre class="mermaid" data-testid="diagram">graph TD; A-->B;</pre>'
+				)
 			}
 		});
 

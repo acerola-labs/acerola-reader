@@ -9,7 +9,11 @@ describe('docs/[...slug]/+page (component)', () => {
 			props: {
 				data: {
 					Doc: FakeDoc,
-					frontmatter: { title: 'Getting Started', section: 'Docs', description: 'Intro doc' },
+					frontmatter: {
+						title: 'Getting Started',
+						section: 'Docs',
+						description: 'Intro doc'
+					},
 					raw: '# Getting Started',
 					prev: null,
 					next: {

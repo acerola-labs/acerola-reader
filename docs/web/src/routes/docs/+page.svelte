@@ -22,7 +22,9 @@
 						href={localizeHref(`/docs/${doc.slug}`)}
 						class="rounded-inner border border-border bg-card p-5 transition-colors hover:bg-accent"
 					>
-						<span class="block font-heading text-lg font-semibold">{doc.frontmatter.title}</span>
+						<span class="block font-heading text-lg font-semibold"
+							>{doc.frontmatter.title}</span
+						>
 						{#if doc.frontmatter.description}
 							<span class="mt-1 block text-sm text-muted-foreground"
 								>{doc.frontmatter.description}</span

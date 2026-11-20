@@ -20,6 +20,8 @@
 <Story
 	name="Default"
 	parameters={{
-		docs: { description: { story: 'Default usage inside the header (top-nav) or the mobile menu.' } }
+		docs: {
+			description: { story: 'Default usage inside the header (top-nav) or the mobile menu.' }
+		}
 	}}
 />

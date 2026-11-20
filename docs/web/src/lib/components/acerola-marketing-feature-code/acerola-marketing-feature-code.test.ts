@@ -38,7 +38,9 @@ describe('AcerolaMarketingFeatureCode', () => {
 				writable: true
 			});
 		}
-		const writeTextMock = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+		const writeTextMock = vi
+			.spyOn(navigator.clipboard, 'writeText')
+			.mockResolvedValue(undefined);
 
 		render(AcerolaMarketingFeatureCode, {
 			props: {

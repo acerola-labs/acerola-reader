@@ -48,8 +48,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Closed by default — click the button (or Ctrl/Cmd+K) to open it and see the search unavailable state outside the production build.'
+				story: 'Closed by default — click the button (or Ctrl/Cmd+K) to open it and see the search unavailable state outside the production build.'
 			}
 		}
 	}}

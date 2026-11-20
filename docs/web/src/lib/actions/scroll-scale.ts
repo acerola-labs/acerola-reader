@@ -147,7 +147,8 @@ export const scrollScale: Action<HTMLElement, ScrollScaleOptions | undefined> = 
 						trigger: node,
 						start: options.start ?? 'top bottom',
 						end: options.end ?? 'bottom top',
-						scrub: typeof options.scrub === 'number' ? options.scrub : (options.scrub ?? 1)
+						scrub:
+							typeof options.scrub === 'number' ? options.scrub : (options.scrub ?? 1)
 					}
 				}
 			);
