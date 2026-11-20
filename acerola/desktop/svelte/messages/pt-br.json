@@ -16,11 +16,11 @@
 			"close": "Fechar"
 		},
 		"sidebar": {
-			"toggle": "Alternar Barra Lateral"
+			"toggle": "Alternar barra lateral"
 		},
 		"command": {
 			"placeholder": "Pesquisar...",
-			"title": "Paleta de Comandos",
+			"title": "Paleta de comandos",
 			"desc": "Pesquise por um comando para executar..."
 		},
 		"notification": {
@@ -29,7 +29,8 @@
 			"clear": {
 				"all": "Limpar tudo"
 			},
-			"scrollToBottom": "Rolar para baixo"
+			"scrollToBottom": "Rolar para baixo",
+			"emptyHint": "Suas novidades aparecem aqui"
 		},
 		"modePicker": {
 			"title": "Mudar tema"
@@ -65,6 +66,16 @@
 			"error": {
 				"load": "Erro ao carregar capítulos",
 				"request": "Erro ao solicitar capítulos"
+			}
+		},
+		"history": {
+			"error": {
+				"load": "Erro ao carregar o histórico",
+				"clear": "Erro ao limpar o histórico",
+				"markRead": "Erro ao marcar o capítulo como lido",
+				"markUnread": "Erro ao marcar o capítulo como não lido",
+				"markManyRead": "Erro ao marcar os capítulos como lidos",
+				"markManyUnread": "Erro ao marcar os capítulos como não lidos"
 			}
 		}
 	},
@@ -179,8 +190,8 @@
 			"noComics": "Nenhum quadrinho encontrado.",
 			"empty": {
 				"desc": "Sua biblioteca está vazia no momento. Execute uma sincronização rápida na pasta atual ou selecione outra pasta contendo seus quadrinhos (.cbz, .cbr, .pdf).",
-				"quickSync": "Sincronização Rápida",
-				"selectFolder": "Selecionar Pasta"
+				"quickSync": "Sincronização rápida",
+				"selectFolder": "Selecionar pasta"
 			},
 			"sort": {
 				"button": "Ordenar",
@@ -189,8 +200,8 @@
 					"desc": "Título (Z-A)"
 				},
 				"chapter": {
-					"asc": "Capítulos (Menor para Maior)",
-					"desc": "Capítulos (Maior para Menor)"
+					"asc": "Capítulos (menor para maior)",
+					"desc": "Capítulos (maior para menor)"
 				},
 				"indicator": {
 					"title": "Título",
@@ -209,29 +220,34 @@
 				"cancel": "Cancelar"
 			},
 			"actions": {
-				"title": "Ações do Quadrinho",
+				"title": "Ações do quadrinho",
 				"description": "{count} quadrinho(s) selecionado(s)",
-				"bookmark": "Adicionar Bookmark",
+				"bookmark": "Adicionar marcador",
 				"hide": "Ocultar",
 				"delete": "Deletar",
-				"clearMetadata": "Limpar Metadados",
+				"clearMetadata": "Limpar metadados",
 				"cancel": "Cancelar",
 				"hideConfirm": {
-					"title": "Ocultar Quadrinhos",
+					"title": "Ocultar quadrinhos",
 					"desc": "Tem certeza de que deseja ocultar o(s) quadrinho(s) selecionado(s)? Eles serão ocultados da biblioteca.",
 					"action": "Ocultar"
 				},
 				"deleteConfirm": {
-					"title": "Excluir Quadrinhos",
+					"title": "Excluir quadrinhos",
 					"desc": "Tem certeza de que deseja excluir o(s) quadrinho(s) selecionado(s)? Isso apagará permanentemente a pasta e os arquivos físicos do disco — essa ação não pode ser desfeita.",
 					"action": "Excluir"
 				},
 				"clearMetadataConfirm": {
-					"title": "Limpar Metadados",
+					"title": "Limpar metadados",
 					"desc": "Isso apaga o ComicInfo.xml, cover e banner da pasta de cada um dos {count} quadrinho(s) selecionado(s), além de todos os metadados sincronizados no banco. Capítulos e volumes não são afetados. Essa ação não pode ser desfeita.",
-					"action": "Limpar Metadados"
+					"action": "Limpar metadados"
 				},
-				"filterCategoriesPlaceholder": "Filtrar categorias..."
+				"filterCategoriesPlaceholder": "Filtrar categorias...",
+				"selection": {
+					"all": "Todos os itens selecionados",
+					"partial": "Seleção parcial"
+				},
+				"collectionsHint": "Organize os quadrinhos selecionados em coleções"
 			},
 			"toast": {
 				"hidden": "{count} quadrinho(s) ocultado(s)",
@@ -245,26 +261,26 @@
 					"clearMetadata": "Falha ao limpar metadados dos quadrinhos"
 				}
 			},
-			"filterButton": "Filtrar e Ordenar",
+			"filterButton": "Filtrar e ordenar",
 			"browseRemoteButton": "Buscar em outro dispositivo",
 			"noResultsFiltered": "Nenhum quadrinho encontrado para o filtro selecionado.",
 			"filterPanel": {
-				"ariaLabel": "Filtrar e Ordenar",
+				"ariaLabel": "Filtrar e ordenar",
 				"activeFilters": "Filtros ativos",
 				"closeAria": "Fechar painel de filtros",
 				"sortSectionTitle": "Ordenar por",
 				"sortRadiogroupAria": "Opções de ordenação",
 				"sortOptions": {
 					"title": "Título",
-					"chapterCount": "Quantidade de Capítulos",
-					"lastUpdated": "Última Atualização"
+					"chapterCount": "Quantidade de capítulos",
+					"lastUpdated": "Última atualização"
 				},
 				"filterSectionTitle": "Filtrar por",
 				"showHidden": {
 					"title": "Mostrar ocultos",
 					"desc": "Exibir quadrinhos ocultos"
 				},
-				"metadataSourcesTitle": "Fontes de Metadados",
+				"metadataSourcesTitle": "Fontes de metadados",
 				"metadataSourcesAria": "Fontes de metadados",
 				"metadataSources": {
 					"all": "Todos",
@@ -299,12 +315,12 @@
 			"sort": {
 				"button": "Ordenar",
 				"number": {
-					"asc": "Número (Menor para Maior)",
-					"desc": "Número (Maior para Menor)"
+					"asc": "Número (menor para maior)",
+					"desc": "Número (maior para menor)"
 				},
 				"modified": {
-					"asc": "Mais Antigo",
-					"desc": "Mais Recente"
+					"asc": "Mais antigo",
+					"desc": "Mais recente"
 				}
 			},
 			"selection": {
@@ -328,12 +344,12 @@
 					"unavailable": "Descrição indisponível."
 				},
 				"unknown": {
-					"author": "Autor Desconhecido",
+					"author": "Autor desconhecido",
 					"status": "Desconhecido"
 				},
 				"synopsis": "Sinopse",
 				"chapters": {
-					"count": "{count} Caps"
+					"count": "{count} caps"
 				},
 				"readNow": "LER AGORA",
 				"completed": "CONCLUÍDO",
@@ -355,7 +371,7 @@
 					}
 				},
 				"volumeHighlight": {
-					"title": "Destaque do Volume",
+					"title": "Destaque do volume",
 					"desc": "Escolha como os volumes são destacados: como capas ou banners.",
 					"cover": "Capa",
 					"banner": "Banner"
@@ -366,18 +382,18 @@
 					"none": "Nenhum"
 				},
 				"externalSync": {
-					"title": "Sincronização Externa",
+					"title": "Sincronização externa",
 					"desc": "Permitir que este quadrinho seja atualizado automaticamente nas sincronizações em lote."
 				},
 				"fileSync": {
-					"title": "Sincronização de Arquivos",
+					"title": "Sincronização de arquivos",
 					"rescan": {
 						"title": "Sincronizar capítulos locais",
 						"desc": "Atualiza apenas os capítulos novos ou alterados nesta pasta."
 					}
 				},
 				"p2pSync": {
-					"title": "Sincronizar com Dispositivo",
+					"title": "Sincronizar com dispositivo",
 					"empty": "Nenhum dispositivo pareado ainda. Pareie um dispositivo na tela de Rede.",
 					"send": {
 						"title": "Enviar este quadrinho",
@@ -404,7 +420,7 @@
 					}
 				},
 				"dangerZone": {
-					"title": "Zona de Risco",
+					"title": "Zona de risco",
 					"clearMetadata": {
 						"title": "Limpar metadados",
 						"desc": "Apaga o ComicInfo.xml, a capa e o banner da pasta, e remove os metadados sincronizados (título, descrição, autores, AniList/MangaDex) do banco. Útil para reverter um sync que trouxe dados errados.",
@@ -435,9 +451,9 @@
 					"toggleError": "Erro ao alterar sincronização externa: {msg}",
 					"success": "Metadados sincronizados!",
 					"rescanSuccess": "Capítulos sincronizados!",
-					"startMangadex": "Sincronizando metadados com MangaDex...",
-					"startAnilist": "Sincronizando metadados com AniList...",
-					"startComicInfo": "Sincronizando metadados com ComicInfo.xml...",
+					"startMangadex": "Sincronizando metadados com o MangaDex…",
+					"startAnilist": "Sincronizando metadados com o AniList…",
+					"startComicInfo": "Sincronizando metadados com o ComicInfo.xml…",
 					"startRescan": "Sincronizando capítulos locais...",
 					"startRegenerateCover": "Gerando capa a partir da primeira página...",
 					"startRegenerateVolumeCovers": "Gerando capas dos volumes...",
@@ -537,10 +553,10 @@
 			"title": "Histórico",
 			"loading": "Carregando...",
 			"noEvents": "Nenhum histórico encontrado.",
-			"resume": "Continuar Lendo",
+			"resume": "Continuar lendo",
 			"chapterLabel": "Capítulo {chapter}",
 			"pageLabel": "Página {page}",
-			"older": "Mais Antigos",
+			"older": "Mais antigos",
 			"sync": {
 				"button": "Sincronizar",
 				"title": "Sincronizar histórico",
@@ -549,7 +565,7 @@
 				"error": "Falha ao sincronizar histórico: {msg}"
 			},
 			"clear": {
-				"button": "Limpar Histórico",
+				"button": "Limpar histórico",
 				"title": "Tem certeza absoluta?",
 				"desc": "Essa ação não pode ser desfeita. Todo o histórico de leitura será apagado permanentemente.",
 				"cancel": "Cancelar",
@@ -574,7 +590,7 @@
 				}
 			},
 			"fileSystem": {
-				"title": "Configuração dos Arquivos",
+				"title": "Configuração dos arquivos",
 				"comicPath": {
 					"title": "Pasta dos quadrinhos",
 					"desc": "Pasta onde será buscado e salvo: {path}"
@@ -621,7 +637,7 @@
 			"bookmarks": {
 				"title": "Marcadores",
 				"desc": "Crie marcadores personalizados para categorizar seus quadrinhos.",
-				"add": "Adicionar Marcador",
+				"add": "Adicionar marcador",
 				"name": "Nome do marcador",
 				"color": "Cor",
 				"create": "Criar",
@@ -634,20 +650,20 @@
 					"error": "Erro na sincronização em lote: {msg}",
 					"progress": "Sincronizando: {name}",
 					"anilist": {
-						"start": "Iniciando sincronização em lote com AniList...",
+						"start": "Iniciando a sincronização em lote com o AniList…",
 						"error": "Erro ao iniciar sync AniList: {msg}"
 					},
 					"mangadex": {
-						"start": "Iniciando sincronização em lote com MangaDex...",
+						"start": "Iniciando a sincronização em lote com o MangaDex…",
 						"error": "Erro ao iniciar sync Mangadex: {msg}"
 					}
 				}
 			},
 			"templates": {
-				"title": "Templates de Nomenclatura",
+				"title": "Templates de nomenclatura",
 				"desc": "Padrões usados para reconhecer o número do capítulo e do volume a partir do nome do arquivo ou da pasta durante o escaneamento.",
 				"nav": {
-					"title": "Templates de Nomenclatura",
+					"title": "Templates de nomenclatura",
 					"desc": "Crie e gerencie os padrões de nome usados na detecção automática de capítulos e volumes."
 				},
 				"back": "Voltar",
@@ -682,8 +698,8 @@
 					"creating": "Criando..."
 				},
 				"list": {
-					"chapterTitle": "Templates de Capítulo",
-					"volumeTitle": "Templates de Volume",
+					"chapterTitle": "Templates de capítulo",
+					"volumeTitle": "Templates de volume",
 					"emptyChapter": "Nenhum template de capítulo personalizado ainda.",
 					"emptyVolume": "Nenhum template de volume personalizado ainda.",
 					"defaultBadge": "Padrão",
@@ -864,9 +880,9 @@
 		"back": "Voltar",
 		"next": "Próximo",
 		"setupTitle": "Configuração do Acerola Reader",
-		"welcomeBadgeFastTitle": "Leitura Veloz",
+		"welcomeBadgeFastTitle": "Leitura veloz",
 		"welcomeBadgeFastDesc": "CBZ, CBR e PDF",
-		"welcomeBadgeP2pTitle": "P2P Seguro",
+		"welcomeBadgeP2pTitle": "P2P seguro",
 		"welcomeBadgeP2pDesc": "Sync com mobile",
 		"welcomeBadgeLocalTitle": "100% Local",
 		"welcomeBadgeLocalDesc": "Privacidade total",
@@ -878,14 +894,14 @@
 			"complete": "Concluir"
 		},
 		"language": {
-			"title": "Selecionar Idioma",
+			"title": "Selecionar idioma",
 			"desc": "Escolha o idioma preferido para a aplicação.",
-			"quickSelect": "Menu de Seleção Rápida",
+			"quickSelect": "Menu de seleção rápida",
 			"countryBr": "Brasil",
 			"countryUs": "Estados Unidos"
 		},
 		"formats": {
-			"title": "Formatos Suportados",
+			"title": "Formatos suportados",
 			"desc": "O Acerola suporta os seguintes formatos de leitura:",
 			"cbz": {
 				"title": "Comic Book ZIP",
@@ -909,28 +925,28 @@
 				"feature2": "Conversão para CBZ"
 			},
 			"syncNote": {
-				"title": "Sincronização Automática:",
+				"title": "Sincronização automática:",
 				"content": "O Acerola escaneia e indexa seus arquivos nesses formatos sem precisar extraí-los manualmente."
 			}
 		},
 		"settings": {
-			"title": "Configuração Inicial",
+			"title": "Configuração inicial",
 			"folder": {
-				"title": "Pasta dos Quadrinhos",
+				"title": "Pasta dos quadrinhos",
 				"desc": "Selecione a pasta onde seus quadrinhos estão armazenados.",
-				"select": "Selecionar Pasta",
+				"select": "Selecionar pasta",
 				"selected": "Pasta selecionada"
 			}
 		},
 		"complete": {
-			"title": "Tudo Pronto!",
+			"title": "Tudo pronto!",
 			"desc": "Seu Acerola está pronto para uso.",
 			"checklistTitle": "Pronto para a melhor experiência de leitura",
 			"checklistItem1": "Idioma e interface configurados",
 			"checklistItem2": "Formatos CBZ, CBR e PDF prontos para indexação",
 			"checklistItem3": "Diretório da biblioteca vinculado com segurança",
 			"note": "Você pode alterar essas configurações a qualquer momento na página de Configurações.",
-			"button": "Ir para Início"
+			"button": "Ir para o início"
 		}
 	},
 	"error": {
