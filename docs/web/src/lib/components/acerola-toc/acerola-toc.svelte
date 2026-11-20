@@ -48,7 +48,7 @@
 
 {#if headings.length > 0}
 	<nav class="text-sm">
-		<p class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+		<p class="mb-3 text-xs font-semibold text-muted-foreground">
 			{m['toc.title']()}
 		</p>
 		<ul

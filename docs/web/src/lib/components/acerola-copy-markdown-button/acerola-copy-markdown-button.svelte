@@ -2,7 +2,6 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ClipboardCopyIcon from '@lucide/svelte/icons/clipboard-copy';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { Button } from '#lib/components/ui/button/index.ts';
 
 	let {
 		raw,
@@ -41,23 +40,32 @@
 		}
 	}
 
+	// Same pill as the brand copy button (AcerolaCode): surface at rest, the state in its soft tone.
 	const views: Record<Status, { icon: typeof ClipboardCopyIcon; text: string; class: string }> =
 		$derived({
-			idle: { icon: ClipboardCopyIcon, text: label, class: 'text-muted-foreground' },
-			copied: { icon: CheckIcon, text: copiedLabel, class: 'text-primary' },
-			failed: { icon: XIcon, text: failedLabel, class: 'text-destructive' }
+			idle: {
+				icon: ClipboardCopyIcon,
+				text: label,
+				class: 'bg-surface text-muted-foreground hover:text-foreground'
+			},
+			copied: { icon: CheckIcon, text: copiedLabel, class: 'bg-success-soft text-success' },
+			failed: {
+				icon: XIcon,
+				text: failedLabel,
+				class: 'bg-destructive-soft text-destructive'
+			}
 		});
 	const view = $derived(views[status]);
+	const Icon = $derived(view.icon);
 </script>
 
-<Button
-	variant="outline"
-	size="icon-lg"
-	class={view.class}
+<button
+	type="button"
+	class="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition-all duration-200 ease-brand active:scale-95 {view.class}"
 	onclick={copy}
 	aria-label={view.text}
 	title={view.text}
 >
-	{@const Icon = view.icon}
-	<Icon class="size-5" />
-</Button>
+	<Icon size={13} />
+	<span>{view.text}</span>
+</button>

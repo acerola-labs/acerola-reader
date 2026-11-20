@@ -19,7 +19,9 @@
 		"menuToggle": "Alternar menu",
 		"skipToContent": "Pular para o conteúdo",
 		"menuTitle": "Menu",
-		"menuDescription": "Navegação da documentação"
+		"menuDescription": "Navegação da documentação",
+		"home": "Início",
+		"switchLanguage": "Mudar idioma"
 	},
 	"themePicker": {
 		"title": "Mudar tema",
@@ -91,7 +93,8 @@
 			"openSource": {
 				"title": "Código aberto",
 				"desc": "Toda plataforma — Android, desktop e as bibliotecas de sincronização — é MPL-2.0 e está aberta pra qualquer um ler, compilar ou auditar."
-			}
+			},
+			"eyebrow": "Princípios"
 		},
 		"howItWorks": {
 			"title": "Da instalação à sincronização, em três passos",
@@ -99,7 +102,8 @@
 			"pair": "Abra a tela Rede nos dois dispositivos e escaneie o QR code exibido em um usando o outro.",
 			"confirm": "Confirme o pareamento. A partir daí, sua biblioteca e o progresso de leitura sincronizam automaticamente, direto entre os dispositivos.",
 			"noteTitle": "Sem rede local?",
-			"noteDesc": "O Acerola usa um relay (próprio ou hospedado por você) só pra ajudar os peers a se encontrarem — sem abrir portas, e ele nunca toca na sua biblioteca."
+			"noteDesc": "O Acerola usa um relay (próprio ou hospedado por você) só pra ajudar os peers a se encontrarem — sem abrir portas, e ele nunca toca na sua biblioteca.",
+			"eyebrow": "Como funciona"
 		},
 		"platformsTitle": "Um ecossistema, várias plataformas",
 		"platform": {
@@ -148,7 +152,8 @@
 				"caddyLabel": "Relay Caddy",
 				"caddyComment": "# Proxy reverso Caddy para seu relay Acerola autohospedado"
 			}
-		}
+		},
+		"platformsEyebrow": "Plataformas"
 	},
 	"marketingCode": {
 		"copy": "Copiar",
@@ -209,5 +214,13 @@
 			"title": "Algo deu errado",
 			"text": "Não sabemos bem o que houve. Tente de novo; se continuar, volte ao início."
 		}
+	},
+	"common": {
+		"copy": "Copiar",
+		"copied": "Copiado"
+	},
+	"code": {
+		"copy": "Copiar código",
+		"tabs": "Arquivos"
 	}
 }

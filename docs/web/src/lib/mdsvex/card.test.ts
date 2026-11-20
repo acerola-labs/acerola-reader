@@ -60,8 +60,14 @@ describe('Card (mdsvex)', () => {
 			props: { title: 'Getting Started', icon: GithubIcon }
 		});
 
-		const titleEl = screen.getByText('Getting Started').closest('[data-slot="card-title"]');
-		expect(titleEl?.querySelector('svg')).toBeInTheDocument();
+		const card = screen.getByText('Getting Started').closest('[data-slot="card"]');
+		const icon = card?.querySelector('svg');
+		expect(icon).toBeInTheDocument();
+		// The icon comes before the title in document order.
+		expect(
+			icon!.compareDocumentPosition(screen.getByText('Getting Started')) &
+				Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
 	});
 
 	it('omits the icon element entirely when none is provided', () => {

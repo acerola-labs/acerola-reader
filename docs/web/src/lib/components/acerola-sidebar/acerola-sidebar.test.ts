@@ -65,7 +65,7 @@ describe('AcerolaSidebar', () => {
 		const active = screen.getByRole('link', { name: 'Visão geral da arquitetura' });
 		const inactive = screen.getByRole('link', { name: 'Guia de instalação' });
 
-		expect(active.className).toContain('text-primary');
-		expect(inactive.className).not.toContain('text-primary');
+		expect(active).toHaveAttribute('aria-current', 'page');
+		expect(inactive).not.toHaveAttribute('aria-current');
 	});
 });

@@ -52,7 +52,7 @@
 		{@const SectionIcon = SECTION_ICONS[group.section]}
 		<div>
 			<p
-				class="mb-2 flex items-center gap-2 px-2 text-xs font-bold tracking-wider text-muted-foreground uppercase"
+				class="mb-2 flex items-center gap-2 px-3 text-xs font-semibold text-muted-foreground"
 			>
 				{#if SectionIcon}
 					<SectionIcon size={13} class="text-primary/70" aria-hidden="true" />
@@ -66,21 +66,22 @@
 					<li>
 						<a
 							href={localizeHref(`/docs/${doc.slug}`)}
+							aria-current={isActive ? 'page' : undefined}
 							class={cn(
-								'group flex items-center gap-2.5 rounded-inner px-2.5 py-1.5 text-xs font-medium transition-all',
+								'group flex min-h-10 items-center gap-2.5 rounded-full px-3 py-2 text-sm font-bold transition-colors',
 								isActive
-									? 'bg-primary/10 font-semibold text-primary'
-									: 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+									? 'bg-foreground text-background'
+									: 'text-muted-foreground hover:bg-surface hover:text-foreground'
 							)}
 						>
 							<DocIcon
 								size={14}
 								aria-hidden="true"
 								class={cn(
-									'shrink-0 transition-transform duration-200 group-hover:scale-110',
+									'shrink-0',
 									isActive
-										? 'text-primary'
-										: 'text-muted-foreground/70 group-hover:text-foreground'
+										? 'text-background'
+										: 'text-muted-foreground group-hover:text-foreground'
 								)}
 							/>
 							<span class="truncate">{doc.frontmatter.title}</span>
