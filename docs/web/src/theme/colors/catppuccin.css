@@ -1,8 +1,8 @@
-/* Paleta única do app, copiada sem alteração de
-   acerola-ticket/acerola/dashboard/client/src/lib/theme/tokens.css — Latte no claro, Mocha
-   no escuro. Não existe mais troca de paleta, só de modo (claro/escuro).
+/* The app's single palette, copied unchanged from
+   acerola-ticket/acerola/dashboard/client/src/lib/theme/tokens.css — Latte in light, Mocha
+   in dark. There is no palette switching anymore, only mode switching (light/dark).
 
-   Default: escuro (Mocha). */
+   Default: dark (Mocha). */
 :root,
 [data-theme='dark'] {
 	--crust: #0e0e15;

@@ -17,7 +17,9 @@
 		"searchPlaceholder": "Search the docs...",
 		"searchShortcutHint": "Search",
 		"menuToggle": "Toggle menu",
-		"skipToContent": "Skip to content"
+		"skipToContent": "Skip to content",
+		"menuTitle": "Menu",
+		"menuDescription": "Documentation navigation"
 	},
 	"themePicker": {
 		"title": "Change theme",

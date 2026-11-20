@@ -60,18 +60,18 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 	@apply no-underline;
 }
 
-/* Card e CopyCard usados soltos no markdown (fora de um CardGrid) não têm
-   margem própria — CardGrid é quem cuida do espaçamento quando eles estão
-   dentro dela (via `gap`). Seletor de filho direto pra não afetar os cards
-   aninhados no CardGrid, que já têm seu próprio espaçamento. */
+/* Card and CopyCard used standalone in markdown (outside a CardGrid) have no
+   margin of their own — CardGrid handles spacing when they're inside it
+   (via `gap`). Direct-child selector so it doesn't affect cards nested in a
+   CardGrid, which already have their own spacing. */
 .doc-content > :where([data-slot='card']) {
 	@apply my-6;
 }
 
 .doc-content .mermaid {
-	/* overflow-hidden, não overflow-auto: o movimento é feito pelo D-pad
-	   (transform: translate no svg, ver addZoomControls) em vez de scrollbars
-	   nativas, então conteúdo movido para fora da caixa deve só ser cortado. */
+	/* overflow-hidden, not overflow-auto: movement is done by the D-pad
+	   (transform: translate on the svg, see addZoomControls) instead of native
+	   scrollbars, so content moved outside the box should just be clipped. */
 	@apply relative my-6 max-h-[70vh] overflow-hidden rounded-tile bg-card p-5;
 }
 
@@ -79,13 +79,12 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 	@apply mx-auto transition-transform;
 }
 
-/* `[data-mermaid-controls]` é enxertado no diagrama a partir de doc-layout.svelte
-   (ver addZoomControls) como DOM puro, não templated Svelte — por isso não dá
-   para usar o par `group`/`group-hover:` do Tailwind (precisa de um token
-   literal `class="group"` no ancestral, que `@apply group` não produz;
-   o Tailwind v4 rejeita `@apply group` de cara já que `group` não é uma
-   utility de verdade). Uma regra simples de `:hover`/`:focus-within` dá o
-   mesmo efeito de revelar-ao-passar-o-mouse sem isso. */
+/* `[data-mermaid-controls]` is grafted onto the diagram from doc-layout.svelte
+   (see addZoomControls) as plain DOM, not templated Svelte — so Tailwind's
+   `group`/`group-hover:` pair can't be used (it needs a literal `class="group"`
+   token on the ancestor, which `@apply group` doesn't produce; Tailwind v4
+   rejects `@apply group` outright since `group` isn't a real utility). A simple
+   `:hover`/`:focus-within` rule gives the same reveal-on-hover effect without it. */
 .doc-content .mermaid:hover [data-mermaid-controls],
 .doc-content .mermaid:focus-within [data-mermaid-controls] {
 	opacity: 1;
@@ -97,9 +96,9 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 	@apply scroll-mt-24;
 }
 
-/* Prosa do conteúdo em markdown — não usamos @tailwindcss/typography porque seu
-   `prose` é baseado em uma paleta cinza fixa, e o site troca entre claro e escuro
-   via essas custom properties. */
+/* Prose for markdown content — we don't use @tailwindcss/typography because its
+   `prose` is based on a fixed gray palette, and the site switches between light and
+   dark via these custom properties. */
 .doc-content :where(h2) {
 	@apply mt-10 mb-4 font-heading text-2xl font-semibold first:mt-0;
 }
@@ -152,11 +151,11 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 	@apply my-8 border-border;
 }
 
-/* Tabelas em markdown viram `<table>`/`<th>`/`<td>` puro via remark-gfm.
-   Tanto tabelas markdown quanto componentes Table compartilham este estilo
-   dentro de .doc-content. O contêiner pai gerencia borda, arredondamento e rolagem
-   horizontal para preservar display: table e permitir que colunas e divisórias
-   preencham 100% da largura do contêiner. */
+/* Markdown tables become plain `<table>`/`<th>`/`<td>` via remark-gfm.
+   Both markdown tables and Table components share this style inside
+   .doc-content. The parent container handles border, rounding and horizontal
+   scrolling to preserve display: table and let columns and dividers fill 100%
+   of the container width. */
 .doc-content :where([data-slot='table-container']),
 .doc-content :where(.table-container) {
 	@apply relative my-6 w-full overflow-x-auto rounded-tile bg-card;

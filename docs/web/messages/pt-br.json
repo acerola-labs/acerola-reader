@@ -17,7 +17,9 @@
 		"searchPlaceholder": "Pesquisar na documentação...",
 		"searchShortcutHint": "Buscar",
 		"menuToggle": "Alternar menu",
-		"skipToContent": "Pular para o conteúdo"
+		"skipToContent": "Pular para o conteúdo",
+		"menuTitle": "Menu",
+		"menuDescription": "Navegação da documentação"
 	},
 	"themePicker": {
 		"title": "Mudar tema",

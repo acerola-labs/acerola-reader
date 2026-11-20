@@ -2,25 +2,25 @@ import { json } from '@sveltejs/kit';
 import { resolveLatestApkKey } from '#lib/server/apk-bucket.ts';
 import type { RequestHandler } from './$types';
 
-// Cacheado na borda da Cloudflare por alguns minutos: a checagem ao vivo passa a rodar de
-// fato só uma vez por janela, por PoP — o resto das visitas nessa janela reaproveita o
-// resultado sem nenhum `list` novo no bucket R2.
+// Cached at the Cloudflare edge for a few minutes: the live check actually runs only once per
+// window, per PoP — the rest of the visits in that window reuse the result without any new
+// `list` on the R2 bucket.
 const CACHE_TTL_SECONDS = 300;
 
-// Checado direto pelo binding R2 (`APK_BUCKET`), não por HTTP: um `fetch` do worker pra uma
-// rota dele mesmo (self-fetch) se mostrou pouco confiável no runtime do Cloudflare — o
-// binding elimina esse round-trip de rede e a lógica de retry/timeout que ele exigia.
+// Checked directly through the R2 binding (`APK_BUCKET`), not over HTTP: a `fetch` from the
+// worker to one of its own routes (self-fetch) proved unreliable on the Cloudflare runtime — the
+// binding removes that network round-trip and the retry/timeout logic it required.
 export const GET: RequestHandler = async ({ platform }) => {
-	// `caches.default` (Cache API da Cloudflare) só existe em runtime de Worker de verdade —
-	// em testes/dev local cai direto pra checagem ao vivo sem cache, sem quebrar nada. `lib
-	// dom` padrão do TS não conhece essa extensão específica da Cloudflare, daí o cast local
-	// em vez de puxar a dependência inteira de @cloudflare/workers-types só por isso.
+	// `caches.default` (Cloudflare's Cache API) only exists in a real Worker runtime — in
+	// tests/local dev it falls straight through to the uncached live check without breaking
+	// anything. TS's default `lib dom` doesn't know this Cloudflare-specific extension, hence the
+	// local cast instead of pulling in all of @cloudflare/workers-types just for this.
 	const edgeCache =
 		typeof caches !== 'undefined'
 			? (caches as CacheStorage & { default: Cache }).default
 			: undefined;
-	// Chave fixa (não depende do request de quem chamou): só existe UM resultado possível
-	// pra essa rota — não há nada por-usuário/por-query-string pra variar o cache.
+	// Fixed key (doesn't depend on the caller's request): there is only ONE possible result
+	// for this route — nothing per-user/per-query-string to vary the cache on.
 	const cacheKey = new Request('https://internal-cache-key.acerola.app/api/apk-status');
 
 	if (edgeCache) {

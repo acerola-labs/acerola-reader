@@ -37,8 +37,8 @@
 	);
 
 	let copied = $state(false);
-	// Módulo, não closure por instância — se duas CopyCard copiarem quase ao mesmo
-	// tempo, o timeout da primeira não pode apagar o estado "copiado" da segunda.
+	// Module, not a per-instance closure — if two CopyCards copy at almost the same
+	// time, the first one's timeout must not clear the second one's "copied" state.
 	let resetTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	async function copy() {

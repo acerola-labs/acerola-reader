@@ -16,12 +16,11 @@ import { defineConfig, devices } from '@playwright/test';
 // spec to have anything real to hit.
 export default defineConfig({
 	testDir: './tests/e2e',
-	// A home roda um fundo WebGL (`faulty-terminal.svelte`) e o search-dialog
-	// carrega o WASM/índice do Pagefind sob demanda na primeira consulta — sob o
-	// GPU virtual do Chromium headless no CI isso passa fácil de 10s, e em runners
-	// mais carregados passa dos 20s (search-dialog.spec.ts dá margem própria pra
-	// essas duas asserções). O timeout por asserção padrão continua curto (5s); só
-	// o teto do teste inteiro é folgado.
+	// The home page runs a WebGL background (`faulty-terminal.svelte`) and the search-dialog
+	// loads the Pagefind WASM/index on demand on the first query — under headless Chromium's
+	// virtual GPU in CI that easily exceeds 10s, and on busier runners it goes past 20s
+	// (search-dialog.spec.ts gives those two assertions its own margin). The default
+	// per-assertion timeout stays short (5s); only the whole-test ceiling is generous.
 	timeout: 90_000,
 	workers: 1,
 	expect: {
@@ -31,11 +30,11 @@ export default defineConfig({
 	use: {
 		baseURL: 'http://127.0.0.1:5173',
 		trace: 'retain-on-failure',
-		// A home usa um efeito de fundo em WebGL (`faulty-terminal.svelte`, via `ogl`) que
-		// gera "GPU stall"/driver warnings sob o GPU virtual do Chromium headless e pode
-		// derrubar a página de vez em quando (mais visível em `page.reload()`) — forçar
-		// SwiftShader (renderização por software) dá um contexto WebGL estável em vez de
-		// depender do driver de GPU do host, que headless não expõe direito.
+		// The home page uses a WebGL background effect (`faulty-terminal.svelte`, via `ogl`) that
+		// emits "GPU stall"/driver warnings under headless Chromium's virtual GPU and can
+		// occasionally crash the page (most visible on `page.reload()`) — forcing SwiftShader
+		// (software rendering) gives a stable WebGL context instead of relying on the host's
+		// GPU driver, which headless doesn't expose properly.
 		launchOptions: {
 			args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist']
 		}

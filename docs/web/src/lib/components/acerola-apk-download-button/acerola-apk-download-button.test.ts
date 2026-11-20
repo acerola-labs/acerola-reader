@@ -67,9 +67,9 @@ describe('AcerolaApkDownloadButton', () => {
 		global.fetch = vi.fn().mockRejectedValue(new Error('network error')) as unknown as typeof fetch;
 		render(AcerolaApkDownloadButton);
 
-		// Não há um estado assíncrono visível pra esperar (o fallback nunca é ativado),
-		// então dá um tick pra deixar a promise rejeitada do onMount assentar antes de
-		// checar que o link continua o de download direto.
+		// There's no visible async state to wait for (the fallback never kicks in), so wait
+		// a tick to let onMount's rejected promise settle before checking that the link is
+		// still the direct download one.
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(screen.getByRole('link')).toHaveAttribute('href', '/api/apk-latest');

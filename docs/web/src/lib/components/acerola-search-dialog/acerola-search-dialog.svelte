@@ -18,10 +18,10 @@
 	let query = $state('');
 	let results = $state<PagefindResult[]>([]);
 	let status = $state<'idle' | 'loading' | 'unavailable'>('idle');
-	// $state (não `let` puro): precisa disparar o $effect de busca de novo quando o import
-	// dinâmico do pagefind.js resolve — sem isso, uma busca digitada antes do pagefind
-	// terminar de carregar zera `results` e nunca tenta de novo (nenhum evento reativo
-	// aciona o re-run), mesmo esperando o quanto for no timeout do teste/asserção.
+	// $state (not a plain `let`): the search $effect must rerun when the dynamic import of
+	// pagefind.js resolves — without this, a query typed before pagefind finishes loading
+	// clears `results` and never retries (no reactive event triggers the rerun), no matter
+	// how long the test/assertion timeout waits.
 	let pagefind = $state<PagefindApi | null>(null);
 
 	async function ensurePagefind() {
@@ -56,9 +56,9 @@
 		const search = await pagefind.search(value);
 		const data = await Promise.all(search.results.slice(0, 8).map((result) => result.data()));
 
-		// Pagefind indexa o build estático e devolve o caminho de arquivo real
-		// (ex.: "/docs/architecture.html"), mas as rotas do SvelteKit servem sem
-		// extensão — sem isso o link do resultado cai no 404.
+		// Pagefind indexes the static build and returns the real file path
+		// (e.g. "/docs/architecture.html"), but SvelteKit routes are served without an
+		// extension — without this the result link lands on a 404.
 		results = data.map((result) => ({
 			...result,
 			url: result.url.replace(/(?:\/index)?\.html$/, '')

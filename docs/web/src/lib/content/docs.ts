@@ -48,11 +48,11 @@ const PATH_PATTERN = /^\/src\/content\/docs\/([^/]+)\/(.+)\.md$/;
 // call, which breaks Vite's glob-import parser (see stryker.conf.mjs for context).
 const modules = import.meta.glob<DocModule>('/src/content/docs/*/**/*.md', { eager: true });
 
-// Segundo glob do mesmo conteúdo, só que como texto cru — usado pelo botão de
-// "copiar como Markdown" (ver copy-markdown-button). Precisa ser um glob à parte
-// porque `query: '?raw'` muda o que o Vite entrega por import, não dá pra pedir os
-// dois formatos de uma vez só.
-// Stryker disable next-line all -- mesmo motivo do glob acima.
+// Second glob of the same content, but as raw text — used by the "copy as Markdown"
+// button (see copy-markdown-button). It has to be a separate glob because
+// `query: '?raw'` changes what Vite delivers per import; you can't ask for both
+// formats at once.
+// Stryker disable next-line all -- same reason as the glob above.
 const rawModules = import.meta.glob<string>('/src/content/docs/*/**/*.md', {
 	eager: true,
 	query: '?raw',

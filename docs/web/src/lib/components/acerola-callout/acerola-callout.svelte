@@ -7,11 +7,9 @@
 
 	export type AcerolaCalloutType = 'note' | 'tip' | 'caution' | 'danger';
 
-	// Selo editorial (ícone + rótulo maiúsculo + régua fina à esquerda) em vez do
-	// admonition padrão de biblioteca de UI (ícone + título numa caixa fechada) —
-	// não é um Alert genérico nem um Card, é uma nota à margem do texto. Cada
-	// variante define sua própria classe de acento em vez de tokens interpolados,
-	// já que o Tailwind precisa da classe completa e literal pra gerar o CSS.
+	// Acerola notice: rounded-card block, no border, background and text in the tone of the
+	// type (`*-soft` + tone). Each variant spells out its classes instead of interpolating
+	// tokens, since Tailwind needs the complete, literal class to generate the CSS.
 	const CALLOUT_CONFIG: Record<AcerolaCalloutType, { icon: Component; accent: string }> = {
 		note: { icon: InfoIcon, accent: ' bg-primary-soft text-primary' },
 		tip: { icon: LightbulbIcon, accent: ' bg-success-soft text-success' },
@@ -31,9 +29,9 @@
 
 	const config = $derived(CALLOUT_CONFIG[type]);
 
-	// `alert` é uma live region assertiva, reservada pra conteúdo urgente — usar
-	// em avisos estáticos (note/tip/caution) faria o leitor de tela interromper o
-	// usuário a cada navegação client-side só pra reler um aviso informativo.
+	// `alert` is an assertive live region, reserved for urgent content — using it on
+	// static notices (note/tip/caution) would make the screen reader interrupt the user
+	// on every client-side navigation just to reread an informational notice.
 	const role = $derived(type === 'danger' ? 'alert' : undefined);
 </script>
 

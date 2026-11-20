@@ -33,9 +33,9 @@
 			await navigator.clipboard.writeText(`<!-- URL: ${url} -->\n\n${raw}`);
 			resetAfter('copied', 2000);
 		} catch (error) {
-			// navigator.clipboard.writeText rejeita em contexto não seguro ou sem
-			// permissão — sem esse catch a promise falha em silêncio e o botão
-			// nunca dá nenhum feedback de erro pro usuário.
+			// navigator.clipboard.writeText rejects in an insecure context or without
+			// permission — without this catch the promise fails silently and the button
+			// never gives the user any error feedback.
 			console.error('Failed to copy page as Markdown', error);
 			resetAfter('failed', 3000);
 		}

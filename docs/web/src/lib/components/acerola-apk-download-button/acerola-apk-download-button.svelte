@@ -10,9 +10,9 @@
 		fallbackTitle = 'Direct download is temporarily unavailable — opening the latest GitHub release instead.'
 	}: { label?: string; fallbackLabel?: string; fallbackTitle?: string } = $props();
 
-	// Otimista: renderiza o link normal de cara (inclusive no SSR, onde este check nunca
-	// roda) e só troca pro fallback se a checagem no cliente confirmar que o objeto não
-	// está acessível — evita bloquear o botão atrás de uma chamada de rede toda vez.
+	// Optimistic: renders the normal link right away (including on SSR, where this check never
+	// runs) and only swaps to the fallback if the client-side check confirms the object isn't
+	// reachable — avoids blocking the button behind a network call every time.
 	let available = $state(true);
 
 	onMount(async () => {
@@ -21,8 +21,8 @@
 			const data: { available: boolean } = await response.json();
 			available = data.available;
 		} catch {
-			// Se a própria checagem falhar (ex.: offline), mantém o link direto — um
-			// problema no check não deveria impedir o usuário de tentar o download real.
+			// If the check itself fails (e.g. offline), keep the direct link — a problem
+			// with the check shouldn't stop the user from trying the real download.
 		}
 	});
 </script>

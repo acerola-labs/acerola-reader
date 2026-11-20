@@ -7,13 +7,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaMarketingFeatureCode,
-		title: 'Componentes/AcerolaMarketingFeatureCode',
+		title: 'Components/AcerolaMarketingFeatureCode',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Seção de marketing com divisão entre lista de recursos e painel de código interativo com suporte a abas e cópia, inspirado no Cult UI.'
+						'Marketing section split between a feature list and an interactive code panel with tabs and copy support, inspired by Cult UI.'
 				}
 			}
 		}
