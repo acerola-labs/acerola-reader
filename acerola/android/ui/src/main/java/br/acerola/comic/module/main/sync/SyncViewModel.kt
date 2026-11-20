@@ -205,7 +205,6 @@ class SyncViewModel
             }
         }
 
-
         /** Records a session's terminal result only in THIS screen's UI state — updates
          *  "last sync" only on success, but [SyncUiState.lastSyncResultByPeer]
          *  always, so [SyncScreen] can show a failure inline on the peer's row without

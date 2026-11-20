@@ -102,8 +102,14 @@ fun Main.Common.Component.ComicActionsSheet(
 
     val metaLine =
         listOfNotNull(
-            comic.remoteInfo?.authors?.name?.takeIf { it.isNotBlank() },
-            comic.remoteInfo?.year?.takeIf { it > 0 }?.toString(),
+            comic.remoteInfo
+                ?.authors
+                ?.name
+                ?.takeIf { it.isNotBlank() },
+            comic.remoteInfo
+                ?.year
+                ?.takeIf { it > 0 }
+                ?.toString(),
             comic.remoteInfo?.status?.takeIf { it.isNotBlank() }?.let {
                 stringResource(id = ComicStatus.fromRawValue(it).stringRes)
             },

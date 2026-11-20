@@ -271,7 +271,14 @@ fun Main.Home.Component.HomeContinueBanner(
                         text = stringResource(R.string.label_banner_chapter_progress, history.chapterSort),
                         style =
                             MaterialTheme.typography.bodyLarge.copy(
-                                color = if (bannerUri != null) AcerolaColors.OnScrim.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color =
+                                    if (bannerUri !=
+                                        null
+                                    ) {
+                                        AcerolaColors.OnScrim.copy(alpha = 0.8f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
                             ),
                         maxLines = 1,
                     )

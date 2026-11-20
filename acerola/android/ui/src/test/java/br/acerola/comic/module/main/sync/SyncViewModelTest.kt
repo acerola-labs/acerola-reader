@@ -5,8 +5,6 @@ import br.acerola.comic.MainDispatcherRule
 import br.acerola.comic.config.preference.DeviceAliasPreference
 import br.acerola.comic.config.preference.PeerNicknamePreference
 import br.acerola.comic.config.preference.RelayPreference
-import br.acerola.comic.module.main.sync.state.ConnectError
-import br.acerola.comic.module.main.sync.state.PendingConnect
 import br.acerola.comic.module.main.sync.state.SyncAction
 import br.acerola.comic.module.main.sync.state.SyncUiState
 import br.acerola.comic.service.NetworkMode
@@ -147,5 +145,6 @@ class SyncViewModelTest {
         }
 
     private fun encodePairingCode(peerId: String) =
-        br.acerola.comic.util.p2p.PairingCode.encode(id = peerId, deviceId = null, addrs = byteArrayOf())
+        br.acerola.comic.util.p2p.PairingCode
+            .encode(id = peerId, deviceId = null, addrs = byteArrayOf())
 }
