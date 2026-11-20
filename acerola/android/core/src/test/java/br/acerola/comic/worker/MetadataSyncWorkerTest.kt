@@ -76,7 +76,7 @@ class MetadataSyncWorkerTest {
             ).build()
     }
 
-    // Teste para directoryId != -1L (sincronização de comic individual)
+    // Test for directoryId != -1L (single comic sync)
     @Test
     fun `doWork should return success when single comic synchronization succeeds`() =
         runTest {
@@ -180,7 +180,7 @@ class MetadataSyncWorkerTest {
             assertTrue(result is Result.Success)
         }
 
-    // Teste para sincronização de toda a biblioteca
+    // Test for syncing the whole library
     @Test
     fun `doWork should return success when Mangadex library synchronization succeeds`() =
         runTest {

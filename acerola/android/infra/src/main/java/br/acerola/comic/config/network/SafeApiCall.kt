@@ -13,7 +13,7 @@ suspend fun <T> safeApiCall(
 ): Either<NetworkError, T> =
     Either
         .catch {
-            // NOTE: Rate limite para que o mangadex não dê bonk
+            // NOTE: Rate limit so MangaDex does not bonk us
             if (timeoutMs > 0) delay(timeMillis = timeoutMs)
 
             block()

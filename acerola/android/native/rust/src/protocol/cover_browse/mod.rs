@@ -18,9 +18,9 @@ use super::files::ChapterTransfer;
 use crate::{callbacks::CoverBrowseProvider, protocol::sync_error::classify_sync_error};
 pub(crate) use registry::PendingCoverRequestRegistry;
 
-/// Busca a capa (thumbnail) de UM quadrinho remoto por vez, complementar ao `browse-library`.
-/// Sem sessão/guard: round-trip curto (uma capa é pequena), não corre o mesmo risco de
-/// I/O pesado duplicado que `sync-files`/`sync-comic` correm.
+/// Fetches the cover (thumbnail) of ONE remote comic at a time, complementing `browse-library`.
+/// No session/guard: short round-trip (a cover is small), it does not run the same risk of
+/// duplicated heavy I/O that `sync-files`/`sync-comic` do.
 pub(crate) const COVER_BROWSE_ALPN: &[u8] = b"acerola/browse-cover/1";
 
 pub(crate) struct CoverBrowseInbound {

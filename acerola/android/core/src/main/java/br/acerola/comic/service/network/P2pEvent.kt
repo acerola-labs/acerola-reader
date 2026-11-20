@@ -39,9 +39,9 @@ sealed interface P2pEvent {
         val error: SyncProtocolError? = null,
     ) : P2pEvent
 
-    /** Push de progresso + marcadores de "lido" de UM ou mais capítulos selecionados
-     *  (`acerola/sync-history-entry/1`) — mais leve que [HistorySyncStarted]/[HistorySyncComplete]
-     *  (biblioteca inteira), disparado pela ação "enviar pra dispositivo" na tela do quadrinho. */
+    /** Push of progress + "read" markers of ONE or more selected chapters
+     *  (`acerola/sync-history-entry/1`) — lighter than [HistorySyncStarted]/[HistorySyncComplete]
+     *  (whole library), triggered by the "send to device" action on the comic screen. */
     data class HistoryEntrySyncStarted(
         val peerId: String,
     ) : P2pEvent
@@ -80,33 +80,33 @@ sealed interface P2pEvent {
         val peerId: String,
         val comicName: String,
         val chapter: String,
-        // Cru/em inglês sempre — é o texto técnico original (às vezes de baixo nível do
-        // QUIC/iroh, tipo "stream reset by peer"), usado só pro log de debug deste bus e como
-        // fallback em `error` quando a causa não é reconhecida. Nunca deve ser mostrado direto
-        // na UI sem passar por um template (ver `SyncScreen::describeEntry`, mesmo padrão já
-        // usado por `HistorySyncError.message`).
+        // Always raw/in English — it is the original technical text (sometimes low-level from
+        // QUIC/iroh, like "stream reset by peer"), used only for this bus's debug log and as a
+        // fallback in `error` when the cause is not recognized. It must never be shown directly
+        // in the UI without going through a template (see `SyncScreen::describeEntry`, same pattern
+        // already used by `HistorySyncError.message`).
         val reason: String,
-        // Causa reconhecida (`SyncProtocolError.fromCode`, a partir do `code` que o Rust anexa —
-        // ver `classify_sync_error` em `protocol/files/mod.rs`), já como valor tipado — não um
-        // `code: String` cru pra quem consome ficar reclassificando com `when`. `null` quando a
-        // causa não é reconhecida (usa `reason` cru como fallback). `UserMessage`/`UiText` não
-        // precisa de `Context` pra ser construído, só na hora de renderizar (`SyncScreen`).
+        // Recognized cause (`SyncProtocolError.fromCode`, from the `code` Rust attaches —
+        // see `classify_sync_error` in `protocol/files/mod.rs`), already as a typed value — not a
+        // raw `code: String` for consumers to keep reclassifying with `when`. `null` when the
+        // cause is not recognized (uses raw `reason` as fallback). `UserMessage`/`UiText` does not
+        // need a `Context` to be built, only at render time (`SyncScreen`).
         val error: SyncProtocolError? = null,
     ) : P2pEvent
 
-    /** Contraparte de [FileSyncChapterComplete] pra itens extra (capa/banner/`ComicInfo.xml`) —
-     *  `kind` é `"cover"`/`"banner"`/`"comic_info"` (ver `EXTRA_KIND_*` em
-     *  `protocol/files/model.rs`), não um nome de capítulo. */
+    /** Counterpart of [FileSyncChapterComplete] for extra items (cover/banner/`ComicInfo.xml`) —
+     *  `kind` is `"cover"`/`"banner"`/`"comic_info"` (see `EXTRA_KIND_*` in
+     *  `protocol/files/model.rs`), not a chapter name. */
     data class FileSyncExtraComplete(
         val peerId: String,
         val comicName: String,
         val kind: String,
     ) : P2pEvent
 
-    /** Contraparte de [FileSyncChapterFailed] pra itens extra — mesmo contrato de `reason`/
-     *  `error` (ver doc lá: cru/em inglês só pro log, `error` já classificado por
-     *  `SyncProtocolError.fromCode`). Não existe sentinela de falha de SESSÃO aqui — isso só
-     *  acontece no canal de capítulo (`FileSyncChapterFailed` com `comicName`/`chapter` vazios). */
+    /** Counterpart of [FileSyncChapterFailed] for extra items — same `reason`/
+     *  `error` contract (see docs there: raw/in English only for the log, `error` already classified by
+     *  `SyncProtocolError.fromCode`). There is no SESSION failure sentinel here — that only
+     *  happens on the chapter channel (`FileSyncChapterFailed` with empty `comicName`/`chapter`). */
     data class FileSyncExtraFailed(
         val peerId: String,
         val comicName: String,
@@ -120,10 +120,10 @@ sealed interface P2pEvent {
         val receivedCount: Int,
         val sentCount: Int,
         val failedCount: Int,
-        /** Quantos capítulos recebidos já existiam localmente com um checksum diferente do
-         *  peer — conflito de verdade (ver `missing_from` em `protocol/files/exchange.rs`).
-         *  Continuam sendo puxados normalmente; só reportados separadamente pra notificação
-         *  final poder mencionar que aconteceu, sem gerar uma notificação por capítulo. */
+        /** How many received chapters already existed locally with a checksum different from the
+         *  peer's — a real conflict (see `missing_from` in `protocol/files/exchange.rs`).
+         *  They are still pulled normally; only reported separately so the final notification
+         *  can mention it happened, without one notification per chapter. */
         val conflictsCount: Int = 0,
     ) : P2pEvent
 
@@ -138,10 +138,10 @@ sealed interface P2pEvent {
         val error: SyncProtocolError? = null,
     ) : P2pEvent
 
-    /** Resultado de `acerola/browse-cover/1` — `status` é `"not_modified"`, `"changed"` (com
-     *  `path` apontando pro cache local recém-gravado) ou `"unavailable"` (peer não tem essa
-     *  capa). `coverVersion` vem junto pra atualizar o cache local de versão conhecida mesmo
-     *  em `not_modified` (confirma que a versão já cacheada continua valendo). */
+    /** Result of `acerola/browse-cover/1` — `status` is `"not_modified"`, `"changed"` (with
+     *  `path` pointing to the freshly written local cache) or `"unavailable"` (peer does not have that
+     *  cover). `coverVersion` comes along to update the local known-version cache even
+     *  on `not_modified` (confirms the already cached version is still valid). */
     data class CoverBrowseResult(
         val peerId: String,
         val comicName: String,
@@ -162,11 +162,11 @@ sealed interface P2pEvent {
     ) : P2pEvent
 }
 
-/** Um quadrinho da biblioteca de um peer remoto — resumido a nome + contagem de capítulos, não
- *  o manifesto completo (checksum/nome de arquivo por capítulo). Usado só pra escolher qual
- *  quadrinho pedir via `SyncAction.SyncComic` depois. `coverVersion` reaproveita
- *  `ComicDirectory.lastModified` do peer — usado pra decidir se `acerola/browse-cover/1` precisa
- *  buscar uma capa nova antes de disparar a busca. */
+/** A comic from a remote peer's library — summarized to name + chapter count, not
+ *  the full manifest (checksum/file name per chapter). Only used to choose which
+ *  comic to request via `SyncAction.SyncComic` later. `coverVersion` reuses the peer's
+ *  `ComicDirectory.lastModified` — used to decide whether `acerola/browse-cover/1` needs to
+ *  fetch a new cover before triggering the fetch. */
 data class ComicSummary(
     val comicName: String,
     val chapterCount: Int,

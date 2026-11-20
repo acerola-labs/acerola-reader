@@ -53,7 +53,7 @@ class ComicInfoSourceTest {
     @Test
     fun searchInfo_should_read_from_root_if_ComicInfo_exists() =
         runTest {
-            // Preparação
+            // Arrange
             val folderUri = mockk<Uri>()
             val folderDoc = mockk<DocumentFile>()
             val xmlFile = mockk<DocumentFile>()
@@ -74,10 +74,10 @@ class ComicInfoSourceTest {
 
             coEvery { parser.parseMangaInfo(inputStream) } returns Either.Right(expectedInfo)
 
-            // Ação
+            // Act
             val result = repository.searchInfo("title", onProgress = null, extra = arrayOf("content://folder"))
 
-            // Verificação
+            // Assert
             assertTrue("Should be Right but was $result", result.isRight())
             result.onRight { assertEquals(expectedInfo, it.first()) }
         }
@@ -85,7 +85,7 @@ class ComicInfoSourceTest {
     @Test
     fun searchInfo_should_search_inside_cbz_if_no_xml_in_root() =
         runTest {
-            // Preparação
+            // Arrange
             val folderUri = mockk<Uri>()
             val folderDoc = mockk<DocumentFile>()
             val cbzFile = mockk<DocumentFile>()
@@ -112,10 +112,10 @@ class ComicInfoSourceTest {
             every { sourceService.close() } returns Unit
             every { inputStream.close() } returns Unit
 
-            // Ação
+            // Act
             val result = repository.searchInfo("title", onProgress = null, extra = arrayOf("content://folder"))
 
-            // Verificação
+            // Assert
             assertTrue("Should be Right but was $result", result.isRight())
             result.onRight { assertEquals(expectedInfo, it.first()) }
         }

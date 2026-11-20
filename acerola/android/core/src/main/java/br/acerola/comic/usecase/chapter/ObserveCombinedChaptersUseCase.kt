@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 /**
- * UseCase especializado para a ComicViewModel.
- * Orquestra dados locais e volumes com Cache LRU.
+ * UseCase specialized for ComicViewModel.
+ * Orchestrates local data and volumes with an LRU cache.
  */
 class ObserveCombinedChaptersUseCase
     @Inject
@@ -71,10 +71,10 @@ class ObserveCombinedChaptersUseCase
             ) { localAll, volumeSections, hasRootChapters ->
                 val isInitialState = localAll.pageSize == 0 && localAll.items.isEmpty()
 
-                // A chave inclui um "retrato" leve dos dados atuais (total + soma dos lastModified).
-                // Sem isso, o cache LRU respondia com o resultado antigo mesmo depois de o Flow do
-                // banco emitir uma lista de capítulos nova (ex: após um rescan), pois a chave dependia
-                // só dos parâmetros da consulta (comicId, sort, página...), nunca dos dados em si.
+                // The key includes a light "snapshot" of the current data (total + sum of lastModified).
+                // Without it, the LRU cache answered with the old result even after the database Flow
+                // emitted a new chapter list (e.g. after a rescan), since the key depended
+                // only on the query parameters (comicId, sort, page...), never on the data itself.
                 val dataSignature = "${localAll.total}_${localAll.items.sumOf { it.lastModified }}_${volumeSections.sumOf { it.totalChapters }}"
                 val cacheKey = "${baseCacheKey}_$dataSignature"
 

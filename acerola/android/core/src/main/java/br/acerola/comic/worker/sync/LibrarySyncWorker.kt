@@ -79,7 +79,7 @@ class LibrarySyncWorker
                         .w("LibrarySyncWorker", "Unable to start foreground service", throwable = exception)
                 }
 
-                // Usamos progressGateway para observar o progresso
+                // We use progressGateway to observe the progress
                 val progressJob =
                     launch {
                         progressGateway.progress.collectLatest { progress ->

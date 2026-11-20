@@ -7,7 +7,7 @@ import br.acerola.comic.dto.metadata.comic.source.ComicInfoSourceDto
 import br.acerola.comic.dto.metadata.comic.source.ComicSourcesDto
 
 /**
- * Representa os dados brutos extraídos do arquivo ComicInfo.xml
+ * Represents the raw data extracted from the ComicInfo.xml file
  */
 data class ComicInfoMapper(
     val title: String,

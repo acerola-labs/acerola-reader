@@ -36,8 +36,8 @@ import javax.inject.Singleton
 
 /**
  * Kotlin implementation of [FileSyncProvider] used by the Rust protocol `acerola/sync-files/1`.
- * Reads/writes chapter files (and, desde a extensão pra capa/banner/ComicInfo.xml, itens
- * "extra") via SAF/DocumentFile em chunks — Rust never sees a stream directly, only opaque
+ * Reads/writes chapter files (and, since the extension to cover/banner/ComicInfo.xml, "extra"
+ * items) via SAF/DocumentFile in chunks — Rust never sees a stream directly, only opaque
  * `Long` handles, so the handle maps here are the "memory" of transfers in flight.
  */
 @Singleton
@@ -55,9 +55,9 @@ class FileSyncProviderImpl
         )
 
         /**
-         * `target` distingue capítulo de item extra só na hora de FINALIZAR — `writeChapterChunk`
-         * (reaproveitado por `beginExtraWrite` também, ver doc da trait em `callbacks.rs` do lado
-         * Rust) grava no mesmo `outputStream` independente do que `target` é.
+         * `target` tells a chapter from an extra item only at FINALIZE time — `writeChapterChunk`
+         * (also reused by `beginExtraWrite`, see the trait docs in `callbacks.rs` on the Rust
+         * side) writes to the same `outputStream` regardless of what `target` is.
          */
         private sealed class WriteTarget {
             data class Chapter(
@@ -85,17 +85,17 @@ class FileSyncProviderImpl
         private val handleCounter = AtomicLong(1)
 
         /**
-         * Serializa "resolve ou cria a pasta do quadrinho" entre chamadas concorrentes de
-         * `beginChapterWrite`/`beginExtraWrite` — agora que `receive_files` (lado Rust,
-         * `exchange.rs`) busca vários capítulos em paralelo, dois capítulos do MESMO quadrinho
-         * novo podiam chegar aqui ao mesmo tempo, ambos ver `getDirectoryByName == null` (o
-         * registro em DB só acontece depois, em `finalizeChapterWrite`) e cada um criar sua
-         * própria pasta SAF com o mesmo `comicName` — `DocumentsProvider` não garante
-         * unicidade de display name, só de URI/document ID, então isso rachava os capítulos
-         * do mesmo quadrinho em duas pastas físicas distintas. Diferente do Desktop
-         * (`resolve_comic_dir`/`create_synced_comic`), que resolve essa mesma corrida via
-         * `UniqueViolation` do banco, aqui quem precisa ser atômico é a criação do diretório
-         * SAF em si — daí o lock em vez de depender só da constraint do Room.
+         * Serializes "resolve or create the comic folder" across concurrent calls of
+         * `beginChapterWrite`/`beginExtraWrite` — now that `receive_files` (Rust side,
+         * `exchange.rs`) fetches several chapters in parallel, two chapters of the SAME new
+         * comic could arrive here at the same time, both see `getDirectoryByName == null` (the
+         * DB record only happens later, in `finalizeChapterWrite`) and each create its
+         * own SAF folder with the same `comicName` — `DocumentsProvider` does not guarantee
+         * display name uniqueness, only URI/document ID uniqueness, so this split the chapters
+         * of the same comic into two distinct physical folders. Unlike Desktop
+         * (`resolve_comic_dir`/`create_synced_comic`), which solves the same race via the
+         * database's `UniqueViolation`, here what must be atomic is creating the SAF directory
+         * itself — hence the lock instead of relying only on the Room constraint.
          */
         private val comicFolderLock = Mutex()
 
@@ -110,12 +110,12 @@ class FileSyncProviderImpl
             return root
         }
 
-        // Checksum é calculado no scan da biblioteca (`ChapterIndexer.buildEntity`), não aqui —
-        // ler o arquivo inteiro pra hashear na hora do handshake P2P é o pior momento possível
-        // pra isso (era o que estourava o timeout de 30s do outro lado numa biblioteca grande
-        // ou recém-escaneada). Um capítulo sem checksum cacheado (biblioteca escaneada antes
-        // dessa mudança, ainda sem rescan) fica de fora do manifesto — melhor omitir do que
-        // bloquear a sessão inteira; o próximo rescan preenche.
+        // The checksum is computed during the library scan (`ChapterIndexer.buildEntity`), not here —
+        // reading the whole file to hash it during the P2P handshake is the worst possible moment
+        // for it (it was what blew the other side's 30s timeout on a large
+        // or freshly scanned library). A chapter without a cached checksum (library scanned before
+        // this change, not rescanned yet) is left out of the manifest — better to omit it than
+        // block the whole session; the next rescan fills it in.
         override fun getFileManifest(): List<FfiFileManifestEntry> =
             runBlocking {
                 comicDirectoryDao.getAllDirectories().first().flatMap { comic ->
@@ -140,11 +140,11 @@ class FileSyncProviderImpl
                 }
             }
 
-        // Só Room/SQLite — nenhum `DocumentFile`/SAF aqui, de propósito. `getFileManifest()`
-        // acima paga um `DocumentFile.exists()` por capítulo (uma transação binder cada) porque
-        // precisa apontar pra um arquivo de verdade pra transferência; `browse-library` só
-        // precisa de nome + contagem, então usa a consulta agregada direto no DB e nunca toca
-        // SAF — é o mesmo custo que estourava o timeout do protocolo antes dessa separação.
+        // Room/SQLite only — no `DocumentFile`/SAF here, on purpose. `getFileManifest()`
+        // above pays a `DocumentFile.exists()` per chapter (one binder transaction each) because
+        // it must point to a real file for the transfer; `browse-library` only
+        // needs name + count, so it uses the aggregate query directly on the DB and never touches
+        // SAF — it is the same cost that blew the protocol timeout before this split.
         override fun getLibrarySummary(): List<FfiComicSummaryEntry> =
             runBlocking {
                 chapterArchiveDao.getLibrarySummary().map { row ->
@@ -179,12 +179,12 @@ class FileSyncProviderImpl
             val readHandle = readHandles[handle] ?: return ByteArray(0)
             val buffer = ByteArray(chunkSize.toInt())
 
-            // `InputStream.read()` só sinaliza fim de arquivo com -1 — 0 é "nenhum byte
-            // disponível agora, mas não acabou" (possível num stream cross-process via SAF).
-            // Tratar 0 como fim (como estava antes) fazia o remetente parar de mandar bytes
-            // NO MEIO do capítulo — o lado que recebe fica esperando o resto, e a stream
-            // desalinha: os próximos bytes que chegam são o header JSON do PRÓXIMO capítulo,
-            // interpretado por engano como mais conteúdo binário do capítulo atual.
+            // `InputStream.read()` only signals end of file with -1 — 0 means "no bytes
+            // available right now, but not done" (possible on a cross-process SAF stream).
+            // Treating 0 as the end (as before) made the sender stop sending bytes
+            // IN THE MIDDLE of the chapter — the receiving side keeps waiting for the rest, and the stream
+            // misaligns: the next bytes to arrive are the NEXT chapter's JSON header,
+            // mistakenly interpreted as more binary content of the current chapter.
             var read = readHandle.stream.read(buffer)
             while (read == 0) {
                 read = readHandle.stream.read(buffer)
@@ -207,13 +207,13 @@ class FileSyncProviderImpl
             runBlocking {
                 val root = libraryRoot() ?: return@runBlocking -1L
 
-                // Se o quadrinho já existe localmente, o capítulo tem que cair na MESMA pasta
-                // que os capítulos já existentes (`comic.path`). Quadrinho novo cai direto em
-                // `<root>/<comicName>/` — mesmo lugar que o DirectoryScanner criaria se o
-                // usuário tivesse adicionado manualmente. Sem pasta `synced/` intermediária:
-                // ela não tinha nenhuma exclusão no DirectoryScanner (que desce recursivo em
-                // qualquer pasta sem manga direto nela), então um rescan completo podia
-                // redescobrir `synced/<comicName>/` como um segundo ComicDirectory fantasma.
+                // If the comic already exists locally, the chapter must land in the SAME folder
+                // as the existing chapters (`comic.path`). A new comic goes straight into
+                // `<root>/<comicName>/` — the same place DirectoryScanner would create if the
+                // user had added it manually. No intermediate `synced/` folder:
+                // it had no exclusion in DirectoryScanner (which recurses into
+                // any folder with no manga directly in it), so a full rescan could
+                // rediscover `synced/<comicName>/` as a second ghost ComicDirectory.
                 val comicFolder =
                     comicFolderLock.withLock {
                         val existingComic = comicDirectoryDao.getDirectoryByName(comicName)
@@ -267,11 +267,11 @@ class FileSyncProviderImpl
         }
 
         /**
-         * Fecha o stream, verifica o checksum do arquivo temporário e remove o handle do mapa —
-         * compartilhado entre `finalizeChapterWrite`/`finalizeExtraWrite`, a única diferença
-         * entre os dois é o que acontece DEPOIS do checksum bater (ver `target` de cada um).
-         * `null` cobre tanto "handle desconhecido" quanto "checksum não bateu" (arquivo
-         * temporário já deletado nesse segundo caso).
+         * Closes the stream, verifies the temp file's checksum and removes the handle from the map —
+         * shared between `finalizeChapterWrite`/`finalizeExtraWrite`, the only difference
+         * between them is what happens AFTER the checksum matches (see each one's `target`).
+         * `null` covers both "unknown handle" and "checksum mismatch" (temp file
+         * already deleted in that second case).
          */
         private fun finalizeAndVerifyChecksum(handle: Long): WriteHandle? {
             val writeHandle = writeHandles.remove(handle) ?: return null
@@ -314,13 +314,13 @@ class FileSyncProviderImpl
             writeHandle.tempFile.delete()
         }
 
-        // --- Itens extra (capa/banner/ComicInfo.xml) ---
+        // --- Extra items (cover/banner/ComicInfo.xml) ---
         //
-        // `openExtraForRead`/`beginExtraWrite` inserem nos MESMOS mapas (`readHandles`/
-        // `writeHandles`) usados por capítulo — `readChapterChunk`/`writeChapterChunk`/
-        // `closeReadHandle` são reaproveitados sem mudança (ver doc da trait em `callbacks.rs`
-        // do lado Rust), então os handles de extra têm que viver no mesmo espaço pra essas três
-        // funções conseguirem achá-los.
+        // `openExtraForRead`/`beginExtraWrite` insert into the SAME maps (`readHandles`/
+        // `writeHandles`) used for chapters — `readChapterChunk`/`writeChapterChunk`/
+        // `closeReadHandle` are reused unchanged (see the trait docs in `callbacks.rs`
+        // on the Rust side), so extra handles must live in the same space for those three
+        // functions to find them.
 
         override fun getExtrasManifest(): List<FfiExtraManifestEntry> =
             runBlocking {
@@ -375,8 +375,8 @@ class FileSyncProviderImpl
         }
 
         /**
-         * Acha `ComicInfo.xml` (case-insensitive) direto na raiz da pasta do quadrinho — mesma
-         * convenção do Desktop (`core/services/metadata/mod.rs::find_comic_info_path`).
+         * Finds `ComicInfo.xml` (case-insensitive) directly at the root of the comic folder — same
+         * convention as Desktop (`core/services/metadata/mod.rs::find_comic_info_path`).
          */
         private fun findComicInfoFile(comic: ComicDirectory): DocumentFile? {
             val comicFolder = DocumentFile.fromTreeUri(context, Uri.parse(comic.path)) ?: return null
@@ -428,9 +428,9 @@ class FileSyncProviderImpl
                     }
                 if (comicFolder == null) return@runBlocking -1L
 
-                // Nome final canônico por `kind` — capa/banner sempre `.jpg` (mesma convenção já
-                // usada por `CoverSaver`/`BannerSaver` no fluxo manual de metadata, independente
-                // da extensão que o peer anunciou), `ComicInfo.xml` sempre esse nome exato.
+                // Canonical final name per `kind` — cover/banner always `.jpg` (same convention already
+                // used by `CoverSaver`/`BannerSaver` in the manual metadata flow, regardless
+                // of the extension the peer announced), `ComicInfo.xml` always that exact name.
                 val finalName =
                     when (kind) {
                         EXTRA_KIND_COVER -> MediaFile.COVER.defaultFileName
@@ -482,8 +482,8 @@ class FileSyncProviderImpl
                     return false
                 }
 
-            // Limpa qualquer cover/banner pré-existente antes de gravar o novo — mesma limpeza
-            // de órfão que `CoverSaver`/`BannerSaver` já fazem pro fluxo manual de metadata.
+            // Cleans up any pre-existing cover/banner before writing the new one — same orphan
+            // cleanup `CoverSaver`/`BannerSaver` already do for the manual metadata flow.
             writeHandle.comicFolder.listFiles().forEach { file ->
                 val name = file.name ?: return@forEach
                 val matches = if (media == MediaFile.COVER) MediaFile.isCover(name) else MediaFile.isBanner(name)
@@ -527,14 +527,14 @@ class FileSyncProviderImpl
                 return false
             }
 
-            // Melhor esforço: o arquivo já foi persistido com sucesso mesmo se o
-            // reprocessamento de metadata falhar — mesma postura do Desktop
+            // Best effort: the file was already persisted successfully even if the
+            // metadata reprocessing fails — same stance as Desktop
             // (`infra/sync/protocol/transfer.rs::receive_extras`).
             runCatching { comicInfoEngine.refreshManga(comicId = directory.id, baseUri = null) }
                 .onFailure { error ->
                     AcerolaLogger.e(
                         "FileSyncProvider",
-                        "ComicInfo.xml recebido, mas reprocessamento de metadata falhou",
+                        "ComicInfo.xml received, but metadata reprocessing failed",
                         LogSource.NETWORK,
                         error,
                     )

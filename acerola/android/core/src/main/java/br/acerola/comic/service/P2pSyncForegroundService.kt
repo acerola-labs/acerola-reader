@@ -13,15 +13,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
- * Serviço "vazio" — não faz nenhuma transferência sozinho, só sinaliza pro sistema que existe
- * trabalho de rede ativo em andamento (o node P2P/`P2pService` já rodam independente disso,
- * atrelados ao ciclo de vida do Hilt). Sem isso, uma sincronização longa (minutos, capítulos
- * grandes) roda sem NENHUMA isenção do Doze/App Standby — em fabricantes com gerenciador de
- * energia próprio (MIUI/EMUI/ColorOS) isso é ainda mais agressivo que o Android puro, e pode
- * suspender a conexão mesmo com a tela ligada (ver TODO.md).
+ * "Empty" service — it does no transfer on its own, it only signals to the system that there is
+ * active network work in progress (the P2P node/`P2pService` already run independently of this,
+ * tied to the Hilt lifecycle). Without it, a long sync (minutes, large
+ * chapters) runs with NO Doze/App Standby exemption — on vendors with their own power
+ * manager (MIUI/EMUI/ColorOS) this is even more aggressive than stock Android, and can
+ * suspend the connection even with the screen on (see TODO.md).
  *
- * Início/fim são disparados por `SyncViewModel` a cada transição de `syncingKeys` vazio<->não
- * vazio — este serviço nunca decide sozinho quando começar ou parar.
+ * Start/stop are triggered by `SyncViewModel` on every `syncingKeys` empty<->non-empty
+ * transition — this service never decides on its own when to start or stop.
  */
 @AndroidEntryPoint
 class P2pSyncForegroundService : Service() {
@@ -62,7 +62,7 @@ class P2pSyncForegroundService : Service() {
     }
 
     companion object {
-        /** Idempotente — chamar de novo enquanto já ativo só reemite a mesma notificação. */
+        /** Idempotent — calling again while already active only re-emits the same notification. */
         fun start(context: Context) {
             ContextCompat.startForegroundService(context, Intent(context, P2pSyncForegroundService::class.java))
         }

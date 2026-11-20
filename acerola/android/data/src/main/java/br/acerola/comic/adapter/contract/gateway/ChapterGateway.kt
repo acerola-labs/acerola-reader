@@ -6,7 +6,7 @@ import br.acerola.comic.error.message.LibrarySyncError
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Interface para observação do estado de sincronização de capítulos.
+ * Interface for observing the chapter sync state.
  */
 interface ChapterSyncStatusGateway {
     val progress: StateFlow<Int>
@@ -14,8 +14,8 @@ interface ChapterSyncStatusGateway {
 }
 
 /**
- * Interface para sincronização de capítulos.
- * Todas as Engines de capítulos implementam isso.
+ * Interface for syncing chapters.
+ * Every chapter Engine implements this.
  */
 interface ChapterSyncGateway : ChapterSyncStatusGateway {
     suspend fun refreshComicChapters(
@@ -25,8 +25,8 @@ interface ChapterSyncGateway : ChapterSyncStatusGateway {
 }
 
 /**
- * Interface apenas para leitura de capítulos.
- * Implementada apenas pelas Engines que possuem persistência ou acesso a dados locais/remotos (Archive, Mangadex).
+ * Interface only for reading chapters.
+ * Implemented only by Engines that have persistence or access to local/remote data (Archive, Mangadex).
  */
 interface ChapterReadGateway<T> {
     fun observeChapters(

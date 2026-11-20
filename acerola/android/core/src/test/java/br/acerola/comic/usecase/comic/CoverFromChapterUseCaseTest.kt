@@ -37,7 +37,7 @@ class CoverFromChapterUseCaseTest {
             )
     }
 
-    // Caminho feliz — extração e refresh funcionam
+    // Happy path — extraction and refresh work
     @Test
     fun `invoke should return success when extraction and comic refresh succeed`() =
         runTest {
@@ -51,7 +51,7 @@ class CoverFromChapterUseCaseTest {
             coVerify(exactly = 1) { comicGateway.refreshManga(42L) }
         }
 
-    // Arquivo inexistente → FileNotFound mapeado para LibrarySyncError sem crash
+    // Missing file → FileNotFound mapped to LibrarySyncError without crashing
     @Test
     fun `invoke should return typed error when file does not exist without throwing exception`() =
         runTest {
@@ -65,7 +65,7 @@ class CoverFromChapterUseCaseTest {
             coVerify(exactly = 0) { comicGateway.refreshManga(any()) }
         }
 
-    // Leitura do arquivo falha → FileReadError mapeado para LibrarySyncError sem cast forçado
+    // File read fails → FileReadError mapped to LibrarySyncError without a forced cast
     @Test
     fun `invoke should return typed error when file read fails without forced cast`() =
         runTest {

@@ -70,7 +70,7 @@ class CbrPageResolver
         override fun open(chapter: ChapterFileDto): Either<ChapterError, PageSource> =
             Either
                 .catch {
-                    close() // NOTE: Limpa o anterior antes de abrir um novo
+                    close() // NOTE: Cleans up the previous one before opening a new one
 
                     val file = resolveFile(chapter.path)
                     val newArchive = Archive(file)
@@ -98,7 +98,7 @@ class CbrPageResolver
             try {
                 archive?.close()
             } catch (_: Exception) {
-                // Ignora erros ao fechar
+                // Ignores errors on close
             } finally {
                 archive = null
                 entries = emptyList()
@@ -114,7 +114,7 @@ class CbrPageResolver
                     context.contentResolver.openInputStream(uri)
                         ?: throw IllegalStateException("Could not open URI: $path")
 
-                // Cria um arquivo temporário único para evitar concorrência (SIGBUS)
+                // Creates a unique temp file to avoid concurrency issues (SIGBUS)
                 val tempFile = File.createTempFile("chapter_sync_", ".cbr", context.cacheDir)
                 currentTempFile = tempFile
 
