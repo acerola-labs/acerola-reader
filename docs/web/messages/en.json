@@ -70,7 +70,7 @@
 		"heroKicker": "Local-first comic & manga reader",
 		"heroTitle": "Read your comics and manga on any device. No account, no cloud.",
 		"heroSubtitle": "Your library stays on your devices and syncs directly between them over encrypted P2P — no server stores or sees your data.",
-		"ctaGetStarted": "Get Started",
+		"ctaGetStarted": "Get started",
 		"ctaGithub": "View on GitHub",
 		"scrollHint": "Scroll to explore",
 		"facts": {
@@ -125,24 +125,24 @@
 			}
 		},
 		"architecture": {
-			"sectionTitle": "P2P Architecture and Open Source",
-			"eyebrow": "Local-First Engineering",
+			"sectionTitle": "P2P architecture and open source",
+			"eyebrow": "Local-first engineering",
 			"title": "Built to give you total control over your data",
 			"desc": "See how Acerola combines Rust, iroh/QUIC, and open standards to ensure privacy and maximum speed.",
 			"p2p": {
-				"title": "Direct P2P Protocol",
+				"title": "Direct P2P protocol",
 				"desc": "Direct secure connection between your devices using QUIC and iroh. No intermediary servers to read or store your comics."
 			},
 			"relay": {
-				"title": "Optional Self-Hosted Relay",
+				"title": "Optional self-hosted relay",
 				"desc": "Host your own relay on a VPS with Caddy or Docker to connect devices behind restrictive NAT."
 			},
 			"metadata": {
-				"title": "Metadata and Open Standards",
+				"title": "Metadata and open standards",
 				"desc": "Full ComicInfo.xml compatibility and automatic sync with MangaDex and AniList with zero lock-in."
 			},
 			"tabs": {
-				"p2pLabel": "P2P Sync",
+				"p2pLabel": "P2P sync",
 				"p2pCommentConnect": "// Direct encrypted P2P connection with iroh/QUIC",
 				"p2pCommentTransfer": "// Transfers chapter index and reading history",
 				"caddyLabel": "Caddy Relay",

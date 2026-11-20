@@ -125,20 +125,20 @@
 			}
 		},
 		"architecture": {
-			"sectionTitle": "Arquitetura P2P e Código Aberto",
-			"eyebrow": "Engenharia Local-First",
+			"sectionTitle": "Arquitetura P2P e código aberto",
+			"eyebrow": "Engenharia local-first",
 			"title": "Construído para dar controle total aos seus dados",
 			"desc": "Veja como o Acerola combina Rust, iroh/QUIC e padrões abertos para garantir privacidade e velocidade máxima.",
 			"p2p": {
-				"title": "Protocolo P2P Direto",
+				"title": "Protocolo P2P direto",
 				"desc": "Conexão segura direta entre seus dispositivos usando QUIC e iroh. Sem servidores intermediários para ler ou armazenar seus quadrinhos."
 			},
 			"relay": {
-				"title": "Relay Self-Hosted Opcional",
+				"title": "Relay self-hosted opcional",
 				"desc": "Hospede seu próprio relay em um servidor VPS com Caddy ou Docker para conectar dispositivos atrás de NAT restritivo."
 			},
 			"metadata": {
-				"title": "Metadados e Padrões Abertos",
+				"title": "Metadados e padrões abertos",
 				"desc": "Compatibilidade integral com ComicInfo.xml e sincronização automática com MangaDex e AniList sem lock-in."
 			},
 			"tabs": {
