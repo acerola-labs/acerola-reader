@@ -39,6 +39,11 @@ Antes de mexer, carregue a skill certa e siga-a:
   em `ui/src/main/res/font/`, licenças em `ui/src/main/assets/licenses/`.
 - **Logo e mascote**: Android e desktop levam os arquivos da marca como asset local (o app é open
   source e não depende da CDN). Só o `docs/web` puxa da CDN da marca, e só o que é da marca.
+- **Tela de erro**: web e desktop usam `AcerolaErrorScreen` no `+error.svelte`; no Android é
+  `Acerola.Component.ErrorScreen`, e a `ErrorActivity` (processo `:error`) recebe qualquer crash no
+  lugar do diálogo do sistema (`ErrorActivity.installCrashHandler` no `AcerolaApplication`).
+- Imports do front por `#lib/…` com extensão (`package.json` `imports`); funções puras em
+  `lib/utils/<nome>.util.ts`.
 - Cada app tem o seu guia: `acerola/desktop/CONTRIBUTING.md`, `lib/p2p/CONTRIBUTING.md`.
 
 ## Desvios do padrão
