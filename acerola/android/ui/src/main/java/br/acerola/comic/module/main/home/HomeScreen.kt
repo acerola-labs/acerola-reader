@@ -333,8 +333,8 @@ private fun HomeScreenContent(
     var isBannerExpanded by remember { mutableStateOf(true) }
     var showRemoteLibraryPeerPicker by remember { mutableStateOf(false) }
     var showSyncAllPeerPicker by remember { mutableStateOf(false) }
-    // Peer escolhido no picker, aguardando confirmação explícita antes de disparar (pode
-    // envolver bastante dados) — `null` = nenhuma confirmação pendente.
+    // Peer picked in the picker, awaiting explicit confirmation before firing (may
+    // involve a lot of data) — `null` = no pending confirmation.
     var syncAllConfirmPeer by remember { mutableStateOf<PairedPeer?>(null) }
 
     var showBatchCategorySheet by remember { mutableStateOf(false) }

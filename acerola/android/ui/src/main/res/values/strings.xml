@@ -70,8 +70,8 @@
     <string name="error_sync_connect_failed">Não foi possível conectar. Confira se o código está certo e se o outro dispositivo está com o Acerola aberto.</string>
     <string name="error_sync_scan_failed">Não foi possível abrir o leitor de QR Code. Tente novamente ou cole o código manualmente.</string>
 
-    <!-- Notificações de RESULTADO de sessão P2P moveram pra core/res (P2pSyncCoordinator é
-         quem dispara agora, não mais esta ViewModel — ver core/src/main/res/values/strings.xml). -->
+    <!-- P2P session RESULT notifications moved to core/res (P2pSyncCoordinator fires them now,
+         not this ViewModel; see core/src/main/res/values/strings.xml). -->
     <string name="error_sync_scan_empty">O QR Code escaneado não contém texto legível.</string>
 
     <!-- Sync screen - Relay settings card -->
@@ -180,14 +180,14 @@
     <string name="title_sync_trust_dialog">Novo dispositivo confiado</string>
     <string name="description_sync_trust_dialog">Você conectou com o dispositivo \"%1$s\" pela primeira vez. Esse acesso agora é permanente até que ele seja removido.</string>
 
-    <!-- Diálogo global de confirmação de dados móveis (ver `MobileDataSyncGate`) — aparece por
-         cima de QUALQUER tela que dispare uma sincronização P2P, não só a de Sync. -->
+    <!-- Global mobile data confirmation dialog (see `MobileDataSyncGate`): it shows on top of ANY
+         screen that starts a P2P sync, not only the Sync one. -->
     <string name="title_mobile_data_sync_confirm">Sincronizar usando dados móveis?</string>
     <string name="description_mobile_data_sync_confirm">Este dispositivo está conectado à internet pelos dados móveis. Continuar pode consumir a franquia do seu plano.</string>
     <string name="label_mobile_data_sync_remember">Sempre permitir com dados móveis</string>
     <string name="action_mobile_data_sync_confirm">Sincronizar</string>
 
-    <!-- Tela de Sync ("Rede") — seção Conexão -->
+    <!-- Sync ("Network") screen: Connection section -->
     <string name="label_relay_settings_allow_mobile_data_sync">Sincronizar usando dados móveis</string>
     <string name="label_relay_settings_allow_mobile_data_sync_desc">Quando desativado, o app pede confirmação toda vez antes de sincronizar pela rede celular.</string>
 
@@ -259,7 +259,7 @@
     <string name="message_image_parameter_required_smart_card">A imagem não pode ser nula para CardType.IMAGE</string>
     <string name="message_path_not_found">Pasta não encontrada.</string>
 
-    <!-- Comic Preferences: categorias (mesmo agrupamento Leitura/Sincronização/Avançado do desktop) -->
+    <!-- Comic Preferences: categories (same Reading/Sync/Advanced grouping as the desktop) -->
     <string name="title_comic_preferences_reading">Leitura</string>
     <string name="description_comic_preferences_reading">Exibição de volume, categoria</string>
     <string name="title_comic_preferences_sync">Sincronização</string>
@@ -523,4 +523,32 @@
     <string name="tutorial_action_finish">Ir para o início</string>
     <string name="tutorial_content_description_slide">Imagem ilustrativa do tutorial</string>
 
+    <!-- Error screen (acerola-brand error.* messages) -->
+    <string name="error_eyebrow">Erro %1$d</string>
+    <string name="error_eyebrow_offline">Sem conexão</string>
+    <string name="error_eyebrow_generic">Erro</string>
+    <string name="error_sticker">Ops!</string>
+    <string name="error_action_home">Ir para o início</string>
+    <string name="error_action_back">Voltar</string>
+    <string name="error_action_retry">Tentar de novo</string>
+    <string name="error_bad_request_title">Algo no pedido não fechou</string>
+    <string name="error_bad_request_text">O endereço ou os dados enviados vieram de um jeito que a gente não entende. Confira e tente de novo pelo início.</string>
+    <string name="error_unauthorized_title">Entre para continuar</string>
+    <string name="error_unauthorized_text">Esta página é só para quem entrou na conta. Entre e volte aqui.</string>
+    <string name="error_forbidden_title">Esta página não é para você</string>
+    <string name="error_forbidden_text">Sua conta não tem acesso a isto. Se acha que deveria ter, fale com quem cuida do app.</string>
+    <string name="error_not_found_title">Página não encontrada</string>
+    <string name="error_not_found_text">O endereço pode ter mudado ou nunca ter existido. Volte ao início e siga de lá.</string>
+    <string name="error_timeout_title">Demorou demais</string>
+    <string name="error_timeout_text">A resposta não chegou a tempo. Tente de novo em instantes.</string>
+    <string name="error_too_many_title">Calma, muitos pedidos</string>
+    <string name="error_too_many_text">Foram muitos pedidos em pouco tempo. Espere um minuto e tente de novo.</string>
+    <string name="error_server_title">Algo quebrou do nosso lado</string>
+    <string name="error_server_text">O erro foi nosso, não seu. Tente de novo; se continuar, volte mais tarde.</string>
+    <string name="error_unavailable_title">Fora do ar por um momento</string>
+    <string name="error_unavailable_text">O serviço está em manutenção ou sobrecarregado. Tente de novo em alguns minutos.</string>
+    <string name="error_offline_title">Você está sem internet</string>
+    <string name="error_offline_text">Confira o Wi-Fi ou os dados móveis e tente de novo.</string>
+    <string name="error_unknown_title">Algo deu errado</string>
+    <string name="error_unknown_text">Não sabemos bem o que houve. Tente de novo; se continuar, volte ao início.</string>
 </resources>

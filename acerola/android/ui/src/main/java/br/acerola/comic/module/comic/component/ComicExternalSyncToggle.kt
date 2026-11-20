@@ -15,9 +15,9 @@ import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.ui.R
 
-// Card ativado no lugar do HeroButton+Switch cru, mesmo formato do card "Sincronização
-// externa" do desktop (acerola-comic-preferences.svelte): clicar liga/desliga e o `content`
-// (Mangadex/AniList) some/aparece animado junto, dentro do próprio card — não como irmão solto.
+// Toggle card instead of the raw HeroButton+Switch, same format as the desktop's "External
+// sync" card (acerola-comic-preferences.svelte): clicking toggles it and the `content`
+// (Mangadex/AniList) hides/shows animated along with it, inside the card itself — not as a loose sibling.
 @Composable
 fun Comic.Component.ComicExternalSyncToggle(
     enabled: Boolean,

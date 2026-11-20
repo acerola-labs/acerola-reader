@@ -45,8 +45,8 @@ import br.acerola.comic.dto.metadata.category.CategoryDto
 import br.acerola.comic.module.main.Main
 import br.acerola.comic.ui.R
 
-// Paleta de cores é só desta tela: `Category.color` (Room) é um Int sem validação —
-// `CategoryManager.createCategory` persiste o que a UI mandar, sem checar contra esta lista.
+// The color palette belongs to this screen only: `Category.color` (Room) is an unvalidated Int —
+// `CategoryManager.createCategory` persists whatever the UI sends, without checking against this list.
 val categoryColors =
     listOf(
         0xFFF44336,

@@ -18,11 +18,11 @@ import javax.inject.Inject
 private const val MAX_ENTRIES = 50
 
 /**
- * ViewModel dedicado da tela cheia de histórico ([TransferLogActivity]) — de propósito leve,
- * só depende de [SyncHistoryLogUseCase]. Diferente de
- * [br.acerola.comic.module.main.sync.SyncViewModel] (que sobe peers, relay e o módulo P2P
- * inteiro), essa tela só lista sessões já persistidas (`complete`/`error`); sessões ao vivo
- * continuam visíveis via os spinners por peer na aba de Rede
+ * Dedicated ViewModel for the full-screen history ([TransferLogActivity]) — lightweight on purpose,
+ * it only depends on [SyncHistoryLogUseCase]. Unlike
+ * [br.acerola.comic.module.main.sync.SyncViewModel] (which brings up peers, relay and the whole P2P
+ * module), this screen only lists already persisted sessions (`complete`/`error`); live sessions
+ * stay visible through the per-peer spinners on the Network tab
  * ([br.acerola.comic.module.main.sync.PeerRow]).
  */
 @HiltViewModel

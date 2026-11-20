@@ -10,9 +10,9 @@ import java.util.Locale
 
 /** Turns a raw [TransferLogEntry] into display text — the only place doing that resolution,
  *  so [SyncViewModel] never needs an Android [android.content.Context]-flavored dependency
- *  just to pre-render a string. Compartilhado com
- *  [br.acerola.comic.module.main.transferlog.TransferLogViewModel] (módulo diferente, mas
- *  mesmo texto — o histórico completo é o mesmo dado, só filtrado/paginado diferente). */
+ *  just to pre-render a string. Shared with
+ *  [br.acerola.comic.module.main.transferlog.TransferLogViewModel] (different module, but
+ *  same text — the full history is the same data, just filtered/paginated differently). */
 @Composable
 internal fun describeEntry(entry: TransferLogEntry): String =
     when ("${entry.kind}:${entry.status}") {
@@ -33,6 +33,6 @@ internal fun describeEntry(entry: TransferLogEntry): String =
         else -> entry.message ?: entry.status
     }
 
-/** Same formatting used both in "last synced" per peer (aqui) e na tela cheia de histórico
+/** Same formatting used both in "last synced" per peer (here) and in the full-screen history
  *  ([br.acerola.comic.module.main.transferlog]). */
 internal fun formatLogTimestamp(timestampMillis: Long): String = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(Date(timestampMillis))

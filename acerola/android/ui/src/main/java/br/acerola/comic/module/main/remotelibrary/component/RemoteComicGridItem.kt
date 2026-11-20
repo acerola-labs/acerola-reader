@@ -43,12 +43,12 @@ import coil.size.Size
 import coil.size.SizeResolver
 
 /**
- * Item de grid pra um quadrinho da biblioteca remota — mesma composição visual de
- * [br.acerola.comic.module.main.home.component.ComicGridItem] (capa 2:3 grande +
- * título/contagem de capítulos abaixo), mas sem nada de [br.acerola.comic.dto.ComicDto]
- * (categoria, marcador, nota, histórico) já que um [br.acerola.comic.service.network.ComicSummary]
- * remoto não carrega nenhum desses campos. O card inteiro é o alvo de clique — pede o pull
- * (`acerola/sync-comic/1`) do quadrinho, sem uma ação separada.
+ * Grid item for a remote library comic — same visual composition as
+ * [br.acerola.comic.module.main.home.component.ComicGridItem] (large 2:3 cover +
+ * title/chapter count below), but without anything from [br.acerola.comic.dto.ComicDto]
+ * (category, bookmark, rating, history) since a remote [br.acerola.comic.service.network.ComicSummary]
+ * carries none of those fields. The whole card is the click target — requests the comic's pull
+ * (`acerola/sync-comic/1`), with no separate action.
  */
 @Composable
 fun Main.RemoteLibrary.Component.RemoteComicGridItem(

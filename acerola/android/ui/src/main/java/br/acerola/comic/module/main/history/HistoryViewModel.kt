@@ -58,9 +58,9 @@ class HistoryViewModel
         private val _pairedPeers = MutableStateFlow<List<PairedPeer>>(emptyList())
         val pairedPeers: StateFlow<List<PairedPeer>> = _pairedPeers.asStateFlow()
 
-        // Histórico só dispara UMA sessão de sync por vez (um único botão, não um por peer) —
-        // mesma forma simplificada usada por `ComicViewModel._syncingPeerId`, que também não
-        // precisa de granularidade por peer nesse contexto.
+        // History only fires ONE sync session at a time (a single button, not one per peer) —
+        // same simplified form used by `ComicViewModel._syncingPeerId`, which also doesn't
+        // need per-peer granularity in that context.
         private val _syncingPeerId = MutableStateFlow<String?>(null)
         val isSyncingWithPeer: StateFlow<Boolean> =
             _syncingPeerId
@@ -89,8 +89,8 @@ class HistoryViewModel
             }
         }
 
-        /** Carrega os peers pareados pro `PeerPickerSheet` — sob demanda (não reativo), mesmo
-         *  padrão de [br.acerola.comic.module.comic.ComicViewModel.loadPairedPeers]. */
+        /** Loads the paired peers for `PeerPickerSheet` — on demand (not reactive), same
+         *  pattern as [br.acerola.comic.module.comic.ComicViewModel.loadPairedPeers]. */
         fun loadPairedPeers() {
             viewModelScope.launch(Dispatchers.IO) {
                 _pairedPeers.value = p2pUseCase.getPairedPeers().map { PairedPeer(peerId = it.id, deviceName = it.deviceName) }

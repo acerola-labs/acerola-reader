@@ -63,7 +63,7 @@ class ChapterArchiveViewModelTest {
             every { statusRepository.progress } returns progressFlow
             every { statusRepository.isIndexing } returns isIndexingFlow
 
-            // Reinicializar viewModel para capturar os novos flows
+            // Re-create the viewModel to capture the new flows
             viewModel = ChapterArchiveViewModel(scheduler, statusRepository, mockk(relaxed = true), observeChaptersUseCase)
 
             viewModel.progress.test {

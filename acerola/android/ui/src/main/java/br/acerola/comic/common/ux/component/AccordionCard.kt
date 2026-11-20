@@ -44,10 +44,10 @@ import br.acerola.comic.common.ux.tokens.SpacingTokens
 
 private val AccordionShape = AcerolaShapes.Tile
 
-// Card colapsável que agrupa vários HeroButton por categoria — mesmo comportamento do
-// AcerolaAccordionCard do desktop (ver acerola-accordion-card.svelte): cabeçalho clicável
-// com chevron que gira, corpo com a lista de HeroButton some/aparece, e mais de um card
-// pode ficar expandido ao mesmo tempo (quem controla isso é o chamador via `expanded`).
+// Collapsible card that groups several HeroButtons by category — same behavior as the
+// desktop's AcerolaAccordionCard (see acerola-accordion-card.svelte): clickable header
+// with a rotating chevron, a body whose HeroButton list hides/shows, and more than one card
+// can be expanded at the same time (the caller controls that via `expanded`).
 @Composable
 fun Acerola.Component.AccordionCard(
     title: String,
@@ -55,15 +55,15 @@ fun Acerola.Component.AccordionCard(
     onToggleExpanded: () -> Unit,
     modifier: Modifier = Modifier,
     description: String? = null,
-    // Cor de identidade da categoria — mesma ideia do `CATEGORY_HOVER_BORDER` (chart-N) do
-    // desktop, só que sempre visível em vez de só no hover (não existe hover em touch): tinge
-    // a borda do card e o fundo do ícone. Papéis do MaterialTheme em vez de hex fixos porque
-    // são os únicos tons garantidos por todos os temas do app (Catppuccin, Dracula, Nord...).
+    // Category identity color — same idea as the desktop's `CATEGORY_HOVER_BORDER` (chart-N),
+    // except always visible instead of only on hover (there's no hover on touch): tints
+    // the card border and the icon background. MaterialTheme roles instead of fixed hex because
+    // they're the only tones guaranteed by every app theme (Catppuccin, Dracula, Nord...).
     accentColor: Color = MaterialTheme.colorScheme.outline,
-    // `false` renderiza a seção sempre aberta, sem chevron nem clique no cabeçalho — pra
-    // misturar, numa mesma tela, seções que valem a pena ver de cara com outras densas o
-    // bastante pra ficarem escondidas por padrão (mesmo mix já usado na tela de Rede do
-    // desktop, ver `ui.collapsible` em `acerola-accordion-card.svelte`).
+    // `false` renders the section always open, with no chevron or header click — to
+    // mix, on the same screen, sections worth seeing upfront with others dense
+    // enough to stay hidden by default (same mix already used on the desktop's Network
+    // screen, see `ui.collapsible` in `acerola-accordion-card.svelte`).
     collapsible: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
@@ -189,8 +189,8 @@ fun Acerola.Component.AccordionCard(
     )
 }
 
-@Preview(name = "Colapsado - Light", showBackground = true)
-@Preview(name = "Colapsado - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Collapsed - Light", showBackground = true)
+@Preview(name = "Collapsed - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun AccordionCardCollapsedPreview() {
     AcerolaTheme {
@@ -206,8 +206,8 @@ private fun AccordionCardCollapsedPreview() {
     }
 }
 
-@Preview(name = "Expandido - Light", showBackground = true)
-@Preview(name = "Expandido - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Expanded - Light", showBackground = true)
+@Preview(name = "Expanded - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun AccordionCardExpandedPreview() {
     AcerolaTheme {

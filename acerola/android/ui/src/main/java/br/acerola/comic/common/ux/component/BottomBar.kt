@@ -116,7 +116,7 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
             WindowInsetsSides.Start + WindowInsetsSides.Vertical,
         )
 
-    // Box externo: preenche toda a altura e aplica a cor de fundo (inclusive atrás da status bar e nav bar)
+    // Outer Box: fills the full height and applies the background color (including behind the status bar and nav bar)
     Box(
         modifier =
             Modifier

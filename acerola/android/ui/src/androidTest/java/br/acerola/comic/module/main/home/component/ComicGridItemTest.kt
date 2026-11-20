@@ -43,7 +43,7 @@ class ComicGridItemTest {
             }
         }
 
-        // Valida se o título é renderizado corretamente
+        // Checks that the title is rendered correctly
         composeTestRule.onNodeWithText("Comic Title").assertIsDisplayed()
     }
 }

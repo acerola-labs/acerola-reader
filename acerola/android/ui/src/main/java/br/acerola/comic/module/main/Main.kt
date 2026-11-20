@@ -1,7 +1,7 @@
 package br.acerola.comic.module.main
 
 /**
- * Namespace para componentes e layouts específicos do módulo de Início (Home).
+ * Namespace for components and layouts specific to the Home module.
  */
 object Main {
     object Common {

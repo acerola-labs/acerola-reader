@@ -1,8 +1,8 @@
 package br.acerola.comic.common.ux
 
 /**
- * Namespace central para todos os componentes visuais customizados do Acerola.
- * Os componentes são adicionados a estes objetos como funções de extensão.
+ * Central namespace for all of Acerola's custom visual components.
+ * Components are added to these objects as extension functions.
  */
 object Acerola {
     object Component

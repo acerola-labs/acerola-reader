@@ -51,8 +51,8 @@ fun Main.Sync.Component.RemoteLibrarySheet(
     errorType: SyncProtocolError? = null,
     onSelectComic: (comicName: String) -> Unit,
     onDismiss: () -> Unit,
-    /** Caminho local (`file://...`) da capa já baixada via `acerola/browse-cover/1`, se
-     *  houver — `null` mostra o ícone padrão em vez de uma imagem. */
+    /** Local path (`file://...`) of the cover already downloaded via `acerola/browse-cover/1`, if
+     *  any — `null` shows the default icon instead of an image. */
     coverPathFor: (comicName: String) -> String? = { null },
 ) {
     Acerola.Component.AdaptiveSheet(

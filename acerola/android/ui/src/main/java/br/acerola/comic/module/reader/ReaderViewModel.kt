@@ -171,7 +171,7 @@ class ReaderViewModel
 
                         if (!isIndexing && pageDto.items.isNotEmpty()) {
                             AcerolaLogger.e(TAG, "Chapter $chapterSort not found locally.", LogSource.VIEWMODEL)
-                            _uiEvents.send(ChapterError.UnexpectedError(Throwable("Capítulo não encontrado localmente")))
+                            _uiEvents.send(ChapterError.UnexpectedError(Throwable("Chapter not found locally")))
                             _uiState.update { it.copy(isLoading = false) }
                             this@launch.coroutineContext.cancelChildren()
                             return@collect

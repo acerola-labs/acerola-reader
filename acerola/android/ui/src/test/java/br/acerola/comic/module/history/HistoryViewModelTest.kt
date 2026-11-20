@@ -114,9 +114,9 @@ class HistoryViewModelTest {
 
             viewModel.syncHistoryWithPeer("peer-1")
 
-            // Confirma que a coroutine em `Dispatchers.IO` já rodou até o fim antes de checar
-            // "nada mais aconteceu" — sem isso a asserção abaixo poderia passar só por ainda
-            // não ter dado tempo.
+            // Confirms the coroutine on `Dispatchers.IO` already ran to completion before checking
+            // "nothing else happened" — without this the assertion below could pass just because
+            // there wasn't enough time yet.
             coVerify(timeout = 2000) { syncHistoryWithPeerUseCase("peer-1") }
 
             assertThat(viewModel.isSyncingWithPeer.value).isFalse()

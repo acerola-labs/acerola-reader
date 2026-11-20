@@ -65,11 +65,11 @@ import br.acerola.comic.module.main.transferlog.state.TransferLogUiState
 import br.acerola.comic.ui.R
 
 /**
- * Tela cheia de histórico de transferências P2P — mesmo formato do localSend: barra própria
- * com seta de voltar, botões de "Atualizar"/"Limpar" logo abaixo, depois a lista. Uma tela de
- * verdade (não um dialog/sheet/accordion espremido na tela de Rede) deixa o scroll óbvio (o
- * próximo item cortado na borda inferior já avisa que tem mais) e nunca compete por espaço com
- * o resto da UI da aba de Rede.
+ * Full-screen P2P transfer history — same format as LocalSend: its own bar
+ * with a back arrow, "Refresh"/"Clear" buttons right below, then the list. A real screen
+ * (not a dialog/sheet/accordion squeezed into the Network screen) makes scrolling obvious (the
+ * next item cut off at the bottom edge already hints there's more) and never competes for space
+ * with the rest of the Network tab's UI.
  */
 @Composable
 fun Main.TransferLog.Template.Screen(
@@ -222,9 +222,9 @@ private fun TransferLogList(
     }
 }
 
-/** Mini-card estilo localSend: avatar quadrado com o ícone de status + título/subtítulo em
- *  duas linhas, em vez de ícone pequeno + texto + data jogados numa linha só (formato antigo
- *  do accordion, ilegível numa tela dedicada a isso). */
+/** LocalSend-style mini card: square avatar with the status icon + title/subtitle on
+ *  two lines, instead of a small icon + text + date crammed into a single line (the accordion's
+ *  old format, unreadable on a screen dedicated to this). */
 @Composable
 private fun TransferLogCard(entry: TransferLogEntry) {
     val containerColor: Color

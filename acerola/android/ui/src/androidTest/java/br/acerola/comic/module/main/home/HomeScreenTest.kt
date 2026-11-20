@@ -39,7 +39,7 @@ class HomeScreenTest {
         every { viewModel.uiEvents } returns MutableSharedFlow<UserMessage>().asSharedFlow()
         every { viewModel.allCategories } returns MutableStateFlow(emptyList())
 
-        // Mock com objetos reais, não proxies
+        // Mock with real objects, not proxies
         every { viewModel.sortSettings } returns MutableStateFlow(HomeSortPreference(ComicSortType.TITLE, SortDirection.ASCENDING))
         every { viewModel.filterSettings } returns MutableStateFlow(FilterSettings())
     }
@@ -54,10 +54,10 @@ class HomeScreenTest {
             }
         }
 
-        // Verifica se o placeholder da busca aparece
+        // Checks that the search placeholder shows up
         composeTestRule.onNodeWithText("Buscar quadrinho...", substring = true).assertIsDisplayed()
 
-        // Verifica se o FloatingTool (HUB) está presente
+        // Checks that the FloatingTool (HUB) is present
         composeTestRule.onNodeWithContentDescription("hub", substring = true).assertIsDisplayed()
     }
 }

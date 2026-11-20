@@ -437,4 +437,33 @@
     <string name="tutorial_action_skip">Skip</string>
     <string name="tutorial_action_finish">Go to home</string>
     <string name="tutorial_content_description_slide">Tutorial illustration</string>
+
+    <!-- Error screen (acerola-brand error.* messages) -->
+    <string name="error_eyebrow">Error %1$d</string>
+    <string name="error_eyebrow_offline">No connection</string>
+    <string name="error_eyebrow_generic">Error</string>
+    <string name="error_sticker">Oops!</string>
+    <string name="error_action_home">Go to the start</string>
+    <string name="error_action_back">Go back</string>
+    <string name="error_action_retry">Try again</string>
+    <string name="error_bad_request_title">Something in the request was off</string>
+    <string name="error_bad_request_text">The address or the data sent came in a shape we don\'t understand. Check it and start over from the home page.</string>
+    <string name="error_unauthorized_title">Sign in to continue</string>
+    <string name="error_unauthorized_text">This page is only for signed-in accounts. Sign in and come back here.</string>
+    <string name="error_forbidden_title">This page isn\'t for you</string>
+    <string name="error_forbidden_text">Your account has no access to this. If you think it should, talk to whoever runs the app.</string>
+    <string name="error_not_found_title">Page not found</string>
+    <string name="error_not_found_text">The address may have changed or never existed. Go back to the start and take it from there.</string>
+    <string name="error_timeout_title">That took too long</string>
+    <string name="error_timeout_text">The answer didn\'t arrive in time. Try again in a moment.</string>
+    <string name="error_too_many_title">Easy, too many requests</string>
+    <string name="error_too_many_text">Too many requests in a short time. Wait a minute and try again.</string>
+    <string name="error_server_title">Something broke on our side</string>
+    <string name="error_server_text">The error was ours, not yours. Try again; if it keeps happening, come back later.</string>
+    <string name="error_unavailable_title">Down for a moment</string>
+    <string name="error_unavailable_text">The service is under maintenance or overloaded. Try again in a few minutes.</string>
+    <string name="error_offline_title">You\'re offline</string>
+    <string name="error_offline_text">Check your Wi-Fi or mobile data and try again.</string>
+    <string name="error_unknown_title">Something went wrong</string>
+    <string name="error_unknown_text">We\'re not sure what happened. Try again; if it keeps happening, go back to the start.</string>
 </resources>

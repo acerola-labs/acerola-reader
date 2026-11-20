@@ -57,7 +57,7 @@ class FileSystemAccessViewModel
             viewModelScope.launch {
                 manager.saveFolderUri(uri).onLeft { error -> _uiEvents.send(error) }
                 updateFolderName(uri)
-                // Se o usuário selecionou uma pasta, marca como tutorial visto
+                // If the user selected a folder, mark the tutorial as seen
                 if (uri != null) setTutorialShown(true)
             }
         }

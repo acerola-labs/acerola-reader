@@ -45,9 +45,9 @@ import br.acerola.comic.common.ux.tokens.SpacingTokens
 
 private val ToggleCardShape = AcerolaShapes.Inner
 
-// Card clicável com estado ativo/inativo (borda+fundo tintados, selo de check animado) e
-// conteúdo expansível opcional — port do AcerolaToggleCard do desktop
-// (acerola-toggle-card.svelte), como componente de design system.
+// Clickable card with an active/inactive state (tinted border+background, animated check badge) and
+// optional expandable content — port of the desktop's AcerolaToggleCard
+// (acerola-toggle-card.svelte), as a design system component.
 @Composable
 fun Acerola.Component.ToggleCard(
     title: String,
@@ -157,8 +157,8 @@ fun Acerola.Component.ToggleCard(
     }
 }
 
-@Preview(name = "Ativo - Light", showBackground = true)
-@Preview(name = "Ativo - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Active - Light", showBackground = true)
+@Preview(name = "Active - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ToggleCardActivePreview() {
     AcerolaTheme {
@@ -172,8 +172,8 @@ private fun ToggleCardActivePreview() {
     }
 }
 
-@Preview(name = "Inativo - Light", showBackground = true)
-@Preview(name = "Inativo - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Inactive - Light", showBackground = true)
+@Preview(name = "Inactive - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ToggleCardInactivePreview() {
     AcerolaTheme {
@@ -188,7 +188,7 @@ private fun ToggleCardInactivePreview() {
     }
 }
 
-@Preview(name = "Expandido - Light", showBackground = true)
+@Preview(name = "Expanded - Light", showBackground = true)
 @Composable
 private fun ToggleCardExpandedPreview() {
     AcerolaTheme {

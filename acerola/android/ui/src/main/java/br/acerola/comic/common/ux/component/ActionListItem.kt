@@ -22,11 +22,11 @@ import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
 /**
- * Linha de ação reutilizada pelos menus de "3 pontinhos" (do quadrinho e do capítulo) — um
- * `ListItem` clicável com fundo transparente pra ficar dentro de um `Surface` agrupador, e um
- * divisor recuado abaixo (exceto no último item do grupo). Quando `iconBackground` é informado,
- * o ícone ganha um chip colorido (estilo "contorno/heroicon", igual ao HeroButton) em vez de
- * ficar cru — usado pra padronizar com o botão de ação equivalente no Desktop.
+ * Action row reused by the "three dots" menus (comic and chapter) — a clickable
+ * `ListItem` with a transparent background to sit inside a grouping `Surface`, and an
+ * inset divider below (except on the group's last item). When `iconBackground` is given,
+ * the icon gets a colored chip ("outline/heroicon" style, like HeroButton) instead of
+ * staying raw — used to match the equivalent action button on Desktop.
  */
 @Composable
 fun Acerola.Component.ActionListItem(
@@ -38,9 +38,9 @@ fun Acerola.Component.ActionListItem(
     iconBackground: Color? = null,
     isLast: Boolean = false,
 ) {
-    // Quando há `iconBackground`, `tint` é a cor de contraste do chip (ex.: onAccent) — serve só
-    // pro ícone, nunca pro texto, senão o título/subtítulo herda uma cor pensada pra ficar em cima
-    // do chip colorido e fica ilegível no fundo neutro do ListItem.
+    // When there's an `iconBackground`, `tint` is the chip's contrast color (e.g. onAccent) — it's only
+    // for the icon, never the text, otherwise the title/subtitle inherits a color meant to sit on top
+    // of the colored chip and becomes unreadable on the ListItem's neutral background.
     val titleColor =
         when {
             iconBackground != null -> MaterialTheme.colorScheme.onSurface

@@ -22,8 +22,8 @@ class ConfigSectionTest {
                 Comic.Template.configSection(
                     scope = this,
                     uiState = uiState,
-                    // "Leitura" colapsa por padrão (ver Acerola.Component.AccordionCard) — expande
-                    // pra o teste inspecionar o conteúdo. "Sincronização" é sempre flat/aberta.
+                    // "Leitura" (Reading) collapses by default (see Acerola.Component.AccordionCard) — expanded
+                    // so the test can inspect the content. "Sincronização" (Sync) is always flat/open.
                     expandedCategories = setOf("reading"),
                     onToggleCategory = {},
                     onAction = {},
@@ -32,13 +32,13 @@ class ConfigSectionTest {
             }
         }
 
-        // Títulos das 3 categorias (Leitura/Sincronização/Avançado) são cabeçalhos de
-        // Acerola.Component.AccordionCard, texto exato do strings.xml.
+        // Titles of the 3 categories (Reading/Sync/Advanced) are
+        // Acerola.Component.AccordionCard headers, exact text from strings.xml.
         composeTestRule.onNodeWithText("Leitura", ignoreCase = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Sincronização", ignoreCase = true).assertIsDisplayed()
 
-        // MangaDex é exibido dentro do content expansível do ComicExternalSyncToggle, na
-        // categoria "Sincronização" (sempre flat) — o fixture já tem externalSyncEnabled = true.
+        // MangaDex is shown inside ComicExternalSyncToggle's expandable content, in the
+        // "Sincronização" (Sync) category (always flat) — the fixture already has externalSyncEnabled = true.
         composeTestRule.onNodeWithText("MangaDex", ignoreCase = true).assertIsDisplayed()
     }
 }
