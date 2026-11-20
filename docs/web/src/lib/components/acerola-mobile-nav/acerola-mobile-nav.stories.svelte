@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { SidebarGroup } from '$lib/content/docs';
+	import type { SidebarGroup } from '#lib/content/docs.ts';
 	import AcerolaMobileNav from './acerola-mobile-nav.svelte';
 
 	const groups: SidebarGroup[] = [

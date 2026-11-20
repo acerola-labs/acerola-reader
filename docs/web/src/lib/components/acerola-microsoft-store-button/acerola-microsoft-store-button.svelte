@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MicrosoftStoreIcon from '$lib/assets/icons/microsoft-store.svg?component';
+	import MicrosoftStoreIcon from '#lib/assets/icons/microsoft-store.svg?component';
 
 	let { label = 'Get it from' }: { label?: string } = $props();
 

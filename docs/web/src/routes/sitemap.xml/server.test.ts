@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { SITE_URL } from '$lib/constants/site';
-import { getFlatOrder, FALLBACK_LOCALE } from '$lib/content/docs';
+import { SITE_URL } from '#lib/constants/site.ts';
+import { getFlatOrder, FALLBACK_LOCALE } from '#lib/content/docs.ts';
 import { GET } from './+server';
 
 // This endpoint doesn't touch event.platform/Cloudflare bindings, so a minimal fake

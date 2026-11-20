@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import type { SidebarGroup } from '$lib/content/docs';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { cn } from '$lib/cn.util';
+	import type { SidebarGroup } from '#lib/content/docs.ts';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	import RocketIcon from '@lucide/svelte/icons/rocket';
 	import GitPullRequestIcon from '@lucide/svelte/icons/git-pull-request';

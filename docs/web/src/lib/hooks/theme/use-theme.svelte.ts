@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { MODE_STORAGE_KEY } from '$lib/constants/themes';
+import { MODE_STORAGE_KEY } from '#lib/constants/themes.ts';
 
 export type ThemeMode = 'light' | 'dark';
 export type ThemeModeOption = ThemeMode | 'system';

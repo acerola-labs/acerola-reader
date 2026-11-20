@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('$lib/paraglide/server', () => ({
+vi.mock('#lib/paraglide/server.js', () => ({
 	paraglideMiddleware: (
 		request: Request,
 		callback: (arg: { request: Request; locale: string }) => unknown
 	) => callback({ request, locale: 'en' })
 }));
 
-vi.mock('$lib/paraglide/runtime', () => ({
+vi.mock('#lib/paraglide/runtime.js', () => ({
 	getTextDirection: (locale: string) => (locale === 'ar' ? 'rtl' : 'ltr')
 }));
 

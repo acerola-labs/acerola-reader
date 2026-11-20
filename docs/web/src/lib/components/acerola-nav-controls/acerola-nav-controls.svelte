@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index';
-	import AcerolaThemePicker from '$lib/components/acerola-theme-picker/acerola-theme-picker.svelte';
-	import GithubIcon from '$lib/icons/github.svelte';
-	import { GITHUB_URL } from '$lib/constants/site';
-	import { m } from '$lib/paraglide/messages';
-	import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaThemePicker from '#lib/components/acerola-theme-picker/acerola-theme-picker.svelte';
+	import GithubIcon from '#lib/icons/github.svelte';
+	import { GITHUB_URL } from '#lib/constants/site.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { getLocale, locales, setLocale, type Locale } from '#lib/paraglide/runtime.js';
 
 	function toggleLocale() {
 		const currentIndex = locales.indexOf(getLocale());

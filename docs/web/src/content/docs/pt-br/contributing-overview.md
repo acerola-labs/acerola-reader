@@ -6,9 +6,9 @@ order: 1
 ---
 
 <script>
-	import Callout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import Card from '$lib/mdsvex/card.svelte';
+	import Callout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import Card from '#lib/mdsvex/card.svelte';
 	import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 	import ServerIcon from '@lucide/svelte/icons/server';

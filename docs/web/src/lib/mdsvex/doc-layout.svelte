@@ -9,10 +9,10 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import { page } from '$app/state';
-	import AcerolaCopyMarkdownButton from '$lib/components/acerola-copy-markdown-button/acerola-copy-markdown-button.svelte';
-	import { DOC_RAW_CONTEXT_KEY, type DocRawContext } from '$lib/content/doc-raw-context';
-	import { useTheme } from '$lib/hooks/theme/use-theme.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaCopyMarkdownButton from '#lib/components/acerola-copy-markdown-button/acerola-copy-markdown-button.svelte';
+	import { DOC_RAW_CONTEXT_KEY, type DocRawContext } from '#lib/content/doc-raw-context.ts';
+	import { useTheme } from '#lib/hooks/theme/use-theme.svelte.ts';
+	import { m } from '#lib/paraglide/messages.js';
 	import { getContext, mount, type Snippet } from 'svelte';
 
 	let {

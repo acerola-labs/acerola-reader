@@ -4,9 +4,9 @@
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import SearchXIcon from '@lucide/svelte/icons/search-x';
-	import * as Command from '$lib/components/ui/command/index';
-	import * as InputGroup from '$lib/components/ui/input-group/index';
-	import { m } from '$lib/paraglide/messages';
+	import * as Command from '#lib/components/ui/command/index.ts';
+	import * as InputGroup from '#lib/components/ui/input-group/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	type PagefindResult = { url: string; excerpt: string; meta: { title?: string } };
 	type PagefindApi = {

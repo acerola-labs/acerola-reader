@@ -6,10 +6,10 @@ order: 1
 ---
 
 <script>
-	import Callout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import Card from '$lib/mdsvex/card.svelte';
-	import AcerolaCopyCard from '$lib/components/acerola-copy-card/acerola-copy-card.svelte';
+	import Callout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import Card from '#lib/mdsvex/card.svelte';
+	import AcerolaCopyCard from '#lib/components/acerola-copy-card/acerola-copy-card.svelte';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 	import MailIcon from '@lucide/svelte/icons/mail';
 </script>

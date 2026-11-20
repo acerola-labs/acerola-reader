@@ -1,10 +1,10 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import type { DocEntry } from '$lib/content/docs';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { cn } from '$lib/cn.util';
+	import type { DocEntry } from '#lib/content/docs.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		prev,

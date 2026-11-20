@@ -28,8 +28,8 @@
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import TerminalIcon from '@lucide/svelte/icons/terminal';
-	import { cn } from '$lib/cn.util';
-	import { m } from '$lib/paraglide/messages';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		eyebrow,

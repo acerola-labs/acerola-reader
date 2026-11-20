@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { scrollReveal, scrollScale } from '$lib/actions';
+	import { scrollReveal, scrollScale } from '#lib/actions/index.ts';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import CloudOffIcon from '@lucide/svelte/icons/cloud-off';
 	import CodeIcon from '@lucide/svelte/icons/code';
@@ -12,23 +12,23 @@
 	import ServerIcon from '@lucide/svelte/icons/server';
 	import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
 	import WaypointsIcon from '@lucide/svelte/icons/waypoints';
-	import { Badge } from '$lib/components/ui/badge/index';
-	import { Button } from '$lib/components/ui/button/index';
-	import AcerolaApkDownloadButton from '$lib/components/acerola-apk-download-button/acerola-apk-download-button.svelte';
-	import AcerolaCallout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import AcerolaMicrosoftStoreButton from '$lib/components/acerola-microsoft-store-button/acerola-microsoft-store-button.svelte';
-	import AcerolaShinyText from '$lib/components/acerola-shiny-text/acerola-shiny-text.svelte';
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import PlatformCard from '$lib/mdsvex/platform-card.svelte';
-	import Steps from '$lib/mdsvex/steps.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaApkDownloadButton from '#lib/components/acerola-apk-download-button/acerola-apk-download-button.svelte';
+	import AcerolaCallout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import AcerolaMicrosoftStoreButton from '#lib/components/acerola-microsoft-store-button/acerola-microsoft-store-button.svelte';
+	import AcerolaShinyText from '#lib/components/acerola-shiny-text/acerola-shiny-text.svelte';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import PlatformCard from '#lib/mdsvex/platform-card.svelte';
+	import Steps from '#lib/mdsvex/steps.svelte';
 	import AcerolaMarketingFeatureCode, {
 		type FeatureItem,
 		type CodeTab
-	} from '$lib/components/acerola-marketing-feature-code/acerola-marketing-feature-code.svelte';
-	import GithubIcon from '$lib/icons/github.svelte';
-	import { BRAND_MASCOT_URL, GITHUB_URL } from '$lib/constants/site';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	} from '#lib/components/acerola-marketing-feature-code/acerola-marketing-feature-code.svelte';
+	import GithubIcon from '#lib/icons/github.svelte';
+	import { BRAND_MASCOT_URL, GITHUB_URL } from '#lib/constants/site.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
 	let heroEl = $state<HTMLElement | null>(null);
 	let heroContentEl = $state<HTMLDivElement | null>(null);

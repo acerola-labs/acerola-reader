@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { MODE_STORAGE_KEY } from '$lib/constants/themes';
-import { useTheme } from '$lib/hooks/theme/use-theme.svelte';
+import { MODE_STORAGE_KEY } from '#lib/constants/themes.ts';
+import { useTheme } from '#lib/hooks/theme/use-theme.svelte.ts';
 import AcerolaThemePicker from './acerola-theme-picker.svelte';
 
 // useTheme() has module-level singleton $state (no per-instance state, no onMount/$effect

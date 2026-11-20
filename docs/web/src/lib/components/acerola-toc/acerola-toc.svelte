@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/cn.util';
-	import { slidingIndicator } from '$lib/utils/sliding-indicator.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { slidingIndicator } from '#lib/utils/sliding-indicator.util.ts';
 
 	type Heading = { id: string; text: string; depth: 2 | 3 };
 
