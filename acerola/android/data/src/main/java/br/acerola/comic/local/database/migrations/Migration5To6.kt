@@ -41,7 +41,7 @@ val MIGRATION_5_6 =
             )
 
             // comic_summary_view (directory_id/metadata_id -> directory_fk/metadata_fk): Room
-            // recria as views declaradas em @Database automaticamente apos rodar as migrations,
-            // usando a definicao atual de ComicSummaryView — nenhum DROP/CREATE VIEW manual aqui.
+            // recreates the views declared in @Database automatically after running the migrations,
+            // using the current ComicSummaryView definition — no manual DROP/CREATE VIEW here.
         }
     }

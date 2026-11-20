@@ -32,7 +32,7 @@ class TemplateToRegexTest {
         val template = "[{chapter}] * .{extension}"
         val regex = templateToRegex(template)
 
-        // Deve aceitar qualquer coisa entre os colchetes e a extensao (devido ao *)
+        // Must accept anything between the brackets and the extension (because of the *)
         assertTrue(regex.matches("[12] Meu Comic.cbz"))
         assertTrue(regex.matches("[01] - Arquivo Especial.cbr"))
         assertFalse(regex.matches("(01) - Errado.cbz"))
@@ -40,7 +40,7 @@ class TemplateToRegexTest {
 
     @Test
     fun `should avoid syntax errors with asterisk and dot variations`() {
-        // Valida que o erro de .*?? nao ocorre mais
+        // Validates that the .*?? error no longer happens
         val template1 = "Ch. {chapter}.*.{extension}"
         val regex1 = templateToRegex(template1)
         assertTrue(regex1.matches("Ch. 10.cbz"))

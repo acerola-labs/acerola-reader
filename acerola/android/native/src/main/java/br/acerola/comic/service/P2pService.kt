@@ -24,11 +24,11 @@ enum class NetworkMode {
     RELAY,
 }
 
-/** Configuração de relay combinável a passar pro `P2PNode::new` — espelha
- *  `FfiRelaySettings` (gerado via UniFFI), mesmo padrão de [NetworkMode]/[SyncDirection]:
- *  os tipos `Ffi*` não vazam além da fronteira deste módulo `:native`. Ver
- *  `br.acerola.comic.config.preference.RelayPreference.RelaySettings`, a fonte persistida
- *  destes valores. */
+/** Combinable relay configuration to pass to `P2PNode::new` — mirrors
+ *  `FfiRelaySettings` (generated via UniFFI), same pattern as [NetworkMode]/[SyncDirection]:
+ *  the `Ffi*` types do not leak beyond this `:native` module boundary. See
+ *  `br.acerola.comic.config.preference.RelayPreference.RelaySettings`, the persisted source
+ *  of these values. */
 data class RelaySettings(
     val useAcerolaRelay: Boolean,
     val useIrohPublicNetwork: Boolean,
@@ -42,9 +42,9 @@ private fun RelaySettings.toFfi(): FfiRelaySettings =
         customRelayUrls = customRelayUrls,
     )
 
-/** Direção explícita de um [syncComic] — `PUSH` manda o quadrinho pro peer, `PULL` puxa dele.
- *  Espelha `FfiSyncDirection` (gerado via UniFFI); mesmo padrão de [NetworkMode]/[FfiNetworkMode]
- *  logo acima, pra `Ffi*` não vazar além desta fronteira `:native`. */
+/** Explicit direction of a [syncComic] — `PUSH` sends the comic to the peer, `PULL` pulls it.
+ *  Mirrors `FfiSyncDirection` (generated via UniFFI); same pattern as [NetworkMode]/[FfiNetworkMode]
+ *  right above, so `Ffi*` does not leak beyond this `:native` boundary. */
 enum class SyncDirection {
     PUSH,
     PULL,
@@ -60,8 +60,8 @@ data class PeerAddress(
     val id: String,
     val deviceId: String?,
     val addrs: ByteArray,
-    /** Só preenchido pelo retorno de [getPairedPeers] — `null` nos demais usos (endereço só
-     *  pra discar, ex: [connect]/[syncComic]). */
+    /** Only filled by the return of [getPairedPeers] — `null` in other uses (address only
+     *  for dialing, e.g. [connect]/[syncComic]). */
     val deviceName: String? = null,
 )
 
@@ -74,10 +74,10 @@ data class ConnectedPeerInfo(
 class P2pService(
     context: Context,
     relaySettings: RelaySettings,
-    /** Apelido custom salvo pelo usuário (DataStore, `DeviceAliasPreference`) — `null` quando
-     *  nunca definido, e o `Build.MODEL` padrão é usado. Só lido aqui, na construção do node;
-     *  renomear depois de iniciado é feito em runtime via [setLocalDeviceName], sem
-     *  reconstruir nada. */
+    /** Custom nickname saved by the user (DataStore, `DeviceAliasPreference`) — `null` when
+     *  never set, and the default `Build.MODEL` is used. Only read here, when building the node;
+     *  renaming after startup is done at runtime via [setLocalDeviceName], without
+     *  rebuilding anything. */
     deviceNameOverride: String?,
     secureStore: SecureBlobStore,
     historyProvider: HistorySyncProvider,
@@ -96,21 +96,21 @@ class P2pService(
             }
         }
 
-    // `P2pNode(...)` chama `P2PNode::new()` no Rust, que faz `runtime.block_on(...)` — uma
-    // chamada síncrona bloqueante (ver TODO.md, item crítico de ANR). Antes, isso rodava direto
-    // no `init{}`, então bloqueava QUALQUER thread que instanciasse `P2pService` — hoje em dia,
-    // a thread principal, porque o Hilt resolve esse singleton pela primeira vez ao construir
-    // `HomeViewModel`/`P2pUseCase` na primeira tela. Trocado por `lazy` (thread-safe por
-    // padrão) disparado numa thread dedicada logo abaixo: o construtor de `P2pService` agora
-    // retorna na hora, e a construção pesada roda em background. Quem chamar um método deste
-    // serviço antes dessa construção terminar ainda bloqueia (o `Lazy` sincroniza via lock), mas
-    // isso deixa de ser garantido a cada vez — só quando o uso realmente corre com o warm-up.
+    // `P2pNode(...)` calls `P2PNode::new()` in Rust, which does `runtime.block_on(...)` — a
+    // synchronous blocking call (see TODO.md, critical ANR item). Before, this ran directly
+    // in `init{}`, so it blocked ANY thread that instantiated `P2pService` — nowadays,
+    // the main thread, because Hilt resolves this singleton for the first time when building
+    // `HomeViewModel`/`P2pUseCase` on the first screen. Replaced by `lazy` (thread-safe by
+    // default) triggered on a dedicated thread right below: the `P2pService` constructor now
+    // returns immediately, and the heavy construction runs in the background. Whoever calls a method
+    // of this service before that construction finishes still blocks (the `Lazy` syncs via a lock), but
+    // that is no longer guaranteed every time — only when the call actually races the warm-up.
     private val p2pNode: P2pNode by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         // Only used by Rust to migrate identity/peers/trust from the old plain-text format
         // into `SecureBlobStore` once — see `storage.rs`/`trust_store.rs`.
         val legacyDataDir = context.filesDir.resolve("p2p").absolutePath
-        // Store local de blobs content-addressed (`iroh-blobs-adapter`) — cache separado da
-        // árvore de biblioteca do usuário (SAF), reclamado por GC interno da lib, não pelo app.
+        // Local content-addressed blob store (`iroh-blobs-adapter`) — cache separate from the
+        // user's library tree (SAF), reclaimed by the lib's internal GC, not by the app.
         val blobsDir = context.filesDir.resolve("blobs").absolutePath
         val appVersion =
             runCatching {
@@ -130,11 +130,11 @@ class P2pService(
         )
     }
 
-    // Iroh (o transporte QUIC por baixo do `p2pNode`) detecta mudança de rede sozinho na
-    // maioria dos sistemas, mas não no Android: o SO não expõe monitoramento de interface pra
-    // código nativo, só pra Java/Kotlin via `ConnectivityManager`. Sem repassar esse evento, uma
-    // troca de Wi-Fi/dados móveis (ou saída de Doze) deixa o transporte reaproveitando conexões
-    // já mortas, e todo browse/sync pro mesmo peer falha com timeout até o app ser reiniciado.
+    // Iroh (the QUIC transport under `p2pNode`) detects network changes on its own on
+    // most systems, but not on Android: the OS does not expose interface monitoring to
+    // native code, only to Java/Kotlin via `ConnectivityManager`. Without forwarding this event, a
+    // Wi-Fi/mobile data switch (or leaving Doze) leaves the transport reusing already dead
+    // connections, and every browse/sync to the same peer times out until the app is restarted.
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -165,8 +165,8 @@ class P2pService(
 
     fun getLocalId(): String = p2pNode.getLocalId()
 
-    /** Apelido custom estilo LocalSend (em vez do `Build.MODEL` padrão) — aplica na hora no
-     *  node P2P (próximo handshake já usa o nome novo, sem precisar reiniciar o app). */
+    /** LocalSend-style custom nickname (instead of the default `Build.MODEL`) — applied right away
+     *  to the P2P node (the next handshake already uses the new name, no app restart needed). */
     fun setLocalDeviceName(name: String) {
         Log.d("P2pService", "Renaming local device to: $name")
         p2pNode.setLocalDeviceName(name)
@@ -195,10 +195,10 @@ class P2pService(
         p2pNode.connect(ffiAddr, alpn)
     }
 
-    /** Sincroniza um único quadrinho com o peer, na [direction] explícita escolhida pelo
-     *  usuário — `PUSH` manda o quadrinho pro peer, `PULL` puxa dele. `chapters` (rótulos de
-     *  capítulo, vazio por padrão = quadrinho inteiro) escopa a sessão a um subconjunto de
-     *  capítulos — usado pelo botão "Enviar" da seleção múltipla/menu de três pontinhos. */
+    /** Syncs a single comic with the peer, in the explicit [direction] chosen by the
+     *  user — `PUSH` sends the comic to the peer, `PULL` pulls it. `chapters` (chapter
+     *  labels, empty by default = whole comic) scopes the session to a subset of
+     *  chapters — used by the "Send" button of the multi-selection/three-dot menu. */
     fun syncComic(
         peerAddress: PeerAddress,
         comicName: String,
@@ -215,9 +215,9 @@ class P2pService(
         p2pNode.syncComic(ffiAddr, comicName, direction.toFfi(), chapters)
     }
 
-    /** Empurra o progresso + marcadores de "lido" do(s) capítulo(s) selecionado(s)
-     *  (`chapterSorts`) de UM único quadrinho pro peer — mais leve que [syncHistory]
-     *  (biblioteca inteira). Progresso via os eventos `sync:history-entry:*`. */
+    /** Pushes the progress + "read" markers of the selected chapter(s)
+     *  (`chapterSorts`) of ONE single comic to the peer — lighter than [syncHistory]
+     *  (whole library). Progress via the `sync:history-entry:*` events. */
     fun syncHistoryEntry(
         peerAddress: PeerAddress,
         comicName: String,
@@ -233,8 +233,8 @@ class P2pService(
         p2pNode.syncHistoryEntry(ffiAddr, comicName, chapterSorts)
     }
 
-    /** Pede a lista de quadrinhos (nome + contagem de capítulos) da biblioteca do peer, sem
-     *  sincronizar nada — resultado chega via evento `browse:library:result`/`error`. */
+    /** Requests the list of comics (name + chapter count) from the peer's library, without
+     *  syncing anything — the result arrives via the `browse:library:result`/`error` event. */
     fun browseLibrary(peerAddress: PeerAddress) {
         Log.d("P2pService", "Browsing library of peer: ${peerAddress.id}")
         val ffiAddr =
@@ -246,10 +246,10 @@ class P2pService(
         p2pNode.browseLibrary(ffiAddr)
     }
 
-    /** Busca a capa de UM quadrinho remoto — `knownVersion` é a versão já cacheada localmente
-     *  (`null` se nunca buscou essa capa antes). Resultado chega via evento
-     *  `browse:cover:result`/`browse:cover:error`, com o caminho local salvo no payload
-     *  (`path`) quando `status == "changed"`. */
+    /** Fetches the cover of ONE remote comic — `knownVersion` is the version already cached locally
+     *  (`null` if this cover was never fetched before). The result arrives via the
+     *  `browse:cover:result`/`browse:cover:error` event, with the saved local path in the payload
+     *  (`path`) when `status == "changed"`. */
     fun browseCover(
         peerAddress: PeerAddress,
         comicName: String,
@@ -297,20 +297,20 @@ class P2pService(
             PeerAddress(id = it.id, deviceId = it.deviceId, addrs = it.addrs, deviceName = it.deviceName)
         }
 
-    /** Desempareia um peer — some da confiança e do cache de endereços conhecidos. Uma
-     *  reconexão futura desse peer passa pelo mesmo fluxo TOFU de um dispositivo novo. */
+    /** Unpairs a peer — removes it from trust and from the known address cache. A future
+     *  reconnection from that peer goes through the same TOFU flow as a new device. */
     fun removePairedPeer(id: String) {
         Log.d("P2pService", "Removing paired peer: $id")
         p2pNode.removePairedPeer(id)
     }
 
-    /** `true` se o usuário já colou e salvou um ticket da própria conta em
-     *  `services.iroh.computer` — nunca devolve o valor em si (é uma credencial real). */
+    /** `true` if the user already pasted and saved a ticket of their own account on
+     *  `services.iroh.computer` — never returns the value itself (it is a real credential). */
     fun hasIrohServicesTicket(): Boolean = p2pNode.hasIrohServicesTicket()
 
-    /** Valida o formato antes de persistir. Não aplica sozinho a config nova — quem chama
-     *  também invoca [applyRelaySettings] em seguida (ver `P2pUseCase`/`SyncViewModel`).
-     *  @throws IllegalArgumentException se o ticket for malformado. */
+    /** Validates the format before persisting. Does not apply the new config by itself — the caller
+     *  also invokes [applyRelaySettings] right after (see `P2pUseCase`/`SyncViewModel`).
+     *  @throws IllegalArgumentException if the ticket is malformed. */
     fun setIrohServicesTicket(ticket: String) {
         try {
             p2pNode.setIrohServicesTicket(ticket)
@@ -319,18 +319,18 @@ class P2pService(
         }
     }
 
-    /** Remove o ticket salvo — usado quando o usuário desliga a fonte ou substitui por um novo. */
+    /** Removes the saved ticket — used when the user turns the source off or replaces it with a new one. */
     fun clearIrohServicesTicket() {
         p2pNode.clearIrohServicesTicket()
     }
 
-    /** Relê a config de relay combinável + o ticket do cofre e aplica ao node JÁ VIVO
-     *  (`insert_relay`/`remove_relay` num `Endpoint` que continua rodando, sem derrubar
-     *  conexões ativas) — chamado depois de QUALQUER mudança nas fontes de relay (toggle do
-     *  Acerola/Iroh, add/remove de URL própria, salvar/remover ticket). Antes disso existir,
-     *  mudar a config de relay só tinha efeito no PRÓXIMO boot do app.
-     *  @throws IllegalArgumentException se a config resultante for inválida (ex: URL própria
-     *  malformada). */
+    /** Re-reads the combinable relay config + the vault ticket and applies it to the ALREADY LIVE node
+     *  (`insert_relay`/`remove_relay` on an `Endpoint` that keeps running, without dropping
+     *  active connections) — called after ANY change in the relay sources (Acerola/Iroh
+     *  toggle, add/remove of a custom URL, save/remove ticket). Before this existed,
+     *  changing the relay config only took effect on the NEXT app boot.
+     *  @throws IllegalArgumentException if the resulting config is invalid (e.g. malformed custom
+     *  URL). */
     fun applyRelaySettings(relaySettings: RelaySettings) {
         try {
             p2pNode.applyRelaySettings(relaySettings.toFfi())
@@ -339,13 +339,13 @@ class P2pService(
         }
     }
 
-    /** Desliga o node P2P atual e sobe um novo com a mesma identidade/storage/handlers —
-     *  estilo LocalSend. Diferente de [applyRelaySettings] (troca só o modo de relay num
-     *  `Endpoint` que continua vivo), isto derruba TODAS as conexões ativas por alguns
-     *  segundos; existe pro botão manual "Reiniciar" da tela de Rede, pra destravar uma
-     *  conexão presa depois de uma troca de rede física do SO que o [notifyNetworkChange]
-     *  sozinho não resolveu. `p2pNode` continua sendo o MESMO objeto FFI depois — o Rust troca
-     *  o node por baixo (`P2PNode::restart`, `RwLock` interno), não recria o handle. */
+    /** Shuts down the current P2P node and brings up a new one with the same identity/storage/handlers —
+     *  LocalSend style. Unlike [applyRelaySettings] (which only switches the relay mode on an
+     *  `Endpoint` that stays alive), this drops ALL active connections for a few
+     *  seconds; it exists for the manual "Restart" button on the Network screen, to unstick a
+     *  connection stuck after a physical OS network switch that [notifyNetworkChange]
+     *  alone did not fix. `p2pNode` remains the SAME FFI object afterwards — Rust swaps
+     *  the node underneath (`P2PNode::restart`, internal `RwLock`), it does not recreate the handle. */
     fun restart(relaySettings: RelaySettings) {
         Log.d("P2pService", "Restarting p2p node")
         p2pNode.restart(relaySettings.toFfi())

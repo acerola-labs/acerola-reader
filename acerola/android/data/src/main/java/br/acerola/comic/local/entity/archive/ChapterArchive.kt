@@ -38,7 +38,7 @@ data class ChapterArchive(
     val chapterSort: String,
     @ColumnInfo(name = "is_special", defaultValue = "0")
     val isSpecial: Boolean = false,
-    // NOTE: Campo vai manter um hash do arquivo, para se tiver quebrado, ele ignorar no frontend
+    // NOTE: Field keeps a hash of the file, so that if it is broken the frontend ignores it
     @ColumnInfo(name = "checksum")
     val checksum: String? = null,
     @ColumnInfo(name = "comic_directory_fk")

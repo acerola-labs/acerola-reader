@@ -1,9 +1,9 @@
 [profile.default]
-# Timeout generoso: os testes de integridade de transferência (`exchange.rs`) movem
-# megabytes reais em memória via `tokio::io::duplex` — lento em máquinas sob carga, mas
-# nenhum deles depende de rede real (sem bind de porta), então não precisam de isolamento
-# tipo `run_in_isolation` (padrão usado no acerola-p2p/acerola-desktop pra testes que
-# fazem bind de porta de verdade).
+# Generous timeout: the transfer integrity tests (`exchange.rs`) move real
+# megabytes in memory via `tokio::io::duplex` — slow on loaded machines, but
+# none of them depend on a real network (no port binding), so they do not need
+# `run_in_isolation`-style isolation (pattern used in acerola-p2p/acerola-desktop for tests
+# that actually bind ports).
 slow-timeout = { period = "20s", terminate-after = 2 }
 test-threads = 4
 

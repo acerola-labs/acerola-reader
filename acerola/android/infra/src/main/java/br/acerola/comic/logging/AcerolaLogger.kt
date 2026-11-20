@@ -40,8 +40,8 @@ object AcerolaLogger {
     ) = log(level = LogLevel.ERROR, tag = tag, msg = msg, source = source, throwable = throwable)
 
     /**
-     * Audit: ações do usuário. Usa tag própria para filtrar separado no Logcat.
-     * Ex: adb logcat -s AUDIT:*
+     * Audit: user actions. Uses its own tag to filter separately in Logcat.
+     * E.g.: adb logcat -s AUDIT:*
      */
     fun audit(
         tag: String,
@@ -72,7 +72,7 @@ object AcerolaLogger {
             LogLevel.INFO -> Log.i(fullTag, formatted)
             LogLevel.WARN -> Log.w(fullTag, formatted, throwable)
             LogLevel.ERROR -> Log.e(fullTag, formatted, throwable)
-            LogLevel.AUDIT -> { // usa audit() diretamente
+            LogLevel.AUDIT -> { // use audit() directly
             }
         }
     }

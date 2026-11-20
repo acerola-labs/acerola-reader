@@ -3,24 +3,24 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-/// `P2PNode::browse_cover` (FFI) grava `(comic_name, known_version)` pro peer ANTES de chamar
-/// `connect()`, e `CoverBrowseOutbound::handle` consome (`take`) esse valor assim que a sessão
-/// outbound começa — mesmo padrão de `protocol::files::PendingComicScope`, mas
-/// `SyncViewModel::fetchCoversFor` dispara UM `browse_cover` por quadrinho da biblioteca remota,
-/// em sequência rápida sem esperar a sessão anterior fechar, pro MESMO peer. Um slot único por
-/// peer (versão anterior, com `insert`/`remove`, ver histórico deste arquivo) permitia que o
-/// `insert` de uma chamada sobrescrevesse o de outra antes do `CoverBrowseOutbound::handle`
-/// correspondente rodar — a maioria das sessões achava o slot vazio e nunca chegava a escrever o
-/// `CoverRequest` no stream, resultando em `browse:cover:error` ("no pending cover scope
-/// registered for this peer") silenciosamente engolido pelo lado Android (ver
-/// `SyncViewModel.handleEvent`'s `P2pEvent.CoverBrowseError -> Unit`), e por isso quase nenhuma
-/// capa remota aparecia. Mesmo bug já visto e corrigido do lado Desktop — ver
-/// `desktop/src-tauri/src/infra/sync/protocol/cover_request_registry.rs`, cujo `push`/`take`
-/// este arquivo espelha.
+/// `P2PNode::browse_cover` (FFI) stores `(comic_name, known_version)` for the peer BEFORE calling
+/// `connect()`, and `CoverBrowseOutbound::handle` consumes (`take`) that value as soon as the
+/// outbound session starts — same pattern as `protocol::files::PendingComicScope`, but
+/// `SyncViewModel::fetchCoversFor` fires ONE `browse_cover` per comic of the remote library,
+/// in quick succession without waiting for the previous session to close, for the SAME peer. A single
+/// slot per peer (previous version, with `insert`/`remove`, see this file's history) let one
+/// call's `insert` overwrite another's before the matching `CoverBrowseOutbound::handle`
+/// ran — most sessions found the slot empty and never got to write the
+/// `CoverRequest` to the stream, resulting in `browse:cover:error` ("no pending cover scope
+/// registered for this peer") silently swallowed by the Android side (see
+/// `SyncViewModel.handleEvent`'s `P2pEvent.CoverBrowseError -> Unit`), which is why almost no
+/// remote cover showed up. Same bug already seen and fixed on the Desktop side — see
+/// `desktop/src-tauri/src/infra/sync/protocol/cover_request_registry.rs`, whose `push`/`take`
+/// this file mirrors.
 ///
-/// Fila (FIFO) por peer em vez de slot único: `push` empilha, `take` desempilha o mais antigo.
-/// Não faz diferença qual conexão física carrega qual pedido — só importa que cada `push` tenha
-/// exatamente um `take` correspondente, sem overwrite e sem perda.
+/// A per-peer (FIFO) queue instead of a single slot: `push` enqueues, `take` dequeues the oldest.
+/// It makes no difference which physical connection carries which request — all that matters is that
+/// each `push` has exactly one matching `take`, with no overwrite and no loss.
 type PendingCoverRequest = (String, Option<i64>);
 
 #[derive(Default)]
@@ -33,7 +33,7 @@ impl PendingCoverRequestRegistry {
         Arc::new(Self::default())
     }
 
-    /// Enfileira um pedido pendente pro peer — nunca sobrescreve um pedido já enfileirado.
+    /// Enqueues a pending request for the peer — never overwrites an already queued request.
     pub(crate) fn push(&self, peer_id: String, comic_name: String, known_version: Option<i64>) {
         self.pending
             .lock()
@@ -43,7 +43,7 @@ impl PendingCoverRequestRegistry {
             .push_back((comic_name, known_version));
     }
 
-    /// Retira o pedido mais antigo ainda pendente pro peer (FIFO). `None` se não há nenhum.
+    /// Takes the oldest still-pending request for the peer (FIFO). `None` if there is none.
     pub(crate) fn take(&self, peer_id: &str) -> Option<PendingCoverRequest> {
         let mut pending = self
             .pending
@@ -80,10 +80,10 @@ mod tests {
         assert_eq!(registry.take("peer-unknown"), None);
     }
 
-    /// Regressão do bug reportado 2026-08-24: `fetchCoversFor` dispara N `browse_cover` em
-    /// sequência rápida pro mesmo peer — com o slot único antigo, o segundo `insert` apagava o
-    /// primeiro antes de qualquer `take` rodar, e uma das duas sessões sempre achava o registry
-    /// vazio. Com a fila, os dois pedidos sobrevivem e saem na ordem em que entraram.
+    /// Regression of the bug reported 2026-08-24: `fetchCoversFor` fires N `browse_cover` in
+    /// quick succession for the same peer — with the old single slot, the second `insert` erased the
+    /// first before any `take` ran, and one of the two sessions always found the registry
+    /// empty. With the queue, both requests survive and come out in the order they went in.
     #[test]
     fn concurrent_pushes_for_the_same_peer_do_not_overwrite_each_other() {
         let registry = PendingCoverRequestRegistry::new();
@@ -98,8 +98,8 @@ mod tests {
         assert_eq!(registry.take("peer-1"), None);
     }
 
-    /// Peers diferentes têm filas independentes — pedidos pendentes pro peer A não vazam pro
-    /// `take` do peer B nem são consumidos por ele.
+    /// Different peers have independent queues — pending requests for peer A do not leak into
+    /// peer B's `take` nor are consumed by it.
     #[test]
     fn different_peers_have_independent_queues() {
         let registry = PendingCoverRequestRegistry::new();

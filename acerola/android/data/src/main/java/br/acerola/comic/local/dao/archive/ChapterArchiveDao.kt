@@ -166,10 +166,10 @@ interface ChapterArchiveDao : BaseDao<ChapterArchive> {
     @Query("SELECT comic_directory_fk, COUNT(*) as count FROM chapter_archive GROUP BY comic_directory_fk")
     fun getChapterCountsByDirectory(): Flow<List<MangaChapterCount>>
 
-    // Só Room/SQLite, de propósito — nenhum toque em SAF/DocumentFile. Usada por
-    // `browse-library` (P2P) pra listar título + contagem de capítulos sem pagar o custo de
-    // uma transação binder por capítulo, que já estourou o timeout do protocolo numa
-    // biblioteca grande (ver `FileSyncProviderImpl.getLibrarySummary`).
+    // Room/SQLite only, on purpose — no SAF/DocumentFile access at all. Used by
+    // `browse-library` (P2P) to list title + chapter count without paying the cost of
+    // one binder transaction per chapter, which already blew the protocol timeout on a
+    // large library (see `FileSyncProviderImpl.getLibrarySummary`).
     @Query(
         value = """
             SELECT cd.name AS comic_name, COUNT(ca.id) AS chapter_count, cd.last_modified AS cover_version

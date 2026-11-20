@@ -35,12 +35,12 @@ class P2pUseCase
             p2pService.setLocalDeviceName(name)
         }
 
-        /** Suspende em [MobileDataSyncGate.ensureAllowed] antes de abrir a conexão — cobre tanto
-         *  o handshake de pareamento quanto os gatilhos de sync (histórico/arquivos), já que
-         *  ambos passam pelo mesmo `connect` genérico (a diferença é só o ALPN). Retorna `false`
-         *  sem abrir nada se o usuário recusar no diálogo — quem chama precisa checar isso pra
-         *  não deixar um spinner de "sincronizando" preso pra sempre esperando um evento que
-         *  nunca vai chegar (ver [SyncComicWithPeerUseCase]/[SyncHistoryEntryWithPeerUseCase]/
+        /** Suspends on [MobileDataSyncGate.ensureAllowed] before opening the connection — covers both
+         *  the pairing handshake and the sync triggers (history/files), since
+         *  both go through the same generic `connect` (the only difference is the ALPN). Returns `false`
+         *  without opening anything if the user declines in the dialog — the caller must check this so
+         *  a "syncing" spinner is not left stuck forever waiting for an event that
+         *  will never arrive (see [SyncComicWithPeerUseCase]/[SyncHistoryEntryWithPeerUseCase]/
          *  `SyncHistoryWithPeerUseCase`). */
         suspend fun connect(
             peerAddress: PeerAddress,

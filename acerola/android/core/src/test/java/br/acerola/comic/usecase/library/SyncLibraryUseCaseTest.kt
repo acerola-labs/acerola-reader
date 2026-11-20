@@ -78,26 +78,26 @@ class SyncLibraryUseCaseTest {
     @Test
     fun `progress should reflect active gateway in metadata synchronization flow`() =
         runTest {
-            // Inicial: nada acontecendo
+            // Initial: nothing happening
             assertEquals(-1, useCase.progress.first())
 
-            // 1. Inicia sync de manga (MetadataSyncWorker fase 1)
+            // 1. Starts manga sync (MetadataSyncWorker phase 1)
             scanIndexing.value = true
             scanProgress.value = 50
             assertEquals(50, useCase.progress.first())
 
-            // 2. Termina manga, inicia capitulos (MetadataSyncWorker fase 2)
+            // 2. Finishes manga, starts chapters (MetadataSyncWorker phase 2)
             scanIndexing.value = false
             scanProgress.value = -1
             chapterIndexing.value = true
             chapterProgress.value = 10
             assertEquals(10, useCase.progress.first())
 
-            // 3. Progresso dos capitulos avanca
+            // 3. Chapter progress advances
             chapterProgress.value = 90
             assertEquals(90, useCase.progress.first())
 
-            // 4. Tudo finaliza
+            // 4. Everything finishes
             chapterIndexing.value = false
             chapterProgress.value = -1
             assertEquals(-1, useCase.progress.first())

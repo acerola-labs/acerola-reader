@@ -49,7 +49,7 @@ class MediaFileTest {
         assertTrue(MediaFile.COVER.matches("cover.jpg"))
         assertTrue(MediaFile.BANNER.matches("banner.png"))
 
-        assertFalse(MediaFile.COVER.matches("folder.jpg")) // from usa matches() estrito para o baseName
+        assertFalse(MediaFile.COVER.matches("folder.jpg")) // from uses strict matches() for the baseName
         assertFalse(MediaFile.COVER.matches("cover.txt"))
         assertFalse(MediaFile.COVER.matches(""))
     }

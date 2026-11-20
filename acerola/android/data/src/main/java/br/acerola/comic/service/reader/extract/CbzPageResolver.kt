@@ -58,7 +58,7 @@ class CbzPageResolver
         override fun open(chapter: ChapterFileDto): Either<ChapterError, PageSource> =
             Either
                 .catch {
-                    close() // NOTE: Limpa o anterior antes de abrir um novo
+                    close() // NOTE: Cleans up the previous one before opening a new one
 
                     val file = resolveFile(chapter.path)
 
@@ -91,7 +91,7 @@ class CbzPageResolver
             try {
                 zipFile?.close()
             } catch (exception: Exception) {
-                // Ignora erros ao fechar
+                // Ignores errors on close
             } finally {
                 zipFile = null
                 entries = emptyList()
@@ -107,7 +107,7 @@ class CbzPageResolver
                     context.contentResolver.openInputStream(uri)
                         ?: throw IllegalStateException("Could not open URI: $path")
 
-                // Cria um arquivo temporário único para evitar concorrência (SIGBUS)
+                // Creates a unique temp file to avoid concurrency issues (SIGBUS)
                 val tempFile = File.createTempFile("chapter_sync_", ".cbz", context.cacheDir)
                 currentTempFile = tempFile
 

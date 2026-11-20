@@ -45,7 +45,7 @@ class ChapterArchiveDaoTest {
     @Test
     fun getChaptersByDirectory_Id_should_order_chapters_numerically_and_decimals() =
         runBlocking {
-            // Preparação: Cria diretório e capítulos com ordenação mista
+            // Arrange: creates a directory and chapters with mixed ordering
             val folderId = directoryDao.insert(MangaDirectoryFixtures.createMangaDirectory(id = 0L))
             val chapters =
                 listOf(
@@ -56,10 +56,10 @@ class ChapterArchiveDaoTest {
                 )
             dao.insertAll(*chapters.toTypedArray())
 
-            // Ação
+            // Act
             val result = dao.getChaptersByDirectoryId(folderId).first()
 
-            // Verificação: Ordem esperada: 1, 1.5, 2, 10
+            // Assert: expected order: 1, 1.5, 2, 10
             assertEquals("1", result[0].chapter.chapterSort)
             assertEquals("1.5", result[1].chapter.chapterSort)
             assertEquals("2", result[2].chapter.chapterSort)
@@ -69,7 +69,7 @@ class ChapterArchiveDaoTest {
     @Test
     fun getChaptersByDirectoryPaged_should_return_only_the_page_size() =
         runBlocking {
-            // Preparação
+            // Arrange
             val folderId = directoryDao.insert(MangaDirectoryFixtures.createMangaDirectory(id = 0L))
             val chapters =
                 List(10) {
@@ -77,17 +77,17 @@ class ChapterArchiveDaoTest {
                 }
             dao.insertAll(*chapters.toTypedArray())
 
-            // Ação: Página 1 (offset 5), tamanho 5
+            // Act: page 1 (offset 5), size 5
             val result = dao.getChaptersByDirectoryPaged(folderId, pageSize = 5, offset = 5)
 
-            // Verificação
+            // Assert
             assertEquals(5, result.size)
         }
 
     @Test
     fun getChaptersByDirectoryPagedDesc_should_return_items_in_reverse_order() =
         runBlocking {
-            // Preparação
+            // Arrange
             val folderId = directoryDao.insert(MangaDirectoryFixtures.createMangaDirectory(id = 0L))
             val chapters =
                 listOf(
@@ -97,10 +97,10 @@ class ChapterArchiveDaoTest {
                 )
             dao.insertAll(*chapters.toTypedArray())
 
-            // Ação: Pega o primeiro item na ordem DESC
+            // Act: takes the first item in DESC order
             val result = dao.getChaptersByDirectoryPagedDesc(folderId, pageSize = 1, offset = 0)
 
-            // Verificação: Deve ser o capítulo "3"
+            // Assert: must be chapter "3"
             assertEquals(1, result.size)
             assertEquals("3", result[0].chapter.chapterSort)
         }
@@ -108,17 +108,17 @@ class ChapterArchiveDaoTest {
     @Test
     fun deleteChaptersByMangaDirectoryId_should_remove_only_chapters_of_that_comic() =
         runBlocking {
-            // Preparação
+            // Arrange
             val id1 = directoryDao.insert(MangaDirectoryFixtures.createMangaDirectory(id = 0L, name = "Comic 1"))
             val id2 = directoryDao.insert(MangaDirectoryFixtures.createMangaDirectory(id = 0L, name = "Comic 2"))
 
             dao.insert(ChapterArchive(chapter = "1", path = "p1", chapterSort = "1", folderPathFk = id1))
             dao.insert(ChapterArchive(chapter = "1", path = "p2", chapterSort = "1", folderPathFk = id2))
 
-            // Ação
+            // Act
             dao.deleteByDirectoryId(id1)
 
-            // Verificação
+            // Assert
             assertEquals(0, dao.countByDirectoryId(id1))
             assertEquals(1, dao.countByDirectoryId(id2))
         }

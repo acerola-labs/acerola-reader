@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::callbacks::{FfiExtraManifestEntry, FfiFileManifestEntry};
 
-/// Todos os tipos de mensagem trocados ao longo de uma sessão do protocolo
-/// `acerola/sync-files/1`. Schema compartilhado com o Desktop
-/// (`acerola-desktop/.../infra/sync/messages.rs`) — os nomes e formatos aqui precisam
-/// bater exatamente com os de lá, já que os dois lados não compartilham código.
+/// All message types exchanged throughout a session of the
+/// `acerola/sync-files/1` protocol. Schema shared with Desktop
+/// (`acerola-desktop/.../infra/sync/messages.rs`) — the names and formats here must
+/// match those exactly, since the two sides do not share code.
 ///
-/// Cada mensagem é um frame JSON solto (sem tag de enum) via length-delimited codec.
-/// Os bytes de um capítulo não viajam dentro de uma mensagem JSON — são frames binários
-/// crus enviados logo após o `FileHeader` correspondente, até somar `size` bytes.
+/// Each message is a standalone JSON frame (no enum tag) via length-delimited codec.
+/// A chapter's bytes do not travel inside a JSON message — they are raw binary frames
+/// sent right after the matching `FileHeader`, until they add up to `size` bytes.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FileChapterInfo {
     pub chapter: String,
@@ -18,8 +18,8 @@ pub(crate) struct FileChapterInfo {
     pub size: u64,
 }
 
-/// Metadado de um item "extra" por quadrinho (capa, banner ou `ComicInfo.xml`) — schema
-/// espelhado no Desktop (`infra/sync/messages.rs::FileExtraInfo`).
+/// Metadata of a per-comic "extra" item (cover, banner or `ComicInfo.xml`) — schema
+/// mirrored on Desktop (`infra/sync/messages.rs::FileExtraInfo`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FileExtraInfo {
     pub file_name: String,
@@ -48,8 +48,8 @@ pub(crate) const EXTRA_KIND_COVER: &str = "cover";
 pub(crate) const EXTRA_KIND_BANNER: &str = "banner";
 pub(crate) const EXTRA_KIND_COMIC_INFO: &str = "comic_info";
 
-/// O que este lado quer *do outro lado* — pares `(comic_name, chapter)`, mais
-/// `wanted_extras`: pares `(comic_name, kind)` pra capa/banner/ComicInfo.xml.
+/// What this side wants *from the other side* — `(comic_name, chapter)` pairs, plus
+/// `wanted_extras`: `(comic_name, kind)` pairs for cover/banner/ComicInfo.xml.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub(crate) struct FileWantList {
     pub wanted: Vec<(String, String)>,
@@ -57,11 +57,11 @@ pub(crate) struct FileWantList {
     pub wanted_extras: Vec<(String, String)>,
 }
 
-/// Direção explícita escolhida por quem inicia um `acerola/sync-comic/1` — substitui a direção
-/// implícita que antes só emergia do diff dos dois manifestos. Ponto de vista sempre do lado
-/// outbound: `Push` = outbound manda o quadrinho pro peer; `Pull` = outbound puxa o quadrinho do
-/// peer. Schema espelhado no Desktop (`infra/sync/messages.rs::SyncDirection`) — os dois lados
-/// não compartilham código, os nomes/valores (`"push"`/`"pull"`) precisam bater exatamente.
+/// Explicit direction chosen by whoever starts an `acerola/sync-comic/1` — replaces the implicit
+/// direction that used to emerge only from diffing the two manifests. Always from the outbound
+/// side's point of view: `Push` = outbound sends the comic to the peer; `Pull` = outbound pulls the
+/// comic from the peer. Schema mirrored on Desktop (`infra/sync/messages.rs::SyncDirection`) — the
+/// two sides do not share code, the names/values (`"push"`/`"pull"`) must match exactly.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum SyncDirection {
@@ -69,22 +69,22 @@ pub(crate) enum SyncDirection {
     Pull,
 }
 
-/// Fase 0 exclusiva do protocolo `acerola/sync-comic/1` (sincronização de um único
-/// quadrinho) — trocada antes de qualquer coisa do protocolo `sync-files` normal. Só o lado
-/// outbound sabe qual quadrinho o usuário escolheu (veio de uma chamada FFI Kotlin ->
-/// `P2PNode::sync_comic`, não do wire); o inbound aprende por aqui e filtra seu próprio
-/// manifesto ao mesmo `comic_name` antes de seguir para as fases 1-3 compartilhadas com
+/// Phase 0, exclusive to the `acerola/sync-comic/1` protocol (sync of a single
+/// comic) — exchanged before anything of the regular `sync-files` protocol. Only the outbound
+/// side knows which comic the user chose (it came from a Kotlin FFI call ->
+/// `P2PNode::sync_comic`, not from the wire); the inbound learns it here and filters its own
+/// manifest to the same `comic_name` before moving on to phases 1-3 shared with
 /// `run_exchange`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct ComicSyncScope {
     pub comic_name: String,
     pub direction: SyncDirection,
-    /// Rótulos de capítulo (mesma chave usada em `FileChapterInfo.chapter`) a escopar a
-    /// sessão — vazio significa "quadrinho inteiro", o comportamento de antes desta mudança.
-    /// Espelha o Desktop (`infra/sync/messages.rs::ComicSyncRequest.chapters`): os dois lados
-    /// filtram o próprio manifesto local por essa lista antes de escrevê-lo (ver
-    /// `exchange::run_exchange_scoped`). `#[serde(default)]` pra um peer sem essa versão do
-    /// protocolo ainda desserializar como lista vazia em vez de falhar.
+    /// Chapter labels (same key used in `FileChapterInfo.chapter`) to scope the
+    /// session to — empty means "whole comic", the behavior before this change.
+    /// Mirrors Desktop (`infra/sync/messages.rs::ComicSyncRequest.chapters`): both sides
+    /// filter their own local manifest by this list before writing it (see
+    /// `exchange::run_exchange_scoped`). `#[serde(default)]` so a peer without this protocol
+    /// version still deserializes it as an empty list instead of failing.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub chapters: Vec<String>,
 }
@@ -95,17 +95,17 @@ pub(crate) struct FileHeader {
     pub chapter: String,
     pub file_name: String,
     pub size: u64,
-    /// SHA-256 do manifesto (`FileChapterInfo.checksum`) — repassado tal e qual pra
-    /// `FileSyncProvider::begin_chapter_write`/verificação Kotlin, sem relação com blobs.
+    /// Manifest SHA-256 (`FileChapterInfo.checksum`) — passed as-is to
+    /// `FileSyncProvider::begin_chapter_write`/Kotlin verification, unrelated to blobs.
     pub checksum: Option<String>,
-    /// Hash de blob (BLAKE3, hex) devolvido por `P2pBlobStore::put` no lado que enviou —
-    /// é o que o lado que recebe usa em `P2pBlobStore::fetch` pra puxar os bytes de verdade.
-    /// `None` só no header vazio de "não tenho mais esse capítulo" (`size: 0`).
+    /// Blob hash (BLAKE3, hex) returned by `P2pBlobStore::put` on the sending side —
+    /// it is what the receiving side uses in `P2pBlobStore::fetch` to pull the actual bytes.
+    /// `None` only in the empty "I no longer have this chapter" header (`size: 0`).
     pub blob_hash: Option<String>,
 }
 
-/// Header de transferência de um item extra (capa/banner/`ComicInfo.xml`) — paralelo a
-/// `FileHeader`, schema espelhado no Desktop (`infra/sync/messages.rs::FileExtraHeader`).
+/// Transfer header of an extra item (cover/banner/`ComicInfo.xml`) — parallel to
+/// `FileHeader`, schema mirrored on Desktop (`infra/sync/messages.rs::FileExtraHeader`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FileExtraHeader {
     pub comic_name: String,
@@ -116,12 +116,12 @@ pub(crate) struct FileExtraHeader {
     pub blob_hash: Option<String>,
 }
 
-/// Mensagem enviada no lugar do manifesto quando o `FileSyncSessionGuard` já rejeitou a
-/// sessão localmente (peer já tem uma sessão ativa) — schema espelhado no Desktop
-/// (`file_handler.rs`), único jeito dos dois lados falarem a mesma coisa mesmo sem
-/// compartilhar código. O campo `error` é o discriminador: nenhuma outra mensagem do
-/// protocolo usa essa chave (`FileManifest` usa `comics`, `FileWantList` usa `wanted`), então
-/// quem lê pode detectar isso antes de tentar desserializar como `FileManifest`.
+/// Message sent in place of the manifest when `FileSyncSessionGuard` already rejected the
+/// session locally (peer already has an active session) — schema mirrored on Desktop
+/// (`file_handler.rs`), the only way for both sides to speak the same thing without
+/// sharing code. The `error` field is the discriminator: no other protocol message
+/// uses that key (`FileManifest` uses `comics`, `FileWantList` uses `wanted`), so
+/// the reader can detect it before trying to deserialize as `FileManifest`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct SessionBusy {
     pub error: String,
@@ -133,15 +133,15 @@ pub(crate) struct FileSyncStats {
     pub received_count: u32,
     pub sent_count: u32,
     pub failed_count: u32,
-    /// Quantos capítulos pedidos já existiam localmente com um checksum diferente do peer —
-    /// conflito de verdade, não só "eu não tinha ainda" (ver `missing_from` em `exchange.rs`).
-    /// Continuam sendo puxados normalmente (comportamento de sobrescrita inalterado); só
-    /// contados separadamente pra `sync:files:complete` poder reportar que aconteceu.
+    /// How many requested chapters already existed locally with a checksum different from the peer's —
+    /// a real conflict, not just "I did not have it yet" (see `missing_from` in `exchange.rs`).
+    /// They are still pulled normally (overwrite behavior unchanged); only
+    /// counted separately so `sync:files:complete` can report that it happened.
     pub conflicts_count: u32,
 }
 
-/// Agrupa a lista plana de `get_file_manifest()` (FFI) em `FileManifest` aninhado por
-/// quadrinho — formato de wire compartilhado com o Desktop.
+/// Groups the flat list from `get_file_manifest()` (FFI) into a `FileManifest` nested by
+/// comic — wire format shared with Desktop.
 pub(super) fn build_manifest(entries: Vec<FfiFileManifestEntry>) -> FileManifest {
     use std::collections::HashMap;
 
@@ -170,16 +170,16 @@ pub(super) fn build_manifest(entries: Vec<FfiFileManifestEntry>) -> FileManifest
     FileManifest { comics }
 }
 
-/// Funde os itens extra (capa/banner/`ComicInfo.xml`) de `get_extras_manifest()` (FFI) dentro
-/// do `FileManifest` já montado por `build_manifest()` — cria uma entrada de comic nova (sem
-/// capítulo nenhum) se o único dado que existe pra ele for um extra.
+/// Merges the extra items (cover/banner/`ComicInfo.xml`) from `get_extras_manifest()` (FFI) into
+/// the `FileManifest` already built by `build_manifest()` — creates a new comic entry (with no
+/// chapters at all) if the only data that exists for it is an extra.
 pub(super) fn merge_extras(manifest: &mut FileManifest, extras: Vec<FfiExtraManifestEntry>) {
     use std::collections::HashMap;
 
-    // Índices (não `&mut FileComicInfo` direto) porque o `push` de um comic novo mais abaixo
-    // pode realocar `manifest.comics` — qualquer referência emprestada antes do `push` ficaria
-    // inválida. Chaves são `String` própria (não emprestada de `manifest`) exatamente pra poder
-    // inserir uma entrada nova nesse mesmo mapa sem conflitar com o empréstimo de `manifest`.
+    // Indices (not `&mut FileComicInfo` directly) because pushing a new comic further below
+    // may reallocate `manifest.comics` — any reference borrowed before the `push` would become
+    // invalid. Keys are owned `String`s (not borrowed from `manifest`) precisely so a new entry
+    // can be inserted into this same map without conflicting with the `manifest` borrow.
     let mut index_by_comic: HashMap<String, usize> = manifest
         .comics
         .iter()
@@ -221,9 +221,9 @@ fn assign_extra(comic: &mut FileComicInfo, kind: &str, info: FileExtraInfo) {
 mod wire_contract_tests {
     use super::*;
 
-    /// Trava o schema de wire do `sync-files` contra o que o Desktop produz/espera
-    /// (`acerola-desktop/.../infra/sync/messages.rs`) — os dois lados não compartilham
-    /// código, então isso é o que garante que não divergem de novo silenciosamente.
+    /// Locks the `sync-files` wire schema against what Desktop produces/expects
+    /// (`acerola-desktop/.../infra/sync/messages.rs`) — the two sides do not share
+    /// code, so this is what guarantees they do not silently diverge again.
     #[test]
     fn file_manifest_matches_desktop_wire_shape() {
         let manifest = build_manifest(vec![FfiFileManifestEntry {
@@ -250,8 +250,8 @@ mod wire_contract_tests {
             })
         );
 
-        // Payload no exato formato que o Desktop envia (chave "comics", sem tag de enum)
-        // precisa desserializar sem erro.
+        // Payload in the exact format Desktop sends ("comics" key, no enum tag)
+        // must deserialize without error.
         let desktop_wire = serde_json::json!({
             "comics": [{
                 "comic_name": "Berserk",
@@ -280,10 +280,10 @@ mod wire_contract_tests {
         );
     }
 
-    /// Trava o schema de wire de `FileComicInfo` com os campos `cover`/`banner`/`comic_info`
-    /// novos contra o formato espelhado no Desktop
-    /// (`infra/sync/messages.rs::FileComicInfo`) — `skip_serializing_if` garante que um
-    /// quadrinho sem nenhum item extra produz o mesmo JSON de antes desta mudança.
+    /// Locks the wire schema of `FileComicInfo` with the new `cover`/`banner`/`comic_info`
+    /// fields against the format mirrored on Desktop
+    /// (`infra/sync/messages.rs::FileComicInfo`) — `skip_serializing_if` guarantees that a
+    /// comic with no extra item produces the same JSON as before this change.
     #[test]
     fn file_comic_info_matches_desktop_wire_shape_with_extras() {
         let comic = FileComicInfo {
@@ -323,8 +323,8 @@ mod wire_contract_tests {
             })
         );
 
-        // Payload de um peer antigo (Desktop sem essa versão do protocolo) — desserializa
-        // como None, não falha.
+        // Payload from an old peer (Desktop without this protocol version) — deserializes
+        // as None, does not fail.
         let old_peer_wire = serde_json::json!({ "comic_name": "Berserk", "chapters": [] });
         let decoded: FileComicInfo = serde_json::from_value(old_peer_wire).unwrap();
         assert!(decoded.cover.is_none());
@@ -332,7 +332,7 @@ mod wire_contract_tests {
         assert!(decoded.comic_info.is_none());
     }
 
-    /// Trava o schema de wire de `FileWantList.wanted_extras` contra o Desktop.
+    /// Locks the wire schema of `FileWantList.wanted_extras` against Desktop.
     #[test]
     fn file_want_list_serializes_wanted_extras_as_tuple_array() {
         let wanted = FileWantList {
@@ -354,9 +354,9 @@ mod wire_contract_tests {
         assert!(decoded.wanted_extras.is_empty());
     }
 
-    /// Trava o schema de wire de `ComicSyncScope`/`SyncDirection` contra o Desktop
-    /// (`infra/sync/messages.rs::ComicSyncRequest`/`SyncDirection`) — valores `"push"`/`"pull"`
-    /// em `snake_case`, sem tag de enum extra.
+    /// Locks the wire schema of `ComicSyncScope`/`SyncDirection` against Desktop
+    /// (`infra/sync/messages.rs::ComicSyncRequest`/`SyncDirection`) — `"push"`/`"pull"` values
+    /// in `snake_case`, with no extra enum tag.
     #[test]
     fn comic_sync_scope_serializes_direction_as_snake_case_string() {
         let scope = ComicSyncScope {
@@ -377,8 +377,8 @@ mod wire_contract_tests {
         assert!(decoded.chapters.is_empty());
     }
 
-    /// Trava que uma sessão escopada a capítulos específicos serializa/desserializa a lista de
-    /// rótulos corretamente, no formato espelhado no Desktop
+    /// Locks that a session scoped to specific chapters serializes/deserializes the label
+    /// list correctly, in the format mirrored on Desktop
     /// (`infra/sync/messages.rs::ComicSyncRequest`).
     #[test]
     fn comic_sync_scope_serializes_chapters_when_scoped() {
@@ -407,7 +407,7 @@ mod wire_contract_tests {
         assert_eq!(decoded.chapters, vec!["Cap 1".to_string()]);
     }
 
-    /// Trava o schema de wire de `FileExtraHeader` contra o Desktop
+    /// Locks the wire schema of `FileExtraHeader` against Desktop
     /// (`infra/sync/messages.rs::FileExtraHeader`).
     #[test]
     fn file_extra_header_matches_desktop_wire_shape() {

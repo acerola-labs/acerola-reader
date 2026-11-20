@@ -5,10 +5,10 @@ import br.acerola.comic.infra.R
 import br.acerola.comic.type.UiText
 
 /**
- * Erros do protocolo de sync P2P (`acerola/sync-files/1`, `acerola/sync-comic/1`) que têm uma
- * causa reconhecida — classificados na origem, a partir do `code` estável que o Rust anexa ao
- * evento (`classify_sync_error`, `protocol/files/mod.rs`), nunca por `when`/substring matching
- * em cima do texto técnico (esse continua cru, em inglês, só pra log/fallback — ver
+ * P2P sync protocol errors (`acerola/sync-files/1`, `acerola/sync-comic/1`) that have a
+ * recognized cause — classified at the source, from the stable `code` Rust attaches to the
+ * event (`classify_sync_error`, `protocol/files/mod.rs`), never by `when`/substring matching
+ * on the technical text (that stays raw, in English, only for log/fallback — see
  * `P2pEvent.FileSyncChapterFailed.reason`).
  */
 sealed interface SyncProtocolError : UserMessage {
@@ -24,27 +24,27 @@ sealed interface SyncProtocolError : UserMessage {
         override val uiMessage = UiText.StringResource(resId = R.string.error_sync_connection_lost)
     }
 
-    /** Diferente das outras três (causas de transporte/protocolo, de `classify_sync_error`),
-     *  este `code` vem de `chapter_failed_payload`/`extra_failed_payload`
-     *  (`protocol/files/exchange.rs`) — anexado quando `write_chapter_chunk`/fetch do blob NÃO
-     *  falharam, mas o Kotlin (`finalizeChapterWrite`/`finalizeExtraWrite`) mesmo assim recusou
-     *  o arquivo por checksum. */
+    /** Unlike the other three (transport/protocol causes, from `classify_sync_error`),
+     *  this `code` comes from `chapter_failed_payload`/`extra_failed_payload`
+     *  (`protocol/files/exchange.rs`) — attached when `write_chapter_chunk`/blob fetch did NOT
+     *  fail, but Kotlin (`finalizeChapterWrite`/`finalizeExtraWrite`) still rejected
+     *  the file because of its checksum. */
     data object ChecksumMismatch : SyncProtocolError {
         override val uiMessage = UiText.StringResource(resId = R.string.error_sync_checksum_mismatch)
     }
 
-    /** `code` vem de `HistoryEntryAck.comic_known == false` (`acerola/sync-history-entry/1`) —
-     *  o peer respondeu que não tem o quadrinho referenciado, então nada foi aplicado do outro
-     *  lado. Histórico nunca cria quadrinho novo no destino, então isso é esperado quando o
-     *  outro lado ainda não sincronizou os arquivos desse quadrinho. */
+    /** `code` comes from `HistoryEntryAck.comic_known == false` (`acerola/sync-history-entry/1`) —
+     *  the peer replied that it does not have the referenced comic, so nothing was applied on the
+     *  other side. History never creates a new comic at the destination, so this is expected when the
+     *  other side has not yet synced that comic's files. */
     data object ComicNotFound : SyncProtocolError {
         override val uiMessage = UiText.StringResource(resId = R.string.error_sync_comic_not_found)
     }
 
     companion object {
-        /** Único lugar que interpreta o `code` cru do wire (`"busy"`/`"timeout"`/
-         *  `"connection_lost"`/`"checksum_mismatch"`/`"comic_not_found"`) — `null` (causa não
-         *  reconhecida) sinaliza pra quem chama usar o `reason` cru como fallback, em vez de um
+        /** The only place that interprets the raw wire `code` (`"busy"`/`"timeout"`/
+         *  `"connection_lost"`/`"checksum_mismatch"`/`"comic_not_found"`) — `null` (unrecognized
+         *  cause) signals the caller to use the raw `reason` as fallback, instead of a
          *  `SyncProtocolError`. */
         fun fromCode(code: String?): SyncProtocolError? =
             when (code) {

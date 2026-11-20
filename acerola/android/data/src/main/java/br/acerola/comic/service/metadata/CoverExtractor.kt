@@ -45,7 +45,7 @@ class CoverExtractor
                     directoryDao.getDirectoryById(comicId)
                         ?: return@withContext IoError.FileNotFound("Comic directory not found in DB").left()
 
-                // Pega o primeiro capítulo da obra toda (Dao já ordena numericamente Vol ASC -> Ch ASC)
+                // Takes the first chapter of the whole work (the Dao already sorts numerically Vol ASC -> Ch ASC)
                 val chapters = chapterArchiveDao.getChaptersByDirectoryId(comicId).first()
                 val firstChapterJoin = chapters.firstOrNull()
                 val firstChapter =
@@ -65,7 +65,7 @@ class CoverExtractor
 
                 extractAndSaveCover(
                     chapter = firstChapter,
-                    folderDoc = rootDoc, // Garante que salva na raiz da comic
+                    folderDoc = rootDoc, // Ensures it is saved at the comic root
                     onSuccess = { uri ->
                         AcerolaLogger.i(TAG, "Comic cover saved to root: $uri", LogSource.SERVICE)
                         directoryDao.update(
@@ -88,7 +88,7 @@ class CoverExtractor
                     volumeArchiveDao.getVolumeById(volumeId)
                         ?: return@withContext IoError.FileNotFound("Volume not found in DB").left()
 
-                // Pega o primeiro capítulo DESTE volume (ordenado numericamente)
+                // Takes the first chapter of THIS volume (sorted numerically)
                 val chapters =
                     chapterArchiveDao.getChaptersByVolumePaged(
                         comicId = comicId,
@@ -108,7 +108,7 @@ class CoverExtractor
 
                 extractAndSaveCover(
                     chapter = firstChapter,
-                    folderDoc = volumeDoc, // Garante que salva dentro da pasta do volume
+                    folderDoc = volumeDoc, // Ensures it is saved inside the volume folder
                     onSuccess = { uri ->
                         AcerolaLogger.i(TAG, "Volume cover saved to volume folder: $uri", LogSource.SERVICE)
                         volumeArchiveDao.update(
@@ -154,7 +154,7 @@ class CoverExtractor
                                 val bytes = outputStream.toByteArray()
                                 bitmap.recycle()
 
-                                // Limpa apenas capas existentes na pasta ALVO (root ou volume)
+                                // Only cleans existing covers in the TARGET folder (root or volume)
                                 folderDoc.listFiles().forEach { file ->
                                     val name = file.name ?: return@forEach
                                     if (MediaFile.isCover(name)) file.delete()

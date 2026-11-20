@@ -59,7 +59,7 @@ object TemplateValidator {
             cursor++
         }
 
-        // Validação do marcador principal obrigatório (Chapter ou Volume)
+        // Validation of the required main marker (Chapter or Volume)
         val mainValidation =
             when (type) {
                 SortType.CHAPTER -> validateChapter(chapterCount, chapterIdx, decimalIdx, extensionIdx, extensionCount, input)
@@ -68,7 +68,7 @@ object TemplateValidator {
 
         if (mainValidation is Either.Left) return mainValidation
 
-        // Validações comuns
+        // Common validations
         if (decimalCount > 1) {
             return Either.Left(TemplateError.InvalidPattern(UiText.StringResource(R.string.error_template_decimal_duplicate)))
         }

@@ -72,8 +72,8 @@ mod android_init {
                     .with_target("acerola_p2p", LevelFilter::DEBUG)
                     .with_target("acerola", LevelFilter::DEBUG)
                     .with_target("acto", LevelFilter::OFF)
-                    .with_target("iroh", LevelFilter::DEBUG) // temporário
-                    .with_target("noq_proto", LevelFilter::DEBUG) // temporário
+                    .with_target("iroh", LevelFilter::DEBUG) // temporary
+                    .with_target("noq_proto", LevelFilter::DEBUG) // temporary
                     .with_target("swarm_discovery", LevelFilter::OFF)
                     .with_target("hickory_proto", LevelFilter::OFF)
                     .with_target("iroh", LevelFilter::ERROR),

@@ -24,7 +24,7 @@ class UpdateComicSettingsUseCaseTest {
         useCase = UpdateComicSettingsUseCase(gateway = gateway)
     }
 
-    // Caminho feliz — sync externo habilitado
+    // Happy path — external sync enabled
     @Test
     fun `invoke should return success and call gateway exactly once when enabling sync`() =
         runTest {
@@ -36,7 +36,7 @@ class UpdateComicSettingsUseCaseTest {
             coVerify(exactly = 1) { gateway.updateMangaSettings(5L, true) }
         }
 
-    // Caminho feliz — sync externo desabilitado
+    // Happy path — external sync disabled
     @Test
     fun `invoke should return success and call gateway exactly once when disabling sync`() =
         runTest {
@@ -48,7 +48,7 @@ class UpdateComicSettingsUseCaseTest {
             coVerify(exactly = 1) { gateway.updateMangaSettings(5L, false) }
         }
 
-    // Erro de banco de dados → retorna Left sem lançar exceção
+    // Database error → returns Left without throwing
     @Test
     fun `invoke should return typed error when gateway fails without throwing exception`() =
         runTest {

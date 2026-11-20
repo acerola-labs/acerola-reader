@@ -182,9 +182,9 @@ class ComicDirectoryEngine
                                 removedFolders.forEach { folder -> directoryDao.delete(entity = folder) }
                             }
 
-                            // Não usamos mais "lastModified" da pasta para decidir o que pular: o SAF nem sempre
-                            // atualiza esse valor quando um arquivo filho é criado (ex: adb push), o que fazia
-                            // quadrinhos com capítulos novos serem ignorados silenciosamente. Reprocessa tudo.
+                            // We no longer use the folder's "lastModified" to decide what to skip: SAF does not always
+                            // update that value when a child file is created (e.g. adb push), which made
+                            // comics with new chapters get silently ignored. Reprocess everything.
                             AcerolaLogger.d(TAG, "Processing ${discoveredFolders.size} folders", LogSource.REPOSITORY)
                             processFolderList(discoveredFolders, baseUri = rootUri)
                         }.mapLeft { exception ->
