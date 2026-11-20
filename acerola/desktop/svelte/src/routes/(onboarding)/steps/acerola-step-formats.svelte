@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils/cn.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import FileTextIcon from '@lucide/svelte/icons/file-text';
 	import FileArchiveIcon from '@lucide/svelte/icons/file-archive';
 	import LayersIcon from '@lucide/svelte/icons/layers';

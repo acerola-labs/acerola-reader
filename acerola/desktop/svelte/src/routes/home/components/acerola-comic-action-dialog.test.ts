@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import AcerolaComicActionDialog from './acerola-comic-action-dialog.svelte';
-import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 // Mock do toast
 vi.mock('svelte-sonner', () => ({

@@ -7,7 +7,7 @@
 	import OctagonXIcon from '@lucide/svelte/icons/octagon-x';
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
-	import { toastIconEnter } from '$lib/utils/toast-icon-motion.utils';
+	import { toastIconEnter } from '#lib/utils/toast-icon-motion.util.ts';
 
 	let { toastOptions, class: className, ...restProps }: SonnerProps = $props();
 </script>

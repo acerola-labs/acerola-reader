@@ -1,8 +1,8 @@
 import { browser } from '$app/environment';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/library.commands';
-import { m } from '$lib/paraglide/messages';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+import { m } from '#lib/paraglide/messages.js';
 import { invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
 import { toast } from 'svelte-sonner';

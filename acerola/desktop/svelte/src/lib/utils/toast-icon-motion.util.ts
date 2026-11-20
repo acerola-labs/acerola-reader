@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import type { Action } from 'svelte/action';
-import { cn } from '$lib/utils/cn.utils';
+import { cn } from '#lib/utils/cn.util.ts';
 
 export type ToastIconVariant = 'loading' | 'success' | 'error' | 'warning' | 'info';
 

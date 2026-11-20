@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import AcerolaNetworkConnectCard from './acerola-network-connect-card.svelte';
-import { InvalidConnectionCodeError } from '$lib/utils/connection-code.utils';
+import { InvalidConnectionCodeError } from '#lib/utils/connection-code.util.ts';
 
 vi.mock('svelte-sonner', () => ({
 	toast: {

@@ -22,7 +22,7 @@ describe('AcerolaModePicker', () => {
 	it('calls setMode when clicked', async () => {
 		const setModeSpy = vi.fn();
 
-		vi.doMock('$lib/hooks/use-theme.svelte', () => ({
+		vi.doMock('#lib/hooks/theme/use-theme.svelte.ts', () => ({
 			useTheme: () => ({
 				get mode() {
 					return 'dark';

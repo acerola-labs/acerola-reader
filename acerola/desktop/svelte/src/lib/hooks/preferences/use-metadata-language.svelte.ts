@@ -1,6 +1,6 @@
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import type { LanguageCode } from '$lib/constants/languages';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import type { LanguageCode } from '#lib/constants/languages.ts';
 
 export function useMetadataLanguage() {
 	let metadataLanguage = $state<LanguageCode>('pt-br');

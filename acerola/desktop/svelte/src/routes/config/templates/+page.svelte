@@ -3,24 +3,24 @@
 	import { toast } from 'svelte-sonner';
 	import { fly, fade } from 'svelte/transition';
 
-	import AcerolaAccordionCard from '$lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCard from '$lib/components/acerola-card/acerola-card.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import AcerolaSettingsHeader from '$lib/components/acerola-settings-header/acerola-settings-header.svelte';
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import * as ToggleGroup from '$lib/components/ui/toggle-group/index';
-	import { extractErrorMessage } from '$lib/utils/error.utils';
-	import { autoAnimateList } from '$lib/utils/auto-animate.utils';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCard from '#lib/components/acerola-card/acerola-card.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import AcerolaSettingsHeader from '#lib/components/acerola-settings-header/acerola-settings-header.svelte';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
-	import { useArchiveTemplates } from '$lib/hooks/store/use-archive-templates.svelte';
+	import { useArchiveTemplates } from '#lib/hooks/store/use-archive-templates.svelte.ts';
 	import type {
 		ArchiveTemplate,
 		ArchiveTemplateSortType
-	} from '$lib/contracts/archive/archive-template.payloads';
+	} from '#lib/contracts/archive/archive-template.payloads.ts';
 
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';

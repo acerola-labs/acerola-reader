@@ -3,9 +3,9 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useRemoteLibrary } from './use-remote-library.svelte';
 

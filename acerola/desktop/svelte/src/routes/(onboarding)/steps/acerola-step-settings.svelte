@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Button } from '$lib/components/ui/button';
+	import { m } from '#lib/paraglide/messages.js';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import FolderIcon from '@lucide/svelte/icons/folder';
 	import PaletteIcon from '@lucide/svelte/icons/palette';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
 
 	import { onMount } from 'svelte';
 

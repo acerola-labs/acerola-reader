@@ -1,6 +1,6 @@
 <script module lang="ts">
 	import { Switch as SwitchPrimitive } from 'bits-ui';
-	import type { WithoutChildrenOrChild } from '$lib/utils/cn.utils';
+	import type { WithoutChildrenOrChild } from '#lib/utils/cn.util.ts';
 
 	export type AcerolaSwitchProps = {
 		state?: {
@@ -17,7 +17,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { events, state: control, ui }: AcerolaSwitchProps = $props();
 

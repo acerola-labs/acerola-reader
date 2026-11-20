@@ -40,8 +40,8 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { cn } from '$lib/utils/cn.utils';
-	import { checkBadgePop } from '$lib/utils/check-badge-motion.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { checkBadgePop } from '#lib/utils/check-badge-motion.util.ts';
 
 	let {
 		data,

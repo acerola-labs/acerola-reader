@@ -4,15 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_KEYS } from '$lib/constants/store-plugin';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+import { STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 import {
 	InvalidConnectionCodeError,
 	encodeConnectionCode,
 	type LocalPeerAddr
-} from '$lib/utils/connection-code.utils';
+} from '#lib/utils/connection-code.util.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { usePeerConnection } from './use-peer-connection.svelte';
 

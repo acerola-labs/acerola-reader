@@ -1,33 +1,33 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 
-	import { ToggleGroupItem } from '$lib/components/ui/toggle-group/index';
+	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
 
-	import { useVolumeViewMode } from '$lib/hooks/preferences/use-volume-view-mode.svelte';
-	import { useComicChapters } from '$lib/hooks/store/use-comic-chapters.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { useChapterSelection } from '$lib/hooks/store/use-chapter-selection.svelte';
-	import { useHistory } from '$lib/hooks/store/use-history.svelte';
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync, SyncDirection } from '$lib/hooks/store/use-network-sync.svelte';
-	import AcerolaPeerPicker from '$lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import { useVolumeViewMode } from '#lib/hooks/preferences/use-volume-view-mode.svelte.ts';
+	import { useComicChapters } from '#lib/hooks/store/use-comic-chapters.svelte.ts';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { useChapterSelection } from '#lib/hooks/store/use-chapter-selection.svelte.ts';
+	import { useHistory } from '#lib/hooks/store/use-history.svelte.ts';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync, SyncDirection } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import AcerolaPeerPicker from '#lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 
-	import { useComicContext } from '$lib/state/comic-context.svelte';
-	import { useMetadataSync } from '$lib/hooks/store/use-metadata-sync.svelte';
+	import { useComicContext } from '#lib/state/comic-context.svelte.ts';
+	import { useMetadataSync } from '#lib/hooks/store/use-metadata-sync.svelte.ts';
 
-	import { resolveArtworkPath, resolveBanner, resolveCover } from '$lib/utils/artwork.utils';
-	import { bumpArtworkVersion } from '$lib/state/artwork-version.svelte';
-	import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+	import { resolveArtworkPath, resolveBanner, resolveCover } from '#lib/utils/artwork.util.ts';
+	import { bumpArtworkVersion } from '#lib/state/artwork-version.svelte.ts';
+	import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 	import { invoke } from '@tauri-apps/api/core';
-	import { HOME_COMMANDS } from '$lib/contracts/home/home.commands';
-	import { HISTORY_COMMANDS } from '$lib/contracts/history/history.commands';
-	import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
+	import { HOME_COMMANDS } from '#lib/contracts/home/home.commands.ts';
+	import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
+	import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
 
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
@@ -37,10 +37,10 @@
 
 	import { getContext, onMount, untrack } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { m } from '$lib/paraglide/messages';
-	import { extractErrorMessage } from '$lib/utils/error.utils';
-	import { toastAsync } from '$lib/utils/toast-async.utils';
-	import { slidingIndicator } from '$lib/utils/sliding-indicator.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import { toastAsync } from '#lib/utils/toast-async.util.ts';
+	import { slidingIndicator } from '#lib/utils/sliding-indicator.util.ts';
 
 	import ComicChapterList, { type Chapter } from './components/acerola-comic-chapter-list.svelte';
 	import ComicHeroBanner from './components/acerola-comic-hero-banner.svelte';

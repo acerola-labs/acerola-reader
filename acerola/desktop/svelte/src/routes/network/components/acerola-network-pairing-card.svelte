@@ -13,9 +13,9 @@
 	import QrCodeIcon from '@lucide/svelte/icons/qr-code';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
-	import AcerolaCopyButton from '$lib/components/acerola-button/acerola-copy-button.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import AcerolaCopyButton from '#lib/components/acerola-button/acerola-copy-button.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { data }: NetworkPairingCardProps = $props();
 

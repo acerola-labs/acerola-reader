@@ -5,7 +5,7 @@ import {
 	InvalidConnectionCodeError,
 	shortId,
 	type LocalPeerAddr
-} from './connection-code.utils';
+} from './connection-code.util';
 
 describe('encodeConnectionCode / decodeConnectionCode', () => {
 	it('round-trips a local peer addr through encode/decode', () => {

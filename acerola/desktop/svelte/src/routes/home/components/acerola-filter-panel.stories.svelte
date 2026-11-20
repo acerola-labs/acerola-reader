@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaFilterPanel from './acerola-filter-panel.svelte';
-	import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+	import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 	const mockBookmarks: Category[] = [
 		{ id: 1, name: 'Favoritos', color: 0xff0000 },

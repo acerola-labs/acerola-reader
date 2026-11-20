@@ -12,11 +12,11 @@
 <script lang="ts">
 	import PlugIcon from '@lucide/svelte/icons/plug';
 	import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { InvalidConnectionCodeError } from '$lib/utils/connection-code.utils';
-	import { toastAsync } from '$lib/utils/toast-async.utils';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { InvalidConnectionCodeError } from '#lib/utils/connection-code.util.ts';
+	import { toastAsync } from '#lib/utils/toast-async.util.ts';
 
 	let { data, events }: NetworkConnectCardProps = $props();
 

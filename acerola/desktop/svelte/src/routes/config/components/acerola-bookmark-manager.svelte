@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import AcerolaToggleCard from '$lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { autoAnimateList } from '$lib/utils/auto-animate.utils';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import AcerolaToggleCard from '#lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
 
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';

@@ -14,11 +14,11 @@
 	import { slide } from 'svelte/transition';
 	import { error } from '@tauri-apps/plugin-log';
 	import { toast } from 'svelte-sonner';
-	import AcerolaDialog from '$lib/components/acerola-dialog/acerola-dialog.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 	export type ComicActionDialogProps = {
 		state?: { open?: boolean };

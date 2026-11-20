@@ -1,8 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
 import { load as loadStore } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import type { ComicSummaryItemPayload } from '$lib/contracts/home/home.payloads';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import type { ComicSummaryItemPayload } from '#lib/contracts/home/home.payloads.ts';
 import type { PageLoad } from './$types';
 
 export const prerender = false;

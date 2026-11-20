@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { Button } from '$lib/components/ui/button';
-	import * as Select from '$lib/components/ui/select';
+	import { m } from '#lib/paraglide/messages.js';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Select from '#lib/components/ui/select/index.ts';
 	import LanguagesIcon from '@lucide/svelte/icons/languages';
-	import { locales } from '$lib/paraglide/runtime';
-	import { setLocale, getLocale } from '$lib/paraglide/runtime';
-	import type { Locale } from '$lib/paraglide/runtime';
+	import { locales } from '#lib/paraglide/runtime.js';
+	import { setLocale, getLocale } from '#lib/paraglide/runtime.js';
+	import type { Locale } from '#lib/paraglide/runtime.js';
 
 	import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
 	import GlobeIcon from '@lucide/svelte/icons/globe';

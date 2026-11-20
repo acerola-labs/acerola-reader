@@ -1,15 +1,15 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import { translateSyncMessage } from '$lib/contracts/errors/sync-error.i18n';
-import { resolveArtworkPath } from '$lib/utils/artwork.utils';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import { translateSyncMessage } from '#lib/contracts/errors/sync-error.i18n.ts';
+import { resolveArtworkPath } from '#lib/utils/artwork.util.ts';
 import type {
 	ComicSummary,
 	CoverQueryResultPayload,
 	LibraryQueryResultPayload
-} from '$lib/contracts/network/network.payloads';
+} from '#lib/contracts/network/network.payloads.ts';
 
 const coverKey = (peerId: string, comicName: string) => `${peerId}:${comicName}`;
 

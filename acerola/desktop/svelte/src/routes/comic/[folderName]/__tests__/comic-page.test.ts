@@ -2,15 +2,15 @@ import { render, screen, waitFor } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CONTEXT_KEYS } from '$lib/constants/context-keys';
-import { ActiveComicState } from '$lib/state/comic-context.svelte';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
-import type { ChapterPayload } from '$lib/contracts/library/chapter.payloads';
-import type { ComicSummaryItemPayload } from '$lib/contracts/home/home.payloads';
-import { _resetBookmarksState } from '$lib/hooks/store/use-bookmarks.svelte';
-import { _resetChapterSelectionState } from '$lib/hooks/store/use-chapter-selection.svelte';
+import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
+import { ActiveComicState } from '#lib/state/comic-context.svelte.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
+import type { ChapterPayload } from '#lib/contracts/library/chapter.payloads.ts';
+import type { ComicSummaryItemPayload } from '#lib/contracts/home/home.payloads.ts';
+import { _resetBookmarksState } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+import { _resetChapterSelectionState } from '#lib/hooks/store/use-chapter-selection.svelte.ts';
 import ComicPage from '../+page.svelte';
 
 const { mockGoto, mockInvalidateAll } = vi.hoisted(() => ({

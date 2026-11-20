@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { LazyStore } from '@tauri-apps/plugin-store';
 

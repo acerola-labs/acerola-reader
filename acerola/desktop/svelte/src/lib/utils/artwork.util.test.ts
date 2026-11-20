@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import { resolveArtworkPath, resolveBanner, resolveCover } from './artwork.utils';
+import { resolveArtworkPath, resolveBanner, resolveCover } from './artwork.util';
 
 vi.mock('@tauri-apps/api/core', () => ({
 	convertFileSrc: vi.fn((path: string) => `asset://${path}`)

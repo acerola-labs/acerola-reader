@@ -3,11 +3,11 @@
 	import DialogPortal from './dialog-portal.svelte';
 	import type { Snippet } from 'svelte';
 	import * as Dialog from './index';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils/cn.utils';
+	import { cn, type WithoutChildrenOrChild } from '#lib/utils/cn.util.ts';
 	import type { ComponentProps } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		ref = $bindable(null),

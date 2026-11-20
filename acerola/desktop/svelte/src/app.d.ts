@@ -1,5 +1,5 @@
 import '@poppanator/sveltekit-svg/dist/svg.d.ts';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 
 declare global {
 	namespace App {

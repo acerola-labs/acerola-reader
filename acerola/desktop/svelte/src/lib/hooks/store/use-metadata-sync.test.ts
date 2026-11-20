@@ -6,7 +6,7 @@ import { error as tauriError } from '@tauri-apps/plugin-log';
 import { load } from '@tauri-apps/plugin-store';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useMetadataSync } from './use-metadata-sync.svelte';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
 
 vi.mock('@tauri-apps/api/core', () => ({
 	invoke: vi.fn()

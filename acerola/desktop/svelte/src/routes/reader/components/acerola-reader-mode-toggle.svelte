@@ -16,10 +16,10 @@
 </script>
 
 <script lang="ts">
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import { ToggleGroupItem } from '$lib/components/ui/toggle-group/index';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import Columns2 from '@lucide/svelte/icons/columns-2';
 	import Rows2 from '@lucide/svelte/icons/rows-2';
 	import ScrollText from '@lucide/svelte/icons/scroll-text';

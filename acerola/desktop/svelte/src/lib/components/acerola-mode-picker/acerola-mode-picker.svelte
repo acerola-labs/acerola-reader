@@ -2,7 +2,7 @@
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SunIcon from '@lucide/svelte/icons/sun';
-	import type { ThemeModeOption } from '$lib/hooks/theme/use-theme.svelte';
+	import type { ThemeModeOption } from '#lib/hooks/theme/use-theme.svelte.ts';
 	import type { Component } from 'svelte';
 
 	export type ModePickerProps = {
@@ -18,9 +18,9 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import { useTheme } from '$lib/hooks/theme/use-theme.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { useTheme } from '#lib/hooks/theme/use-theme.svelte.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	const themeCtx = useTheme();
 

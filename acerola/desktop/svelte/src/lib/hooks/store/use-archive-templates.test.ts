@@ -3,8 +3,8 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { error as tauriError } from '@tauri-apps/plugin-log';
-import { ARCHIVE_TEMPLATE_COMMANDS } from '$lib/contracts/archive/archive-template.commands';
-import type { ArchiveTemplate } from '$lib/contracts/archive/archive-template.payloads';
+import { ARCHIVE_TEMPLATE_COMMANDS } from '#lib/contracts/archive/archive-template.commands.ts';
+import type { ArchiveTemplate } from '#lib/contracts/archive/archive-template.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { _resetArchiveTemplatesState, useArchiveTemplates } from './use-archive-templates.svelte';
 

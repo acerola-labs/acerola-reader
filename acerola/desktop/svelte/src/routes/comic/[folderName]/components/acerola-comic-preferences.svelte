@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { SyncDirection } from '$lib/hooks/store/use-network-sync.svelte';
+	import type { SyncDirection } from '#lib/hooks/store/use-network-sync.svelte.ts';
 
 	export type ComicPreferencesProps = {
 		data?: {
@@ -51,17 +51,17 @@
 
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import AcerolaAccordionCard from '$lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaSelect from '$lib/components/acerola-select/acerola-select.svelte';
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import AcerolaToggleCard from '$lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
-	import { buttonVariants } from '$lib/components/ui/button';
-	import { ToggleGroupItem } from '$lib/components/ui/toggle-group/index';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaSelect from '#lib/components/acerola-select/acerola-select.svelte';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import AcerolaToggleCard from '#lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import { buttonVariants } from '#lib/components/ui/button/index.ts';
+	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	import Layers from '@lucide/svelte/icons/layers';
 	import Layers2 from '@lucide/svelte/icons/layers-2';
@@ -71,8 +71,8 @@
 	import CloudSync from '@lucide/svelte/icons/cloud-sync';
 	import Link from '@lucide/svelte/icons/link';
 	import FileText from '@lucide/svelte/icons/file-text';
-	import MangaDexIcon from '$lib/assets/icons/mangadex.svg?component';
-	import AniListIcon from '$lib/assets/icons/anilist.svg?component';
+	import MangaDexIcon from '#lib/assets/icons/mangadex.svg?component';
+	import AniListIcon from '#lib/assets/icons/anilist.svg?component';
 	import FolderSync from '@lucide/svelte/icons/folder-sync';
 	import Image from '@lucide/svelte/icons/image';
 	import Eraser from '@lucide/svelte/icons/eraser';

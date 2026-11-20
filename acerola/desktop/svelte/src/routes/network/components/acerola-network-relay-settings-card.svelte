@@ -33,16 +33,16 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import KeyRoundIcon from '@lucide/svelte/icons/key-round';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
-	import AcerolaAccordionCard from '$lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaToggleCard from '$lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
-	import { autoAnimateList } from '$lib/utils/auto-animate.utils';
-	import { checkBadgePop } from '$lib/utils/check-badge-motion.utils';
+	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
+	import AcerolaToggleCard from '#lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
+	import { checkBadgePop } from '#lib/utils/check-badge-motion.util.ts';
 
 	let { data, events }: NetworkRelaySettingsCardProps = $props();
 

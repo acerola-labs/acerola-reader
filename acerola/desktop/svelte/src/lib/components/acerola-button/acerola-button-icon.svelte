@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { Button, type ButtonProps } from '$lib/components/ui/button';
+	import { Button, type ButtonProps } from '#lib/components/ui/button/index.ts';
 
 	// Padrão "contorno": bg SÓLIDO colorido por padrão (não só no hover) com o ícone na cor
 	// de foreground por cima — o bg contorna o ícone, não o contrário. `accent` é pra ações
@@ -34,7 +34,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import type { Snippet } from 'svelte';
 
 	let {

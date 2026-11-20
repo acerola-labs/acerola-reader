@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { toast } from 'svelte-sonner';
 	import AcerolaSonner from './acerola-sonner.svelte';
-	import { toastAsync } from '$lib/utils/toast-async.utils';
+	import { toastAsync } from '#lib/utils/toast-async.util.ts';
 
 	function fakeInstantAction(): Promise<void> {
 		// Resolve na hora de propósito — é o caso que `toastAsync` protege (`minDurationMs`),

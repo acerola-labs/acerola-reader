@@ -34,7 +34,7 @@
 
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 

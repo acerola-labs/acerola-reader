@@ -1,13 +1,13 @@
 import { invoke } from '@tauri-apps/api/core';
 import { onDestroy } from 'svelte';
-import { READER_COMMANDS } from '$lib/contracts/reader/reader.commands';
+import { READER_COMMANDS } from '#lib/contracts/reader/reader.commands.ts';
 import type {
 	ReaderCachedPagePayload,
 	ReaderChapterPayload,
 	ReaderPagePayload,
 	ReaderSessionPayload
-} from '$lib/contracts/reader/reader.payloads';
-import { LRUService } from '$lib/services/lru.service';
+} from '#lib/contracts/reader/reader.payloads.ts';
+import { LRUService } from '#lib/services/lru.service.ts';
 
 // INFO: Espelha DEFAULT_CACHE_CAPACITY do backend (core/services/reader/mod.rs) —
 // janela deslizante, não o capítulo inteiro. É só o valor usado antes do

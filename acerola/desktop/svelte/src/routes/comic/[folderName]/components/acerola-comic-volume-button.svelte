@@ -18,9 +18,9 @@
 	import Folder from '@lucide/svelte/icons/folder';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
-	import { cn } from '$lib/utils/cn.utils';
-	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
-	import { m } from '$lib/paraglide/messages';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { AspectRatio } from '#lib/components/ui/aspect-ratio/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events }: ComicVolumeButtonProps = $props();
 

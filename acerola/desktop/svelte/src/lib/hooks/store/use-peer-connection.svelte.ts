@@ -1,24 +1,24 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
 import type {
 	DeviceInfoPayload,
 	NetworkStatusPayload,
 	PairedPeerPayload,
 	RelayInfo
-} from '$lib/contracts/network/network.payloads';
+} from '#lib/contracts/network/network.payloads.ts';
 import {
 	decodeConnectionCode,
 	encodeConnectionCode,
 	InvalidConnectionCodeError,
 	shortId,
 	type LocalPeerAddr
-} from '$lib/utils/connection-code.utils';
+} from '#lib/utils/connection-code.util.ts';
 
-export { InvalidConnectionCodeError, shortId } from '$lib/utils/connection-code.utils';
+export { InvalidConnectionCodeError, shortId } from '#lib/utils/connection-code.util.ts';
 
 const HANDSHAKE_ALPN = 'acerola/handshake/1';
 

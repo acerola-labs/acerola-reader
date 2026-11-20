@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Select as SelectPrimitive } from 'bits-ui';
-	import { cn, type WithoutChild } from '$lib/utils/cn.utils';
+	import { cn, type WithoutChild } from '#lib/utils/cn.util.ts';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	let {

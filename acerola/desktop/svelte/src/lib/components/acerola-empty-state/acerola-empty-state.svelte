@@ -16,8 +16,8 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
-	import { revealIn } from '$lib/utils/motion.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { revealIn } from '#lib/utils/motion.util.ts';
 
 	let { data, ui, action }: AcerolaEmptyStateProps = $props();
 </script>

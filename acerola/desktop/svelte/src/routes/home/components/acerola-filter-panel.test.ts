@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, within } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AcerolaFilterPanel from './acerola-filter-panel.svelte';
-import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 // Not anchored: selected sort options render extra content (A–Z/Z–A badge, check icon)
 // appended to their accessible name, so an exact/anchored match would miss them.

@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaNetworkTransfersLog from './acerola-network-transfers-log.svelte';
-	import type { TransferLogEntry } from '$lib/hooks/store/use-network-sync.svelte';
+	import type { TransferLogEntry } from '#lib/hooks/store/use-network-sync.svelte.ts';
 
 	const entries: TransferLogEntry[] = [
 		{

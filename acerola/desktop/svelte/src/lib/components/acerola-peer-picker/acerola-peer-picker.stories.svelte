@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaPeerPicker from './acerola-peer-picker.svelte';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 
 	const peers: PairedPeerPayload[] = [
 		{ peerId: 'peer-1', addrs: [1, 2, 3], deviceName: 'Meu Celular' },

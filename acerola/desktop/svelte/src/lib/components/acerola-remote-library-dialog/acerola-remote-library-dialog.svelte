@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+	import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 
 	export type AcerolaRemoteLibraryDialogProps = {
 		state: {
@@ -21,10 +21,10 @@
 </script>
 
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import AcerolaDialog from '$lib/components/acerola-dialog/acerola-dialog.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
+	import { m } from '#lib/paraglide/messages.js';
+	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';

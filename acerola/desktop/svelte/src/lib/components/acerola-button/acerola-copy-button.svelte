@@ -14,9 +14,9 @@
 <script lang="ts">
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils/cn.utils';
-	import { m } from '$lib/paraglide/messages';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		value,

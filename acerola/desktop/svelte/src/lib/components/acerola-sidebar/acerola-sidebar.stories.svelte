@@ -5,7 +5,7 @@
 	import HistoryIcon from '@lucide/svelte/icons/history';
 	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
-	import AcerolaLogo from '$lib/assets/icons/acerola.svg?component';
+	import AcerolaLogo from '#lib/assets/icons/acerola.svg?component';
 
 	const items = [
 		{ href: '/home', label: 'Home', icon: HouseIcon },

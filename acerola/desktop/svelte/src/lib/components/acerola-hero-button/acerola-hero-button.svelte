@@ -26,9 +26,9 @@
 </script>
 
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import * as Item from '$lib/components/ui/item/index';
-	import { cn } from '$lib/utils/cn.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import * as Item from '#lib/components/ui/item/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { data, events, ui, icon, action }: AcerolaHeroButtonProps & AcerolaHeroButtonSnippets =
 		$props();

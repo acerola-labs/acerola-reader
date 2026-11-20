@@ -37,14 +37,14 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import RadioIcon from '@lucide/svelte/icons/radio';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { shortId } from '$lib/utils/connection-code.utils';
-	import { autoAnimateList } from '$lib/utils/auto-animate.utils';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { shortId } from '#lib/utils/connection-code.util.ts';
+	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
 
 	let { data, events }: NetworkPeerListProps = $props();
 

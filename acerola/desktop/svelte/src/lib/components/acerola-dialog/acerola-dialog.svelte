@@ -19,9 +19,9 @@
 </script>
 
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog/index';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import type { Snippet } from 'svelte';
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		state = $bindable({ open: false }),

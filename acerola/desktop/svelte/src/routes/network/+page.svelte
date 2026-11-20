@@ -5,10 +5,10 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 
-	import { m } from '$lib/paraglide/messages';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaRemoteLibraryDialog from '$lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaRemoteLibraryDialog from '#lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
 	import AcerolaNetworkMyDeviceCard from './components/acerola-network-my-device-card.svelte';
 	import AcerolaNetworkRelaySettingsCard from './components/acerola-network-relay-settings-card.svelte';
 	import AcerolaNetworkPairingCard from './components/acerola-network-pairing-card.svelte';
@@ -18,13 +18,13 @@
 	} from './components/acerola-network-peer-list.svelte';
 	import AcerolaNetworkTransfersLog from './components/acerola-network-transfers-log.svelte';
 
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { useRemoteLibrary } from '$lib/hooks/store/use-remote-library.svelte';
-	import { useRelaySettings } from '$lib/hooks/preferences/use-relay-settings.svelte';
-	import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-	import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { useRemoteLibrary } from '#lib/hooks/store/use-remote-library.svelte.ts';
+	import { useRelaySettings } from '#lib/hooks/preferences/use-relay-settings.svelte.ts';
+	import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+	import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
 	import XIcon from '@lucide/svelte/icons/x';

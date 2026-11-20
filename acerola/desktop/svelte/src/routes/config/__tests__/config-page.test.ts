@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
-import { _resetBookmarksState } from '$lib/hooks/store/use-bookmarks.svelte';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
+import { _resetBookmarksState } from '#lib/hooks/store/use-bookmarks.svelte.ts';
 import ConfigPage from '../+page.svelte';
 
 const { mockGoto } = vi.hoisted(() => ({ mockGoto: vi.fn() }));

@@ -3,11 +3,11 @@ import { replaceState } from '$app/navigation';
 import { page } from '$app/state';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { SESSION_KEYS } from '$lib/constants/session-keys';
-import type { ChapterPayload } from '$lib/contracts/library/chapter.payloads';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { SESSION_KEYS } from '#lib/constants/session-keys.ts';
+import type { ChapterPayload } from '#lib/contracts/library/chapter.payloads.ts';
 import { onMount } from 'svelte';
 
 export type ReaderNavigationState = {

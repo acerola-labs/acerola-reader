@@ -1,5 +1,5 @@
-import * as m from '$lib/paraglide/messages';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
+import * as m from '#lib/paraglide/messages.js';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
 
 // Contrato entre os tipos de erro do Rust (ComicError) e as mensagens do Paraglide.
 // A chave é o valor exato do campo `errorType` vindo do payload do evento Tauri.

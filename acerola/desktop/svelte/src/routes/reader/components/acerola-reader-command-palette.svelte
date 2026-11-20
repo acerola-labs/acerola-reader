@@ -23,10 +23,10 @@
 </script>
 
 <script lang="ts">
-	import AcerolaCommand from '$lib/components/acerola-command/acerola-command.svelte';
-	import * as Command from '$lib/components/ui/command';
+	import AcerolaCommand from '#lib/components/acerola-command/acerola-command.svelte';
+	import * as Command from '#lib/components/ui/command/index.ts';
 	import { fade, scale } from 'svelte/transition';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import Columns2 from '@lucide/svelte/icons/columns-2';
 	import Rows2 from '@lucide/svelte/icons/rows-2';
 	import ScrollText from '@lucide/svelte/icons/scroll-text';

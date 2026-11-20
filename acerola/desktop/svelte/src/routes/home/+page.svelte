@@ -4,25 +4,25 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import AcerolaEmptyState from '$lib/components/acerola-empty-state/acerola-empty-state.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import AcerolaComicActionDialog from './components/acerola-comic-action-dialog.svelte';
 	import AcerolaFilterPanel, {
 		type BookmarkFilter
 	} from './components/acerola-filter-panel.svelte';
-	import AcerolaPeerPicker from '$lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
-	import AcerolaRemoteLibraryDialog from '$lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { useComicSelection } from '$lib/hooks/store/use-comic-selection.svelte';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { useRemoteLibrary } from '$lib/hooks/store/use-remote-library.svelte';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import AcerolaPeerPicker from '#lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
+	import AcerolaRemoteLibraryDialog from '#lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { useComicSelection } from '#lib/hooks/store/use-comic-selection.svelte.ts';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { useRemoteLibrary } from '#lib/hooks/store/use-remote-library.svelte.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 	import MoreVertical from '@lucide/svelte/icons/more-vertical';
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import Check from '@lucide/svelte/icons/check';
@@ -31,23 +31,23 @@
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import SearchX from '@lucide/svelte/icons/search-x';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
-	import { LIBRARY_EVENTS } from '$lib/contracts/library/library.events';
-	import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-	import { useLibraryScanner } from '$lib/hooks/store/use-comic-scanner.svelte';
-	import { useComicSummary } from '$lib/hooks/store/use-comic-summary.svelte';
-	import { useComicContext } from '$lib/state/comic-context.svelte';
-	import { resolveCover } from '$lib/utils/artwork.utils';
+	import { LIBRARY_EVENTS } from '#lib/contracts/library/library.events.ts';
+	import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+	import { useLibraryScanner } from '#lib/hooks/store/use-comic-scanner.svelte.ts';
+	import { useComicSummary } from '#lib/hooks/store/use-comic-summary.svelte.ts';
+	import { useComicContext } from '#lib/state/comic-context.svelte.ts';
+	import { resolveCover } from '#lib/utils/artwork.util.ts';
 	import { listen } from '@tauri-apps/api/event';
 	import { getContext, onDestroy, onMount } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { toast } from 'svelte-sonner';
 	import type {
 		ComicSummaryItemPayload,
 		MetadataSource,
 		SortBy,
 		SortOrder
-	} from '$lib/contracts/home/home.payloads';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+	} from '#lib/contracts/home/home.payloads.ts';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 
 	const summary = useComicSummary();
 	const activeComic = useComicContext();

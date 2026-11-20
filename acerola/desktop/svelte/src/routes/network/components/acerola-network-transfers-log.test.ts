@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import AcerolaNetworkTransfersLog from './acerola-network-transfers-log.svelte';
-import type { TransferLogEntry } from '$lib/hooks/store/use-network-sync.svelte';
+import type { TransferLogEntry } from '#lib/hooks/store/use-network-sync.svelte.ts';
 
 function entry(overrides: Partial<TransferLogEntry> = {}): TransferLogEntry {
 	return {

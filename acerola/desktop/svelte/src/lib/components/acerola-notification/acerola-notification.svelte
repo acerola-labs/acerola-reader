@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { createNotifications } from '$lib/state/notification.svelte';
+	import { createNotifications } from '#lib/state/notification.svelte.ts';
 	import { tv } from 'tailwind-variants';
 
 	import AlertTriangleIcon from '@lucide/svelte/icons/alert-triangle';
@@ -36,14 +36,14 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { fly, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { cubicOut } from 'svelte/easing';
 
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	const { notifications, pop, clearAll } = notificationStore;
 

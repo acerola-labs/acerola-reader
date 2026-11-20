@@ -2,9 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { invoke } from '@tauri-apps/api/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ARCHIVE_TEMPLATE_COMMANDS } from '$lib/contracts/archive/archive-template.commands';
-import { _resetArchiveTemplatesState } from '$lib/hooks/store/use-archive-templates.svelte';
-import type { ArchiveTemplate } from '$lib/contracts/archive/archive-template.payloads';
+import { ARCHIVE_TEMPLATE_COMMANDS } from '#lib/contracts/archive/archive-template.commands.ts';
+import { _resetArchiveTemplatesState } from '#lib/hooks/store/use-archive-templates.svelte.ts';
+import type { ArchiveTemplate } from '#lib/contracts/archive/archive-template.payloads.ts';
 
 vi.mock('@tauri-apps/api/core', () => ({
 	invoke: vi.fn()

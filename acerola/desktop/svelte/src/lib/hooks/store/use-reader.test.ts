@@ -1,12 +1,12 @@
 import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { READER_COMMANDS } from '$lib/contracts/reader/reader.commands';
+import { READER_COMMANDS } from '#lib/contracts/reader/reader.commands.ts';
 import type {
 	ReaderChapterPayload,
 	ReaderPagePayload,
 	ReaderSessionPayload
-} from '$lib/contracts/reader/reader.payloads';
+} from '#lib/contracts/reader/reader.payloads.ts';
 import { useReader } from './use-reader.svelte';
 import ReaderHarness from '../../../../tests/harness/hooks/reader-store.svelte';
 import { invoke } from '@tauri-apps/api/core';

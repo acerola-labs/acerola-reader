@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { toast } from 'svelte-sonner';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/library.events';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/library.events.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useLibraryScanner } from './use-comic-scanner.svelte';
 

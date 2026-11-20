@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { ComicSummaryItemPayload } from '$lib/contracts/home/home.payloads';
-	import { setComicContext, type ActiveComicState } from '$lib/state/comic-context.svelte';
+	import type { ComicSummaryItemPayload } from '#lib/contracts/home/home.payloads.ts';
+	import { setComicContext, type ActiveComicState } from '#lib/state/comic-context.svelte.ts';
 	import Child from './comic-context-child.svelte';
 
 	let {

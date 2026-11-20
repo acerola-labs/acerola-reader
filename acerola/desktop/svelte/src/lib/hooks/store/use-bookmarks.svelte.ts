@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { error } from '@tauri-apps/plugin-log';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
-import type { Category, MangaCategory } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
+import type { Category, MangaCategory } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 let bookmarks = $state<Category[]>([]);
 let assignments = $state<MangaCategory[]>([]);

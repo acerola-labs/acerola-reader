@@ -21,10 +21,10 @@
 </script>
 
 <script lang="ts">
-	import * as AlertDialog from '$lib/components/ui/alert-dialog/index';
+	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.ts';
 	import type { Snippet } from 'svelte';
-	import { buttonVariants } from '$lib/components/ui/button/index';
-	import { cn } from '$lib/utils/cn.utils';
+	import { buttonVariants } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		state = $bindable({ open: false }),

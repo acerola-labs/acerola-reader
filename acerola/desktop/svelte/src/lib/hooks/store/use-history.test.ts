@@ -3,9 +3,9 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'svelte-sonner';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { HISTORY_COMMANDS } from '$lib/contracts/history/history.commands';
-import type { ReadingHistoryPayload } from '$lib/contracts/history/history.payloads';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
+import type { ReadingHistoryPayload } from '#lib/contracts/history/history.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useHistory } from './use-history.svelte';
 
