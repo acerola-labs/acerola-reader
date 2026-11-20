@@ -66,7 +66,7 @@
 
 <section
 	class={cn(
-		'relative w-full overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-b from-card/80 via-card/50 to-background/90 p-6 shadow-2xl backdrop-blur-xl sm:p-10',
+		'relative w-full overflow-hidden rounded-tile border border-border/70 bg-gradient-to-b from-card/80 via-card/50 to-background/90 p-6 shadow-float backdrop-blur-xl sm:p-10',
 		className
 	)}
 >
@@ -79,7 +79,7 @@
 	<div class="mb-10 text-center sm:text-left">
 		{#if eyebrow}
 			<div
-				class="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary"
+				class="mb-3 inline-flex items-center gap-2 rounded-full border bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary"
 			>
 				<TerminalIcon size={13} />
 				<span>{eyebrow}</span>
@@ -102,7 +102,7 @@
 			{#each features as feat}
 				<div class="group flex items-start gap-4">
 					<div
-						class="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-background/80 text-primary shadow-xs transition-transform duration-200 group-hover:scale-105 group-hover:border-primary/40 group-hover:shadow-[0_0_16px_rgba(var(--color-primary-rgb),0.2)]"
+						class="flex size-11 shrink-0 items-center justify-center rounded-inner border border-border/80 bg-background/80 text-primary transition-transform duration-200 group-hover:scale-105"
 					>
 						{#if feat.icon}
 							<feat.icon size={20} />
@@ -124,7 +124,7 @@
 
 		<!-- Code Card Showcase (Right - Cult UI style) -->
 		<div
-			class="relative flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/95 shadow-xl lg:col-span-7"
+			class="relative flex flex-col overflow-hidden rounded-inner border border-border/80 bg-background/95 shadow-float lg:col-span-7"
 		>
 			<!-- Top Tab Bar -->
 			<div
@@ -133,9 +133,9 @@
 				<!-- Window mock circles + Tabs -->
 				<div class="flex items-center gap-3">
 					<div class="flex items-center gap-1.5 pl-1.5">
-						<span class="size-2.5 rounded-full bg-rose-500/80"></span>
-						<span class="size-2.5 rounded-full bg-amber-500/80"></span>
-						<span class="size-2.5 rounded-full bg-emerald-500/80"></span>
+						<span class="size-2.5 rounded-full bg-destructive-soft"></span>
+						<span class="size-2.5 rounded-full bg-warning-soft"></span>
+						<span class="size-2.5 rounded-full bg-success-soft"></span>
 					</div>
 
 					<div class="flex items-center gap-1 border-l border-border/60 pl-3">
@@ -145,9 +145,9 @@
 								type="button"
 								onclick={() => (selectedTabId = tab.id)}
 								class={cn(
-									'rounded-lg px-2.5 py-1 font-mono text-xs font-medium transition-all',
+									'rounded-inner px-2.5 py-1 font-mono text-xs font-medium transition-all',
 									isActive
-										? 'border border-border/60 bg-card text-foreground shadow-xs'
+										? 'border border-border/60 bg-card text-foreground'
 										: 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
 								)}
 							>
@@ -161,20 +161,20 @@
 				<button
 					type="button"
 					onclick={handleCopy}
-					aria-label={copied ? m['marketing_code.copied_aria']() : m['marketing_code.copy_aria']()}
+					aria-label={copied ? m['marketingCode.copiedAria']() : m['marketingCode.copyAria']()}
 					class={cn(
-						'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-xs font-medium transition-all active:scale-95',
+						'inline-flex items-center gap-1.5 rounded-inner border px-2.5 py-1 font-mono text-xs font-medium transition-all active:scale-95',
 						copied
-							? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)]'
+							? ' bg-success-soft text-success shadow-lift'
 							: 'border-border/60 bg-card/60 text-muted-foreground hover:border-border hover:bg-card hover:text-foreground'
 					)}
 				>
 					{#if copied}
 						<CheckIcon size={12} strokeWidth={2.5} class="animate-in zoom-in-50" />
-						<span>{m['marketing_code.copied']()}</span>
+						<span>{m['marketingCode.copied']()}</span>
 					{:else}
 						<CopyIcon size={12} />
-						<span>{m['marketing_code.copy']()}</span>
+						<span>{m['marketingCode.copy']()}</span>
 					{/if}
 				</button>
 			</div>

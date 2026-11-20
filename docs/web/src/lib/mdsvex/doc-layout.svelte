@@ -36,7 +36,7 @@
 		button.type = 'button';
 		button.setAttribute('aria-label', labelText);
 		button.className =
-			'flex items-center justify-center rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground';
+			'flex items-center justify-center rounded-inner p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground';
 		mount(icon, { target: button, props: { size: 14 } });
 		button.addEventListener('click', onClick);
 		return button;
@@ -97,38 +97,38 @@
 			cell(
 				2,
 				1,
-				iconButton(m['mermaid.pan_up'](), ChevronUpIcon, () => pan(0, PAN_STEP))
+				iconButton(m['mermaid.panUp'](), ChevronUpIcon, () => pan(0, PAN_STEP))
 			),
 			cell(
 				1,
 				2,
-				iconButton(m['mermaid.pan_left'](), ChevronLeftIcon, () => pan(PAN_STEP, 0))
+				iconButton(m['mermaid.panLeft'](), ChevronLeftIcon, () => pan(PAN_STEP, 0))
 			),
 			cell(2, 2, iconButton(m['mermaid.reset'](), RotateCcwIcon, reset)),
 			cell(
 				3,
 				2,
-				iconButton(m['mermaid.pan_right'](), ChevronRightIcon, () => pan(-PAN_STEP, 0))
+				iconButton(m['mermaid.panRight'](), ChevronRightIcon, () => pan(-PAN_STEP, 0))
 			),
 			cell(
 				2,
 				3,
-				iconButton(m['mermaid.pan_down'](), ChevronDownIcon, () => pan(0, -PAN_STEP))
+				iconButton(m['mermaid.panDown'](), ChevronDownIcon, () => pan(0, -PAN_STEP))
 			)
 		);
 
 		const zoomStack = document.createElement('div');
 		zoomStack.className = 'flex flex-col items-center gap-0.5';
 		zoomStack.append(
-			iconButton(m['mermaid.zoom_in'](), PlusIcon, () => zoomBy(0.25)),
+			iconButton(m['mermaid.zoomIn'](), PlusIcon, () => zoomBy(0.25)),
 			zoomLabel,
-			iconButton(m['mermaid.zoom_out'](), MinusIcon, () => zoomBy(-0.25))
+			iconButton(m['mermaid.zoomOut'](), MinusIcon, () => zoomBy(-0.25))
 		);
 
 		const toolbar = document.createElement('div');
 		toolbar.dataset.mermaidControls = '';
 		toolbar.className =
-			'absolute bottom-2 right-2 z-10 flex items-center gap-1.5 rounded-md border border-border bg-background/90 p-1.5 opacity-0 backdrop-blur transition-opacity';
+			'absolute bottom-2 right-2 z-10 flex items-center gap-1.5 rounded-inner border border-border bg-background/90 p-1.5 opacity-0 backdrop-blur transition-opacity';
 		toolbar.append(pad, zoomStack);
 		node.appendChild(toolbar);
 	}
@@ -186,10 +186,10 @@
 			const btn = document.createElement('button');
 			btn.type = 'button';
 			btn.dataset.codeCopyButton = '';
-			btn.setAttribute('aria-label', m['marketing_code.copy_aria']?.() ?? 'Copiar');
-			btn.title = m['marketing_code.copy']?.() ?? 'Copiar';
+			btn.setAttribute('aria-label', m['marketingCode.copyAria']?.() ?? 'Copiar');
+			btn.title = m['marketingCode.copy']?.() ?? 'Copiar';
 			btn.className =
-				'absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/90 px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur-md transition-all duration-200 hover:border-primary/50 hover:bg-card hover:text-foreground active:scale-95 cursor-pointer';
+				'absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-inner border border-border/80 bg-card/90 px-2.5 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-card hover:text-foreground active:scale-95 cursor-pointer';
 
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'flex items-center justify-center';
@@ -197,7 +197,7 @@
 
 			const labelSpan = document.createElement('span');
 			labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-			labelSpan.textContent = m['marketing_code.copy']?.() ?? 'Copiar';
+			labelSpan.textContent = m['marketingCode.copy']?.() ?? 'Copiar';
 
 			btn.append(iconSpan, labelSpan);
 
@@ -210,18 +210,18 @@
 				await navigator.clipboard.writeText(textToCopy);
 
 				iconSpan.innerHTML = '';
-				mount(CheckIcon, { target: iconSpan, props: { size: 14, class: 'text-emerald-400' } });
-				labelSpan.textContent = m['marketing_code.copied']?.() ?? 'Copiado!';
-				labelSpan.className = 'text-[11px] font-mono text-emerald-400 select-none hidden sm:inline';
-				btn.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
+				mount(CheckIcon, { target: iconSpan, props: { size: 14, class: 'text-success' } });
+				labelSpan.textContent = m['marketingCode.copied']?.() ?? 'Copiado!';
+				labelSpan.className = 'text-[11px] font-mono text-success select-none hidden sm:inline';
+				btn.classList.add('', 'bg-success-soft');
 
 				clearTimeout(resetTimeout);
 				resetTimeout = setTimeout(() => {
 					iconSpan.innerHTML = '';
 					mount(CopyIcon, { target: iconSpan, props: { size: 14 } });
-					labelSpan.textContent = m['marketing_code.copy']?.() ?? 'Copiar';
+					labelSpan.textContent = m['marketingCode.copy']?.() ?? 'Copiar';
 					labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-					btn.classList.remove('border-emerald-500/50', 'bg-emerald-500/10');
+					btn.classList.remove('', 'bg-success-soft');
 				}, 2000);
 			});
 

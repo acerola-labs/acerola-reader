@@ -5,6 +5,8 @@
 @import '@fontsource-variable/noto-serif';
 
 @import './colors/catppuccin.css';
+@import './tokens.css';
+@import './components.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -13,8 +15,6 @@
 	--font-heading: 'Noto Serif Variable', serif;
 	--font-mono:
 		ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-
-	--radius-huge: 2.5rem;
 
 	--color-crust: var(--crust);
 	--color-mantle: var(--mantle);

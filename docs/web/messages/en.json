@@ -8,18 +8,18 @@
 		"og": {
 			"title": "Acerola — Local-first comic & manga reader",
 			"description": "Read your comics and manga on any device. Acerola syncs your library straight between your devices over P2P — no cloud, no account, no lock-in.",
-			"image_alt": "Screenshot of the Acerola docs homepage"
+			"imageAlt": "Screenshot of the Acerola docs homepage"
 		}
 	},
 	"nav": {
 		"docs": "Docs",
 		"github": "GitHub",
-		"search_placeholder": "Search the docs...",
-		"search_shortcut_hint": "Search",
-		"menu_toggle": "Toggle menu",
-		"skip_to_content": "Skip to content"
+		"searchPlaceholder": "Search the docs...",
+		"searchShortcutHint": "Search",
+		"menuToggle": "Toggle menu",
+		"skipToContent": "Skip to content"
 	},
-	"theme_picker": {
+	"themePicker": {
 		"title": "Change theme",
 		"light": "Light",
 		"dark": "Dark",
@@ -32,10 +32,10 @@
 		"title": "Search",
 		"placeholder": "Type to search...",
 		"idle": "Type to search the whole documentation.",
-		"no_results": "No results found.",
+		"noResults": "No results found.",
 		"close": "Close",
 		"loading": "Loading search index...",
-		"unavailable_dev": "Search is only available in the production build (`npm run build`)."
+		"unavailableDev": "Search is only available in the production build (`npm run build`)."
 	},
 	"toc": {
 		"title": "On this page"
@@ -48,58 +48,58 @@
 		}
 	},
 	"mermaid": {
-		"zoom_in": "Zoom in",
-		"zoom_out": "Zoom out",
+		"zoomIn": "Zoom in",
+		"zoomOut": "Zoom out",
 		"reset": "Reset",
-		"pan_up": "Pan up",
-		"pan_down": "Pan down",
-		"pan_left": "Pan left",
-		"pan_right": "Pan right"
+		"panUp": "Pan up",
+		"panDown": "Pan down",
+		"panLeft": "Pan left",
+		"panRight": "Pan right"
 	},
-	"prev_next": {
+	"prevNext": {
 		"previous": "Previous",
 		"next": "Next"
 	},
 	"footer": {
-		"edit_page": "Edit this page on GitHub",
+		"editPage": "Edit this page on GitHub",
 		"license": "Code under the MPL-2.0 license"
 	},
 	"landing": {
-		"hero_kicker": "Local-first comic & manga reader",
-		"hero_title": "Read your comics and manga on any device. No account, no cloud.",
-		"hero_subtitle": "Your library stays on your devices and syncs directly between them over encrypted P2P — no server stores or sees your data.",
-		"cta_get_started": "Get Started",
-		"cta_github": "View on GitHub",
-		"scroll_hint": "Scroll to explore",
+		"heroKicker": "Local-first comic & manga reader",
+		"heroTitle": "Read your comics and manga on any device. No account, no cloud.",
+		"heroSubtitle": "Your library stays on your devices and syncs directly between them over encrypted P2P — no server stores or sees your data.",
+		"ctaGetStarted": "Get Started",
+		"ctaGithub": "View on GitHub",
+		"scrollHint": "Scroll to explore",
 		"facts": {
-			"no_cloud": "No cloud",
-			"no_account": "No account",
-			"open_source": "Open source"
+			"noCloud": "No cloud",
+			"noAccount": "No account",
+			"openSource": "Open source"
 		},
 		"features": {
 			"title": "Built around one idea: your library is yours",
-			"no_cloud": {
+			"noCloud": {
 				"title": "No cloud, no account",
 				"desc": "Your comics, progress, and metadata stay on your devices. No sign-up, no central server."
 			},
-			"p2p_sync": {
+			"p2pSync": {
 				"title": "Direct P2P sync",
 				"desc": "Devices connect straight to each other over iroh/QUIC. When a direct connection isn't possible, a relay just helps them find each other — it never sees your library."
 			},
-			"open_source": {
+			"openSource": {
 				"title": "Open source",
 				"desc": "Every platform — Android, desktop, and the sync libraries — is MPL-2.0 and open for anyone to read, build, or audit."
 			}
 		},
-		"how_it_works": {
+		"howItWorks": {
 			"title": "From install to synced, in three steps",
 			"install": "Install Acerola on the devices you want to sync — download the Android APK or build the desktop app from source.",
 			"pair": "Open Network on both devices and scan the QR code shown on one with the other.",
 			"confirm": "Confirm the pairing. From then on, your library and reading progress sync automatically, device to device.",
-			"note_title": "No local network?",
-			"note_desc": "Acerola falls back to a relay (self-hosted or ours) just to help peers find each other — no port forwarding needed, and it never touches your library."
+			"noteTitle": "No local network?",
+			"noteDesc": "Acerola falls back to a relay (self-hosted or ours) just to help peers find each other — no port forwarding needed, and it never touches your library."
 		},
-		"platforms_title": "One ecosystem, many platforms",
+		"platformsTitle": "One ecosystem, many platforms",
 		"platform": {
 			"android": {
 				"title": "Android",
@@ -117,13 +117,13 @@
 				"title": "lib/p2p",
 				"desc": "Shared P2P library in Rust, built on iroh/QUIC."
 			},
-			"relay_lib": {
+			"relayLib": {
 				"title": "lib/relay",
 				"desc": "Vendored iroh relay code, the base for the relay service."
 			}
 		},
 		"architecture": {
-			"section_title": "P2P Architecture and Open Source",
+			"sectionTitle": "P2P Architecture and Open Source",
 			"eyebrow": "Local-First Engineering",
 			"title": "Built to give you total control over your data",
 			"desc": "See how Acerola combines Rust, iroh/QUIC, and open standards to ensure privacy and maximum speed.",
@@ -140,27 +140,72 @@
 				"desc": "Full ComicInfo.xml compatibility and automatic sync with MangaDex and AniList with zero lock-in."
 			},
 			"tabs": {
-				"p2p_label": "P2P Sync",
-				"p2p_comment_connect": "// Direct encrypted P2P connection with iroh/QUIC",
-				"p2p_comment_transfer": "// Transfers chapter index and reading history",
-				"caddy_label": "Caddy Relay",
-				"caddy_comment": "# Caddy reverse proxy for your self-hosted Acerola relay"
+				"p2pLabel": "P2P Sync",
+				"p2pCommentConnect": "// Direct encrypted P2P connection with iroh/QUIC",
+				"p2pCommentTransfer": "// Transfers chapter index and reading history",
+				"caddyLabel": "Caddy Relay",
+				"caddyComment": "# Caddy reverse proxy for your self-hosted Acerola relay"
 			}
 		}
 	},
-	"marketing_code": {
+	"marketingCode": {
 		"copy": "Copy",
 		"copied": "Copied",
-		"copy_aria": "Copy code",
-		"copied_aria": "Code copied"
+		"copyAria": "Copy code",
+		"copiedAria": "Code copied"
 	},
-	"copy_card": {
+	"copyCard": {
 		"copy": "Copy",
 		"copied": "Copied"
 	},
 	"error": {
-		"404_title": "Page not found",
-		"404_desc": "The page you're looking for doesn't exist or was moved.",
-		"back_home": "Back to home"
+		"eyebrow": "Error {status}",
+		"eyebrowOffline": "No connection",
+		"sticker": "Oops!",
+		"actions": {
+			"home": "Go to the start",
+			"back": "Go back",
+			"retry": "Try again"
+		},
+		"badRequest": {
+			"title": "Something in the request was off",
+			"text": "The address or the data sent came in a shape we don't understand. Check it and start over from the home page."
+		},
+		"unauthorized": {
+			"title": "Sign in to continue",
+			"text": "This page is only for signed-in accounts. Sign in and come back here."
+		},
+		"forbidden": {
+			"title": "This page isn't for you",
+			"text": "Your account has no access to this. If you think it should, talk to whoever runs the app."
+		},
+		"notFound": {
+			"title": "Page not found",
+			"text": "The address may have changed or never existed. Go back to the start and take it from there."
+		},
+		"timeout": {
+			"title": "That took too long",
+			"text": "The answer didn't arrive in time. Try again in a moment."
+		},
+		"tooMany": {
+			"title": "Easy, too many requests",
+			"text": "Too many requests in a short time. Wait a minute and try again."
+		},
+		"server": {
+			"title": "Something broke on our side",
+			"text": "The error was ours, not yours. Try again; if it keeps happening, come back later."
+		},
+		"unavailable": {
+			"title": "Down for a moment",
+			"text": "The service is under maintenance or overloaded. Try again in a few minutes."
+		},
+		"offline": {
+			"title": "You're offline",
+			"text": "Check your Wi-Fi or mobile data and try again."
+		},
+		"unknown": {
+			"title": "Something went wrong",
+			"text": "We're not sure what happened. Try again; if it keeps happening, go back to the start."
+		}
 	}
 }

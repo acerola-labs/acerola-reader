@@ -75,7 +75,8 @@
 	<meta name="keywords" content={m['site.keywords']()} />
 	<meta name="author" content="Vinícius GPL" />
 	<meta name="robots" content="index, follow" />
-	<meta name="theme-color" content="#1e1e2e" />
+	<meta name="theme-color" content="#11111a" /><!-- design-allow: meta theme-color takes a literal; it is the dark --background token -->
+
 
 	<!-- Canonical & Multilingual Alternate Links -->
 	<link rel="canonical" href={page.url.href} />
@@ -99,25 +100,30 @@
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content={m['site.og.image_alt']()} />
+	<meta property="og:image:alt" content={m['site.og.imageAlt']()} />
 
 	<!-- Twitter Card Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={m['site.og.title']()} />
 	<meta name="twitter:description" content={m['site.og.description']()} />
 	<meta name="twitter:image" content={OG_IMAGE_URL} />
-	<meta name="twitter:image:alt" content={m['site.og.image_alt']()} />
+	<meta name="twitter:image:alt" content={m['site.og.imageAlt']()} />
 
 	<!-- JSON-LD Structured Data for Google & AI Engines. -->
 	{@html jsonLdScript}
 </svelte:head>
 
-<AcerolaScrollProgress />
-<AcerolaTopNav
-	onOpenSearch={() => (searchOpen = true)}
-	onOpenMobileNav={() => (mobileNavOpen = true)}
-/>
-<AcerolaSearchDialog bind:open={searchOpen} />
-<AcerolaMobileNav bind:open={mobileNavOpen} {groups} {activeSlug} />
+{#if page.error}
+	<!-- Acerola standard: only the error on screen, no navigation; its two actions are the way out. -->
+	{@render children()}
+{:else}
+	<AcerolaScrollProgress />
+	<AcerolaTopNav
+		onOpenSearch={() => (searchOpen = true)}
+		onOpenMobileNav={() => (mobileNavOpen = true)}
+	/>
+	<AcerolaSearchDialog bind:open={searchOpen} />
+	<AcerolaMobileNav bind:open={mobileNavOpen} {groups} {activeSlug} />
 
-{@render children()}
+	{@render children()}
+{/if}

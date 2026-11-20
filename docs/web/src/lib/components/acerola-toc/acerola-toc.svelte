@@ -65,7 +65,7 @@
 						href="#{heading.id}"
 						aria-current={activeId === heading.id ? 'true' : undefined}
 						class={cn(
-							'-ml-px block border-l-2 border-transparent py-0.5 pl-3 transition-colors',
+							'block py-0.5 pl-3 transition-colors',
 							activeId === heading.id
 								? 'font-medium text-primary'
 								: 'text-muted-foreground hover:text-foreground'

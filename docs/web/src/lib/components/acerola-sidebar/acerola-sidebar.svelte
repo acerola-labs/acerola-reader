@@ -67,9 +67,9 @@
 						<a
 							href={localizeHref(`/docs/${doc.slug}`)}
 							class={cn(
-								'group flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all',
+								'group flex items-center gap-2.5 rounded-inner px-2.5 py-1.5 text-xs font-medium transition-all',
 								isActive
-									? 'bg-primary/10 font-semibold text-primary shadow-xs'
+									? 'bg-primary/10 font-semibold text-primary'
 									: 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
 							)}
 						>

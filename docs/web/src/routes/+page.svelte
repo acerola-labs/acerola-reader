@@ -26,7 +26,7 @@
 		type CodeTab
 	} from '$lib/components/acerola-marketing-feature-code/acerola-marketing-feature-code.svelte';
 	import GithubIcon from '$lib/icons/github.svelte';
-	import { GITHUB_URL } from '$lib/constants/site';
+	import { BRAND_MASCOT_URL, GITHUB_URL } from '$lib/constants/site';
 	import { m } from '$lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
 
@@ -125,16 +125,16 @@
 
 	const FEATURE_LABELS = {
 		no_cloud: {
-			title: m['landing.features.no_cloud.title'],
-			desc: m['landing.features.no_cloud.desc']
+			title: m['landing.features.noCloud.title'],
+			desc: m['landing.features.noCloud.desc']
 		},
 		p2p_sync: {
-			title: m['landing.features.p2p_sync.title'],
-			desc: m['landing.features.p2p_sync.desc']
+			title: m['landing.features.p2pSync.title'],
+			desc: m['landing.features.p2pSync.desc']
 		},
 		open_source: {
-			title: m['landing.features.open_source.title'],
-			desc: m['landing.features.open_source.desc']
+			title: m['landing.features.openSource.title'],
+			desc: m['landing.features.openSource.desc']
 		}
 	} as const;
 
@@ -158,8 +158,8 @@
 		relay: { title: m['landing.platform.relay.title'], desc: m['landing.platform.relay.desc'] },
 		p2p: { title: m['landing.platform.p2p.title'], desc: m['landing.platform.p2p.desc'] },
 		relay_lib: {
-			title: m['landing.platform.relay_lib.title'],
-			desc: m['landing.platform.relay_lib.desc']
+			title: m['landing.platform.relayLib.title'],
+			desc: m['landing.platform.relayLib.desc']
 		}
 	} as const;
 
@@ -184,9 +184,9 @@
 	const architectureTabs = $derived<CodeTab[]>([
 		{
 			id: 'p2p-sync',
-			label: m['landing.architecture.tabs.p2p_label'](),
+			label: m['landing.architecture.tabs.p2pLabel'](),
 			filename: 'src/p2p/sync.rs',
-			code: `${m['landing.architecture.tabs.p2p_comment_connect']()}
+			code: `${m['landing.architecture.tabs.p2pCommentConnect']()}
 let endpoint = Endpoint::builder()
     .discovery_n0()
     .bind()
@@ -195,14 +195,14 @@ let endpoint = Endpoint::builder()
 let connection = endpoint.connect(peer_node_id, ALPN).await?;
 let (mut send, mut recv) = connection.open_bi().await?;
 
-${m['landing.architecture.tabs.p2p_comment_transfer']()}
+${m['landing.architecture.tabs.p2pCommentTransfer']()}
 send.write_all(&comic_sync_payload).await?;`
 		},
 		{
 			id: 'caddyfile',
-			label: m['landing.architecture.tabs.caddy_label'](),
+			label: m['landing.architecture.tabs.caddyLabel'](),
 			filename: 'Caddyfile',
-			code: `${m['landing.architecture.tabs.caddy_comment']()}
+			code: `${m['landing.architecture.tabs.caddyComment']()}
 relay.reader.acerola.app {
     reverse_proxy localhost:3340 {
         header_up Host {host}
@@ -251,33 +251,31 @@ relay.reader.acerola.app {
 				bind:this={heroContentEl}
 				class="flex max-w-3xl flex-col items-center will-change-transform"
 			>
+				<!-- Brand moment: the mascot, from the brand CDN. -->
 				<div class="hero-logo relative mb-6">
-					<div
-						class="absolute -inset-1.5 rounded-2xl bg-gradient-to-tr from-primary/30 to-ring/20 opacity-60 blur-lg"
-					></div>
 					<img
-						src="/logo.svg"
-						alt={m['site.name']()}
-						width="72"
-						height="72"
-						class="relative h-16 w-16 rounded-2xl border border-border/80 bg-card/90 p-2.5 shadow-xl backdrop-blur transition-transform duration-300 hover:scale-105 sm:h-20 sm:w-20"
+						src={BRAND_MASCOT_URL}
+						alt=""
+						width="144"
+						height="144"
+						class="relative size-28 transition-transform duration-300 hover:scale-105 sm:size-36"
 					/>
 				</div>
 
 				<div class="hero-kicker">
-					<Badge variant="secondary" class="mb-4">{m['landing.hero_kicker']()}</Badge>
+					<Badge variant="secondary" class="mb-4">{m['landing.heroKicker']()}</Badge>
 				</div>
 
 				<h1
-					class="hero-title font-heading text-3xl font-semibold text-balance sm:text-4xl md:text-5xl lg:text-6xl"
+					class="hero-title font-display text-3xl text-balance sm:text-4xl md:text-5xl lg:text-6xl"
 				>
-					<AcerolaShinyText text={m['landing.hero_title']()} />
+					<AcerolaShinyText text={m['landing.heroTitle']()} />
 				</h1>
 
 				<p
 					class="hero-subtitle mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg lg:text-xl"
 				>
-					{m['landing.hero_subtitle']()}
+					{m['landing.heroSubtitle']()}
 				</p>
 
 				<div class="hero-downloads mt-8 grid w-full max-w-md grid-cols-2 gap-3">
@@ -287,18 +285,18 @@ relay.reader.acerola.app {
 
 				<div class="hero-ctas mt-4 flex flex-wrap items-center justify-center gap-3">
 					<Button href={localizeHref('/docs/getting-started')} variant="link">
-						{m['landing.cta_get_started']()}
+						{m['landing.ctaGetStarted']()}
 					</Button>
 					<Button href={GITHUB_URL} target="_blank" rel="noreferrer" variant="ghost">
 						<GithubIcon size={16} />
-						{m['landing.cta_github']()}
+						{m['landing.ctaGithub']()}
 					</Button>
 				</div>
 
 				<div class="hero-facts mt-8 flex flex-wrap items-center justify-center gap-2">
-					<Badge variant="outline">{m['landing.facts.no_cloud']()}</Badge>
-					<Badge variant="outline">{m['landing.facts.no_account']()}</Badge>
-					<Badge variant="outline">{m['landing.facts.open_source']()}</Badge>
+					<Badge variant="outline">{m['landing.facts.noCloud']()}</Badge>
+					<Badge variant="outline">{m['landing.facts.noAccount']()}</Badge>
+					<Badge variant="outline">{m['landing.facts.openSource']()}</Badge>
 				</div>
 			</div>
 
@@ -306,15 +304,15 @@ relay.reader.acerola.app {
 			<a
 				href="#features"
 				class="scroll-indicator group mt-12 inline-flex flex-col items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground"
-				aria-label={m['landing.scroll_hint']()}
+				aria-label={m['landing.scrollHint']()}
 			>
 				<span
 					class="font-mono text-[0.68rem] tracking-widest text-muted-foreground/80 uppercase transition-colors group-hover:text-primary"
 				>
-					{m['landing.scroll_hint']()}
+					{m['landing.scrollHint']()}
 				</span>
 				<div
-					class="flex h-8 w-5 items-start justify-center rounded-full border border-border/80 p-1 shadow-sm transition-colors group-hover:border-primary group-hover:shadow-[0_0_12px_color-mix(in_srgb,var(--primary)_30%,transparent)]"
+					class="flex h-8 w-5 items-start justify-center rounded-full border border-border/80 p-1 transition-colors"
 				>
 					<div class="animate-scroll-bounce h-1.5 w-1 rounded-full bg-primary"></div>
 				</div>
@@ -363,22 +361,22 @@ relay.reader.acerola.app {
 						02.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
-						{m['landing.how_it_works.title']()}
+						{m['landing.howItWorks.title']()}
 					</h2>
 				</div>
 
 				<div use:scrollScale={{ mode: 'scale-up', startScale: 0.94 }}>
 					<Steps>
 						<ol>
-							<li>{m['landing.how_it_works.install']()}</li>
-							<li>{m['landing.how_it_works.pair']()}</li>
-							<li>{m['landing.how_it_works.confirm']()}</li>
+							<li>{m['landing.howItWorks.install']()}</li>
+							<li>{m['landing.howItWorks.pair']()}</li>
+							<li>{m['landing.howItWorks.confirm']()}</li>
 						</ol>
 					</Steps>
 
 					<div class="mt-8">
-						<AcerolaCallout type="tip" title={m['landing.how_it_works.note_title']()}>
-							<p>{m['landing.how_it_works.note_desc']()}</p>
+						<AcerolaCallout type="tip" title={m['landing.howItWorks.noteTitle']()}>
+							<p>{m['landing.howItWorks.noteDesc']()}</p>
 						</AcerolaCallout>
 					</div>
 				</div>
@@ -390,7 +388,7 @@ relay.reader.acerola.app {
 						03.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
-						{m['landing.architecture.section_title']()}
+						{m['landing.architecture.sectionTitle']()}
 					</h2>
 				</div>
 
@@ -411,7 +409,7 @@ relay.reader.acerola.app {
 						04.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
-						{m['landing.platforms_title']()}
+						{m['landing.platformsTitle']()}
 					</h2>
 				</div>
 

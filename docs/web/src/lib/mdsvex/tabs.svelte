@@ -10,9 +10,9 @@
 	let active = $state(untrack(() => items[0]?.value ?? ''));
 </script>
 
-<Tabs.Root bind:value={active} class="my-6 overflow-hidden rounded-lg border border-border">
+<Tabs.Root bind:value={active} class="my-6 overflow-hidden rounded-tile bg-card p-2">
 	<Tabs.List
-		class="w-full justify-start overflow-x-auto rounded-none border-b border-border bg-muted/40 p-1"
+		class="w-full justify-start overflow-x-auto rounded-full bg-surface p-1"
 	>
 		{#each items as item (item.value)}
 			<Tabs.Trigger value={item.value} class="flex-none">{item.label}</Tabs.Trigger>
