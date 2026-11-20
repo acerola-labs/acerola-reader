@@ -121,8 +121,8 @@ mod tests {
         let guard = PathGuard::new(root.path().to_path_buf());
         let file = root.path().join("arquivo.cbz");
         fs::write(&file, b"").unwrap();
-        let result =
-            guard.execute(&file, |_| -> Result<(), String> { Err("simulated failure".to_string()) });
+        let result = guard
+            .execute(&file, |_| -> Result<(), String> { Err("simulated failure".to_string()) });
         assert!(matches!(result, Err(PathError::ActionFailed(_))));
     }
 }

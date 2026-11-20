@@ -90,7 +90,11 @@ impl ComicSyncOutbound {
 
         write_json(
             writer,
-            &ComicSyncRequest { comic_name: comic_name.clone(), direction, chapters: chapters.clone() },
+            &ComicSyncRequest {
+                comic_name: comic_name.clone(),
+                direction,
+                chapters: chapters.clone(),
+            },
         )
         .await?;
 
@@ -1173,7 +1177,9 @@ mod tests {
             .find(|(name, payload)| {
                 name == "sync:comic:error" && payload.contains("\"itemLevel\":true")
             })
-            .expect("should have emitted an ITEM error for Cap 1, not only the final session error");
+            .expect(
+                "should have emitted an ITEM error for Cap 1, not only the final session error",
+            );
         let payload: serde_json::Value = serde_json::from_str(&item_error.1).unwrap();
         assert_eq!(payload["item"], "Cap 1");
         assert_eq!(payload["code"], "persist_failed");

@@ -55,9 +55,8 @@ pub fn run() {
     bios::migration::migrate_legacy_data_dir_if_needed();
 
     let application_context = tauri::generate_context!();
-    let app = bios::build()
-        .build(application_context)
-        .expect("Failed to build the Tauri application");
+    let app =
+        bios::build().build(application_context).expect("Failed to build the Tauri application");
 
     // `RunEvent::Exit` (not a direct `.run(context)`) just so the P2P node can be shut down
     // gracefully before the process exits — see `bios::shutdown_network`.

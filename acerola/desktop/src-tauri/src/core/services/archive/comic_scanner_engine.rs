@@ -317,8 +317,7 @@ impl ComicScannerService {
         &self, comic: ComicDirectory, on_progress: impl FnMut(String),
         on_converting: impl FnMut(String),
     ) -> Result<(), ComicError> {
-        self.scan_comic_path(PathBuf::from(&comic.path), comic.id, on_progress, on_converting)
-            .await
+        self.scan_comic_path(PathBuf::from(&comic.path), comic.id, on_progress, on_converting).await
     }
 
     /// Shared core of [`Self::rescan_comic`]: processes only the entries found inside

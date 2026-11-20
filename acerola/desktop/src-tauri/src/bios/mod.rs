@@ -243,11 +243,18 @@ mod tests {
         }
 
         fn local_addr(&self) -> Result<PeerAddr, String> {
-            Ok(PeerAddr { id: PeerIdentity { id: "local-id".to_string(), device_id: None }, addrs: vec![] })
+            Ok(PeerAddr {
+                id: PeerIdentity { id: "local-id".to_string(), device_id: None },
+                addrs: vec![],
+            })
         }
 
         async fn local_device_info(&self) -> Result<DeviceInfo, String> {
-            Ok(DeviceInfo { name: "test".to_string(), os: "test".to_string(), version: "0.0.0".to_string() })
+            Ok(DeviceInfo {
+                name: "test".to_string(),
+                os: "test".to_string(),
+                version: "0.0.0".to_string(),
+            })
         }
 
         async fn set_local_device_name(&self, _name: String) -> Result<(), String> {
@@ -311,7 +318,8 @@ mod tests {
     #[test]
     fn shutdown_network_shuts_down_the_managed_network_service() {
         let service = Arc::new(RecordingNetworkService::default());
-        let managed: Arc<dyn NetworkServiceApi> = Arc::clone(&service) as Arc<dyn NetworkServiceApi>;
+        let managed: Arc<dyn NetworkServiceApi> =
+            Arc::clone(&service) as Arc<dyn NetworkServiceApi>;
         let app = tauri::test::mock_builder()
             .manage(managed)
             .build(tauri::test::mock_context(tauri::test::noop_assets()))
