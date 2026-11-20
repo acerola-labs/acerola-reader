@@ -117,8 +117,7 @@ object MobileDataSyncPreference {
         context.dataStore.edit { prefs -> prefs[ALWAYS_ALLOW] = value }
     }
 
-    fun alwaysAllowFlow(context: Context): Flow<Boolean> =
-        context.dataStore.data.map { prefs -> prefs[ALWAYS_ALLOW] ?: false }
+    fun alwaysAllowFlow(context: Context): Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[ALWAYS_ALLOW] ?: false }
 }
 
 object DeviceAliasPreference {
