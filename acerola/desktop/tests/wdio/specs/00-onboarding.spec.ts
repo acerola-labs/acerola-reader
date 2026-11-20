@@ -36,13 +36,13 @@ describe('onboarding and initial tutorial', () => {
 
 		// Advance to Step 3 (Settings)
 		await clickText('Começar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
 		await clickText('Próximo');
-		await waitForText('Formatos Suportados');
+		await waitForText('Formatos suportados');
 
 		await clickText('Próximo');
-		await waitForText('Configuração Inicial');
+		await waitForText('Configuração inicial');
 
 		// Without a library folder in settings.json, the "Próximo" (Next) button must be disabled
 		const nextBtn = await firstDisplayed(
@@ -60,14 +60,14 @@ describe('onboarding and initial tutorial', () => {
 
 		// Advance to Step 2 (Formats)
 		await clickText('Começar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
 		await clickText('Próximo');
-		await waitForText('Formatos Suportados');
+		await waitForText('Formatos suportados');
 
 		// Go back to Step 1 (Language)
 		await clickText('Voltar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
 		// Go back to Step 0 (Welcome)
 		await clickText('Voltar');

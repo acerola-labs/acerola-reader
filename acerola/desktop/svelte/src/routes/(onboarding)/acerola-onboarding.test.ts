@@ -46,7 +46,7 @@ describe('AcerolaOnboarding', () => {
 
 		await user.click(screen.getByText('Começar'));
 
-		expect(screen.getByText('Selecionar Idioma')).toBeInTheDocument();
+		expect(screen.getByText('Selecionar idioma')).toBeInTheDocument();
 		expect(screen.getByText('Escolha o idioma preferido para a aplicação.')).toBeInTheDocument();
 	});
 
@@ -57,7 +57,7 @@ describe('AcerolaOnboarding', () => {
 		await user.click(screen.getByText('Começar'));
 		await user.click(screen.getByText('Próximo'));
 
-		expect(screen.getByText('Formatos Suportados')).toBeInTheDocument();
+		expect(screen.getByText('Formatos suportados')).toBeInTheDocument();
 		expect(screen.getByText('CBZ')).toBeInTheDocument();
 		expect(screen.getByText('CBR')).toBeInTheDocument();
 		expect(screen.getByText('PDF')).toBeInTheDocument();

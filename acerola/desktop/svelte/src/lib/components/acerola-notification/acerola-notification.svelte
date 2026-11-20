@@ -140,7 +140,7 @@
 							<p class="text-sm font-semibold text-foreground/60">
 								{m['components.notification.empty']()}
 							</p>
-							<p class="mt-1 text-xs text-muted-foreground/60">Suas novidades aparecerão aqui</p>
+							<p class="mt-1 text-xs text-muted-foreground/60">{m['components.notification.emptyHint']()}</p>
 						</div>
 					{:else}
 						{#each notifications as notify (notify.id)}

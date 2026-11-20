@@ -184,7 +184,7 @@
 								{selectedIds.length} / {totalCount} Selecionados
 							</span>
 							<span class="truncate text-sm font-bold tracking-tight text-foreground">
-								{isAllSelected ? 'Todos os itens selecionados' : 'Seleção parcial'}
+								{isAllSelected ? m['pages.home.actions.selection.all']() : m['pages.home.actions.selection.partial']()}
 							</span>
 						</div>
 					</div>
@@ -237,7 +237,7 @@
 							{m['pages.home.actions.bookmark']()}
 						</span>
 						<span class="truncate text-xs text-muted-foreground">
-							Organize seus quadrinhos selecionados em coleções
+							{m['pages.home.actions.collectionsHint']()}
 						</span>
 					</div>
 				</div>

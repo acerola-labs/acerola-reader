@@ -16,11 +16,11 @@
 			"close": "Close"
 		},
 		"sidebar": {
-			"toggle": "Toggle Sidebar"
+			"toggle": "Toggle sidebar"
 		},
 		"command": {
 			"placeholder": "Search...",
-			"title": "Command Palette",
+			"title": "Command palette",
 			"desc": "Search for a command to execute..."
 		},
 		"notification": {
@@ -29,7 +29,8 @@
 			"clear": {
 				"all": "Clear all"
 			},
-			"scrollToBottom": "Scroll to bottom"
+			"scrollToBottom": "Scroll to bottom",
+			"emptyHint": "Your news shows up here"
 		},
 		"modePicker": {
 			"title": "Change theme"
@@ -65,6 +66,16 @@
 			"error": {
 				"load": "Error loading chapters",
 				"request": "Error requesting chapters"
+			}
+		},
+		"history": {
+			"error": {
+				"load": "Could not load the history",
+				"clear": "Could not clear the history",
+				"markRead": "Could not mark the chapter as read",
+				"markUnread": "Could not mark the chapter as unread",
+				"markManyRead": "Could not mark the chapters as read",
+				"markManyUnread": "Could not mark the chapters as unread"
 			}
 		}
 	},
@@ -179,8 +190,8 @@
 			"noComics": "No comics found.",
 			"empty": {
 				"desc": "Your library is empty right now. Perform a quick sync in the current folder or select another folder containing your comics (.cbz, .cbr, .pdf).",
-				"quickSync": "Quick Sync",
-				"selectFolder": "Select Folder"
+				"quickSync": "Quick sync",
+				"selectFolder": "Select folder"
 			},
 			"sort": {
 				"button": "Sort",
@@ -189,8 +200,8 @@
 					"desc": "Title (Z-A)"
 				},
 				"chapter": {
-					"asc": "Chapters (Low to High)",
-					"desc": "Chapters (High to Low)"
+					"asc": "Chapters (low to high)",
+					"desc": "Chapters (high to low)"
 				},
 				"indicator": {
 					"title": "Title",
@@ -209,29 +220,34 @@
 				"cancel": "Cancel"
 			},
 			"actions": {
-				"title": "Comic Actions",
+				"title": "Comic actions",
 				"description": "{count} comic(s) selected",
-				"bookmark": "Add Bookmark",
+				"bookmark": "Add bookmark",
 				"hide": "Hide",
 				"delete": "Delete",
-				"clearMetadata": "Clear Metadata",
+				"clearMetadata": "Clear metadata",
 				"cancel": "Cancel",
 				"hideConfirm": {
-					"title": "Hide Comics",
+					"title": "Hide comics",
 					"desc": "Are you sure you want to hide the selected comic(s)? They will be hidden from the library.",
 					"action": "Hide"
 				},
 				"deleteConfirm": {
-					"title": "Delete Comics",
+					"title": "Delete comics",
 					"desc": "Are you sure you want to delete the selected comic(s)? This will permanently delete the folder and physical files from disk — this action cannot be undone.",
 					"action": "Delete"
 				},
 				"clearMetadataConfirm": {
-					"title": "Clear Metadata",
+					"title": "Clear metadata",
 					"desc": "This deletes ComicInfo.xml, cover and banner from each of the {count} selected comic(s)' folder, plus all synced metadata in the database. Chapters and volumes are not affected. This action cannot be undone.",
-					"action": "Clear Metadata"
+					"action": "Clear metadata"
 				},
-				"filterCategoriesPlaceholder": "Filter categories..."
+				"filterCategoriesPlaceholder": "Filter categories...",
+				"selection": {
+					"all": "All items selected",
+					"partial": "Partial selection"
+				},
+				"collectionsHint": "Organize the selected comics into collections"
 			},
 			"toast": {
 				"hidden": "{count} comic(s) hidden",
@@ -245,26 +261,26 @@
 					"clearMetadata": "Failed to clear comics metadata"
 				}
 			},
-			"filterButton": "Filter & Sort",
+			"filterButton": "Filter and sort",
 			"browseRemoteButton": "Browse another device",
 			"noResultsFiltered": "No comics found for the selected filter.",
 			"filterPanel": {
-				"ariaLabel": "Filter & Sort",
+				"ariaLabel": "Filter and sort",
 				"activeFilters": "Active filters",
 				"closeAria": "Close filter panel",
 				"sortSectionTitle": "Sort by",
 				"sortRadiogroupAria": "Sort options",
 				"sortOptions": {
 					"title": "Title",
-					"chapterCount": "Chapter Count",
-					"lastUpdated": "Last Updated"
+					"chapterCount": "Chapter count",
+					"lastUpdated": "Last updated"
 				},
 				"filterSectionTitle": "Filter by",
 				"showHidden": {
 					"title": "Show hidden",
 					"desc": "Display hidden comics"
 				},
-				"metadataSourcesTitle": "Metadata Sources",
+				"metadataSourcesTitle": "Metadata sources",
 				"metadataSourcesAria": "Metadata sources",
 				"metadataSources": {
 					"all": "All",
@@ -328,12 +344,12 @@
 					"unavailable": "Description unavailable."
 				},
 				"unknown": {
-					"author": "Unknown Author",
+					"author": "Unknown author",
 					"status": "Unknown"
 				},
 				"synopsis": "Synopsis",
 				"chapters": {
-					"count": "{count} Chaps"
+					"count": "{count} chaps"
 				},
 				"readNow": "READ NOW",
 				"completed": "COMPLETED",
@@ -355,7 +371,7 @@
 					}
 				},
 				"volumeHighlight": {
-					"title": "Volume Highlight",
+					"title": "Volume highlight",
 					"desc": "Choose how volumes are highlighted: as covers or banners.",
 					"cover": "Cover",
 					"banner": "Banner"
@@ -366,18 +382,18 @@
 					"none": "None"
 				},
 				"externalSync": {
-					"title": "External Sync",
+					"title": "External sync",
 					"desc": "Allow this comic to be automatically updated during batch syncs."
 				},
 				"fileSync": {
-					"title": "File Sync",
+					"title": "File sync",
 					"rescan": {
 						"title": "Sync local chapters",
 						"desc": "Updates only the chapters that are new or changed in this folder."
 					}
 				},
 				"p2pSync": {
-					"title": "Sync with Device",
+					"title": "Sync with a device",
 					"empty": "No paired devices yet. Pair a device on the Network screen.",
 					"send": {
 						"title": "Send this comic",
@@ -404,7 +420,7 @@
 					}
 				},
 				"dangerZone": {
-					"title": "Danger Zone",
+					"title": "Danger zone",
 					"clearMetadata": {
 						"title": "Clear metadata",
 						"desc": "Deletes ComicInfo.xml, the cover and the banner from the folder, and removes the synced metadata (title, description, authors, AniList/MangaDex) from the database. Useful for reverting a sync that pulled in wrong data.",
@@ -435,9 +451,9 @@
 					"toggleError": "Error toggling external sync: {msg}",
 					"success": "Metadata synced!",
 					"rescanSuccess": "Chapters synced!",
-					"startMangadex": "Syncing metadata with MangaDex...",
-					"startAnilist": "Syncing metadata with AniList...",
-					"startComicInfo": "Syncing metadata with ComicInfo.xml...",
+					"startMangadex": "Syncing metadata with MangaDex…",
+					"startAnilist": "Syncing metadata with AniList…",
+					"startComicInfo": "Syncing metadata with ComicInfo.xml…",
 					"startRescan": "Syncing local chapters...",
 					"startRegenerateCover": "Generating cover from first page...",
 					"startRegenerateVolumeCovers": "Generating volume covers...",
@@ -537,7 +553,7 @@
 			"title": "History",
 			"loading": "Loading...",
 			"noEvents": "No history found.",
-			"resume": "Continue Reading",
+			"resume": "Keep reading",
 			"chapterLabel": "Chapter {chapter}",
 			"pageLabel": "Page {page}",
 			"older": "Older",
@@ -549,7 +565,7 @@
 				"error": "Failed to sync history: {msg}"
 			},
 			"clear": {
-				"button": "Clear History",
+				"button": "Clear history",
 				"title": "Are you absolutely sure?",
 				"desc": "This action cannot be undone. All reading history will be permanently deleted.",
 				"cancel": "Cancel",
@@ -574,7 +590,7 @@
 				}
 			},
 			"fileSystem": {
-				"title": "File Configuration",
+				"title": "File settings",
 				"comicPath": {
 					"title": "Comics folder",
 					"desc": "Folder where comics are searched and saved: {path}"
@@ -595,7 +611,7 @@
 				}
 			},
 			"metadata": {
-				"title": "Metadata Settings",
+				"title": "Metadata settings",
 				"lang": {
 					"title": "Language",
 					"desc": "Select the default language for metadata.",
@@ -607,11 +623,11 @@
 					"itemDesc": "Code {code}"
 				},
 				"mangadex": {
-					"title": "MangaDex Sync",
+					"title": "MangaDex sync",
 					"desc": "Sync metadata with MangaDex."
 				},
 				"anilist": {
-					"title": "AniList Sync",
+					"title": "AniList sync",
 					"desc": "Sync metadata with AniList."
 				}
 			},
@@ -621,7 +637,7 @@
 			"bookmarks": {
 				"title": "Bookmarks",
 				"desc": "Create custom bookmarks to categorize your comics.",
-				"add": "Add Bookmark",
+				"add": "Add bookmark",
 				"name": "Bookmark name",
 				"color": "Color",
 				"create": "Create",
@@ -634,20 +650,20 @@
 					"error": "Batch sync error: {msg}",
 					"progress": "Syncing: {name}",
 					"anilist": {
-						"start": "Starting batch sync with AniList...",
+						"start": "Starting batch sync with AniList…",
 						"error": "Error starting AniList sync: {msg}"
 					},
 					"mangadex": {
-						"start": "Starting batch sync with MangaDex...",
+						"start": "Starting batch sync with MangaDex…",
 						"error": "Error starting MangaDex sync: {msg}"
 					}
 				}
 			},
 			"templates": {
-				"title": "Naming Templates",
+				"title": "Naming templates",
 				"desc": "Patterns used to recognize chapter and volume numbers from file or folder names during scanning.",
 				"nav": {
-					"title": "Naming Templates",
+					"title": "Naming templates",
 					"desc": "Create and manage the naming patterns used to auto-detect chapters and volumes."
 				},
 				"back": "Back",
@@ -682,8 +698,8 @@
 					"creating": "Creating..."
 				},
 				"list": {
-					"chapterTitle": "Chapter Templates",
-					"volumeTitle": "Volume Templates",
+					"chapterTitle": "Chapter templates",
+					"volumeTitle": "Volume templates",
 					"emptyChapter": "No custom chapter templates yet.",
 					"emptyVolume": "No custom volume templates yet.",
 					"defaultBadge": "Default",
@@ -860,11 +876,11 @@
 	},
 	"onboarding": {
 		"welcome": "Welcome to Acerola, your comic reader.",
-		"start": "Get Started",
+		"start": "Get started",
 		"back": "Back",
 		"next": "Next",
-		"setupTitle": "Acerola Reader Setup",
-		"welcomeBadgeFastTitle": "Fast Reading",
+		"setupTitle": "Acerola Reader setup",
+		"welcomeBadgeFastTitle": "Fast reading",
 		"welcomeBadgeFastDesc": "CBZ, CBR and PDF",
 		"welcomeBadgeP2pTitle": "Secure P2P",
 		"welcomeBadgeP2pDesc": "Sync with mobile",
@@ -878,14 +894,14 @@
 			"complete": "Finish"
 		},
 		"language": {
-			"title": "Select Language",
+			"title": "Select language",
 			"desc": "Choose your preferred language for the application.",
-			"quickSelect": "Quick Selection Menu",
+			"quickSelect": "Quick selection menu",
 			"countryBr": "Brazil",
 			"countryUs": "United States"
 		},
 		"formats": {
-			"title": "Supported Formats",
+			"title": "Supported formats",
 			"desc": "Acerola supports the following reading formats:",
 			"cbz": {
 				"title": "Comic Book ZIP",
@@ -902,35 +918,35 @@
 				"feature2": "No disk clutter"
 			},
 			"pdf": {
-				"title": "PDF Document",
+				"title": "PDF document",
 				"badge": "Auto-Conversion",
 				"desc": "Automatically converted to CBZ via Pdfium engine in background for optimal reader performance.",
 				"feature1": "High resolution",
 				"feature2": "Conversion to CBZ"
 			},
 			"syncNote": {
-				"title": "Automatic Sync:",
+				"title": "Automatic sync:",
 				"content": "Acerola scans and indexes your files in these formats without needing manual extraction."
 			}
 		},
 		"settings": {
-			"title": "Initial Setup",
+			"title": "Initial setup",
 			"folder": {
-				"title": "Comics Folder",
+				"title": "Comics folder",
 				"desc": "Select the folder where your comics are stored.",
-				"select": "Select Folder",
+				"select": "Select folder",
 				"selected": "Folder selected"
 			}
 		},
 		"complete": {
-			"title": "All Set!",
+			"title": "All set!",
 			"desc": "Your Acerola is ready to use.",
 			"checklistTitle": "Ready for the best reading experience",
 			"checklistItem1": "Language and interface configured",
 			"checklistItem2": "CBZ, CBR and PDF formats ready for indexing",
 			"checklistItem3": "Library directory securely linked",
 			"note": "You can always change these settings later in the Settings page.",
-			"button": "Go to Home"
+			"button": "Go to home"
 		}
 	},
 	"error": {

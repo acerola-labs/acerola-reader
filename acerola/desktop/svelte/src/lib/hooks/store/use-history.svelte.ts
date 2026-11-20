@@ -20,7 +20,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao carregar histórico', {
+			notify.error(m['hooks.history.error.load'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -36,7 +36,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao limpar histórico', {
+			notify.error(m['hooks.history.error.clear'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -67,7 +67,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao marcar capítulo como lido', {
+			notify.error(m['hooks.history.error.markRead'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -81,7 +81,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao marcar capítulo como não lido', {
+			notify.error(m['hooks.history.error.markUnread'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -98,7 +98,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao marcar capítulos como lidos', {
+			notify.error(m['hooks.history.error.markManyRead'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -115,7 +115,7 @@ export function useHistory() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error('Erro ao marcar capítulos como não lidos', {
+			notify.error(m['hooks.history.error.markManyUnread'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
