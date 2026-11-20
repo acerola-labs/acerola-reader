@@ -66,7 +66,8 @@ function rehypeTableWrapper() {
 			const parentClass = parent.properties?.className;
 			const isAlreadyWrapped =
 				(Array.isArray(parentClass) &&
-					(parentClass.includes('table-wrapper') || parentClass.includes('table-container'))) ||
+					(parentClass.includes('table-wrapper') ||
+						parentClass.includes('table-container'))) ||
 				parent.properties?.dataSlot === 'table-container' ||
 				parent.properties?.['data-slot'] === 'table-container';
 			if (isAlreadyWrapped) return;

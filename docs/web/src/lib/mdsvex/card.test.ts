@@ -56,7 +56,9 @@ describe('Card (mdsvex)', () => {
 	});
 
 	it('renders the icon before the title when provided', () => {
-		const { container } = render(Card, { props: { title: 'Getting Started', icon: GithubIcon } });
+		const { container } = render(Card, {
+			props: { title: 'Getting Started', icon: GithubIcon }
+		});
 
 		const titleEl = screen.getByText('Getting Started').closest('[data-slot="card-title"]');
 		expect(titleEl?.querySelector('svg')).toBeInTheDocument();

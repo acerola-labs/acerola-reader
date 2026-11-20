@@ -42,7 +42,9 @@
 
 	let selectedTabId = $state<string | null>(null);
 	let activeTabId = $derived(
-		selectedTabId && tabs.some((t) => t.id === selectedTabId) ? selectedTabId : (tabs[0]?.id ?? '')
+		selectedTabId && tabs.some((t) => t.id === selectedTabId)
+			? selectedTabId
+			: (tabs[0]?.id ?? '')
 	);
 
 	let currentTab = $derived(tabs.find((t) => t.id === activeTabId) ?? tabs[0]);
@@ -161,7 +163,9 @@
 				<button
 					type="button"
 					onclick={handleCopy}
-					aria-label={copied ? m['marketingCode.copiedAria']() : m['marketingCode.copyAria']()}
+					aria-label={copied
+						? m['marketingCode.copiedAria']()
+						: m['marketingCode.copyAria']()}
 					class={cn(
 						'inline-flex items-center gap-1.5 rounded-inner border px-2.5 py-1 font-mono text-xs font-medium transition-all active:scale-95',
 						copied
@@ -183,7 +187,8 @@
 			<div
 				class="max-h-[380px] overflow-x-auto overflow-y-auto p-4 font-mono text-xs leading-relaxed sm:p-5"
 			>
-				<pre class="whitespace-pre text-foreground/90"><code>{currentTab?.code ?? ''}</code></pre>
+				<pre class="whitespace-pre text-foreground/90"><code>{currentTab?.code ?? ''}</code
+					></pre>
 			</div>
 		</div>
 	</div>

@@ -75,13 +75,17 @@
 	<meta name="keywords" content={m['site.keywords']()} />
 	<meta name="author" content="Vinícius GPL" />
 	<meta name="robots" content="index, follow" />
-	<meta name="theme-color" content="#11111a" /><!-- design-allow: meta theme-color takes a literal; it is the dark --background token -->
-
+	<!-- The meta takes a literal color: it is the dark --background token. -->
+	<meta name="theme-color" content="#11111a" /><!-- design-allow: literal -->
 
 	<!-- Canonical & Multilingual Alternate Links -->
 	<link rel="canonical" href={page.url.href} />
 	{#each locales as loc (loc)}
-		<link rel="alternate" hreflang={loc} href={localizeHref(page.url.pathname, { locale: loc })} />
+		<link
+			rel="alternate"
+			hreflang={loc}
+			href={localizeHref(page.url.pathname, { locale: loc })}
+		/>
 	{/each}
 	<link
 		rel="alternate"

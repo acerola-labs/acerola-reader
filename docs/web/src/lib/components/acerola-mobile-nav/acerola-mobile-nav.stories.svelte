@@ -12,7 +12,11 @@
 					slug: 'getting-started',
 					component: {} as never,
 					raw: '',
-					frontmatter: { title: 'Primeiros passos', section: 'Primeiros passos', order: 1 }
+					frontmatter: {
+						title: 'Primeiros passos',
+						section: 'Primeiros passos',
+						order: 1
+					}
 				}
 			]
 		},
@@ -65,8 +69,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Closed by default, in a fixed mobile viewport (the component is `md:hidden` — without this the story only shows up by zooming out in the browser). Click the button to open it and see the full navigation and controls.'
+				story: 'Closed by default, in a fixed mobile viewport (the component is `md:hidden` — without this the story only shows up by zooming out in the browser). Click the button to open it and see the full navigation and controls.'
 			}
 		}
 	}}

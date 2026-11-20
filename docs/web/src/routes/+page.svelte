@@ -68,10 +68,20 @@
 			);
 		}
 		if (subtitle) {
-			tl.fromTo(subtitle, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.35');
+			tl.fromTo(
+				subtitle,
+				{ opacity: 0, y: 15 },
+				{ opacity: 1, y: 0, duration: 0.5 },
+				'-=0.35'
+			);
 		}
 		if (downloads) {
-			tl.fromTo(downloads, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55 }, '-=0.3');
+			tl.fromTo(
+				downloads,
+				{ opacity: 0, y: 20 },
+				{ opacity: 1, y: 0, duration: 0.55 },
+				'-=0.3'
+			);
 		}
 		if (ctas) {
 			tl.fromTo(ctas, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.45 }, '-=0.3');
@@ -327,7 +337,9 @@ relay.reader.acerola.app {
 		<div class="flex flex-col gap-28 pb-24 sm:pb-32">
 			<section id="features" use:scrollReveal>
 				<div class="mb-10 text-center">
-					<span class="font-mono text-xs font-semibold tracking-wider text-primary uppercase">
+					<span
+						class="font-mono text-xs font-semibold tracking-wider text-primary uppercase"
+					>
 						01.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
@@ -357,7 +369,9 @@ relay.reader.acerola.app {
 
 			<section id="how-it-works" use:scrollReveal class="mx-auto w-full max-w-3xl">
 				<div class="mb-10 text-center">
-					<span class="font-mono text-xs font-semibold tracking-wider text-primary uppercase">
+					<span
+						class="font-mono text-xs font-semibold tracking-wider text-primary uppercase"
+					>
 						02.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
@@ -384,7 +398,9 @@ relay.reader.acerola.app {
 
 			<section id="architecture" use:scrollReveal class="mx-auto w-full max-w-5xl">
 				<div class="mb-10 text-center">
-					<span class="font-mono text-xs font-semibold tracking-wider text-primary uppercase">
+					<span
+						class="font-mono text-xs font-semibold tracking-wider text-primary uppercase"
+					>
 						03.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">
@@ -405,7 +421,9 @@ relay.reader.acerola.app {
 
 			<section id="platforms" use:scrollReveal>
 				<div class="mb-10 text-center">
-					<span class="font-mono text-xs font-semibold tracking-wider text-primary uppercase">
+					<span
+						class="font-mono text-xs font-semibold tracking-wider text-primary uppercase"
+					>
 						04.
 					</span>
 					<h2 class="mt-1 font-heading text-2xl font-semibold sm:text-3xl">

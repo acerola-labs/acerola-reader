@@ -31,7 +31,9 @@ describe('handle (paraglide middleware)', () => {
 			typeof handle
 		>[0]['event'];
 
-		const response = await handle({ event, resolve } as unknown as Parameters<typeof handle>[0]);
+		const response = await handle({ event, resolve } as unknown as Parameters<
+			typeof handle
+		>[0]);
 		const html = await (response as Response).text();
 
 		expect(html).toBe('<html lang="en" dir="ltr"></html>');

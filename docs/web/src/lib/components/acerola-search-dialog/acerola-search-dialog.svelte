@@ -130,11 +130,17 @@
 			</Command.Empty>
 		{:else}
 			{#each results as result (result.url)}
-				<Command.LinkItem href={result.url} onclick={() => (open = false)} class="rounded-inner py-2">
+				<Command.LinkItem
+					href={result.url}
+					onclick={() => (open = false)}
+					class="rounded-inner py-2"
+				>
 					<FileTextIcon size={16} class="mt-0.5 shrink-0 self-start" />
 					<div class="flex min-w-0 flex-col gap-0.5">
 						<span class="truncate font-medium">{result.meta?.title ?? result.url}</span>
-						<span class="line-clamp-2 text-xs text-muted-foreground">{@html result.excerpt}</span>
+						<span class="line-clamp-2 text-xs text-muted-foreground"
+							>{@html result.excerpt}</span
+						>
 					</div>
 				</Command.LinkItem>
 			{/each}

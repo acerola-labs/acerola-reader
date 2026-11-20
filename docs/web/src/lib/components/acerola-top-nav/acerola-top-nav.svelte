@@ -7,8 +7,10 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { localizeHref } from '#lib/paraglide/runtime.js';
 
-	let { onOpenSearch, onOpenMobileNav }: { onOpenSearch: () => void; onOpenMobileNav: () => void } =
-		$props();
+	let {
+		onOpenSearch,
+		onOpenMobileNav
+	}: { onOpenSearch: () => void; onOpenMobileNav: () => void } = $props();
 </script>
 
 <header

@@ -211,7 +211,8 @@
 				iconSpan.innerHTML = '';
 				mount(CheckIcon, { target: iconSpan, props: { size: 14, class: 'text-success' } });
 				labelSpan.textContent = m['marketingCode.copied']();
-				labelSpan.className = 'text-[11px] font-mono text-success select-none hidden sm:inline';
+				labelSpan.className =
+					'text-[11px] font-mono text-success select-none hidden sm:inline';
 				btn.classList.add('bg-success-soft');
 
 				clearTimeout(resetTimeout);

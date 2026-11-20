@@ -20,9 +20,15 @@
 				description: 'Value displayed and copied to the clipboard.',
 				control: 'text'
 			},
-			href: { description: 'If set, the value becomes a link (e.g. mailto:).', control: 'text' },
+			href: {
+				description: 'If set, the value becomes a link (e.g. mailto:).',
+				control: 'text'
+			},
 			copyLabel: { description: 'Accessible button text before copying.', control: 'text' },
-			copiedLabel: { description: 'Accessible button text right after copying.', control: 'text' }
+			copiedLabel: {
+				description: 'Accessible button text right after copying.',
+				control: 'text'
+			}
 		}
 	});
 </script>

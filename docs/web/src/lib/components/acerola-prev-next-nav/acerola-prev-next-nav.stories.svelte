@@ -26,7 +26,10 @@
 			}
 		},
 		argTypes: {
-			prev: { description: 'Previous document, or null if this is the first.', control: false },
+			prev: {
+				description: 'Previous document, or null if this is the first.',
+				control: false
+			},
 			next: { description: 'Next document, or null if this is the last.', control: false }
 		}
 	});
@@ -39,7 +42,11 @@
 		next: doc('architecture', 'Arquitetura')
 	}}
 	parameters={{
-		docs: { description: { story: 'Both neighbors present, the common case in the middle of the list.' } }
+		docs: {
+			description: {
+				story: 'Both neighbors present, the common case in the middle of the list.'
+			}
+		}
 	}}
 />
 

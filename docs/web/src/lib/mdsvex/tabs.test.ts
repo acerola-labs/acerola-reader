@@ -52,7 +52,9 @@ describe('Tabs (mdsvex)', () => {
 
 	it('renders a single item as one tab, already showing its content', () => {
 		render(Tabs, {
-			props: { items: [{ value: 'npm', label: 'npm', content: snippet('npm install acerola') }] }
+			props: {
+				items: [{ value: 'npm', label: 'npm', content: snippet('npm install acerola') }]
+			}
 		});
 
 		expect(screen.getAllByRole('tab')).toHaveLength(1);

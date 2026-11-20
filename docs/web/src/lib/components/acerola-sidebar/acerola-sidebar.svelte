@@ -78,7 +78,9 @@
 								aria-hidden="true"
 								class={cn(
 									'shrink-0 transition-transform duration-200 group-hover:scale-110',
-									isActive ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground'
+									isActive
+										? 'text-primary'
+										: 'text-muted-foreground/70 group-hover:text-foreground'
 								)}
 							/>
 							<span class="truncate">{doc.frontmatter.title}</span>

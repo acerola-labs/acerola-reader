@@ -32,7 +32,9 @@ describe('PlatformCard (mdsvex)', () => {
 	});
 
 	it('renders the icon when provided', () => {
-		const { container } = render(PlatformCard, { props: { title: 'Windows', icon: GithubIcon } });
+		const { container } = render(PlatformCard, {
+			props: { title: 'Windows', icon: GithubIcon }
+		});
 
 		expect(container.querySelector('svg')).toBeInTheDocument();
 	});

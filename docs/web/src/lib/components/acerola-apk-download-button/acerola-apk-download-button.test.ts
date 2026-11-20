@@ -64,7 +64,9 @@ describe('AcerolaApkDownloadButton', () => {
 	});
 
 	it('keeps the direct download link when the availability check itself fails', async () => {
-		global.fetch = vi.fn().mockRejectedValue(new Error('network error')) as unknown as typeof fetch;
+		global.fetch = vi
+			.fn()
+			.mockRejectedValue(new Error('network error')) as unknown as typeof fetch;
 		render(AcerolaApkDownloadButton);
 
 		// There's no visible async state to wait for (the fallback never kicks in), so wait
