@@ -68,9 +68,9 @@
 
 	<AspectRatio
 		ratio={2 / 3}
-		class="relative rounded-xl bg-surface shadow-lg transition-shadow duration-300 group-hover:shadow-2xl group-hover:shadow-primary/20"
+		class="relative rounded-inner bg-surface shadow-lift transition-shadow duration-300 group-hover:shadow-float"
 	>
-		<div class="h-full w-full overflow-hidden rounded-xl">
+		<div class="h-full w-full overflow-hidden rounded-inner">
 			<button
 				type="button"
 				class="relative h-full w-full cursor-pointer text-left"

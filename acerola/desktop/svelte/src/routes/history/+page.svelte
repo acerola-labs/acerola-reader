@@ -87,8 +87,8 @@
 		if (peer.connected) return m['pages.network.peers.online']();
 		const timestamp = sync.lastSyncedAt(peer.peerId);
 
-		if (!timestamp) return m['pages.network.peers.never_synced']();
-		return m['pages.network.peers.last_synced']({ when: new Date(timestamp).toLocaleString() });
+		if (!timestamp) return m['pages.network.peers.neverSynced']();
+		return m['pages.network.peers.lastSynced']({ when: new Date(timestamp).toLocaleString() });
 	}
 
 	async function handleSyncHistory(peerId: string) {
@@ -124,7 +124,7 @@
 		if (entry.status === 'started') {
 			lastHandledSyncKey = currentKey;
 			toast.loading(
-				m['pages.network.transfers.history_started']({ peer: peers.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyStarted']({ peer: peers.peerLabel(entry.message) }),
 				{ id: toastId }
 			);
 			return;
@@ -200,7 +200,7 @@
 				ui={{
 					align: 'end',
 					contentClass:
-						'w-72 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-1.5 shadow-2xl backdrop-blur-md'
+						'w-72 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
 				}}
 			>
 				{#snippet trigger()}
@@ -233,7 +233,7 @@
 								{@const syncing = sync.isSyncing(peer.peerId, 'history')}
 								<button
 									type="button"
-									class="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+									class="flex items-center gap-2.5 rounded-inner px-2.5 py-2 text-left text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
 									disabled={!addrs || syncing}
 									onclick={() => {
 										syncMenuOpen = false;
@@ -293,26 +293,26 @@
 		{@const heroCover = resolveArtworkPath(heroItem.comicCover)}
 
 		<div class="flex-1 overflow-auto pb-8">
-			<div class="relative mb-8 h-100 w-full shrink-0 overflow-hidden rounded-b-3xl">
+			<div class="relative mb-8 h-100 w-full shrink-0 overflow-hidden rounded-b-tile">
 				{#if heroCover}
 					<img
 						src={heroCover}
 						class="absolute inset-0 h-full w-full object-cover"
 						referrerpolicy="no-referrer"
-						alt="background"
+						alt=""
 					/>
 				{:else}
 					<div class="absolute inset-0 bg-linear-to-b from-primary/20 via-base/50 to-base"></div>
 				{/if}
-				<div class="absolute inset-0 bg-linear-to-t from-base via-base/40 to-transparent"></div>
+				<div class="absolute inset-0 bg-linear-to-t from-scrim/80 via-scrim/40 to-transparent"></div>
 				<div
-					class="absolute inset-0 hidden bg-linear-to-l from-transparent via-transparent to-base/80 lg:block"
+					class="absolute inset-0 hidden bg-linear-to-l from-transparent via-transparent to-scrim/60 lg:block"
 				></div>
 
 				<div class="absolute right-8 bottom-8 left-8 flex items-end gap-8">
 					{#if heroCover}
 						<button
-							class="relative h-64 w-48 overflow-hidden rounded-xl shadow-2xl ring-1 ring-surface transition-transform hover:scale-105"
+							class="relative h-64 w-48 overflow-hidden rounded-inner shadow-float ring-1 ring-surface transition-transform hover:scale-105"
 							onclick={() => openComic(heroItem)}
 						>
 							<img
@@ -324,7 +324,7 @@
 						</button>
 					{:else}
 						<button
-							class="flex h-64 w-48 items-center justify-center rounded-xl bg-surface text-muted-foreground transition-transform hover:scale-105"
+							class="flex h-64 w-48 items-center justify-center rounded-inner bg-surface text-muted-foreground transition-transform hover:scale-105"
 							onclick={() => openComic(heroItem)}
 						>
 							<PlaceholderManga class="h-full w-full" preserveAspectRatio="none" />
@@ -336,23 +336,23 @@
 							class="text-left transition-opacity hover:opacity-80"
 							onclick={() => openComic(heroItem)}
 						>
-							<h3 class="text-5xl font-black tracking-tight text-white drop-shadow-md">
+							<h3 class="text-5xl font-black tracking-tight text-on-scrim">
 								{heroItem.comicName}
 							</h3>
 						</button>
 
-						<div class="flex items-center gap-2 text-lg font-medium text-white/80">
+						<div class="flex items-center gap-2 text-lg font-medium text-on-scrim/80">
 							<BookOpen size={20} />
-							<span>{m['pages.history.chapter_label']({ chapter: heroItem.chapterName })}</span>
+							<span>{m['pages.history.chapterLabel']({ chapter: heroItem.chapterName })}</span>
 							<span class="mx-2 opacity-50">•</span>
-							<span>{m['pages.history.page_label']({ page: heroItem.lastPage + 1 })}</span>
+							<span>{m['pages.history.pageLabel']({ page: heroItem.lastPage + 1 })}</span>
 						</div>
 
 						<AcerolaButton
 							events={{ onClick: () => resumeReading(heroItem) }}
 							ui={{
 								class:
-									'mt-4 px-8 py-6 rounded-full font-black tracking-widest text-sm hover:scale-105 transition-all shadow-xl shadow-primary/20'
+									'mt-4 px-8 py-6 rounded-full font-black tracking-widest text-sm hover:scale-105 transition-all shadow-float'
 							}}
 						>
 							{m['pages.history.resume']()}
@@ -385,12 +385,12 @@
 										>
 											<BookOpen size={10} class="shrink-0" />
 											<span class="truncate">
-												{m['pages.history.chapter_label']({ chapter: item.chapterName })}
+												{m['pages.history.chapterLabel']({ chapter: item.chapterName })}
 											</span>
 										</span>
 
 										<span class="text-overlay text-[10px] opacity-80">
-											{m['pages.history.page_label']({ page: item.lastPage + 1 })}
+											{m['pages.history.pageLabel']({ page: item.lastPage + 1 })}
 										</span>
 									</div>
 								{/snippet}
@@ -414,7 +414,7 @@
 		</div>
 	{:else}
 		<div class="flex flex-1 items-center justify-center p-8 text-muted-foreground">
-			{m['pages.history.no_events']()}
+			{m['pages.history.noEvents']()}
 		</div>
 	{/if}
 </div>

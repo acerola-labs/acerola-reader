@@ -26,7 +26,7 @@
 		<!-- Header -->
 		<div class="flex flex-col items-center gap-3 sm:flex-row sm:items-start">
 			<div
-				class="flex size-14 items-center justify-center rounded-2xl bg-chart-4/10 text-chart-4 shadow-inner"
+				class="flex size-14 items-center justify-center rounded-inner bg-chart-4/10 text-chart-4"
 			>
 				<FolderIcon size={28} />
 			</div>
@@ -42,12 +42,12 @@
 
 		<!-- Dropzone-style Folder Selection Card -->
 		<div
-			class="relative flex flex-col items-center rounded-3xl border-2 border-dashed p-8 text-center backdrop-blur-md transition-all duration-300 {folder.folderPath
-				? 'border-primary/50 bg-primary/5 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.12)]'
-				: 'border-border/70 bg-card/40 hover:border-primary/40 hover:bg-card/60'}"
+			class="relative flex flex-col items-center rounded-tile border-2 border-dashed p-8 text-center backdrop-blur-md transition-all duration-300 {folder.folderPath
+				? ' bg-primary/5 shadow-lift'
+				: 'border-border/70 bg-card/40 hover:bg-card/60'}"
 		>
 			<div
-				class="mb-4 flex size-16 items-center justify-center rounded-2xl transition-transform duration-300 hover:scale-105 {folder.folderPath
+				class="mb-4 flex size-16 items-center justify-center rounded-inner transition-transform duration-300 hover:scale-105 {folder.folderPath
 					? 'bg-primary/20 text-primary'
 					: 'bg-muted/60 text-muted-foreground'}"
 			>
@@ -64,7 +64,7 @@
 
 			{#if folder.folderPath}
 				<div
-					class="mb-5 flex max-w-full items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary"
+					class="mb-5 flex max-w-full items-center gap-2 rounded-full border bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary"
 				>
 					<CheckIcon size={14} strokeWidth={2.5} />
 					<span>{m['onboarding.settings.folder.selected']()}</span>
@@ -74,7 +74,7 @@
 			<Button
 				onclick={folder.selectFolder}
 				variant={folder.folderPath ? 'outline' : 'default'}
-				class="w-full max-w-md truncate rounded-2xl px-6 py-5 text-sm font-semibold shadow-xs"
+				class="w-full max-w-md truncate rounded-inner px-6 py-5 text-sm font-semibold"
 			>
 				{folder.folderPath || m['onboarding.settings.folder.select']()}
 			</Button>
@@ -82,13 +82,13 @@
 
 		<!-- Action Controls -->
 		<div class="flex items-center justify-between pt-2">
-			<Button onclick={onPrev} variant="outline" class="rounded-xl px-6">
+			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
 				{m['onboarding.back']()}
 			</Button>
 			<Button
 				onclick={onNext}
 				disabled={!folder.folderPath}
-				class="rounded-xl px-8 font-semibold shadow-md transition-all hover:shadow-lg disabled:opacity-40"
+				class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift disabled:opacity-40"
 			>
 				{m['onboarding.next']()}
 			</Button>

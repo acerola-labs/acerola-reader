@@ -205,7 +205,7 @@ pub(super) fn classify_sync_error(error: &P2pError) -> Option<SyncErrorCode> {
 /// passa o nome do evento (`sync:files:error` ou `sync:comic:error`) porque cada protocolo tem
 /// o seu próprio canal. `message` continua em inglês (é texto técnico de log/wire, não deve ser
 /// mostrado como está) — `code` é o identificador estável que o frontend usa pra traduzir via
-/// Paraglide (`tauri_errors.sync.session_busy.label`), no mesmo padrão de `errors.i18n.ts`.
+/// Paraglide (`tauriErrors.sync.sessionBusy.label`), no mesmo padrão de `errors.i18n.ts`.
 pub fn emit_busy(emit: &EventEmitter, event_name: &str, peer_id: &str) {
     (emit)(
         event_name,

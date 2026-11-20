@@ -5,9 +5,9 @@ import { cn } from '$lib/utils/cn.utils';
 export type ToastIconVariant = 'loading' | 'success' | 'error' | 'warning' | 'info';
 
 const BURST_COLOR: Partial<Record<ToastIconVariant, string>> = {
-	success: 'bg-emerald-500/35 ring-4 ring-emerald-500/20',
-	error: 'bg-rose-500/30 ring-4 ring-rose-500/20',
-	warning: 'bg-amber-500/30 ring-4 ring-amber-500/20',
+	success: 'bg-success-soft ring-4 ring-success/20',
+	error: 'bg-destructive-soft ring-4 ring-destructive/20',
+	warning: 'bg-warning-soft ring-4 ring-warning/20',
 	info: 'bg-primary/30 ring-4 ring-primary/20'
 };
 

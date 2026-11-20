@@ -73,7 +73,7 @@
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
 					<span class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-						{m['onboarding.setup_title']()}
+						{m['onboarding.setupTitle']()}
 					</span>
 				</div>
 				<span class="text-xs font-medium text-muted-foreground">
@@ -87,15 +87,15 @@
 					{@const isCompleted = it < currentStepIndex}
 					{@const isCurrent = it === currentStepIndex}
 					<div
-						class="flex flex-1 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-all duration-300 {isCurrent
-							? 'border-primary/50 bg-primary/10 text-primary shadow-[0_0_16px_rgba(var(--color-primary-rgb),0.15)] ring-1 ring-primary/30'
+						class="flex flex-1 items-center gap-2 rounded-inner border px-3 py-2 text-xs font-medium transition-all duration-300 {isCurrent
+							? ' bg-primary/10 text-primary shadow-lift ring-1 ring-primary/30'
 							: isCompleted
 								? 'border-border/60 bg-muted/40 text-foreground'
 								: 'border-transparent bg-transparent text-muted-foreground/60'}"
 					>
 						<span
 							class="flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300 {isCurrent
-								? 'bg-primary text-primary-foreground shadow-xs'
+								? 'bg-primary text-primary-foreground'
 								: isCompleted
 									? 'bg-primary/20 text-primary'
 									: 'bg-muted/60 text-muted-foreground'}"

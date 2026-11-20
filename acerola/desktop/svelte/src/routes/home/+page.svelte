@@ -9,6 +9,7 @@
 	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
 	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
 	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import AcerolaEmptyState from '$lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import AcerolaComicActionDialog from './components/acerola-comic-action-dialog.svelte';
 	import AcerolaFilterPanel, {
 		type BookmarkFilter
@@ -130,9 +131,9 @@
 			lastHandledSyncKey = currentKey;
 			const peer = peers.peerLabel(entry.peerId);
 			if (entry.kind === 'comic') {
-				toast.loading(m['pages.network.transfers.comic_started']({ peer }), { id: toastId });
+				toast.loading(m['pages.network.transfers.comicStarted']({ peer }), { id: toastId });
 			} else {
-				toast.loading(m['pages.network.transfers.files_started']({ peer }), { id: toastId });
+				toast.loading(m['pages.network.transfers.filesStarted']({ peer }), { id: toastId });
 			}
 			return;
 		}
@@ -143,9 +144,9 @@
 			const peer = peers.peerLabel(entry.peerId);
 			const opts = { id: toastId, duration: 4000 };
 			if (entry.kind === 'comic') {
-				toast.success(m['pages.network.transfers.comic_complete']({ peer }), opts);
+				toast.success(m['pages.network.transfers.comicComplete']({ peer }), opts);
 			} else {
-				toast.success(m['pages.network.transfers.files_complete']({ peer }), opts);
+				toast.success(m['pages.network.transfers.filesComplete']({ peer }), opts);
 			}
 			summary.fetch();
 			return;
@@ -157,9 +158,9 @@
 			const msg = entry.message;
 			const opts = { id: toastId, duration: 5000 };
 			if (entry.kind === 'comic') {
-				toast.error(m['pages.network.transfers.comic_error']({ msg }), opts);
+				toast.error(m['pages.network.transfers.comicError']({ msg }), opts);
 			} else {
-				toast.error(m['pages.network.transfers.files_error']({ msg }), opts);
+				toast.error(m['pages.network.transfers.filesError']({ msg }), opts);
 			}
 			// `sync:files:error`/`sync:comic:error` também cobre sessão que terminou com
 			// capítulos faltando (`Ok(skipped) => ... Err(...)` em file_handler.rs/
@@ -217,7 +218,7 @@
 		if (validIds.length === 0) return;
 		const count = await summary.clearMetadata(validIds);
 
-		toast.success(m['pages.home.toast.metadata_cleared']({ count }));
+		toast.success(m['pages.home.toast.metadataCleared']({ count }));
 		selection.exitSelectionMode();
 
 		showActionDialog = false;
@@ -306,8 +307,24 @@
 </script>
 
 {#if summary.loading && (!summary.comics || summary.comics.total === 0)}
-	<div class="flex items-center justify-center p-8 text-muted-foreground">
-		{m['pages.home.loading']()}
+	<!-- Loading: skeleton in the shape of the cover grid. -->
+	<div class="px-8 pt-8 pb-8" role="status" aria-label={m['pages.home.loading']()}>
+		<div class="mb-4 h-10 w-48 animate-pulse rounded-full bg-surface"></div>
+		<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
+			{#each Array.from({ length: 12 }, (_, i) => i) as i (i)}
+				<div class="aspect-2/3 animate-pulse rounded-tile bg-surface"></div>
+			{/each}
+		</div>
+	</div>
+{:else if summary.failed && !summary.comics}
+	<!-- Error: what happened and what to do. -->
+	<div class="p-8">
+		<div class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive">
+			<p class="flex-1 text-sm font-semibold">{m['pages.home.error.text']()}</p>
+			<AcerolaButton ui={{ variant: 'secondary', class: 'rounded-full font-black' }} events={{ onClick: () => summary.fetch() }}>
+				{m['pages.home.error.retry']()}
+			</AcerolaButton>
+		</div>
 	</div>
 {:else if summary.comics && (summary.comics.total > 0 || activeFiltersCount > 0)}
 	<div class="px-8 pt-8 pb-8">
@@ -318,7 +335,7 @@
 						{m['pages.home.selection.selected']({ count: selection.selectedCount })}
 					</span>
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
 						events={{ onClick: handleSelectAllToggle }}
 					>
 						{selection.selectedCount === visibleComics.length
@@ -327,15 +344,15 @@
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg font-semibold gap-1.5' }}
+						ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner font-semibold gap-1.5' }}
 						events={{ onClick: () => (showActionDialog = true) }}
 					>
 						<SlidersHorizontal size={14} />
-						{m['pages.home.selection.actions_button']({ count: selection.selectedCount })}
+						{m['pages.home.selection.actionsButton']({ count: selection.selectedCount })}
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
 						events={{ onClick: () => selection.exitSelectionMode() }}
 					>
 						{m['pages.home.selection.cancel']()}
@@ -345,11 +362,11 @@
 				<div class="flex items-center gap-2">
 					<!-- Filter & Sort Button -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-xl gap-2' }}
+						ui={{ variant: 'ghost', class: 'rounded-inner gap-2' }}
 						events={{ onClick: () => (showFilterPanel = !showFilterPanel) }}
 					>
 						<SlidersHorizontal size={16} />
-						{m['pages.home.filter_button']()}
+						{m['pages.home.filterButton']()}
 						{#if activeFiltersCount > 0}
 							<span
 								class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground"
@@ -361,23 +378,23 @@
 
 					<!-- Buscar/sincronizar quadrinhos de outro dispositivo pareado -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-xl gap-2' }}
+						ui={{ variant: 'ghost', class: 'rounded-inner gap-2' }}
 						events={{ onClick: () => (showPeerPicker = true) }}
 					>
 						<MonitorIcon size={16} />
-						{m['pages.home.browse_remote_button']()}
+						{m['pages.home.browseRemoteButton']()}
 					</AcerolaButton>
 
 					<!-- Active sort indicator -->
 					{#if summary.sortBy !== 'title' || summary.sortOrder !== 'asc'}
 						<span
-							class="rounded-lg bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary"
+							class="rounded-inner bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary"
 						>
 							{summary.sortBy === 'title'
 								? m['pages.home.sort.indicator.title']()
 								: summary.sortBy === 'chapterCount'
-									? m['pages.home.sort.indicator.chapter_count']()
-									: m['pages.home.sort.indicator.last_updated']()}
+									? m['pages.home.sort.indicator.chapterCount']()
+									: m['pages.home.sort.indicator.lastUpdated']()}
 							{summary.sortOrder === 'asc' ? '↑' : '↓'}
 						</span>
 					{/if}
@@ -386,21 +403,14 @@
 		</div>
 
 		{#if visibleComics.length === 0}
-			<div
-				class="flex min-h-[40vh] animate-in flex-col items-center justify-center p-12 text-center duration-300 fade-in-50"
-			>
-				<div
-					class="mb-4 flex size-16 items-center justify-center rounded-2xl bg-surface/60 text-primary shadow-inner"
-				>
-					<SearchX size={32} />
-				</div>
-				<h3 class="text-xl font-bold tracking-tight text-foreground">
-					{m['pages.home.no_results_filtered_title']()}
-				</h3>
-				<p class="mt-1.5 max-w-md text-sm text-muted-foreground">
-					{m['pages.home.no_results_filtered']()}
-				</p>
-			</div>
+			<AcerolaEmptyState
+				data={{
+					title: m['pages.home.noResultsFilteredTitle'](),
+					hint: m['pages.home.noResultsFiltered'](),
+					icon: SearchX
+				}}
+				ui={{ class: 'min-h-[40vh] justify-center' }}
+			/>
 		{/if}
 
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
@@ -463,7 +473,7 @@
 					{#snippet overlay()}
 						{#if isSelected}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-xl bg-primary/30"
+								class="absolute inset-0 flex items-center justify-center rounded-inner bg-primary/30"
 							>
 								<div class="rounded-full bg-primary p-2">
 									<Check size={24} class="text-primary-foreground" />
@@ -471,9 +481,9 @@
 							</div>
 						{:else if selection.isSelectionMode}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-xl bg-surface/50"
+								class="absolute inset-0 flex items-center justify-center rounded-inner bg-surface/50"
 							>
-								<div class="rounded-full border-2 border-muted-foreground p-2">
+								<div class="rounded-full border-2 p-2">
 									<div class="h-6 w-6"></div>
 								</div>
 							</div>
@@ -501,46 +511,36 @@
 		}}
 	/>
 {:else}
-	<div
-		class="flex min-h-[60vh] animate-in flex-col items-center justify-center p-8 text-center duration-300 fade-in-50"
+	<!-- Empty: mascot + title + one phrase + one action (rescan when a folder exists, pick one otherwise). -->
+	<AcerolaEmptyState
+		data={{ title: m['pages.home.noComics'](), hint: m['pages.home.empty.desc']() }}
+		ui={{ class: 'min-h-[60vh] justify-center p-8' }}
 	>
-		<div
-			class="mb-4 flex size-16 items-center justify-center rounded-2xl bg-surface/60 text-primary shadow-inner"
-		>
-			<FolderPlus size={32} />
-		</div>
-		<h3 class="text-xl font-bold tracking-tight text-foreground">
-			{m['pages.home.no_comics']()}
-		</h3>
-		<p class="mt-1.5 max-w-md text-sm text-muted-foreground">
-			{m['pages.home.empty.desc']()}
-		</p>
-		<div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-			<AcerolaButton
-				ui={{
-					variant: 'default',
-					class: 'rounded-xl font-semibold gap-2 shadow-md hover:shadow-lg transition-all'
-				}}
-				events={{ onClick: () => refreshScanner.start() }}
-			>
-				<RefreshCw size={18} class={refreshScanner.scanning ? 'animate-spin' : ''} />
-				{m['pages.home.empty.quick_sync']()}
-			</AcerolaButton>
-
-			<AcerolaButton
-				ui={{ variant: 'outline', class: 'rounded-xl font-medium gap-2' }}
-				events={{
-					onClick: async () => {
-						await folderStore.selectFolder();
-						await summary.fetch();
-					}
-				}}
-			>
-				<FolderPlus size={16} />
-				{m['pages.home.empty.select_folder']()}
-			</AcerolaButton>
-		</div>
-	</div>
+		{#snippet action()}
+			{#if folderStore.folderPath}
+				<AcerolaButton
+					ui={{ variant: 'default', class: 'h-12 rounded-full font-black gap-2' }}
+					events={{ onClick: () => refreshScanner.start() }}
+				>
+					<RefreshCw size={18} class={refreshScanner.scanning ? 'animate-spin' : ''} />
+					{m['pages.home.empty.quickSync']()}
+				</AcerolaButton>
+			{:else}
+				<AcerolaButton
+					ui={{ variant: 'default', class: 'h-12 rounded-full font-black gap-2' }}
+					events={{
+						onClick: async () => {
+							await folderStore.selectFolder();
+							await summary.fetch();
+						}
+					}}
+				>
+					<FolderPlus size={18} />
+					{m['pages.home.empty.selectFolder']()}
+				</AcerolaButton>
+			{/if}
+		{/snippet}
+	</AcerolaEmptyState>
 {/if}
 
 <!-- Filter Panel (slide-in drawer) -->

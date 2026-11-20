@@ -32,7 +32,7 @@
 
 <button
 	onclick={events.onClick}
-	class="group relative flex w-full items-center justify-between overflow-hidden rounded-3xl border border-surface/40 bg-mantle/50 p-5 text-left transition-all duration-300 hover:border-primary/50 hover:bg-mantle/70"
+	class="group relative flex w-full items-center justify-between overflow-hidden rounded-tile border border-surface/40 bg-mantle/50 p-5 text-left transition-all duration-300 hover:bg-mantle/70"
 >
 	{#if activeBanner}
 		<div class="pointer-events-none absolute inset-0 z-0 overflow-hidden">
@@ -47,7 +47,7 @@
 	{/if}
 
 	<div class="relative z-10 flex min-w-0 items-center gap-4">
-		<div class="w-18 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-muted">
+		<div class="w-18 shrink-0 overflow-hidden rounded-inner border bg-muted">
 			<AspectRatio ratio={2 / 3}>
 				{#if activeCover}
 					<img
@@ -69,7 +69,7 @@
 			</h3>
 
 			<p class="text-sm text-muted-foreground">
-				{m['pages.comic.volume.chapters_included']({ count: data.totalChapters })}
+				{m['pages.comic.volume.chaptersIncluded']({ count: data.totalChapters })}
 			</p>
 		</div>
 	</div>

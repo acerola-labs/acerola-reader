@@ -43,7 +43,7 @@
 			{@render children()}
 		{/if}
 	</AlertDialog.Trigger>
-	<AlertDialog.Content class="font-dm-sans rounded-2xl">
+	<AlertDialog.Content class="font-dm-sans rounded-inner">
 		<AlertDialog.Header>
 			<AlertDialog.Title class="text-xl font-bold tracking-tight">{data?.title}</AlertDialog.Title>
 			<AlertDialog.Description class="opacity-80">
@@ -51,11 +51,11 @@
 			</AlertDialog.Description>
 		</AlertDialog.Header>
 		<AlertDialog.Footer class="mt-6">
-			<AlertDialog.Cancel class="rounded-xl" onclick={events?.onCancel}>
+			<AlertDialog.Cancel class="rounded-inner" onclick={events?.onCancel}>
 				{data?.cancelText ?? 'Cancel'}
 			</AlertDialog.Cancel>
 			<AlertDialog.Action
-				class={cn('rounded-xl', buttonVariants({ variant: ui?.variant ?? 'default' }))}
+				class={cn('rounded-inner', buttonVariants({ variant: ui?.variant ?? 'default' }))}
 				onclick={events?.onAction}
 			>
 				{data?.actionText ?? 'Continue'}

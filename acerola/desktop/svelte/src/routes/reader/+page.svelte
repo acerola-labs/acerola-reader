@@ -51,10 +51,10 @@
 
 	const chapterProgressLabel = $derived.by(() => {
 		if (nav.chapterIndex === undefined || nav.totalChapters === undefined) {
-			return m['pages.reader.progress.chapter_unavailable']();
+			return m['pages.reader.progress.chapterUnavailable']();
 		}
 
-		return m['pages.reader.progress.chapter_count']({
+		return m['pages.reader.progress.chapterCount']({
 			current: nav.chapterIndex + 1,
 			total: nav.totalChapters
 		});
@@ -62,12 +62,12 @@
 
 	const chaptersRemainingLabel = $derived.by(() => {
 		if (nav.chaptersRemaining === undefined) {
-			return m['pages.reader.progress.remaining_unavailable']();
+			return m['pages.reader.progress.remainingUnavailable']();
 		}
 
 		return nav.chaptersRemaining === 1
-			? m['pages.reader.progress.remaining_one']()
-			: m['pages.reader.progress.remaining_many']({ count: nav.chaptersRemaining });
+			? m['pages.reader.progress.remainingOne']()
+			: m['pages.reader.progress.remainingMany']({ count: nav.chaptersRemaining });
 	});
 
 	const pageProgressPercent = $derived(
@@ -420,10 +420,9 @@
 		class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-base/95 backdrop-blur-xl transition-opacity duration-300"
 	>
 		<div class="flex flex-col items-center gap-4">
-			<div
-				class="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"
-			></div>
-			<p class="animate-pulse text-sm font-black tracking-widest text-primary uppercase">
+			<!-- Loading skeleton in the shape of a page, never a loose spinner (Acerola standard). -->
+			<div class="aspect-2/3 h-[60vh] animate-pulse rounded-tile bg-surface" aria-hidden="true"></div>
+			<p class="animate-pulse text-sm font-black text-muted-foreground" role="status">
 				{m['pages.reader.fallback.loading']()}
 			</p>
 		</div>
@@ -434,7 +433,7 @@
 	{#snippet toolbar()}
 		<ReaderToolbar
 			data={{
-				title: nav.chapter?.name ?? m['pages.reader.fallback.chapter_unavailable'](),
+				title: nav.chapter?.name ?? m['pages.reader.fallback.chapterUnavailable'](),
 				subtitle: readerSubtitle,
 				zoomLevel: zoom.zoomLevel,
 				zoomMode: zoom.zoomMode,

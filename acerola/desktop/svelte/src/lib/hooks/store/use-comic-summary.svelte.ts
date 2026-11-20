@@ -21,6 +21,8 @@ const { notify } = notificationStore;
 
 let comics = $state<ComicSummaryPayload | undefined>(undefined);
 let loading = $state(false);
+/** The last fetch failed: the screen shows the error state with a retry. */
+let failed = $state(false);
 let sortBy = $state<SortBy>('title');
 let sortOrder = $state<SortOrder>('asc');
 let showHidden = $state(false);
@@ -32,6 +34,7 @@ let lastSearch: string | undefined = undefined;
 export function _resetComicSummaryState() {
 	comics = undefined;
 	loading = false;
+	failed = false;
 	sortBy = 'title';
 	sortOrder = 'asc';
 	showHidden = false;
@@ -53,6 +56,7 @@ export function useComicSummary() {
 		return new Promise<void>(async (resolve) => {
 			const unlisten = await listen<ComicSummaryPayload>(HOME_EVENTS.homeData, (event) => {
 				comics = event.payload;
+				failed = false;
 
 				debug(
 					`[useComicSummary] total=${event.payload.total} fetchedAt=${event.payload.fetchedAt} payload=${JSON.stringify(event.payload.comics.slice(0, 3))}`
@@ -65,8 +69,9 @@ export function useComicSummary() {
 
 			const unlistenErr = await listen<ErrorPayload>(HOME_EVENTS.homeError, (event) => {
 				const description = resolveErrorMessage(event.payload);
+				failed = true;
 
-				notify.error(m['hooks.comic_summary.error.title'](), {
+				notify.error(m['hooks.comicSummary.error.title'](), {
 					description,
 					duration: 0
 				});
@@ -183,6 +188,9 @@ export function useComicSummary() {
 		},
 		get loading() {
 			return loading;
+		},
+		get failed() {
+			return failed;
 		},
 		get sortBy() {
 			return sortBy;

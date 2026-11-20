@@ -31,7 +31,7 @@
 		aria-label="Navigation"
 		use:slidingIndicator={{
 			selector: '[aria-current="page"]',
-			indicatorClass: 'rounded-xl bg-primary shadow-lg'
+			indicatorClass: 'rounded-inner bg-primary shadow-lift'
 		}}
 		class="flex w-[4.6rem] shrink-0 flex-col items-center gap-1 border-r border-surface/30 bg-mantle/40 py-4 backdrop-blur-xl"
 	>
@@ -52,7 +52,7 @@
 							{...props}
 							aria-label={item.label}
 							aria-current={page.url.pathname === item.href ? 'page' : undefined}
-							class="relative flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors [&_svg]:size-6 {page
+							class="relative flex size-11 shrink-0 items-center justify-center rounded-inner transition-colors [&_svg]:size-6 {page
 								.url.pathname === item.href
 								? 'text-primary-foreground'
 								: 'text-foreground hover:bg-surface/80'}"

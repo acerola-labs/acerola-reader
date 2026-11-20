@@ -48,35 +48,35 @@
 	const messageByKind = $derived<Record<TransferLogEntry['kind'], EntryMessageByStatus>>({
 		history: {
 			started: (entry) =>
-				m['pages.network.transfers.history_started']({ peer: data.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyStarted']({ peer: data.peerLabel(entry.message) }),
 			complete: (entry) =>
-				m['pages.network.transfers.history_complete']({ peer: data.peerLabel(entry.message) }),
-			error: (entry) => m['pages.network.transfers.history_error']({ msg: entry.message })
+				m['pages.network.transfers.historyComplete']({ peer: data.peerLabel(entry.message) }),
+			error: (entry) => m['pages.network.transfers.historyError']({ msg: entry.message })
 		},
 		historyEntry: {
 			started: (entry) =>
-				m['pages.network.transfers.history_entry_started']({ peer: data.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyEntryStarted']({ peer: data.peerLabel(entry.message) }),
 			complete: (entry) =>
-				m['pages.network.transfers.history_entry_complete']({
+				m['pages.network.transfers.historyEntryComplete']({
 					peer: data.peerLabel(entry.message)
 				}),
-			error: (entry) => m['pages.network.transfers.history_entry_error']({ msg: entry.message })
+			error: (entry) => m['pages.network.transfers.historyEntryError']({ msg: entry.message })
 		},
 		files: {
 			started: (entry) =>
-				m['pages.network.transfers.files_started']({ peer: data.peerLabel(entry.message) }),
-			progress: (entry) => m['pages.network.transfers.files_progress']({ item: entry.message }),
+				m['pages.network.transfers.filesStarted']({ peer: data.peerLabel(entry.message) }),
+			progress: (entry) => m['pages.network.transfers.filesProgress']({ item: entry.message }),
 			complete: (entry) =>
-				m['pages.network.transfers.files_complete']({ peer: data.peerLabel(entry.message) }),
-			error: (entry) => m['pages.network.transfers.files_error']({ msg: entry.message })
+				m['pages.network.transfers.filesComplete']({ peer: data.peerLabel(entry.message) }),
+			error: (entry) => m['pages.network.transfers.filesError']({ msg: entry.message })
 		},
 		comic: {
 			started: (entry) =>
-				m['pages.network.transfers.comic_started']({ peer: data.peerLabel(entry.message) }),
-			progress: (entry) => m['pages.network.transfers.comic_progress']({ item: entry.message }),
+				m['pages.network.transfers.comicStarted']({ peer: data.peerLabel(entry.message) }),
+			progress: (entry) => m['pages.network.transfers.comicProgress']({ item: entry.message }),
 			complete: (entry) =>
-				m['pages.network.transfers.comic_complete']({ peer: data.peerLabel(entry.message) }),
-			error: (entry) => m['pages.network.transfers.comic_error']({ msg: entry.message })
+				m['pages.network.transfers.comicComplete']({ peer: data.peerLabel(entry.message) }),
+			error: (entry) => m['pages.network.transfers.comicError']({ msg: entry.message })
 		}
 	});
 
@@ -86,7 +86,7 @@
 		// conflito só precisa aparecer aqui, na linha da sessão que já ia ser mostrada de
 		// qualquer forma, um total por sessão em vez de uma notificação por capítulo.
 		if (entry.status === 'complete' && entry.conflicts) {
-			return `${base} ${m['pages.network.transfers.conflicts_suffix']({ count: entry.conflicts })}`;
+			return `${base} ${m['pages.network.transfers.conflictsSuffix']({ count: entry.conflicts })}`;
 		}
 		return base;
 	}

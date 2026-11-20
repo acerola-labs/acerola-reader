@@ -76,10 +76,10 @@
 			: '';
 		const openingState = isOpening ? ' pointer-events-none opacity-70' : '';
 		if (chapter.hasConflict) {
-			return `${base} border-destructive/30 bg-destructive/10 hover:bg-destructive/20${selectedRing}${openingState}`;
+			return `${base} bg-destructive/10 hover:bg-destructive/20${selectedRing}${openingState}`;
 		}
 		if (chapter.isRead) {
-			return `${base} border-primary/30 bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
+			return `${base} bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
 		}
 		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
 	}
@@ -235,7 +235,7 @@
 										</div>
 									{:else}
 										<div class="flex h-6 w-6 items-center justify-center">
-											<div class="h-5 w-5 rounded-full border-2 border-muted-foreground"></div>
+											<div class="h-5 w-5 rounded-full border-2"></div>
 										</div>
 									{/if}
 								{:else if chapter.hasConflict}
@@ -291,12 +291,12 @@
 											ui={{
 												align: 'end',
 												contentClass:
-													'w-52 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-1.5 shadow-2xl backdrop-blur-md'
+													'w-52 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
 											}}
 										>
 											{#snippet trigger()}
 												<span
-													class="flex size-10 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+													class="flex size-10 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
 												>
 													<MoreVertical size={20} />
 												</span>
@@ -309,7 +309,7 @@
 															ui={{
 																variant: 'ghost',
 																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-amber-500 hover:bg-amber-500/10 hover:text-amber-400'
+																	'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-warning hover:bg-warning-soft hover:text-warning'
 															}}
 															events={{
 																onClick: () => {
@@ -319,14 +319,14 @@
 															}}
 														>
 															<BookOpen size={16} class="shrink-0" />
-															{m['pages.comic.selection.mark_unread']()}
+															{m['pages.comic.selection.markUnread']()}
 														</AcerolaButton>
 													{:else}
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
 																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																	'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
 															}}
 															events={{
 																onClick: () => {
@@ -336,7 +336,7 @@
 															}}
 														>
 															<Check size={16} class="shrink-0" />
-															{m['pages.comic.selection.mark_read']()}
+															{m['pages.comic.selection.markRead']()}
 														</AcerolaButton>
 													{/if}
 
@@ -346,7 +346,7 @@
 														ui={{
 															variant: 'ghost',
 															class:
-																'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+																'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 														}}
 														events={{
 															onClick: () => {

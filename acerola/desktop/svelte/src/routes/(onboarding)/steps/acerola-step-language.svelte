@@ -25,8 +25,8 @@
 			nativeName: locale === 'pt-br' ? 'Português' : 'English',
 			sub:
 				locale === 'pt-br'
-					? m['onboarding.language.country_br']()
-					: m['onboarding.language.country_us']()
+					? m['onboarding.language.countryBr']()
+					: m['onboarding.language.countryUs']()
 		}))
 	);
 
@@ -43,7 +43,7 @@
 		<!-- Header -->
 		<div class="flex flex-col items-center gap-3 sm:flex-row sm:items-start">
 			<div
-				class="flex size-14 items-center justify-center rounded-2xl bg-chart-3/10 text-chart-3 shadow-inner"
+				class="flex size-14 items-center justify-center rounded-inner bg-chart-3/10 text-chart-3"
 			>
 				<LanguagesIcon size={28} />
 			</div>
@@ -62,8 +62,8 @@
 				<button
 					type="button"
 					onclick={() => handleLocaleChange(opt.value)}
-					class="group relative flex cursor-pointer items-start justify-between rounded-2xl border p-5 text-left backdrop-blur-sm transition-all duration-200 {isSelected
-						? 'border-primary/60 bg-linear-to-b from-primary/10 via-card/70 to-card/90 shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.2)] ring-2 ring-primary/40'
+					class="group relative flex cursor-pointer items-start justify-between rounded-inner border p-5 text-left backdrop-blur-sm transition-all duration-200 {isSelected
+						? ' bg-linear-to-b from-primary/10 via-card/70 to-card/90 shadow-lift ring-2 ring-primary/40'
 						: 'border-border/40 bg-card/40 hover:border-border hover:bg-card/70'}"
 				>
 					<div class="space-y-2">
@@ -76,7 +76,7 @@
 
 					<div
 						class="flex size-6 items-center justify-center rounded-full transition-all {isSelected
-							? 'bg-primary text-primary-foreground shadow-xs'
+							? 'bg-primary text-primary-foreground'
 							: 'border border-border/80 bg-background/50 text-transparent'}"
 					>
 						<CheckCircle2Icon size={16} strokeWidth={2.5} />
@@ -86,13 +86,13 @@
 		</div>
 
 		<!-- Dropdown Alternative -->
-		<div class="rounded-2xl border border-border/40 bg-card/30 p-4 backdrop-blur-sm">
+		<div class="rounded-inner border border-border/40 bg-card/30 p-4 backdrop-blur-sm">
 			<div class="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
 				<GlobeIcon size={14} />
-				<span>{m['onboarding.language.quick_select']()}</span>
+				<span>{m['onboarding.language.quickSelect']()}</span>
 			</div>
 			<Select.Root type="single" value={selectedLocale} onValueChange={handleLocaleChange}>
-				<Select.Trigger class="w-full rounded-xl">
+				<Select.Trigger class="w-full rounded-inner">
 					{localeOptions.find((l) => l.value === selectedLocale)?.label || selectedLocale}
 				</Select.Trigger>
 				<Select.Content>
@@ -107,10 +107,10 @@
 
 		<!-- Action Controls -->
 		<div class="flex items-center justify-between pt-2">
-			<Button onclick={onPrev} variant="outline" class="rounded-xl px-6">
+			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
 				{m['onboarding.back']()}
 			</Button>
-			<Button onclick={onNext} class="rounded-xl px-8 font-semibold shadow-md transition-all hover:shadow-lg">
+			<Button onclick={onNext} class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift">
 				{m['onboarding.next']()}
 			</Button>
 		</div>

@@ -1,7 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"components": {
-		"hero_button": {
+		"heroButton": {
 			"default": {
 				"title": "Untitled"
 			}
@@ -29,142 +29,143 @@
 			"clear": {
 				"all": "Clear all"
 			},
-			"scroll_to_bottom": "Scroll to bottom"
+			"scrollToBottom": "Scroll to bottom"
 		},
-		"mode_picker": {
+		"modePicker": {
 			"title": "Change theme"
 		},
-		"bookmark_ribbon": {
-			"default_label": "Bookmarked",
+		"bookmarkRibbon": {
+			"defaultLabel": "Bookmarked",
 			"label": "Bookmark: {name}"
 		},
-		"copy_button": {
+		"copyButton": {
 			"copy": "Copy",
 			"copied": "Copied"
 		}
 	},
 	"hooks": {
-		"comic_scanner": {
-			"no_folder": "No folder selected.",
-			"in_progress": "Scan in progress...",
+		"comicScanner": {
+			"noFolder": "No folder selected.",
+			"inProgress": "Scan in progress...",
 			"converting": "Converting files to CBZ...",
 			"success": "Scan complete!",
 			"error": {
 				"title": "Scan failed"
 			}
 		},
-		"comic_summary": {
+		"comicSummary": {
 			"error": {
 				"title": "Error loading library"
 			}
 		},
-		"select_folder": {
+		"selectFolder": {
 			"success": "Folder saved successfully."
 		},
-		"comic_chapters": {
+		"comicChapters": {
 			"error": {
 				"load": "Error loading chapters",
 				"request": "Error requesting chapters"
 			}
 		}
 	},
-	"tauri_errors": {
+	"tauriErrors": {
 		"comic": {
-			"already_exists": {
+			"alreadyExists": {
 				"label": "This comic already exists in your library."
 			},
-			"sync_in_progress": {
+			"syncInProgress": {
 				"label": "A sync is already in progress for this comic."
 			},
-			"not_found": {
+			"notFound": {
 				"label": "Comic not found."
 			},
-			"invalid_request": {
+			"invalidRequest": {
 				"label": "Invalid data provided."
 			},
-			"integrity_violation": {
+			"integrityViolation": {
 				"label": "Integrity error: invalid or missing reference."
 			},
-			"system_failure": {
+			"systemFailure": {
 				"label": "System failure while processing comic."
 			},
-			"io_error": {
+			"ioError": {
 				"label": "Error accessing file system."
 			}
 		},
 		"sync": {
-			"session_busy": {
+			"sessionBusy": {
 				"label": "A sync session is already in progress with this device."
 			},
-			"timed_out": {
+			"timedOut": {
 				"label": "The sync took too long and was cancelled — the device may have gone offline."
 			},
-			"connection_lost": {
+			"connectionLost": {
 				"label": "The connection to the device dropped during sync. Please try again."
 			},
-			"peer_not_found": {
+			"peerNotFound": {
 				"label": "Could not find this device on the network."
 			},
-			"auth_denied": {
+			"authDenied": {
 				"label": "The connection to this device was refused."
 			},
 			"shutdown": {
 				"label": "The network was shut down during sync."
 			},
-			"incompatible_version": {
+			"incompatibleVersion": {
 				"label": "This device is running an incompatible app version."
 			},
-			"startup_failed": {
+			"startupFailed": {
 				"label": "Failed to start the connection to the device."
 			},
-			"blob_not_found": {
+			"blobNotFound": {
 				"label": "The requested file was not found on the remote device."
 			},
-			"missing_blob_hash": {
+			"missingBlobHash": {
 				"label": "The remote device sent an item without the data needed to transfer it."
 			},
-			"blob_fetch_failed": {
+			"blobFetchFailed": {
 				"label": "Failed to download one of the files during sync."
 			},
-			"checksum_mismatch": {
+			"checksumMismatch": {
 				"label": "One of the received files failed integrity verification."
 			},
-			"comic_directory_unavailable": {
+			"comicDirectoryUnavailable": {
 				"label": "Could not access this comic's folder."
 			},
-			"persist_failed": {
+			"persistFailed": {
 				"label": "Failed to save one of the received files."
 			},
-			"no_pending_request": {
+			"noPendingRequest": {
 				"label": "The request expired before it could be processed. Try again."
 			},
-			"partial_sync": {
+			"partialSync": {
 				"label": "Some chapters were not synced — check the history for details."
 			},
-			"comic_not_found": {
+			"comicNotFound": {
 				"label": "The other device doesn't have this comic yet."
 			}
 		}
 	},
 	"layout": {
-		"search_placeholder": "Search comic...",
+		"searchPlaceholder": "Search comic...",
 		"buttons": {
 			"minimize": "Minimize",
 			"maximize": "Maximize",
 			"close": "Close"
 		},
-		"language_picker": {
+		"languagePicker": {
 			"title": "Change language"
 		},
 		"command": {
-			"navigation_group": "Navigation",
-			"library_group": "Library",
-			"no_results": "No comics found."
+			"navigationGroup": "Navigation",
+			"libraryGroup": "Library",
+			"noResults": "No comics found."
 		},
-		"sync_indicator": {
+		"syncIndicator": {
 			"syncing": "Syncing with {peer}",
 			"tooltip": "View details in the Network tab"
-		}
+		},
+		"loading": "Loading Acerola"
 	},
 	"routes": {
 		"home": "Home",
@@ -175,11 +176,11 @@
 	"pages": {
 		"home": {
 			"loading": "Loading...",
-			"no_comics": "No comics found.",
+			"noComics": "No comics found.",
 			"empty": {
 				"desc": "Your library is empty right now. Perform a quick sync in the current folder or select another folder containing your comics (.cbz, .cbr, .pdf).",
-				"quick_sync": "Quick Sync",
-				"select_folder": "Select Folder"
+				"quickSync": "Quick Sync",
+				"selectFolder": "Select Folder"
 			},
 			"sort": {
 				"button": "Sort",
@@ -193,8 +194,8 @@
 				},
 				"indicator": {
 					"title": "Title",
-					"chapter_count": "Chapters",
-					"last_updated": "Updated"
+					"chapterCount": "Chapters",
+					"lastUpdated": "Updated"
 				}
 			},
 			"selection": {
@@ -202,9 +203,9 @@
 				"all": {
 					"select": "Select all",
 					"deselect": "Deselect all",
-					"select_total": "Select all ({total})"
+					"selectTotal": "Select all ({total})"
 				},
-				"actions_button": "Actions ({count})",
+				"actionsButton": "Actions ({count})",
 				"cancel": "Cancel"
 			},
 			"actions": {
@@ -213,75 +214,79 @@
 				"bookmark": "Add Bookmark",
 				"hide": "Hide",
 				"delete": "Delete",
-				"clear_metadata": "Clear Metadata",
+				"clearMetadata": "Clear Metadata",
 				"cancel": "Cancel",
-				"hide_confirm": {
+				"hideConfirm": {
 					"title": "Hide Comics",
 					"desc": "Are you sure you want to hide the selected comic(s)? They will be hidden from the library.",
 					"action": "Hide"
 				},
-				"delete_confirm": {
+				"deleteConfirm": {
 					"title": "Delete Comics",
 					"desc": "Are you sure you want to delete the selected comic(s)? This will permanently delete the folder and physical files from disk — this action cannot be undone.",
 					"action": "Delete"
 				},
-				"clear_metadata_confirm": {
+				"clearMetadataConfirm": {
 					"title": "Clear Metadata",
 					"desc": "This deletes ComicInfo.xml, cover and banner from each of the {count} selected comic(s)' folder, plus all synced metadata in the database. Chapters and volumes are not affected. This action cannot be undone.",
 					"action": "Clear Metadata"
 				},
-				"filter_categories_placeholder": "Filter categories..."
+				"filterCategoriesPlaceholder": "Filter categories..."
 			},
 			"toast": {
 				"hidden": "{count} comic(s) hidden",
 				"deleted": "{count} comic(s) deleted",
 				"bookmarked": "{count} comic(s) bookmarked",
-				"metadata_cleared": "{count} comic(s) had their metadata cleared",
+				"metadataCleared": "{count} comic(s) had their metadata cleared",
 				"error": {
 					"hide": "Failed to hide comics",
 					"delete": "Failed to delete comics",
 					"bookmark": "Failed to bookmark comics",
-					"clear_metadata": "Failed to clear comics metadata"
+					"clearMetadata": "Failed to clear comics metadata"
 				}
 			},
-			"filter_button": "Filter & Sort",
-			"browse_remote_button": "Browse another device",
-			"no_results_filtered": "No comics found for the selected filter.",
-			"filter_panel": {
-				"aria_label": "Filter & Sort",
-				"active_filters": "Active filters",
-				"close_aria": "Close filter panel",
-				"sort_section_title": "Sort by",
-				"sort_radiogroup_aria": "Sort options",
-				"sort_options": {
+			"filterButton": "Filter & Sort",
+			"browseRemoteButton": "Browse another device",
+			"noResultsFiltered": "No comics found for the selected filter.",
+			"filterPanel": {
+				"ariaLabel": "Filter & Sort",
+				"activeFilters": "Active filters",
+				"closeAria": "Close filter panel",
+				"sortSectionTitle": "Sort by",
+				"sortRadiogroupAria": "Sort options",
+				"sortOptions": {
 					"title": "Title",
-					"chapter_count": "Chapter Count",
-					"last_updated": "Last Updated"
+					"chapterCount": "Chapter Count",
+					"lastUpdated": "Last Updated"
 				},
-				"filter_section_title": "Filter by",
-				"show_hidden": {
+				"filterSectionTitle": "Filter by",
+				"showHidden": {
 					"title": "Show hidden",
 					"desc": "Display hidden comics"
 				},
-				"metadata_sources_title": "Metadata Sources",
-				"metadata_sources_aria": "Metadata sources",
-				"metadata_sources": {
+				"metadataSourcesTitle": "Metadata Sources",
+				"metadataSourcesAria": "Metadata sources",
+				"metadataSources": {
 					"all": "All",
 					"comicinfo": "ComicInfo",
 					"mangadex": "MangaDex",
 					"anilist": "AniList",
-					"no_metadata": "No metadata"
+					"noMetadata": "No metadata"
 				},
-				"bookmark_filter_title": "Filter by bookmark",
-				"bookmark_filter_aria": "Filter by bookmark",
-				"bookmark_filter": {
+				"bookmarkFilterTitle": "Filter by bookmark",
+				"bookmarkFilterAria": "Filter by bookmark",
+				"bookmarkFilter": {
 					"all": "All",
 					"none": "No bookmark"
 				},
 				"reset": "Reset",
 				"apply": "Apply"
 			},
-			"no_results_filtered_title": "No results found"
+			"noResultsFilteredTitle": "No results found",
+			"error": {
+				"text": "We could not load your library. Check the folder and try again.",
+				"retry": "Try again"
+			}
 		},
 		"comic": {
 			"loading": "Loading...",
@@ -290,7 +295,7 @@
 				"chapters": "Chapters",
 				"preferences": "Preferences"
 			},
-			"filter_placeholder": "FILTER...",
+			"filterPlaceholder": "FILTER...",
 			"sort": {
 				"button": "Sort",
 				"number": {
@@ -303,13 +308,13 @@
 				}
 			},
 			"selection": {
-				"mark_read": "Mark as read",
-				"mark_unread": "Mark as unread",
+				"markRead": "Mark as read",
+				"markUnread": "Mark as unread",
 				"select": "Select",
 				"selected": "{count} selected",
-				"select_all": "Select all",
+				"selectAll": "Select all",
 				"cancel": "Cancel",
-				"send_to_peer": {
+				"sendToPeer": {
 					"button": "Send",
 					"toast": {
 						"start": "Sending to device...",
@@ -330,7 +335,7 @@
 				"chapters": {
 					"count": "{count} Chaps"
 				},
-				"read_now": "READ NOW",
+				"readNow": "READ NOW",
 				"completed": "COMPLETED",
 				"conflict": "CONFLICT"
 			},
@@ -349,7 +354,7 @@
 						"desc": "Cover and danger zone"
 					}
 				},
-				"volume_highlight": {
+				"volumeHighlight": {
 					"title": "Volume Highlight",
 					"desc": "Choose how volumes are highlighted: as covers or banners.",
 					"cover": "Cover",
@@ -360,18 +365,18 @@
 					"desc": "Assign a bookmark to this comic.",
 					"none": "None"
 				},
-				"external_sync": {
+				"externalSync": {
 					"title": "External Sync",
 					"desc": "Allow this comic to be automatically updated during batch syncs."
 				},
-				"file_sync": {
+				"fileSync": {
 					"title": "File Sync",
 					"rescan": {
 						"title": "Sync local chapters",
 						"desc": "Updates only the chapters that are new or changed in this folder."
 					}
 				},
-				"p2p_sync": {
+				"p2pSync": {
 					"title": "Sync with Device",
 					"empty": "No paired devices yet. Pair a device on the Network screen.",
 					"send": {
@@ -393,14 +398,14 @@
 						"title": "Use chapter page as cover",
 						"desc": "Extracts the first chapter's first page and sets it as the comic cover, replacing the current one."
 					},
-					"regenerate_volumes": {
+					"regenerateVolumes": {
 						"title": "Generate volume covers",
 						"desc": "Extracts the first page of each volume's first chapter and sets it as that volume's cover, replacing the current ones."
 					}
 				},
-				"danger_zone": {
+				"dangerZone": {
 					"title": "Danger Zone",
-					"clear_metadata": {
+					"clearMetadata": {
 						"title": "Clear metadata",
 						"desc": "Deletes ComicInfo.xml, the cover and the banner from the folder, and removes the synced metadata (title, description, authors, AniList/MangaDex) from the database. Useful for reverting a sync that pulled in wrong data.",
 						"confirm": {
@@ -413,36 +418,36 @@
 				}
 			},
 			"volume": {
-				"chapters_included": "{count} chapters included",
-				"no_chapters": "No chapters available.",
-				"no_volumes": "No volumes indexed yet."
+				"chaptersIncluded": "{count} chapters included",
+				"noChapters": "No chapters available.",
+				"noVolumes": "No volumes indexed yet."
 			},
 			"toast": {
-				"mangadex_error": "MangaDex: {msg}",
-				"anilist_error": "AniList: {msg}",
-				"rescan_error": "Error syncing chapters: {msg}",
-				"regenerate_cover_error": "Error generating cover: {msg}",
-				"regenerate_volume_covers_error": "Error generating volume covers: {msg}",
-				"clear_metadata_error": "Error clearing metadata: {msg}",
+				"mangadexError": "MangaDex: {msg}",
+				"anilistError": "AniList: {msg}",
+				"rescanError": "Error syncing chapters: {msg}",
+				"regenerateCoverError": "Error generating cover: {msg}",
+				"regenerateVolumeCoversError": "Error generating volume covers: {msg}",
+				"clearMetadataError": "Error clearing metadata: {msg}",
 				"sync": {
 					"disabled": "External sync disabled",
 					"enabled": "External sync enabled",
-					"toggle_error": "Error toggling external sync: {msg}",
+					"toggleError": "Error toggling external sync: {msg}",
 					"success": "Metadata synced!",
-					"rescan_success": "Chapters synced!",
-					"start_mangadex": "Syncing metadata with MangaDex...",
-					"start_anilist": "Syncing metadata with AniList...",
-					"start_comic_info": "Syncing metadata with ComicInfo.xml...",
-					"start_rescan": "Syncing local chapters...",
-					"start_regenerate_cover": "Generating cover from first page...",
-					"start_regenerate_volume_covers": "Generating volume covers...",
-					"start_clear_metadata": "Clearing metadata...",
-					"start_toggle": "Updating external sync...",
-					"regenerate_cover_success": "Cover updated!",
-					"regenerate_volume_covers_success": "Volume covers updated!",
-					"clear_metadata_success": "Metadata cleared!"
+					"rescanSuccess": "Chapters synced!",
+					"startMangadex": "Syncing metadata with MangaDex...",
+					"startAnilist": "Syncing metadata with AniList...",
+					"startComicInfo": "Syncing metadata with ComicInfo.xml...",
+					"startRescan": "Syncing local chapters...",
+					"startRegenerateCover": "Generating cover from first page...",
+					"startRegenerateVolumeCovers": "Generating volume covers...",
+					"startClearMetadata": "Clearing metadata...",
+					"startToggle": "Updating external sync...",
+					"regenerateCoverSuccess": "Cover updated!",
+					"regenerateVolumeCoversSuccess": "Volume covers updated!",
+					"clearMetadataSuccess": "Metadata cleared!"
 				},
-				"comic_info": {
+				"comicInfo": {
 					"error": "ComicInfo.xml: {msg}",
 					"title": "ComicInfo.xml",
 					"desc": "Extract metadata from ComicInfo.xml in local folder"
@@ -452,21 +457,21 @@
 		"reader": {
 			"fallback": {
 				"loading": "Loading...",
-				"chapter_unavailable": "Chapter unavailable",
-				"open_failed": {
+				"chapterUnavailable": "Chapter unavailable",
+				"openFailed": {
 					"title": "Couldn't open this chapter",
 					"desc": "The pages may be corrupted, or the file may have been moved or deleted. Try again or go back."
 				},
 				"retry": "Try again"
 			},
 			"progress": {
-				"chapter_unavailable": "Chapter progress",
-				"chapter_count": "Chapter {current} of {total}",
-				"remaining_unavailable": "Remaining chapters unavailable",
-				"remaining_one": "1 chapter remaining",
-				"remaining_many": "{count} chapters remaining",
+				"chapterUnavailable": "Chapter progress",
+				"chapterCount": "Chapter {current} of {total}",
+				"remainingUnavailable": "Remaining chapters unavailable",
+				"remainingOne": "1 chapter remaining",
+				"remainingMany": "{count} chapters remaining",
 				"subtitle": "{scope} - {current} / {total} pages",
-				"read_percent": "{percent}% read"
+				"readPercent": "{percent}% read"
 			},
 			"modes": {
 				"vertical": {
@@ -481,15 +486,15 @@
 			},
 			"actions": {
 				"back": "Back",
-				"apply_zoom": "Apply zoom",
-				"reset_zoom": "Reset zoom",
-				"zoom_mode": "Zoom mode",
+				"applyZoom": "Apply zoom",
+				"resetZoom": "Reset zoom",
+				"zoomMode": "Zoom mode",
 				"commands": "Commands",
-				"close_commands": "Close commands",
+				"closeCommands": "Close commands",
 				"page": {
 					"previous": "Previous page",
 					"next": "Next page",
-					"navigation_locked": "Disable zoom to change page"
+					"navigationLocked": "Disable zoom to change page"
 				},
 				"chapter": {
 					"previous": "Previous chapter",
@@ -498,24 +503,24 @@
 			},
 			"pages": {
 				"label": "Page {page}",
-				"image_alt": "Page {page}"
+				"imageAlt": "Page {page}"
 			},
 			"command": {
 				"placeholder": "Reader commands...",
-				"zoom_group": "Zoom",
-				"reading_group": "Reading",
+				"zoomGroup": "Zoom",
+				"readingGroup": "Reading",
 				"search": {
-					"toggle_zoom": "toggle zoom mode",
-					"zoom_in": "zoom in",
-					"zoom_out": "zoom out",
-					"reset_zoom": "reset zoom",
+					"toggleZoom": "toggle zoom mode",
+					"zoomIn": "zoom in",
+					"zoomOut": "zoom out",
+					"resetZoom": "reset zoom",
 					"vertical": "vertical paged",
 					"horizontal": "horizontal paged",
 					"webtoon": "webtoon"
 				},
 				"mode": {
-					"enable_zoom": "Enable zoom mode",
-					"disable_zoom": "Disable zoom mode"
+					"enableZoom": "Enable zoom mode",
+					"disableZoom": "Disable zoom mode"
 				},
 				"zoom": {
 					"in": "Zoom in",
@@ -525,16 +530,16 @@
 			},
 			"zoom": {
 				"status": "Zoom {zoom}",
-				"scroll_status": "Zoom {zoom} - scroll adjusts"
+				"scrollStatus": "Zoom {zoom} - scroll adjusts"
 			}
 		},
 		"history": {
 			"title": "History",
 			"loading": "Loading...",
-			"no_events": "No history found.",
+			"noEvents": "No history found.",
 			"resume": "Continue Reading",
-			"chapter_label": "Chapter {chapter}",
-			"page_label": "Page {page}",
+			"chapterLabel": "Chapter {chapter}",
+			"pageLabel": "Page {page}",
 			"older": "Older",
 			"sync": {
 				"button": "Sync",
@@ -568,13 +573,13 @@
 					"desc": "Create and organize bookmarks"
 				}
 			},
-			"file_system": {
+			"fileSystem": {
 				"title": "File Configuration",
-				"comic_path": {
+				"comicPath": {
 					"title": "Comics folder",
 					"desc": "Folder where comics are searched and saved: {path}"
 				},
-				"comic_info": {
+				"comicInfo": {
 					"title": "Generate ComicInfo.xml",
 					"desc": "Create metadata file in folder when syncing."
 				},
@@ -594,12 +599,12 @@
 				"lang": {
 					"title": "Language",
 					"desc": "Select the default language for metadata.",
-					"popover_title": "Metadata language",
-					"popover_desc": "Current: {language}",
-					"search_placeholder": "Search language...",
-					"group_title": "Available languages",
+					"popoverTitle": "Metadata language",
+					"popoverDesc": "Current: {language}",
+					"searchPlaceholder": "Search language...",
+					"groupTitle": "Available languages",
 					"empty": "No language found.",
-					"item_desc": "Code {code}"
+					"itemDesc": "Code {code}"
 				},
 				"mangadex": {
 					"title": "MangaDex Sync",
@@ -621,7 +626,7 @@
 				"color": "Color",
 				"create": "Create",
 				"empty": "No bookmarks created.",
-				"color_option": "Color {hex}"
+				"colorOption": "Color {hex}"
 			},
 			"toast": {
 				"sync": {
@@ -649,53 +654,53 @@
 				"help": {
 					"title": "How to build a template",
 					"desc": "Combine fixed text (like \"Ch.\" or \"Vol.\") with the macros below, always in curly braces. Use an asterisk to cover any variable part of the name, like the chapter title.",
-					"macro_chapter_label": "Chapter number",
-					"macro_chapter_desc": "Required and unique in chapter templates.",
-					"macro_volume_label": "Volume number",
-					"macro_volume_desc": "Required and unique in volume templates.",
-					"macro_decimal_label": "Decimal part",
-					"macro_decimal_desc": "Optional. At most one per template, always after the chapter or volume.",
-					"macro_extension_label": "File extension",
-					"macro_extension_desc": "Required in chapter templates. Acerola appends it by itself at the end — you don't need to (or get to) type it.",
-					"wildcard_label": "Asterisk (*)",
-					"wildcard_desc": "Covers any text, like the chapter title or variable spacing.",
-					"example_chapter_label": "Chapter template example",
-					"example_chapter_match": "Matches: \"Ch. 12.5.Chapter Title.cbz\"",
-					"example_volume_label": "Volume template example",
-					"example_volume_match": "Matches the folder: \"Vol. 3\""
+					"macroChapterLabel": "Chapter number",
+					"macroChapterDesc": "Required and unique in chapter templates.",
+					"macroVolumeLabel": "Volume number",
+					"macroVolumeDesc": "Required and unique in volume templates.",
+					"macroDecimalLabel": "Decimal part",
+					"macroDecimalDesc": "Optional. At most one per template, always after the chapter or volume.",
+					"macroExtensionLabel": "File extension",
+					"macroExtensionDesc": "Required in chapter templates. Acerola appends it by itself at the end — you don't need to (or get to) type it.",
+					"wildcardLabel": "Asterisk (*)",
+					"wildcardDesc": "Covers any text, like the chapter title or variable spacing.",
+					"exampleChapterLabel": "Chapter template example",
+					"exampleChapterMatch": "Matches: \"Ch. 12.5.Chapter Title.cbz\"",
+					"exampleVolumeLabel": "Volume template example",
+					"exampleVolumeMatch": "Matches the folder: \"Vol. 3\""
 				},
 				"form": {
 					"title": "Create new template",
-					"sort_type": "Applies to",
-					"sort_type_chapter": "Chapters",
-					"sort_type_volume": "Volumes",
+					"sortType": "Applies to",
+					"sortTypeChapter": "Chapters",
+					"sortTypeVolume": "Volumes",
 					"label": "Template name",
-					"label_placeholder": "A name to identify this template",
+					"labelPlaceholder": "A name to identify this template",
 					"pattern": "Pattern",
-					"extension_auto_hint": "The file extension is already included automatically at the end of the pattern — no need to type it.",
+					"extensionAutoHint": "The file extension is already included automatically at the end of the pattern — no need to type it.",
 					"create": "Create template",
 					"creating": "Creating..."
 				},
 				"list": {
-					"chapter_title": "Chapter Templates",
-					"volume_title": "Volume Templates",
-					"empty_chapter": "No custom chapter templates yet.",
-					"empty_volume": "No custom volume templates yet.",
-					"default_badge": "Default",
-					"default_hint": "Default templates ship with the app and cannot be edited or removed."
+					"chapterTitle": "Chapter Templates",
+					"volumeTitle": "Volume Templates",
+					"emptyChapter": "No custom chapter templates yet.",
+					"emptyVolume": "No custom volume templates yet.",
+					"defaultBadge": "Default",
+					"defaultHint": "Default templates ship with the app and cannot be edited or removed."
 				},
-				"delete_confirm": {
+				"deleteConfirm": {
 					"title": "Remove template?",
 					"desc": "The template \"{label}\" will be removed and will no longer be recognized when scanning the library.",
 					"action": "Remove",
 					"cancel": "Cancel"
 				},
 				"toast": {
-					"create_success": "Template \"{label}\" created successfully.",
-					"create_error": "Could not create the template: {msg}",
-					"delete_success": "Template removed.",
-					"delete_error": "Could not remove the template: {msg}",
-					"load_error": "Could not load templates: {msg}"
+					"createSuccess": "Template \"{label}\" created successfully.",
+					"createError": "Could not create the template: {msg}",
+					"deleteSuccess": "Template removed.",
+					"deleteError": "Could not remove the template: {msg}",
+					"loadError": "Could not load templates: {msg}"
 				}
 			}
 		},
@@ -703,13 +708,13 @@
 			"title": "Network",
 			"subtitle": "Connect another Acerola device to bring your reading history and comics with you.",
 			"copied": "Copied!",
-			"keyring_unavailable": "Your system's secure keyring isn't available, so the encryption key protecting your device identity and trusted peers is stored in a local file instead — still encrypted, but without OS-level protection. This can happen on Linux without a keyring service (like gnome-keyring) running.",
+			"keyringUnavailable": "Your system's secure keyring isn't available, so the encryption key protecting your device identity and trusted peers is stored in a local file instead — still encrypted, but without OS-level protection. This can happen on Linux without a keyring service (like gnome-keyring) running.",
 			"dismiss": "Dismiss",
-			"my_device": {
+			"myDevice": {
 				"title": "This device",
-				"mode_local": "Local network",
-				"mode_relay": "Relay",
-				"copy_id": "Copy ID",
+				"modeLocal": "Local network",
+				"modeRelay": "Relay",
+				"copyId": "Copy ID",
 				"rename": {
 					"action": "Rename device",
 					"placeholder": "This device's name",
@@ -719,38 +724,38 @@
 					"error": "Couldn't rename the device: {msg}"
 				}
 			},
-			"relay_settings": {
+			"relaySettings": {
 				"title": "Connection",
 				"description": "Choose how this device reaches others outside your local network.",
-				"use_acerola_relay": "Use Acerola's relay",
-				"use_acerola_relay_desc": "Managed automatically ({url}).",
-				"use_iroh_public_network": "Use Iroh Services (own account)",
-				"use_iroh_public_network_desc": "Authenticated with your own account's ticket from services.iroh.computer — can't be combined with the sources below.",
-				"use_iroh_public_network_disabled_hint": "Configure a ticket below to enable this source.",
-				"iroh_services_ticket": {
+				"useAcerolaRelay": "Use Acerola's relay",
+				"useAcerolaRelayDesc": "Managed automatically ({url}).",
+				"useIrohPublicNetwork": "Use Iroh Services (own account)",
+				"useIrohPublicNetworkDesc": "Authenticated with your own account's ticket from services.iroh.computer — can't be combined with the sources below.",
+				"useIrohPublicNetworkDisabledHint": "Configure a ticket below to enable this source.",
+				"irohServicesTicket": {
 					"label": "Iroh Services ticket",
 					"configured": "Ticket configured.",
-					"not_configured": "No ticket configured yet.",
+					"notConfigured": "No ticket configured yet.",
 					"placeholder": "Paste the ticket generated at services.iroh.computer",
-					"save_button": "Save ticket",
-					"replace_button": "Replace ticket",
-					"remove_button": "Remove ticket",
+					"saveButton": "Save ticket",
+					"replaceButton": "Replace ticket",
+					"removeButton": "Remove ticket",
 					"invalid": "Invalid ticket. Check that you copied the full text.",
 					"help": "Create a free account at services.iroh.computer, generate a ticket in your project, and paste it here — the credential stays on this device only, it's never sent to the relay."
 				},
-				"custom_relays": {
+				"customRelays": {
 					"title": "Your own relays",
-					"add_placeholder": "https://your-relay.example.com",
-					"add_button": "Add custom relay",
+					"addPlaceholder": "https://your-relay.example.com",
+					"addButton": "Add custom relay",
 					"empty": "No custom relay added.",
 					"count": "{count} configured",
 					"remove": "Remove custom relay"
 				},
-				"invalid_url": "Enter a valid URL (e.g. https://relay.example.com).",
-				"summary_mdns_only": "Local network only (mDNS) — no relay active, only devices on the same network can connect.",
-				"summary_iroh_public": "Using Iroh's public relay network.",
-				"summary_active": "{count} relay source(s) active.",
-				"switch_confirm": {
+				"invalidUrl": "Enter a valid URL (e.g. https://relay.example.com).",
+				"summaryMdnsOnly": "Local network only (mDNS) — no relay active, only devices on the same network can connect.",
+				"summaryIrohPublic": "Using Iroh's public relay network.",
+				"summaryActive": "{count} relay source(s) active.",
+				"switchConfirm": {
 					"title": "Switch relay?",
 					"desc": "This reconnects using a different relay. Paired devices that don't converge to the same relay may become unreachable until they do.",
 					"cancel": "Cancel",
@@ -767,12 +772,12 @@
 			"pairing": {
 				"title": "Connection code",
 				"desc": "Scan this QR code on the other device, or copy the code below.",
-				"security_note": "Only pair with devices you trust — the first connection permanently grants access to your library.",
+				"securityNote": "Only pair with devices you trust — the first connection permanently grants access to your library.",
 				"copy": "Copy code",
-				"show_code": "Show code as text",
-				"hide_code": "Hide code",
+				"showCode": "Show code as text",
+				"hideCode": "Hide code",
 				"loading": "Generating code...",
-				"qr_error": "Couldn't generate the QR code. Use the text code below instead."
+				"qrError": "Couldn't generate the QR code. Use the text code below instead."
 			},
 			"connect": {
 				"title": "Connect to a device",
@@ -781,26 +786,26 @@
 				"loading": "Connecting...",
 				"success": "Connected!",
 				"error": "Couldn't connect. Make sure the code is correct and the other device has Acerola open.",
-				"invalid_code": "Invalid code. Make sure you copied the full code from the other device."
+				"invalidCode": "Invalid code. Make sure you copied the full code from the other device."
 			},
-			"peer_picker": {
+			"peerPicker": {
 				"title": "Choose a device"
 			},
 			"peers": {
 				"title": "Paired devices",
 				"empty": "No devices paired yet. Share your code or paste one above to pair.",
-				"empty_title": "Waiting for connections...",
-				"empty_desc": "Devices on the same network or paired via code will appear here automatically.",
-				"searching_mdns": "Scanning local network via mDNS...",
-				"sync_history": "Sync history",
-				"sync_files": "Sync files",
-				"sync_all": "Sync all",
-				"last_synced": "Last sync: {when}",
-				"never_synced": "Never synced",
+				"emptyTitle": "Waiting for connections...",
+				"emptyDesc": "Devices on the same network or paired via code will appear here automatically.",
+				"searchingMdns": "Scanning local network via mDNS...",
+				"syncHistory": "Sync history",
+				"syncFiles": "Sync files",
+				"syncAll": "Sync all",
+				"lastSynced": "Last sync: {when}",
+				"neverSynced": "Never synced",
 				"online": "Online now",
-				"offline_hint": "This device isn't reachable right now — reconnect it to sync.",
-				"more_actions": "More sync actions for this device.",
-				"browse_library": "Browse remote library",
+				"offlineHint": "This device isn't reachable right now — reconnect it to sync.",
+				"moreActions": "More sync actions for this device.",
+				"browseLibrary": "Browse remote library",
 				"remove": "Remove device",
 				"rename": {
 					"action": "Rename",
@@ -809,7 +814,7 @@
 					"cancel": "Cancel",
 					"hint": "Only visible on this device — the other side keeps its own default name."
 				},
-				"remove_confirm": {
+				"removeConfirm": {
 					"title": "Remove \"{peer}\"?",
 					"desc": "This device loses access to your library. If it tries to connect again later, it'll go through the same confirmation as a never-paired device.",
 					"cancel": "Cancel",
@@ -819,21 +824,21 @@
 			"transfers": {
 				"title": "Transfers",
 				"empty": "No transfers in progress.",
-				"history_started": "Syncing reading history with {peer}...",
-				"history_complete": "Reading history synced with {peer}.",
-				"history_error": "History sync failed: {msg}",
-				"history_entry_started": "Sending chapter(s) to {peer}...",
-				"history_entry_complete": "Chapter(s) sent to {peer}.",
-				"history_entry_error": "Failed to send chapter(s): {msg}",
-				"files_started": "Syncing files with {peer}...",
-				"files_progress": "Transferring {item}...",
-				"files_complete": "Files synced with {peer}.",
-				"files_error": "File sync error: {msg}",
-				"comic_started": "Syncing comic with {peer}...",
-				"comic_progress": "Transferring {item}...",
-				"comic_complete": "Comic synced with {peer}.",
-				"comic_error": "Failed to sync comic: {msg}",
-				"conflicts_suffix": "— {count} conflict(s) (kept the peer's version)",
+				"historyStarted": "Syncing reading history with {peer}...",
+				"historyComplete": "Reading history synced with {peer}.",
+				"historyError": "History sync failed: {msg}",
+				"historyEntryStarted": "Sending chapter(s) to {peer}...",
+				"historyEntryComplete": "Chapter(s) sent to {peer}.",
+				"historyEntryError": "Failed to send chapter(s): {msg}",
+				"filesStarted": "Syncing files with {peer}...",
+				"filesProgress": "Transferring {item}...",
+				"filesComplete": "Files synced with {peer}.",
+				"filesError": "File sync error: {msg}",
+				"comicStarted": "Syncing comic with {peer}...",
+				"comicProgress": "Transferring {item}...",
+				"comicComplete": "Comic synced with {peer}.",
+				"comicError": "Failed to sync comic: {msg}",
+				"conflictsSuffix": "— {count} conflict(s) (kept the peer's version)",
 				"refresh": "Refresh",
 				"clear": {
 					"button": "Clear",
@@ -843,13 +848,13 @@
 					"confirm": "Yes, clear everything"
 				}
 			},
-			"remote_library": {
+			"remoteLibrary": {
 				"title": "Remote library",
-				"search_placeholder": "Search comic...",
+				"searchPlaceholder": "Search comic...",
 				"loading": "Querying device's library...",
 				"empty": "No comics found.",
-				"chapter_count": "{count} chapters",
-				"sync_button": "Sync"
+				"chapterCount": "{count} chapters",
+				"syncButton": "Sync"
 			}
 		}
 	},
@@ -858,13 +863,13 @@
 		"start": "Get Started",
 		"back": "Back",
 		"next": "Next",
-		"setup_title": "Acerola Reader Setup",
-		"welcome_badge_fast_title": "Fast Reading",
-		"welcome_badge_fast_desc": "CBZ, CBR and PDF",
-		"welcome_badge_p2p_title": "Secure P2P",
-		"welcome_badge_p2p_desc": "Sync with mobile",
-		"welcome_badge_local_title": "100% Local",
-		"welcome_badge_local_desc": "Total privacy",
+		"setupTitle": "Acerola Reader Setup",
+		"welcomeBadgeFastTitle": "Fast Reading",
+		"welcomeBadgeFastDesc": "CBZ, CBR and PDF",
+		"welcomeBadgeP2pTitle": "Secure P2P",
+		"welcomeBadgeP2pDesc": "Sync with mobile",
+		"welcomeBadgeLocalTitle": "100% Local",
+		"welcomeBadgeLocalDesc": "Total privacy",
 		"step": {
 			"welcome": "Welcome",
 			"language": "Language",
@@ -875,9 +880,9 @@
 		"language": {
 			"title": "Select Language",
 			"desc": "Choose your preferred language for the application.",
-			"quick_select": "Quick Selection Menu",
-			"country_br": "Brazil",
-			"country_us": "United States"
+			"quickSelect": "Quick Selection Menu",
+			"countryBr": "Brazil",
+			"countryUs": "United States"
 		},
 		"formats": {
 			"title": "Supported Formats",
@@ -886,24 +891,24 @@
 				"title": "Comic Book ZIP",
 				"badge": "Recommended",
 				"desc": "Random access ZIP container. Instant reading with smart in-memory caching and prefetching.",
-				"feature_1": "Direct random access",
-				"feature_2": "In-memory LRU cache"
+				"feature1": "Direct random access",
+				"feature2": "In-memory LRU cache"
 			},
 			"cbr": {
 				"title": "Comic Book RAR",
 				"badge": "Native (Unrar)",
 				"desc": "Native support via Unrar in Rust. On-demand page extraction directly into memory with zero temporary files.",
-				"feature_1": "On-demand reading",
-				"feature_2": "No disk clutter"
+				"feature1": "On-demand reading",
+				"feature2": "No disk clutter"
 			},
 			"pdf": {
 				"title": "PDF Document",
 				"badge": "Auto-Conversion",
 				"desc": "Automatically converted to CBZ via Pdfium engine in background for optimal reader performance.",
-				"feature_1": "High resolution",
-				"feature_2": "Conversion to CBZ"
+				"feature1": "High resolution",
+				"feature2": "Conversion to CBZ"
 			},
-			"sync_note": {
+			"syncNote": {
 				"title": "Automatic Sync:",
 				"content": "Acerola scans and indexes your files in these formats without needing manual extraction."
 			}
@@ -920,12 +925,62 @@
 		"complete": {
 			"title": "All Set!",
 			"desc": "Your Acerola is ready to use.",
-			"checklist_title": "Ready for the best reading experience",
-			"checklist_item_1": "Language and interface configured",
-			"checklist_item_2": "CBZ, CBR and PDF formats ready for indexing",
-			"checklist_item_3": "Library directory securely linked",
+			"checklistTitle": "Ready for the best reading experience",
+			"checklistItem1": "Language and interface configured",
+			"checklistItem2": "CBZ, CBR and PDF formats ready for indexing",
+			"checklistItem3": "Library directory securely linked",
 			"note": "You can always change these settings later in the Settings page.",
 			"button": "Go to Home"
+		}
+	},
+	"error": {
+		"eyebrow": "Error {status}",
+		"eyebrowOffline": "No connection",
+		"sticker": "Oops!",
+		"actions": {
+			"home": "Go to the start",
+			"back": "Go back",
+			"retry": "Try again"
+		},
+		"badRequest": {
+			"title": "Something in the request was off",
+			"text": "The address or the data sent came in a shape we don't understand. Check it and start over from the home page."
+		},
+		"unauthorized": {
+			"title": "Sign in to continue",
+			"text": "This page is only for signed-in accounts. Sign in and come back here."
+		},
+		"forbidden": {
+			"title": "This page isn't for you",
+			"text": "Your account has no access to this. If you think it should, talk to whoever runs the app."
+		},
+		"notFound": {
+			"title": "Page not found",
+			"text": "The address may have changed or never existed. Go back to the start and take it from there."
+		},
+		"timeout": {
+			"title": "That took too long",
+			"text": "The answer didn't arrive in time. Try again in a moment."
+		},
+		"tooMany": {
+			"title": "Easy, too many requests",
+			"text": "Too many requests in a short time. Wait a minute and try again."
+		},
+		"server": {
+			"title": "Something broke on our side",
+			"text": "The error was ours, not yours. Try again; if it keeps happening, come back later."
+		},
+		"unavailable": {
+			"title": "Down for a moment",
+			"text": "The service is under maintenance or overloaded. Try again in a few minutes."
+		},
+		"offline": {
+			"title": "You're offline",
+			"text": "Check your Wi-Fi or mobile data and try again."
+		},
+		"unknown": {
+			"title": "Something went wrong",
+			"text": "We're not sure what happened. Try again; if it keeps happening, go back to the start."
 		}
 	}
 }

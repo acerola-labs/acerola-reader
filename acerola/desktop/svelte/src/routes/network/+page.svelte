@@ -114,8 +114,8 @@
 	function peerStatusLabel(peer: DisplayPeer): string {
 		if (peer.connected) return m['pages.network.peers.online']();
 		const timestamp = sync.lastSyncedAt(peer.peerId);
-		if (!timestamp) return m['pages.network.peers.never_synced']();
-		return m['pages.network.peers.last_synced']({ when: new Date(timestamp).toLocaleString() });
+		if (!timestamp) return m['pages.network.peers.neverSynced']();
+		return m['pages.network.peers.lastSynced']({ when: new Date(timestamp).toLocaleString() });
 	}
 
 	async function withSync(
@@ -148,7 +148,7 @@
 	<!-- Header -->
 	<div class="space-y-2">
 		<div
-			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-subtext shadow-xs backdrop-blur-xs"
+			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-subtext backdrop-blur-xs"
 		>
 			<NetworkIcon size={13} class="text-primary" />
 			<span>{m['pages.network.title']()}</span>
@@ -158,7 +158,6 @@
 		</h1>
 		<p
 			class="text-sm leading-relaxed font-normal text-subtext sm:text-base"
-			style="color: var(--subtext, #94a3b8);"
 		>
 			{m['pages.network.subtitle']()}
 		</p>
@@ -166,16 +165,16 @@
 
 	{#if keyringUnavailable && !keyringWarningDismissed}
 		<div
-			class="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 shadow-xs"
+			class="flex items-start gap-3 rounded-card bg-destructive-soft p-4"
 		>
 			<ShieldAlertIcon size={18} class="mt-0.5 shrink-0 text-destructive" />
-			<p class="flex-1 text-sm text-foreground">{m['pages.network.keyring_unavailable']()}</p>
+			<p class="flex-1 text-sm text-foreground">{m['pages.network.keyringUnavailable']()}</p>
 			<AcerolaButtonIcon
 				events={{ onClick: () => (keyringWarningDismissed = true) }}
 				ui={{
 					variant: 'ghost',
 					tone: 'muted',
-					class: 'size-8 shrink-0 rounded-md p-1',
+					class: 'size-8 shrink-0 rounded-inner p-1',
 					title: m['pages.network.dismiss'](),
 					'aria-label': m['pages.network.dismiss']()
 				}}
@@ -234,7 +233,7 @@
 						onClearIrohServicesTicket: () => relay.clearIrohServicesTicket(),
 						onRestart: async () => {
 							await relay.restartP2p();
-							toast.success(m['pages.network.relay_settings.restart.success']());
+							toast.success(m['pages.network.relaySettings.restart.success']());
 						}
 					}}
 				/>
@@ -295,12 +294,12 @@
 <AcerolaAlertDialog
 	state={{ open: peerPendingRemoval !== null }}
 	data={{
-		title: m['pages.network.peers.remove_confirm.title']({
+		title: m['pages.network.peers.removeConfirm.title']({
 			peer: peerPendingRemoval ? peers.peerLabel(peerPendingRemoval.peerId) : ''
 		}),
-		description: m['pages.network.peers.remove_confirm.desc'](),
-		cancelText: m['pages.network.peers.remove_confirm.cancel'](),
-		actionText: m['pages.network.peers.remove_confirm.confirm']()
+		description: m['pages.network.peers.removeConfirm.desc'](),
+		cancelText: m['pages.network.peers.removeConfirm.cancel'](),
+		actionText: m['pages.network.peers.removeConfirm.confirm']()
 	}}
 	ui={{ variant: 'destructive' }}
 	events={{

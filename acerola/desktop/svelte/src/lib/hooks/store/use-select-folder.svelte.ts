@@ -42,8 +42,8 @@ export function useSelectFolder() {
 			await store.set(STORE_KEYS.libraryPath, path);
 			await store.save();
 
-			notify.success(m['hooks.select_folder.success'](), { duration: 5000 });
-			toast.success(m['hooks.select_folder.success']());
+			notify.success(m['hooks.selectFolder.success'](), { duration: 5000 });
+			toast.success(m['hooks.selectFolder.success']());
 			folderPath = path;
 		}
 	}

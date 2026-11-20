@@ -36,7 +36,7 @@
 
 <Dialog.Root open={state?.open} onOpenChange={events?.onOpenChange}>
 	<Dialog.Content
-		class={cn('font-dm-sans rounded-2xl', ui?.contentClass)}
+		class={cn('font-dm-sans rounded-inner', ui?.contentClass)}
 		showCloseButton={ui?.showCloseButton}
 	>
 		{#if data?.title || data?.description}

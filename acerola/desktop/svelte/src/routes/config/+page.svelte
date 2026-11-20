@@ -183,14 +183,13 @@
 		}
 	}
 
-	// Cor de borda no hover de cada categoria colapsável — combina com a cor do ícone (mesma
-	// paleta chart-N), reforçando a identidade visual de cada card no hover. Aparência e
-	// Marcadores não entram aqui: ficam sempre abertas (`ui.collapsible: false`), sem clique
-	// nenhum pra destacar no hover.
+	// Hover lift of each collapsible category. No colored border (Acerola standard): the card
+	// rises with shadow-lift. Appearance and Bookmarks stay out: they are always open
+	// (`ui.collapsible: false`), with no click to highlight on hover.
 	const CATEGORY_HOVER_BORDER: Record<string, string> = {
-		files: 'hover:border-chart-5/60 shadow-xs hover:shadow-md transition-all duration-200',
-		library: 'hover:border-chart-3/60 shadow-xs hover:shadow-md transition-all duration-200',
-		metadata: 'hover:border-chart-4/60 shadow-xs hover:shadow-md transition-all duration-200'
+		files: 'hover:shadow-lift transition-all duration-200',
+		library: 'hover:shadow-lift transition-all duration-200',
+		metadata: 'hover:shadow-lift transition-all duration-200'
 	};
 </script>
 
@@ -203,7 +202,7 @@
 	<!-- Page Title & Header -->
 	<div class="space-y-2">
 		<div
-			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-muted-foreground shadow-xs backdrop-blur-xs"
+			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-xs"
 		>
 			<SettingsIcon size={13} class="text-primary" />
 			<span>{m['pages.config.title']()}</span>
@@ -220,7 +219,7 @@
 		<!-- Arquivos -->
 		<AcerolaAccordionCard
 			data={{
-				title: m['pages.config.file_system.title'](),
+				title: m['pages.config.fileSystem.title'](),
 				description: m['pages.config.categories.files.desc']()
 			}}
 			state={{ expanded: expandedCategories.has('files') }}
@@ -234,8 +233,8 @@
 			{#snippet children()}
 				<AcerolaHeroButton
 					data={{
-						title: m['pages.config.file_system.comic_path.title'](),
-						description: m['pages.config.file_system.comic_path.desc']({
+						title: m['pages.config.fileSystem.comicPath.title'](),
+						description: m['pages.config.fileSystem.comicPath.desc']({
 							path: folder.folderPath ?? ''
 						})
 					}}
@@ -255,8 +254,8 @@
 
 				<AcerolaHeroButton
 					data={{
-						title: m['pages.config.file_system.comic_info.title'](),
-						description: m['pages.config.file_system.comic_info.desc']()
+						title: m['pages.config.fileSystem.comicInfo.title'](),
+						description: m['pages.config.fileSystem.comicInfo.desc']()
 					}}
 					events={{
 						onClick: () =>
@@ -301,8 +300,8 @@
 			{#snippet children()}
 				<AcerolaHeroButton
 					data={{
-						title: m['pages.config.file_system.sync.fast.title'](),
-						description: m['pages.config.file_system.sync.fast.desc']()
+						title: m['pages.config.fileSystem.sync.fast.title'](),
+						description: m['pages.config.fileSystem.sync.fast.desc']()
 					}}
 					events={{ onClick: () => refreshScanner.start() }}
 					ui={{ iconClass: 'bg-chart-3 text-primary-foreground' }}
@@ -322,8 +321,8 @@
 
 				<AcerolaHeroButton
 					data={{
-						title: m['pages.config.file_system.sync.deep.title'](),
-						description: m['pages.config.file_system.sync.deep.desc']()
+						title: m['pages.config.fileSystem.sync.deep.title'](),
+						description: m['pages.config.fileSystem.sync.deep.desc']()
 					}}
 					events={{ onClick: () => rebuildScanner.start() }}
 					ui={{ iconClass: 'bg-chart-1 text-primary-foreground' }}
@@ -397,13 +396,13 @@
 							events={{ onOpenChange: (open) => (metadataLanguagePopoverOpen = open) }}
 							ui={{
 								contentClass:
-									'w-80 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-0 shadow-2xl backdrop-blur-md'
+									'w-80 overflow-hidden rounded-card border-border/40 bg-card/95 p-0 shadow-float backdrop-blur-md'
 							}}
 						>
 							{#snippet trigger()}
 								<Button
 									variant="outline"
-									class="h-10 min-w-24 gap-2 rounded-full border-border/60 bg-background/70 px-3 font-medium transition-all group-hover:border-primary/50 group-hover:bg-primary group-hover:text-primary-foreground"
+									class="h-10 min-w-24 gap-2 rounded-full border-border/60 bg-background/70 px-3 font-medium transition-all group-hover:bg-primary group-hover:text-primary-foreground"
 								>
 									<span class="max-w-36 truncate text-sm">{selectedMetadataLanguageLabel}</span>
 									<ChevronDownIcon class="size-4 opacity-70" />
@@ -414,15 +413,15 @@
 								<div class="flex flex-col">
 									<div class="border-b border-border/40 bg-muted/20 px-4 py-3">
 										<div class="flex items-start gap-3">
-											<div class="rounded-xl bg-chart-4 p-2 text-primary-foreground">
+											<div class="rounded-inner bg-chart-4 p-2 text-primary-foreground">
 												<LanguagesIcon size={18} />
 											</div>
 											<div class="min-w-0">
 												<h3 class="text-sm font-bold text-foreground">
-													{m['pages.config.metadata.lang.popover_title']()}
+													{m['pages.config.metadata.lang.popoverTitle']()}
 												</h3>
 												<p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-													{m['pages.config.metadata.lang.popover_desc']({
+													{m['pages.config.metadata.lang.popoverDesc']({
 														language: selectedMetadataLanguageLabel
 													})}
 												</p>
@@ -432,7 +431,7 @@
 
 									<AcerolaCommand state={{ value: metadataLanguageStore.metadataLanguage }}>
 										<Command.Input
-											placeholder={m['pages.config.metadata.lang.search_placeholder']()}
+											placeholder={m['pages.config.metadata.lang.searchPlaceholder']()}
 										/>
 
 										<Command.List class="max-h-72 p-2">
@@ -440,11 +439,11 @@
 												{m['pages.config.metadata.lang.empty']()}
 											</Command.Empty>
 
-											<Command.Group heading={m['pages.config.metadata.lang.group_title']()}>
+											<Command.Group heading={m['pages.config.metadata.lang.groupTitle']()}>
 												{#each LANGUAGES as lang}
 													<Command.Item
 														value={lang.code}
-														class="group/language cursor-pointer rounded-xl px-3 py-2.5 data-selected:bg-primary/10 data-selected:text-foreground data-[checked=true]:bg-primary/10"
+														class="group/language cursor-pointer rounded-inner px-3 py-2.5 data-selected:bg-primary/10 data-selected:text-foreground data-[checked=true]:bg-primary/10"
 														onSelect={() => selectMetadataLanguage(lang.code)}
 													>
 														<div class="min-w-0 flex-1">
@@ -473,7 +472,7 @@
 				>
 					{#snippet icon()}
 						<span style="all: unset; display: inline-flex;">
-							<MangaDexIcon class="h-6 w-6 rounded-lg" />
+							<MangaDexIcon class="h-6 w-6 rounded-inner" />
 						</span>
 					{/snippet}
 
@@ -495,7 +494,7 @@
 				>
 					{#snippet icon()}
 						<span style="all: unset; display: inline-flex;">
-							<AniListIcon class="h-6 w-6 rounded-lg" />
+							<AniListIcon class="h-6 w-6 rounded-inner" />
 						</span>
 					{/snippet}
 
@@ -523,7 +522,7 @@
 			ui={{
 				collapsible: false,
 				iconClass: 'bg-chart-2 text-primary-foreground',
-				class: 'border-border/60 bg-card/60 shadow-xs backdrop-blur-sm'
+				class: 'border-border/60 bg-card/60 backdrop-blur-sm'
 			}}
 		>
 			{#snippet icon()}

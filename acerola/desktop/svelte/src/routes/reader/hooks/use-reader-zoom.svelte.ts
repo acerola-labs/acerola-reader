@@ -44,7 +44,7 @@ export function useReaderZoom() {
 
 	const zoomStatusLabel = $derived(
 		zoomMode
-			? m['pages.reader.zoom.scroll_status']({ zoom: zoomLabel })
+			? m['pages.reader.zoom.scrollStatus']({ zoom: zoomLabel })
 			: m['pages.reader.zoom.status']({ zoom: zoomLabel })
 	);
 
