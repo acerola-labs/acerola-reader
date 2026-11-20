@@ -13,7 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.tokens.SizeTokens
 
 @Composable
@@ -30,12 +30,12 @@ fun Acerola.Component.ActionIcon(
     val resolvedTint = if (enabled) iconTint else iconTint.copy(alpha = 0.4f)
 
     Surface(
-        shape = ShapeTokens.Medium,
+        shape = AcerolaShapes.Inner,
         color = resolvedBackground,
         modifier =
             modifier
                 .size(SizeTokens.ClickTargetSmall)
-                .clip(ShapeTokens.Medium)
+                .clip(AcerolaShapes.Inner)
                 .clickable(enabled = enabled, onClick = onClick),
     ) {
         Box(contentAlignment = Alignment.Center) {

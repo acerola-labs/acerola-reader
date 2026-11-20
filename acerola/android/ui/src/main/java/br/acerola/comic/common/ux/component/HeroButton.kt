@@ -31,13 +31,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
-private val HeroShape = ShapeTokens.Huge
-private val IconShape = ShapeTokens.Large
+private val HeroShape = AcerolaShapes.Tile
+private val IconShape = AcerolaShapes.Inner
 
 @Composable
 fun Acerola.Component.HeroButton(
@@ -129,7 +129,7 @@ fun Acerola.Component.HeroNestedButton(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
-                shape = ShapeTokens.MediumLarge,
+                shape = AcerolaShapes.Inner,
                 color = iconBackground,
                 modifier = Modifier.size(40.dp),
             ) {

@@ -52,8 +52,8 @@ import br.acerola.comic.common.ux.component.ActionListItem
 import br.acerola.comic.common.ux.component.AdaptiveSheet
 import br.acerola.comic.common.ux.component.SyncActionIcon
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.archive.ChapterFileDto
@@ -189,7 +189,7 @@ fun Comic.Component.ChapterItem(
             // em todo o app) — só o círculo à esquerda carrega a cor de alerta.
             if (hasConflict) {
                 Surface(
-                    shape = ShapeTokens.Full,
+                    shape = AcerolaShapes.Full,
                     color = MaterialTheme.colorScheme.surfaceVariant,
                 ) {
                     Text(
@@ -209,7 +209,7 @@ fun Comic.Component.ChapterItem(
 
             if (isRead) {
                 Surface(
-                    shape = ShapeTokens.Full,
+                    shape = AcerolaShapes.Full,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 ) {
                     Text(
@@ -313,7 +313,7 @@ fun Comic.Component.ChapterItem(
                 verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
             ) {
                 Surface(
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Inner,
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ) {
                     Column(modifier = Modifier.padding(SpacingTokens.Large)) {
@@ -332,7 +332,7 @@ fun Comic.Component.ChapterItem(
                 }
 
                 Surface(
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Inner,
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ) {
                     Acerola.Component.ActionListItem(
@@ -352,7 +352,7 @@ fun Comic.Component.ChapterItem(
                 }
 
                 Surface(
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Inner,
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                 ) {
                     Acerola.Component.ActionListItem(

@@ -46,8 +46,9 @@ import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.BookmarkRibbon
 import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -157,7 +158,7 @@ fun Comic.Template.Header(
                                     .padding(top = SpacingTokens.ExtraSmall)
                                     .width(width = SizeTokens.ComicHeaderCoverWidth)
                                     .height(height = SizeTokens.ComicHeaderCoverHeight)
-                                    .clip(shape = ShapeTokens.Medium)
+                                    .clip(shape = AcerolaShapes.Inner)
                                     .background(color = MaterialTheme.colorScheme.surfaceVariant),
                         )
 
@@ -178,15 +179,15 @@ fun Comic.Template.Header(
                             Icon(
                                 imageVector = Icons.Rounded.VisibilityOff,
                                 contentDescription = stringResource(id = R.string.description_icon_comic_hidden),
-                                tint = Color.White,
+                                tint = AcerolaColors.OnScrim,
                                 modifier =
                                     Modifier
                                         .align(Alignment.BottomStart)
                                         .padding(SpacingTokens.Small)
                                         .size(SizeTokens.IconSmall)
                                         .background(
-                                            color = Color.Black.copy(alpha = 0.5f),
-                                            shape = ShapeTokens.ExtraSmall,
+                                            color = AcerolaColors.Scrim.copy(alpha = 0.5f),
+                                            shape = AcerolaShapes.Inner,
                                         ).padding(2.dp),
                             )
                         }
@@ -249,7 +250,7 @@ fun Comic.Template.Header(
         }
 
         Surface(
-            shape = ShapeTokens.Medium,
+            shape = AcerolaShapes.Inner,
             color = MaterialTheme.colorScheme.surfaceVariant,
             modifier =
                 Modifier
@@ -319,7 +320,7 @@ private fun GenreBadge(
     Box(
         modifier =
             modifier
-                .clip(shape = ShapeTokens.Full)
+                .clip(shape = AcerolaShapes.Full)
                 .background(color = MaterialTheme.colorScheme.secondaryContainer)
                 .padding(
                     horizontal = SpacingTokens.Large,
@@ -342,7 +343,7 @@ private fun SourceBadge(
     Box(
         modifier =
             modifier
-                .clip(shape = ShapeTokens.ExtraSmall)
+                .clip(shape = AcerolaShapes.Inner)
                 .background(
                     color =
                         when (source) {
@@ -353,7 +354,7 @@ private fun SourceBadge(
                 ).border(
                     width = SizeTokens.BorderThin,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = ShapeTokens.ExtraSmall,
+                    shape = AcerolaShapes.Inner,
                 ).padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
     ) {
         Text(
@@ -372,12 +373,12 @@ private fun StatusBadge(
     Box(
         modifier =
             modifier
-                .clip(shape = ShapeTokens.ExtraSmall)
+                .clip(shape = AcerolaShapes.Inner)
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .border(
                     width = SizeTokens.BorderThin,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = ShapeTokens.ExtraSmall,
+                    shape = AcerolaShapes.Inner,
                 ).padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
     ) {
         Text(

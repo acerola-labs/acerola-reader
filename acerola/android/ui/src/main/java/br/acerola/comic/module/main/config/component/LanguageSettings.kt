@@ -21,8 +21,8 @@ import br.acerola.comic.common.mapper.LanguageMapper
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.HeroButton
 import br.acerola.comic.common.ux.component.LanguagePicker
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
@@ -54,7 +54,7 @@ fun Main.Config.Component.LanguageSettings(
                             modifier =
                                 Modifier
                                     .size(size = SpacingTokens.Giant)
-                                    .clip(ShapeTokens.Full)
+                                    .clip(AcerolaShapes.Full)
                                     .background(color = MaterialTheme.colorScheme.primary),
                         ) {
                             Icon(

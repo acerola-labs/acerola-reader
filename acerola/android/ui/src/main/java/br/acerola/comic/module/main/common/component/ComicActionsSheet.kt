@@ -59,8 +59,8 @@ import br.acerola.comic.common.ux.component.AdaptiveSheet
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -134,7 +134,7 @@ fun Main.Common.Component.ComicActionsSheet(
                     Modifier
                         .width(56.dp)
                         .height(84.dp)
-                        .clip(ShapeTokens.Small),
+                        .clip(AcerolaShapes.Inner),
             )
 
             Spacer(modifier = Modifier.width(SpacingTokens.Large))
@@ -179,7 +179,7 @@ fun Main.Common.Component.ComicActionsSheet(
                     ) {
                         genres.forEach { genre ->
                             Surface(
-                                shape = ShapeTokens.Full,
+                                shape = AcerolaShapes.Full,
                                 color = MaterialTheme.colorScheme.secondaryContainer,
                             ) {
                                 Text(
@@ -206,7 +206,7 @@ fun Main.Common.Component.ComicActionsSheet(
             verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
         ) {
             Surface(
-                shape = ShapeTokens.Large,
+                shape = AcerolaShapes.Inner,
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {
                 val accent = AcerolaExtendedTheme.colors.accent
@@ -275,7 +275,7 @@ fun Main.Common.Component.ComicActionsSheet(
             }
 
             Surface(
-                shape = ShapeTokens.Large,
+                shape = AcerolaShapes.Inner,
                 color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f),
             ) {
                 Acerola.Component.ActionListItem(

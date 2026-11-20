@@ -30,8 +30,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 
 @Composable
@@ -42,7 +43,7 @@ fun Acerola.Component.SyncActionIcon(
     iconSize: Dp = SizeTokens.IconMedium,
     defaultBackground: Color = MaterialTheme.colorScheme.primary,
     onDefaultBackground: Color = MaterialTheme.colorScheme.onPrimary,
-    successBackground: Color = Color(0xFF1B5E20),
+    successBackground: Color = AcerolaExtendedTheme.colors.success,
     icon: @Composable () -> Unit,
 ) {
     val backgroundColor by animateColorAsState(
@@ -56,7 +57,7 @@ fun Acerola.Component.SyncActionIcon(
     )
 
     Surface(
-        shape = ShapeTokens.Large,
+        shape = AcerolaShapes.Inner,
         color = backgroundColor,
         modifier = modifier.size(containerSize),
     ) {
@@ -88,7 +89,7 @@ fun Acerola.Component.SyncActionIcon(
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = AcerolaExtendedTheme.colors.onSuccess,
                             modifier = Modifier.size(iconSize),
                         )
                     }

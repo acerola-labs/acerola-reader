@@ -38,12 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
-private val ToggleCardShape = ShapeTokens.Large
+private val ToggleCardShape = AcerolaShapes.Inner
 
 // Card clicável com estado ativo/inativo (borda+fundo tintados, selo de check animado) e
 // conteúdo expansível opcional — port do AcerolaToggleCard do desktop
@@ -82,7 +82,7 @@ fun Acerola.Component.ToggleCard(
             ) {
                 if (icon != null) {
                     Surface(
-                        shape = ShapeTokens.Large,
+                        shape = AcerolaShapes.Inner,
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         modifier = Modifier.size(SizeTokens.ClickTarget),
                     ) {
@@ -124,7 +124,7 @@ fun Acerola.Component.ToggleCard(
                     exit = scaleOut() + fadeOut(),
                 ) {
                     Surface(
-                        shape = ShapeTokens.Full,
+                        shape = AcerolaShapes.Full,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(SizeTokens.IconSmall),
                     ) {

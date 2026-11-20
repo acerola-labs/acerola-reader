@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -143,7 +144,7 @@ fun <T> Acerola.Component.SearchBar(
             exit = fadeOut(tween(220)) + shrinkVertically(),
         ) {
             Surface(
-                shape = RoundedCornerShape(0.dp),
+                shape = RectangleShape,
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {

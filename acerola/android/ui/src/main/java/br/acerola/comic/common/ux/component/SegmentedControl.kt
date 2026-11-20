@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
 /** Pílula de N opções mutuamente exclusivas — para trocar de aba dentro de um mesmo
@@ -36,7 +36,7 @@ fun Acerola.Component.SegmentedControl(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        shape = ShapeTokens.Full,
+        shape = AcerolaShapes.Full,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -54,7 +54,7 @@ fun Acerola.Component.SegmentedControl(
                     modifier =
                         Modifier
                             .weight(1f)
-                            .clip(ShapeTokens.Full)
+                            .clip(AcerolaShapes.Full)
                             .background(containerColor)
                             .clickable(enabled = !selected) { onSelect(index) }
                             .padding(vertical = SpacingTokens.Small),

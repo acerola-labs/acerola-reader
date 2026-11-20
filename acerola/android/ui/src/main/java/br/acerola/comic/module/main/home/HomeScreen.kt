@@ -18,16 +18,15 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -58,7 +57,6 @@ import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,7 +75,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -87,6 +84,7 @@ import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
+import br.acerola.comic.common.ux.component.EmptyState
 import br.acerola.comic.common.ux.component.FabGroup
 import br.acerola.comic.common.ux.component.FabGroupItem
 import br.acerola.comic.common.ux.component.SelectionAction
@@ -94,8 +92,9 @@ import br.acerola.comic.common.ux.component.SelectionActionDock
 import br.acerola.comic.common.ux.component.SelectionTopBar
 import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaDimens
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.common.viewmodel.archive.FileSystemAccessViewModel
@@ -171,6 +170,7 @@ fun Main.Home.Template.Screen(
     val isSearchExpanded by homeViewModel.isSearchExpanded.collectAsStateWithLifecycle()
     val selectedComicIds by homeViewModel.selectedComicIds.collectAsStateWithLifecycle()
     val pairedPeers by homeViewModel.pairedPeers.collectAsStateWithLifecycle()
+    val folderName by fileSystemAccessViewModel.folderName.collectAsStateWithLifecycle()
 
     val isSelectionMode = selectedComicIds.isNotEmpty()
 
@@ -248,6 +248,7 @@ fun Main.Home.Template.Screen(
         areAllSelectedHidden = areAllSelectedHidden,
         selectedCategoryCounts = selectedCategoryCounts,
         lastRead = lastRead,
+        hasFolder = folderName != null,
         onAction = onAction,
         onQuickSyncLibrary = comicDirectoryViewModel::syncLibrary,
         onSelectFolder = { uri ->
@@ -303,6 +304,7 @@ private fun HomeScreenContent(
     onAction: (HomeAction) -> Unit,
     onQuickSyncLibrary: () -> Unit,
     onSelectFolder: (Uri?) -> Unit,
+    hasFolder: Boolean = false,
     onUpdateSearchQuery: (String) -> Unit,
     onSetSearchExpanded: (Boolean) -> Unit,
     onClearComicSelection: () -> Unit,
@@ -380,10 +382,11 @@ private fun HomeScreenContent(
                 }
 
         when {
-            comicList == null -> Unit
+            comicList == null -> LoadingSkeleton()
             comicList.isEmpty() ->
                 EmptyState(
                     isIndexing = uiState.isIndexing,
+                    hasFolder = hasFolder,
                     onQuickSync = onQuickSyncLibrary,
                     onFolderSelected = onSelectFolder,
                 )
@@ -864,6 +867,7 @@ private fun HomeScreenContent(
 @Composable
 private fun EmptyState(
     isIndexing: Boolean,
+    hasFolder: Boolean,
     onQuickSync: () -> Unit,
     onFolderSelected: (Uri?) -> Unit,
 ) {
@@ -887,154 +891,72 @@ private fun EmptyState(
         label = "spin_angle",
     )
 
-    val scrollState = rememberScrollState()
-
-    BoxWithConstraints(
+    Box(
         modifier =
             Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
+                .verticalScroll(rememberScrollState())
                 .padding(SpacingTokens.Large),
         contentAlignment = Alignment.Center,
     ) {
-        val isNarrow = maxWidth < 400.dp
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier =
-                Modifier
-                    .widthIn(max = SizeTokens.MaxContentWidth)
-                    .fillMaxWidth(),
+        // Acerola standard empty state: mascot + title + one phrase + ONE action (rescan when a
+        // folder is already chosen, pick one otherwise).
+        Acerola.Component.EmptyState(
+            title = stringResource(id = R.string.description_text_home_empty_state),
+            hint = stringResource(id = R.string.description_text_home_empty_subtitle),
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier =
-                    Modifier
-                        .size(64.dp)
-                        .clip(ShapeTokens.Large)
-                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)),
+            Button(
+                onClick = { if (hasFolder) onQuickSync() else launcher.launch(null) },
+                shape = AcerolaShapes.Full,
+                modifier = Modifier.heightIn(min = AcerolaDimens.ControlHeight),
             ) {
                 Icon(
-                    imageVector = Icons.Default.FolderOpen,
+                    imageVector = if (hasFolder) Icons.Default.Refresh else Icons.Default.FolderOpen,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(32.dp),
+                    modifier =
+                        Modifier
+                            .size(18.dp)
+                            .graphicsLayer { rotationZ = if (hasFolder && isIndexing) angle else 0f },
+                )
+                Spacer(modifier = Modifier.width(SpacingTokens.Small))
+                Text(
+                    text =
+                        stringResource(
+                            id = if (hasFolder) R.string.action_home_quick_sync else R.string.action_home_select_folder,
+                        ),
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(SpacingTokens.Medium))
+// Loading: skeleton in the shape of the cover grid, never a blank screen or a loose spinner.
+@Composable
+private fun LoadingSkeleton() {
+    val pulse by rememberInfiniteTransition(label = "skeleton_pulse").animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(animation = tween(durationMillis = 900), repeatMode = RepeatMode.Reverse),
+        label = "skeleton_alpha",
+    )
 
-            Text(
-                text = stringResource(id = R.string.description_text_home_empty_state),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
-
-            Text(
-                text = stringResource(id = R.string.description_text_home_empty_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = SpacingTokens.Small),
-            )
-
-            Spacer(modifier = Modifier.height(SpacingTokens.Large))
-
-            if (isNarrow) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Button(
-                        onClick = onQuickSync,
-                        shape = ShapeTokens.Medium,
+    Column(
+        modifier = Modifier.fillMaxSize().padding(SpacingTokens.Medium),
+        verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+    ) {
+        repeat(3) {
+            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
+                repeat(3) {
+                    Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 44.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = null,
-                            modifier =
-                                Modifier
-                                    .size(18.dp)
-                                    .graphicsLayer { rotationZ = if (isIndexing) angle else 0f },
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Text(
-                            text = stringResource(id = R.string.action_home_quick_sync),
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-
-                    OutlinedButton(
-                        onClick = { launcher.launch(null) },
-                        shape = ShapeTokens.Medium,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 44.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FolderOpen,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Text(
-                            text = stringResource(id = R.string.action_home_select_folder),
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                }
-            } else {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Button(
-                        onClick = onQuickSync,
-                        shape = ShapeTokens.Medium,
-                        modifier = Modifier.heightIn(min = 44.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = null,
-                            modifier =
-                                Modifier
-                                    .size(18.dp)
-                                    .graphicsLayer { rotationZ = if (isIndexing) angle else 0f },
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Text(
-                            text = stringResource(id = R.string.action_home_quick_sync),
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-
-                    OutlinedButton(
-                        onClick = { launcher.launch(null) },
-                        shape = ShapeTokens.Medium,
-                        modifier = Modifier.heightIn(min = 44.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FolderOpen,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Text(
-                            text = stringResource(id = R.string.action_home_select_folder),
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
+                                .weight(1f)
+                                .aspectRatio(2f / 3f)
+                                .graphicsLayer { alpha = pulse }
+                                .clip(AcerolaShapes.Tile)
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                    )
                 }
             }
         }
@@ -1048,6 +970,7 @@ private fun EmptyStatePreview() {
     AcerolaTheme {
         EmptyState(
             isIndexing = false,
+            hasFolder = false,
             onQuickSync = {},
             onFolderSelected = {},
         )

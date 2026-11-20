@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.module.comic.state.MainTab
@@ -77,7 +77,7 @@ fun Comic.Template.Tabs(
                                 .height(height = 3.dp)
                                 .background(
                                     color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(size = 2.dp),
+                                    shape = AcerolaShapes.Full,
                                 ),
                     )
                 }

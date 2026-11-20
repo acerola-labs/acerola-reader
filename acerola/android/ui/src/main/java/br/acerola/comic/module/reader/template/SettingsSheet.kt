@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.AdaptiveSheet
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.config.preference.types.ReadingMode
@@ -123,7 +123,7 @@ private fun ReadingModeItem(
             Modifier
                 .fillMaxWidth()
                 .padding(vertical = SpacingTokens.ExtraSmall)
-                .clip(ShapeTokens.Large)
+                .clip(AcerolaShapes.Inner)
                 .background(backgroundColor)
                 .clickable(onClick = onClick)
                 .padding(SpacingTokens.Large),
@@ -152,7 +152,7 @@ private fun ReadingModeItem(
                 modifier =
                     Modifier
                         .size(SpacingTokens.Small)
-                        .clip(ShapeTokens.Full)
+                        .clip(AcerolaShapes.Full)
                         .background(MaterialTheme.colorScheme.primary),
             )
         }

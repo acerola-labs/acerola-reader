@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.AdaptiveSheet
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.error.message.SyncProtocolError
@@ -105,7 +105,7 @@ fun Main.Sync.Component.RemoteLibrarySheet(
                                         modifier =
                                             Modifier
                                                 .size(40.dp)
-                                                .clip(RoundedCornerShape(SpacingTokens.Small)),
+                                                .clip(AcerolaShapes.Inner),
                                     )
                                 } else {
                                     Icon(imageVector = Icons.Rounded.AutoStories, contentDescription = null)

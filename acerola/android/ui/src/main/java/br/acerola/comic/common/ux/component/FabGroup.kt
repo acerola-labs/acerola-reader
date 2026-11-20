@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
@@ -120,7 +120,7 @@ fun Acerola.Component.FabGroup(
                         ) {
                             item.label?.let { label ->
                                 Surface(
-                                    shape = ShapeTokens.Small,
+                                    shape = AcerolaShapes.Inner,
                                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
                                     tonalElevation = 2.dp,
                                     modifier =

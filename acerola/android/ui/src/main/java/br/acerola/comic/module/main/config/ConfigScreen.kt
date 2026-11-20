@@ -52,8 +52,8 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.AccordionCard
 import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.common.viewmodel.archive.FileSystemAccessViewModel
@@ -242,7 +242,7 @@ private fun ConfigScreenContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Inner,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                     modifier = Modifier.size(SizeTokens.ClickTarget),
                 ) {
@@ -387,7 +387,7 @@ private fun OnboardingGuideCard() {
                 .padding(SpacingTokens.Large)
                 .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        shape = ShapeTokens.Medium,
+        shape = AcerolaShapes.Inner,
     ) {
         Column(modifier = Modifier.padding(SpacingTokens.Large)) {
             Icon(imageVector = Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
