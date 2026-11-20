@@ -33,7 +33,7 @@ Antes de mexer, carregue a skill certa e siga-a:
 - Cores em `theme/colors/catppuccin.css` (web e desktop), cópia exata das cores do
   `tokens.css` do acerola-brand; raio, sombra, fonte e movimento no `theme/tokens.css`; classes
   `.ac-*` no `theme/components.css` (cópia do brand book).
-- **Android**: `Color.kt` e `Shape.kt` são gerados do `tokens.json` da marca por
+- **Android**: `AcerolaColors.kt` e `Shape.kt` são gerados do `tokens.json` da marca por
   `node scripts/design/android-theme.mjs` (nunca editar à mão); a mascote vira VectorDrawable com
   `node scripts/design/android-mascot.mjs <svg> <xml>`. Fontes (DM Sans e Titan One, SIL OFL 1.1)
   em `ui/src/main/res/font/`, licenças em `ui/src/main/assets/licenses/`.
@@ -62,5 +62,5 @@ Antes de mexer, carregue a skill certa e siga-a:
   em snake_case (`action_home_select_folder`), a convenção do Android. O idioma base é o
   `values/` (pt-br) e o inglês fica em `values-en/`, com as mesmas chaves.
 - **Estrutura do Android**: o app é multi-módulo (`app`, `ui`, `core`, `data`, `infra`,
-  `native`), não um `app/` só. O tema mora em `ui/…/common/ux/theme/` (`Color.kt`, `Shape.kt`,
+  `native`), não um `app/` só. O tema mora em `ui/…/common/ux/theme/` (`AcerolaColors.kt`, `Shape.kt`,
   `Type.kt`), e as telas em `ui/…/module/<área>/`.
