@@ -38,7 +38,7 @@ code[data-theme*=' '] span {
 }
 
 figure[data-rehype-pretty-code-figure] pre {
-	@apply overflow-x-auto rounded-lg border border-border bg-card p-4 text-sm leading-relaxed;
+	@apply overflow-x-auto rounded-tile bg-card p-5 text-sm leading-relaxed;
 }
 
 figure[data-rehype-pretty-code-figure] code {
@@ -53,7 +53,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 }
 
 .doc-content :where(code):not(figure code) {
-	@apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.875em] text-foreground;
+	@apply rounded-full bg-muted px-1.5 py-0.5 font-mono text-[0.875em] text-foreground;
 }
 
 .doc-content .heading-anchor {
@@ -72,7 +72,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 	/* overflow-hidden, não overflow-auto: o movimento é feito pelo D-pad
 	   (transform: translate no svg, ver addZoomControls) em vez de scrollbars
 	   nativas, então conteúdo movido para fora da caixa deve só ser cortado. */
-	@apply relative my-6 max-h-[70vh] overflow-hidden rounded-lg border border-border bg-card p-4;
+	@apply relative my-6 max-h-[70vh] overflow-hidden rounded-tile bg-card p-5;
 }
 
 .doc-content .mermaid svg {
@@ -145,7 +145,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 }
 
 .doc-content :where(blockquote) {
-	@apply my-6 border-l-4 border-border pl-4 text-muted-foreground italic;
+	@apply my-6 rounded-tile bg-surface p-5 text-muted-foreground italic;
 }
 
 .doc-content :where(hr) {
@@ -159,7 +159,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
    preencham 100% da largura do contêiner. */
 .doc-content :where([data-slot='table-container']),
 .doc-content :where(.table-container) {
-	@apply relative my-6 w-full overflow-x-auto rounded-lg border border-border;
+	@apply relative my-6 w-full overflow-x-auto rounded-tile bg-card;
 }
 
 .doc-content :where(table) {

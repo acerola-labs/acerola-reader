@@ -43,7 +43,7 @@
 			{#if icon}
 				{@const Icon = icon}
 				<div
-					class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary shadow-xs transition-all duration-300 group-hover:scale-105 group-hover:border-primary/60 group-hover:shadow-[0_0_16px_rgba(203,166,247,0.3)]"
+					class="flex size-10 shrink-0 items-center justify-center rounded-inner border bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary transition-all duration-300 group-hover:scale-105"
 				>
 					<Icon size={18} />
 				</div>
@@ -56,7 +56,7 @@
 				</span>
 				{#if badge}
 					<span
-						class="shrink-0 rounded-full border border-primary/35 bg-primary/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider whitespace-nowrap text-primary uppercase shadow-xs backdrop-blur-xs transition-colors group-hover:border-primary/60 group-hover:bg-primary/25"
+						class="shrink-0 rounded-full border bg-primary/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider whitespace-nowrap text-primary uppercase backdrop-blur-xs transition-colors group-hover:bg-primary/25"
 					>
 						{badge}
 					</span>
@@ -89,7 +89,7 @@
 		<Card.Root
 			bind:ref={cardEl}
 			class={cn(
-				'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 shadow-xs ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg hover:ring-1 hover:shadow-primary/5 hover:ring-primary/40',
+				'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-inner border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift hover:ring-1 hover:ring-primary/40',
 				className
 			)}
 		>
@@ -100,7 +100,7 @@
 	<Card.Root
 		bind:ref={cardEl}
 		class={cn(
-			'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 shadow-xs ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5',
+			'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-inner border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift',
 			className
 		)}
 	>

@@ -89,10 +89,10 @@
 	shouldFilter={false}
 	title={m['search.title']()}
 	description={m['search.title']()}
-	class="top-1/4 w-full max-w-lg translate-y-0 gap-0 overflow-hidden rounded-xl! p-0 shadow-2xl ring-1 ring-border sm:max-w-lg"
+	class="top-1/4 w-full max-w-lg translate-y-0 gap-0 overflow-hidden rounded-inner! p-0 shadow-float ring-1 ring-border sm:max-w-lg"
 >
 	<div data-slot="command-input-wrapper" class="p-3 pb-2">
-		<InputGroup.Root class="h-11 rounded-lg border-border bg-input/50">
+		<InputGroup.Root class="h-11 rounded-inner border-border bg-input/50">
 			<InputGroup.Addon>
 				<SearchIcon class="size-4 shrink-0 opacity-50" />
 			</InputGroup.Addon>
@@ -111,7 +111,7 @@
 		{#if status === 'unavailable'}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 				<SearchXIcon size={20} />
-				<span>{m['search.unavailable_dev']()}</span>
+				<span>{m['search.unavailableDev']()}</span>
 			</Command.Empty>
 		{:else if status === 'loading'}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
@@ -126,11 +126,11 @@
 		{:else if query && results.length === 0}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 				<SearchXIcon size={20} />
-				<span>{m['search.no_results']()}</span>
+				<span>{m['search.noResults']()}</span>
 			</Command.Empty>
 		{:else}
 			{#each results as result (result.url)}
-				<Command.LinkItem href={result.url} onclick={() => (open = false)} class="rounded-lg py-2">
+				<Command.LinkItem href={result.url} onclick={() => (open = false)} class="rounded-inner py-2">
 					<FileTextIcon size={16} class="mt-0.5 shrink-0 self-start" />
 					<div class="flex min-w-0 flex-col gap-0.5">
 						<span class="truncate font-medium">{result.meta?.title ?? result.url}</span>

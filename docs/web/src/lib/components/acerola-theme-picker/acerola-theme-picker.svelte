@@ -27,8 +27,8 @@
 <Button
 	variant="ghost"
 	size="icon"
-	title={m['theme_picker.title']()}
-	aria-label={m['theme_picker.title']()}
+	title={m['themePicker.title']()}
+	aria-label={m['themePicker.title']()}
 	onclick={nextMode}
 >
 	{#key themeCtx.mode}

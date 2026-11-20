@@ -20,7 +20,7 @@
 				{#each group.docs as doc (doc.slug)}
 					<a
 						href={localizeHref(`/docs/${doc.slug}`)}
-						class="rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+						class="rounded-inner border border-border bg-card p-5 transition-colors hover:bg-accent"
 					>
 						<span class="block font-heading text-lg font-semibold">{doc.frontmatter.title}</span>
 						{#if doc.frontmatter.description}

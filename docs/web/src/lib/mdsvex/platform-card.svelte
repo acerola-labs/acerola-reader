@@ -26,11 +26,11 @@
 
 <Card.Root
 	bind:ref={cardEl}
-	class="items-center gap-4 p-6 text-center ring-1 ring-border transition-all hover:shadow-lg hover:ring-primary/40"
+	class="items-center gap-4 p-6 text-center ring-1 ring-border transition-all hover:shadow-lift hover:ring-primary/40"
 >
 	{#if icon}
 		{@const Icon = icon}
-		<div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+		<div class="flex h-16 w-16 items-center justify-center rounded-inner bg-muted">
 			<Icon class="h-8 w-auto max-w-10 text-foreground" />
 		</div>
 	{/if}

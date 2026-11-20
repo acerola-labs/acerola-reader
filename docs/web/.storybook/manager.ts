@@ -5,9 +5,8 @@ addons.setConfig({
 	theme: create({
 		base: 'dark',
 		brandTitle: 'Acerola Docs',
-		// Logo real do site (docs/web/static/logo.svg) — o favicon.ico real da aba é
-		// setado à parte em manager-head.html, não por aqui.
-		brandImage: 'logo.svg',
+		// Brand logo from the brand CDN; the tab favicon is set in manager-head.html.
+		brandImage: 'https://cdn.acerola.app/brand/logo/acerola-logo-foreground.svg',
 		brandTarget: '_self'
 	})
 });

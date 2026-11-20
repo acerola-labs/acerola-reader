@@ -21,12 +21,13 @@
 		position: relative;
 		padding-left: 2.5rem;
 		padding-bottom: 1.5rem;
-		border-left: 2px solid var(--border);
+		/* Neutral rail joining the steps, drawn as a background (no side border, Acerola standard). */
+		background: linear-gradient(var(--border), var(--border)) no-repeat left top / 2px 100%;
 		margin-left: 0.9rem;
 	}
 
 	.doc-steps :global(ol > li:last-child) {
-		border-left-color: transparent;
+		background: none;
 		padding-bottom: 0;
 	}
 
