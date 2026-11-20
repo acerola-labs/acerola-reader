@@ -49,7 +49,7 @@ impl ComicRepository {
         Ok(result)
     }
 
-    /// Atualiza o status de visibilidade de um quadrinho especifico.
+    /// Updates the visibility status of a specific comic.
     pub async fn update_hidden_status(
         &self, id: i64, hidden: bool,
     ) -> Result<ComicDirectory, DbError> {
@@ -68,7 +68,7 @@ impl ComicRepository {
         Ok(result)
     }
 
-    /// Atualiza o status de sincronizacao externa de um quadrinho especifico.
+    /// Updates the external sync status of a specific comic.
     pub async fn update_external_sync_enabled(
         &self, id: i64, external_sync_enabled: bool,
     ) -> Result<ComicDirectory, DbError> {
@@ -87,7 +87,7 @@ impl ComicRepository {
         Ok(result)
     }
 
-    /// Atualiza a capa de um quadrinho especifico.
+    /// Updates the cover of a specific comic.
     pub async fn update_cover(&self, id: i64, cover: &str) -> Result<ComicDirectory, DbError> {
         let table = ComicDirectory::table_name();
         let cols = ComicDirectory::columns().join(", ");
@@ -104,7 +104,7 @@ impl ComicRepository {
         Ok(result)
     }
 
-    /// Remove a capa e o banner (apenas a referência no banco; não mexe nos arquivos).
+    /// Removes the cover and banner (only the database reference; files are left untouched).
     pub async fn clear_artwork(&self, id: i64) -> Result<ComicDirectory, DbError> {
         let table = ComicDirectory::table_name();
         let cols = ComicDirectory::columns().join(", ");
@@ -120,7 +120,7 @@ impl ComicRepository {
         Ok(result)
     }
 
-    /// Atualiza o status de visibilidade de multiplos quadrinhos em batch.
+    /// Updates the visibility status of multiple comics in batch.
     pub async fn update_hidden_status_batch(
         &self, ids: &[i64], hidden: bool,
     ) -> Result<usize, DbError> {
@@ -142,7 +142,7 @@ impl ComicRepository {
         Ok(rows_affected as usize)
     }
 
-    /// Deleta multiplos quadrinhos em batch.
+    /// Deletes multiple comics in batch.
     pub async fn delete_batch(&self, ids: &[i64]) -> Result<usize, DbError> {
         if ids.is_empty() {
             return Ok(0);
@@ -162,7 +162,7 @@ impl ComicRepository {
         Ok(rows_affected as usize)
     }
 
-    /// Busca todos os quadrinhos filtrando pelo status de visibilidade.
+    /// Fetches every comic filtered by visibility status.
     pub async fn find_all_by_hidden(&self, hidden: bool) -> Result<Vec<ComicDirectory>, DbError> {
         let table = ComicDirectory::table_name();
         let cols = ComicDirectory::columns().join(", ");
@@ -270,7 +270,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::UniqueViolation)),
-            "Deveria ter retornado UniqueViolation, mas veio: {:?}",
+            "Should have returned UniqueViolation, but got: {:?}",
             result
         );
     }
@@ -283,7 +283,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::NotFound)),
-            "Deveria ter retornado NotFound, mas veio: {:?}",
+            "Should have returned NotFound, but got: {:?}",
             result
         );
     }

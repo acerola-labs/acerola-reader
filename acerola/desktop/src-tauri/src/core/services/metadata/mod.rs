@@ -29,9 +29,9 @@ use crate::{
 
 pub mod comic_info;
 
-/// Acha o `ComicInfo.xml` (case-insensitive) direto na raiz de um diretório de quadrinho, sem
-/// entrar em arquivos — usada tanto por `find_xml_file_on_disk` (leitura pra parse) quanto por
-/// `FileSyncService` (sync de arquivos: precisa do path, não do conteúdo, pra hashear/persistir).
+/// Finds `ComicInfo.xml` (case-insensitive) directly at the root of a comic directory, without
+/// looking inside archives — used both by `find_xml_file_on_disk` (reading for parsing) and by
+/// `FileSyncService` (file sync: needs the path, not the content, to hash/persist).
 pub(crate) fn find_comic_info_path(directory: &std::path::Path) -> Option<std::path::PathBuf> {
     let metadata_guard = MetadataFileGuard;
     let entries = std::fs::read_dir(directory).ok()?;
@@ -83,15 +83,15 @@ pub struct MetadataService {
     mangadex_client: MangadexClient,
     anilist_client: AnilistClient,
     http_client: reqwest::Client,
-    // Sync individual (MangaDex/AniList/ComicInfo) e sync em lote fazem check-then-insert em
-    // upsert_metadata sem transação — sem esse lock, disparar os dois pro mesmo quadrinho ao
-    // mesmo tempo corre pra um UniqueViolation que vira ComicError::AlreadyExists (mensagem
-    // enganosa: parece "quadrinho duplicado", mas é uma corrida de sync).
+    // Individual sync (MangaDex/AniList/ComicInfo) and batch sync do check-then-insert in
+    // upsert_metadata without a transaction — without this lock, triggering both for the same
+    // comic at the same time races into a UniqueViolation that becomes ComicError::AlreadyExists
+    // (misleading message: it looks like a "duplicate comic", but it is a sync race).
     syncing: Mutex<HashSet<i64>>,
 }
 
-/// RAII: libera `comic_directory_fk` do set de "sincronizando agora" ao sair de escopo, mesmo
-/// em erro ou cancelamento — sem depender de lembrar de remover em cada `return`/`?`.
+/// RAII: releases `comic_directory_fk` from the "syncing now" set when leaving scope, even
+/// on error or cancellation — without having to remember to remove it on every `return`/`?`.
 struct SyncGuard<'a> {
     syncing: &'a Mutex<HashSet<i64>>,
     comic_directory_fk: i64,
@@ -210,13 +210,13 @@ impl MetadataService {
         self.parse_and_sync_comic_info(&xml_content, comic_directory_fk).await
     }
 
-    /// Remove por completo os metadados sincronizados e as artes (cover/banner +
-    /// ComicInfo.xml) de um quadrinho, devolvendo-o ao estado "sem metadados" — como se
-    /// nunca tivesse sido sincronizado. Pensada para reverter um sync que trouxe dados
-    /// errados (ex.: match errado no AniList/MangaDex).
+    /// Fully removes the synced metadata and artwork (cover/banner +
+    /// ComicInfo.xml) of a comic, returning it to the "no metadata" state — as if it had
+    /// never been synced. Meant to revert a sync that brought wrong data
+    /// (e.g. a wrong match on AniList/MangaDex).
     ///
-    /// A limpeza dos arquivos em disco é best-effort: um arquivo ausente ou bloqueado
-    /// não interrompe a limpeza dos demais nem do banco.
+    /// Cleaning up files on disk is best-effort: a missing or locked file
+    /// does not stop cleaning up the others or the database.
     pub async fn clear_comic_metadata(&self, comic_directory_fk: i64) -> Result<(), ComicError> {
         let comic_dir = self
             .comic_directory_repo
@@ -226,9 +226,9 @@ impl MetadataService {
 
         let dir_path = PathBuf::from(&comic_dir.path);
 
-        // Mesmo padrão de `find_xml_file_on_disk`: reaproveita os guards que já definem o
-        // que conta como arquivo de metadados/artwork sincronizado, em vez de manter uma
-        // lista solta de nomes de arquivo que precisaria ser atualizada nos dois lugares.
+        // Same pattern as `find_xml_file_on_disk`: reuses the guards that already define
+        // what counts as a synced metadata/artwork file, instead of keeping a loose list of
+        // file names that would need to be updated in both places.
         let metadata_guard = MetadataFileGuard;
         let artwork_guard = ArtworkFileGuard;
 
@@ -258,8 +258,8 @@ impl MetadataService {
         Ok(())
     }
 
-    /// Aplica [`Self::clear_comic_metadata`] em lote, prosseguindo mesmo se algum item
-    /// falhar. Retorna quantos quadrinhos foram limpos com sucesso.
+    /// Applies [`Self::clear_comic_metadata`] in batch, proceeding even if some item
+    /// fails. Returns how many comics were cleared successfully.
     pub async fn clear_comics_metadata_batch(&self, ids: &[i64]) -> usize {
         let mut cleared = 0;
         for &id in ids {
@@ -340,7 +340,7 @@ impl MetadataService {
             response.data.len()
         );
 
-        // 1. Tentar encontrar match EXATO no título principal
+        // 1. Try to find an EXACT match on the main title
         let primary_match = response.data.iter().find(|manga| {
             manga
                 .attributes
@@ -359,7 +359,7 @@ impl MetadataService {
             return Ok(manga.clone());
         }
 
-        // 2. Se não achou no principal, tenta encontrar match EXATO nos títulos alternativos
+        // 2. If not found on the main title, try to find an EXACT match on the alternative titles
         let alt_match = response.data.iter().find(|manga| {
             manga
                 .attributes
@@ -379,7 +379,7 @@ impl MetadataService {
             return Ok(manga.clone());
         }
 
-        // 3. Fallback: Pega o primeiro resultado da busca se não houver match exato
+        // 3. Fallback: take the first search result if there is no exact match
         match response.data.into_iter().next() {
             Some(manga) => {
                 tracing::warn!(
@@ -579,8 +579,8 @@ impl MetadataService {
         Ok(())
     }
 
-    /// Persiste a nota do AniList (escala 0-100) em `anilist_source`, ligada por
-    /// `comic_metadata_fk`. Não faz nada se o AniList não retornou nota (manga sem votos).
+    /// Persists the AniList score (0-100 scale) in `anilist_source`, linked by
+    /// `comic_metadata_fk`. Does nothing if AniList returned no score (manga without votes).
     async fn process_anilist_score(
         &self, media: &AnilistMedia, metadata_id: i64,
     ) -> Result<(), ComicError> {

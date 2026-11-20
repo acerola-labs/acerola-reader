@@ -21,45 +21,45 @@ use crate::infra::security::{p2p_storage::SecureP2pStorage, trusted_store::Secur
 
 pub type ConnectedPeerInfo = (PeerIdentity, HashSet<Vec<u8>>, Option<DeviceInfo>);
 
-/// Reconstrói um `AcerolaP2p` do zero (mesma identidade/storage/handlers, config de relay
-/// relida na hora) — fornecido por `bios::network::setup_network`, que é quem tem em mãos
-/// todos os ingredientes específicos de protocolo (`HistorySyncInbound`, `FileSyncInbound`,
-/// etc.) que `NetworkService` não precisa conhecer. `NetworkService` só sabe "pedir um node
-/// novo", nunca como um é montado — mesma separação que já existia entre `bios::network` (monta)
-/// e `NetworkService` (opera o que foi montado).
+/// Rebuilds an `AcerolaP2p` from scratch (same identity/storage/handlers, relay config
+/// re-read on the spot) — provided by `bios::network::setup_network`, which holds all the
+/// protocol-specific ingredients (`HistorySyncInbound`, `FileSyncInbound`, etc.) that
+/// `NetworkService` does not need to know. `NetworkService` only knows how to "ask for a new
+/// node", never how one is built — the same separation that already existed between
+/// `bios::network` (builds) and `NetworkService` (operates what was built).
 pub type NodeBuilder = Arc<
     dyn Fn() -> Pin<Box<dyn Future<Output = Result<Arc<AcerolaP2p>, String>> + Send>> + Send + Sync,
 >;
 
-// `#[async_trait]` gera `#[must_use]` em métodos que já retornam um `Future` (`must_use` por
-// si só) — clippy >= 1.99 acusa isso como `double_must_use` no código expandido pela macro.
+// `#[async_trait]` generates `#[must_use]` on methods that already return a `Future`
+// (`must_use` by itself) — clippy >= 1.99 flags this as `double_must_use` in the macro-expanded code.
 #[allow(clippy::double_must_use)]
 #[async_trait]
 pub trait NetworkServiceApi: Send + Sync + 'static {
     fn local_id(&self) -> Result<String, String>;
     fn local_addr(&self) -> Result<PeerAddr, String>;
     async fn local_device_info(&self) -> Result<DeviceInfo, String>;
-    /// Sobrescreve o nome exibido do dispositivo local (apelido custom estilo LocalSend). Vale
-    /// a partir do próximo handshake — não precisa reiniciar o app (ver
-    /// `AcerolaP2p::set_local_device_name`). Persistir entre reinícios é responsabilidade do
-    /// chamador (frontend grava em `settings.json`, `bios::network::setup_network` reaplica no
-    /// próximo boot).
+    /// Overrides the local device's display name (custom alias, LocalSend style). Applies
+    /// from the next handshake on — no app restart needed (see
+    /// `AcerolaP2p::set_local_device_name`). Persisting it across restarts is the caller's
+    /// job (the frontend writes it to `settings.json`, `bios::network::setup_network` reapplies it
+    /// on the next boot).
     async fn set_local_device_name(&self, name: String) -> Result<(), String>;
     async fn connected_peers_with_info(&self) -> Result<Vec<ConnectedPeerInfo>, String>;
-    /// Todo peer já pareado (TOFU) alguma vez, com o último endereço conhecido — persiste
-    /// entre reinícios e independe de conexão ativa agora, diferente de
-    /// [`NetworkServiceApi::connected_peers_with_info`] (sessão de protocolo, dura só
-    /// segundos). É essa lista que deve alimentar "disparar sync com X" na UI, já que o peer
-    /// quase nunca está conectado no exato instante em que o usuário clica o botão.
+    /// Every peer ever paired (TOFU), with the last known address — persists
+    /// across restarts and does not depend on an active connection right now, unlike
+    /// [`NetworkServiceApi::connected_peers_with_info`] (protocol session, lasts only
+    /// seconds). This is the list that must feed "start sync with X" in the UI, since the peer
+    /// is almost never connected at the exact moment the user clicks the button.
     ///
-    /// `DeviceInfo` vem de `AcerolaP2p::known_peers()` (mesmo mecanismo persistente,
-    /// sobrevive ao handshake fechar) — não de `connected_peers_with_info`, que só tem dado
-    /// nos poucos segundos em que a sessão de handshake está de fato aberta.
+    /// `DeviceInfo` comes from `AcerolaP2p::known_peers()` (same persistent mechanism,
+    /// survives the handshake closing) — not from `connected_peers_with_info`, which only has data
+    /// during the few seconds the handshake session is actually open.
     async fn paired_peers(&self) -> Result<Vec<(PeerAddr, Option<DeviceInfo>)>, String>;
-    /// Desempareia um peer: some da confiança (TOFU) e do cache de endereços conhecidos —
-    /// mesmo par de fontes que [`NetworkServiceApi::paired_peers`] lê. Não derruba uma
-    /// conexão ativa nem bloqueia o peer; se ele reconectar depois, passa pelo mesmo fluxo
-    /// TOFU de um dispositivo nunca visto (mesmo comportamento do lado Android, ver
+    /// Unpairs a peer: it disappears from trust (TOFU) and from the known address cache —
+    /// the same pair of sources [`NetworkServiceApi::paired_peers`] reads. Does not drop an
+    /// active connection nor block the peer; if it reconnects later, it goes through the same
+    /// TOFU flow as a never-seen device (same behavior as the Android side, see
     /// `P2PNode::remove_paired_peer`).
     async fn remove_peer(&self, id: String) -> Result<(), String>;
     async fn switch_to_local(&self) -> Result<(), String>;
@@ -67,59 +67,59 @@ pub trait NetworkServiceApi: Send + Sync + 'static {
     async fn mode(&self) -> Result<NetworkMode, String>;
     async fn connect(&self, peer_addr: PeerAddr, alpn: Vec<u8>) -> Result<(), String>;
     async fn shutdown(&self) -> Result<(), String>;
-    /// `true` se o usuário já colou e salvou um ticket da própria conta em
-    /// `services.iroh.computer` — nunca devolve o valor em si (é uma credencial real).
+    /// `true` if the user already pasted and saved a ticket of their own account on
+    /// `services.iroh.computer` — never returns the value itself (it is a real credential).
     async fn has_iroh_services_ticket(&self) -> Result<bool, String>;
-    /// Valida o formato antes de persistir (rejeita colagem incompleta/errada na hora, em vez
-    /// de só falhar depois). Só tem efeito de verdade depois que o frontend chamar
-    /// [`Self::apply_relay_settings`] — que agora reinicia o node (ver [`Self::restart`]), não
-    /// precisa mais de um boot novo do app inteiro.
+    /// Validates the format before persisting (rejects an incomplete/wrong paste right away,
+    /// instead of only failing later). Only actually takes effect after the frontend calls
+    /// [`Self::apply_relay_settings`] — which now restarts the node (see [`Self::restart`]), it no
+    /// longer needs a fresh boot of the whole app.
     async fn set_iroh_services_ticket(&self, ticket: String) -> Result<(), String>;
     async fn clear_iroh_services_ticket(&self) -> Result<(), String>;
-    /// Relê `settings.json` + o ticket do cofre, resolve a config de relay combinável e aplica
-    /// ao node JÁ VIVO (`AcerolaP2p::apply_relay_mode`) — sem isso, mudar a config de relay na
-    /// UI só tinha efeito no PRÓXIMO boot do app. Chamado pelo frontend depois de qualquer
-    /// mudança nas fontes de relay (toggle do Acerola/Iroh, add/remove de URL própria, ticket).
+    /// Re-reads `settings.json` + the vault ticket, resolves the combinable relay config and
+    /// applies it to the ALREADY LIVE node (`AcerolaP2p::apply_relay_mode`) — without this, changing
+    /// the relay config in the UI only took effect on the app's NEXT boot. Called by the frontend
+    /// after any change to the relay sources (Acerola/Iroh toggle, add/remove own URL, ticket).
     async fn apply_relay_settings(&self) -> Result<(), String>;
-    /// Desliga o node P2P por completo (fecha o `Endpoint` de verdade — ver `AcerolaP2p::shutdown`
-    /// — não só derruba o canal de comandos) e reconstrói do zero com a mesma identidade/storage,
-    /// relendo a config de relay atual. Estilo LocalSend: qualquer troca de relay reseta o
-    /// módulo inteiro em vez de mutar um `Endpoint` já vivo — era exatamente essa mutação ao
-    /// vivo (`apply_relay_mode`) que deixava conexões QUIC num estado confuso depois de uma
-    /// troca de rede grande o bastante (ex.: relay próprio -> rede pública Iroh): pacotes
-    /// "dropping unexpected packet" no log, discagem repetindo timeout sem nunca resolver.
-    /// Também exposta como comando pro usuário disparar manualmente ("Reiniciar" na tela de
-    /// Rede), não só automaticamente em [`Self::apply_relay_settings`].
+    /// Fully shuts down the P2P node (really closes the `Endpoint` — see `AcerolaP2p::shutdown`
+    /// — not just dropping the command channel) and rebuilds it from scratch with the same
+    /// identity/storage, re-reading the current relay config. LocalSend style: any relay change
+    /// resets the whole module instead of mutating an already-live `Endpoint` — it was exactly
+    /// that live mutation (`apply_relay_mode`) that left QUIC connections in a confused state
+    /// after a big enough network change (e.g. own relay -> Iroh public network): "dropping
+    /// unexpected packet" in the log, dialing repeatedly timing out without ever resolving.
+    /// Also exposed as a command for the user to trigger manually ("Restart" on the Network
+    /// screen), not only automatically in [`Self::apply_relay_settings`].
     async fn restart(&self) -> Result<(), String>;
 }
 
 pub struct NetworkService {
     node: RwLock<Option<Arc<AcerolaP2p>>>,
-    /// Mesmo storage passado ao builder (`.storage(...)`) — clonado antes por
-    /// `bios::network::setup_network` pra sobreviver aqui como fonte de "peers pareados"
-    /// persistidos, já que a lib não devolve o storage de volta depois do `build()`. Tipo
-    /// concreto (não `Arc<dyn P2PStorage>`) porque [`Self::remove_peer`] precisa de
-    /// `SecureP2pStorage::remove_peer`, que é específico dessa implementação — não faz parte
-    /// da trait compartilhada com o lado Android.
+    /// Same storage passed to the builder (`.storage(...)`) — cloned beforehand by
+    /// `bios::network::setup_network` to survive here as the source of persisted "paired
+    /// peers", since the lib does not hand the storage back after `build()`. Concrete type
+    /// (not `Arc<dyn P2PStorage>`) because [`Self::remove_peer`] needs
+    /// `SecureP2pStorage::remove_peer`, which is specific to this implementation — it is not part
+    /// of the trait shared with the Android side.
     storage: Arc<SecureP2pStorage>,
-    /// Mesmo motivo do campo acima, pro lado da confiança (TOFU) — `SecureTrustedStore::remove`
-    /// também não faz parte de `TrustedPeerStore`.
+    /// Same reason as the field above, for the trust (TOFU) side — `SecureTrustedStore::remove`
+    /// is not part of `TrustedPeerStore` either.
     trust_store: Arc<SecureTrustedStore>,
-    /// Só pra [`Self::apply_relay_settings`] poder reler `settings.json` sob demanda — mesma
-    /// pasta já usada por `bios::network::setup_network` na inicialização.
+    /// Only so [`Self::apply_relay_settings`] can re-read `settings.json` on demand — same
+    /// folder already used by `bios::network::setup_network` at startup.
     app_data_directory: PathBuf,
-    /// Fornecido por `bios::network::setup_network` — ver doc de [`NodeBuilder`]. Chamado só
-    /// por [`Self::restart`].
+    /// Provided by `bios::network::setup_network` — see the docs of [`NodeBuilder`]. Only called
+    /// by [`Self::restart`].
     rebuild_node: NodeBuilder,
-    /// Serializa [`Self::restart`] — sem isso, duas chamadas sobrepostas (ex.: dois toggles de
-    /// relay em sequência na tela de Rede, ou o toggle e o botão manual "Reiniciar" quase
-    /// juntos; Tauri não enfileira `invoke`s, cada um roda numa task própria) constroem DOIS
-    /// nodes em paralelo com a MESMA identidade persistida — os dois tentam se registrar ao
-    /// mesmo tempo no mesmo relay, que aceita só um e derruba o outro silenciosamente
-    /// ("Another endpoint connected with the same endpoint id", visto ao vivo). `tokio::sync`
-    /// (não `std::sync`) porque o lock precisa continuar seguro através de vários `.await`
-    /// (shutdown do node antigo + rebuild assíncrono), não só de uma seção crítica síncrona
-    /// como [`Self::node`].
+    /// Serializes [`Self::restart`] — without it, two overlapping calls (e.g. two relay toggles
+    /// in a row on the Network screen, or the toggle and the manual "Restart" button almost
+    /// together; Tauri does not queue `invoke`s, each runs in its own task) build TWO
+    /// nodes in parallel with the SAME persisted identity — both try to register at the
+    /// same time on the same relay, which accepts only one and silently drops the other
+    /// ("Another endpoint connected with the same endpoint id", seen live). `tokio::sync`
+    /// (not `std::sync`) because the lock must stay held safely across several `.await`s
+    /// (old node shutdown + async rebuild), not just a synchronous critical section
+    /// like [`Self::node`].
     restart_lock: Mutex<()>,
 }
 
@@ -158,16 +158,16 @@ impl NetworkService {
         *write = Some(node);
     }
 
-    /// Clona o `Arc` atual e libera o lock na hora — cada chamador opera sobre o node que
-    /// estava vivo no instante da chamada, sem segurar o lock por toda a duração de uma
-    /// operação de rede potencialmente longa (e sem arriscar um deadlock se essa operação,
-    /// direta ou indiretamente, acabar chamando de volta um método deste serviço).
+    /// Clones the current `Arc` and releases the lock right away — each caller operates on the
+    /// node that was alive at the moment of the call, without holding the lock for the whole
+    /// duration of a potentially long network operation (and without risking a deadlock if that
+    /// operation, directly or indirectly, ends up calling back into a method of this service).
     ///
-    /// `std::sync::RwLock` (não `tokio::sync::RwLock`) de propósito: o critical section aqui
-    /// é só um `clone()`, nunca atravessa um `.await` — usar a versão síncrona evita de vez
-    /// `blocking_read()` (que pode entrar em pânico dentro do runtime tokio, exatamente onde
-    /// [`Self::local_id`]/[`Self::local_addr`] — os dois métodos SÍNCRONOS da trait — são
-    /// chamados) sem precisar tornar essa função `async` só pelos outros métodos.
+    /// `std::sync::RwLock` (not `tokio::sync::RwLock`) on purpose: the critical section here
+    /// is just a `clone()`, it never crosses an `.await` — using the synchronous version avoids
+    /// `blocking_read()` entirely (which can panic inside the tokio runtime, exactly where
+    /// [`Self::local_id`]/[`Self::local_addr`] — the trait's two SYNCHRONOUS methods — are
+    /// called) without having to make this function `async` just because of the other methods.
     fn node(&self) -> Result<Arc<AcerolaP2p>, String> {
         self.node
             .read()
@@ -184,14 +184,14 @@ impl NetworkServiceApi for NetworkService {
         Ok(self.node()?.local_id().to_string())
     }
 
-    /// Endereço completo (id + bytes de endereçamento) usado pra gerar o código/QR de
-    /// pareamento — é o que o outro dispositivo precisa pra nos alcançar via `connect()`.
+    /// Full address (id + addressing bytes) used to generate the pairing code/QR —
+    /// it is what the other device needs to reach us via `connect()`.
     fn local_addr(&self) -> Result<PeerAddr, String> {
         self.node()?.local_addr().map_err(|err| err.to_string())
     }
 
-    /// Nome/OS/versão deste dispositivo — usado na tela de Rede pra exibir algo mais
-    /// legível que o peer id cru (ex: "Notebook do Vinicius" em vez de um hex de 64 chars).
+    /// Name/OS/version of this device — used on the Network screen to show something more
+    /// readable than the raw peer id (e.g. "Vinicius's Notebook" instead of a 64-char hex).
     async fn local_device_info(&self) -> Result<DeviceInfo, String> {
         Ok(self.node()?.local_device_info().await)
     }
@@ -282,25 +282,25 @@ impl NetworkServiceApi for NetworkService {
         self.storage.clear_iroh_services_ticket().await.map_err(|err| err.to_string())
     }
 
-    /// Antes mutava o `Endpoint` já vivo (`apply_relay_mode`) — agora delega pra
-    /// [`Self::restart`], que reseta o módulo inteiro. Ver doc de [`NetworkServiceApi::restart`]
-    /// pro porquê: uma troca de relay grande o bastante (ex.: relay próprio -> rede pública
-    /// Iroh) deixava conexões QUIC num estado confuso quando só reconfigurada ao vivo.
+    /// It used to mutate the already-live `Endpoint` (`apply_relay_mode`) — now it delegates to
+    /// [`Self::restart`], which resets the whole module. See the docs of [`NetworkServiceApi::restart`]
+    /// for why: a big enough relay change (e.g. own relay -> Iroh public
+    /// network) left QUIC connections in a confused state when only reconfigured live.
     async fn apply_relay_settings(&self) -> Result<(), String> {
         self.restart().await
     }
 
     async fn restart(&self) -> Result<(), String> {
-        // Segura o lock pela operação INTEIRA (não só a troca do ponteiro no fim) — uma
-        // segunda chamada concorrente espera esta terminar de verdade (node antigo desligado +
-        // node novo já registrado no relay) antes de começar a sua. Ver doc de
-        // `Self::restart_lock` pro bug real que isso evita.
+        // Holds the lock for the WHOLE operation (not just the pointer swap at the end) — a
+        // second concurrent call waits for this one to really finish (old node shut down +
+        // new node already registered on the relay) before starting its own. See the docs of
+        // `Self::restart_lock` for the real bug this prevents.
         let _restart_guard = self.restart_lock.lock().await;
 
         if let Ok(old_node) = self.node() {
-            // Melhor esforço: mesmo se o shutdown do node antigo falhar/travar parcialmente, ainda
-            // vale a pena tentar subir um node novo em vez de deixar o usuário sem rede nenhuma —
-            // loga mas não aborta o restart por causa disso.
+            // Best-effort: even if shutting down the old node fails/partially hangs, it is still
+            // worth trying to bring up a new node instead of leaving the user with no network at all —
+            // log it but do not abort the restart because of it.
             if let Err(error) = old_node.shutdown().await {
                 tracing::warn!(
                     ?error,
@@ -315,22 +315,22 @@ impl NetworkServiceApi for NetworkService {
 
         tracing::info!("[NetworkService] P2P node restarted");
 
-        // Sem isso, um restart devolvia o node num estado limpo — identidade e storage
-        // preservados, mas ZERO conexões ativas — e nada tentava falar de novo com nenhum peer
-        // pareado até o usuário disparar alguma ação manual (browse library, sync, etc). Achado
-        // ao vivo: trocar pra um relay que um peer pareado não compartilha corta o alcance por
-        // relay pra ele, e o usuário não tinha NENHUM sinal disso além de tentar algo manualmente
-        // e ver falhar. `reconnect_known_peers` só ENFILEIRA a tentativa (não espera confirmação
-        // — ver doc lá); best-effort: uma falha ao ler `paired_peers` não deve fazer o restart em
-        // si (já concluído com sucesso acima) parecer ter falhado.
+        // Without this, a restart returned the node in a clean state — identity and storage
+        // preserved, but ZERO active connections — and nothing tried to talk to any paired peer
+        // again until the user triggered some manual action (browse library, sync, etc). Found
+        // live: switching to a relay a paired peer does not share cuts relay reachability to it,
+        // and the user had NO signal of that other than trying something manually
+        // and seeing it fail. `reconnect_known_peers` only QUEUES the attempt (it does not wait for
+        // confirmation — see the docs there); best-effort: failing to read `paired_peers` must not
+        // make the restart itself (already successfully completed above) look like it failed.
         //
-        // Sem teste dedicado pro branch `Err` abaixo: `SecureP2pStorage::load_peers` só lê um
-        // cache em memória (`peers_cache.read().await.clone()`) e não tem, hoje, nenhum jeito
-        // de falhar de verdade — o `Result` existe porque é o contrato da trait `P2PStorage`
-        // (implementações futuras, ou outra plataforma, podem genuinamente errar aqui), não
-        // porque este caminho é alcançável com o storage concreto atual. Tratado mesmo assim
-        // (sem `.unwrap()`/`.expect()`, por regra do CONTRIBUTING.md) por respeitar o contrato
-        // do tipo, não por cobertura de teste possível agora.
+        // No dedicated test for the `Err` branch below: `SecureP2pStorage::load_peers` only reads an
+        // in-memory cache (`peers_cache.read().await.clone()`) and currently has no way to
+        // really fail — the `Result` exists because it is the `P2PStorage` trait contract
+        // (future implementations, or another platform, may genuinely fail here), not
+        // because this path is reachable with the current concrete storage. Handled anyway
+        // (no `.unwrap()`/`.expect()`, per the CONTRIBUTING.md rule) to respect the type's
+        // contract, not because test coverage is possible right now.
         match self.storage.load_peers().await {
             Ok(known_peers) => {
                 acerola_p2p::api::network::reconnect_known_peers(&fresh_node, known_peers).await;
@@ -367,9 +367,9 @@ mod tests {
         }
     }
 
-    /// Node real (Iroh de verdade, sem `.storage(...)`) — identidade gerada do zero a cada
-    /// chamada, o que é exatamente a propriedade que os testes abaixo exploram pra provar que
-    /// `restart()` trocou o node de fato, e não só reexecutou algo em cima do mesmo.
+    /// Real node (actual Iroh, without `.storage(...)`) — identity generated from scratch on every
+    /// call, which is exactly the property the tests below rely on to prove that
+    /// `restart()` really swapped the node, and did not just rerun something on top of the same one.
     async fn build_test_node() -> Arc<AcerolaP2p> {
         Arc::new(
             AcerolaP2p::builder(
@@ -391,12 +391,12 @@ mod tests {
         (storage, trust, dir)
     }
 
-    /// Regressão central desta mudança: `restart()` precisa (1) desligar o node antigo de
-    /// verdade (`AcerolaP2p::shutdown`, não só derrubar o canal de comandos — ver o fix em
-    /// `lib/p2p`), (2) chamar a closure de rebuild fornecida por `bios::network::setup_network`
-    /// exatamente uma vez, e (3) fazer qualquer chamada seguinte (`local_id()`) refletir o node
-    /// NOVO, não o antigo. Dois nodes Iroh reais (sem `.storage(...)`, identidade sempre nova)
-    /// tornam "o id mudou" uma prova direta de que a troca aconteceu de verdade.
+    /// Core regression of this change: `restart()` must (1) really shut down the old node
+    /// (`AcerolaP2p::shutdown`, not just drop the command channel — see the fix in
+    /// `lib/p2p`), (2) call the rebuild closure provided by `bios::network::setup_network`
+    /// exactly once, and (3) make any following call (`local_id()`) reflect the NEW node,
+    /// not the old one. Two real Iroh nodes (without `.storage(...)`, always a new identity)
+    /// make "the id changed" direct proof that the swap really happened.
     #[tokio::test]
     async fn restart_shuts_down_old_node_and_swaps_in_a_freshly_built_one() {
         let (storage, trust, _dir) = open_storage();
@@ -421,19 +421,19 @@ mod tests {
         assert_eq!(
             rebuild_calls.load(Ordering::SeqCst),
             1,
-            "a closure de rebuild deveria ter sido chamada exatamente uma vez"
+            "the rebuild closure should have been called exactly once"
         );
         let new_local_id = service.local_id().unwrap();
         assert_ne!(
             old_local_id, new_local_id,
-            "restart deveria ter trocado pra um node novo (identidade diferente)"
+            "restart should have swapped to a new node (different identity)"
         );
     }
 
-    /// Se a closure de rebuild falhar, `restart()` propaga o erro em vez de mascarar um estado
-    /// quebrado — o node antigo já foi desligado nesse ponto, então o usuário PRECISA saber que
-    /// o restart não completou, não ver "sucesso" e descobrir só quando a rede não responder
-    /// mais.
+    /// If the rebuild closure fails, `restart()` propagates the error instead of masking a broken
+    /// state — the old node was already shut down at that point, so the user NEEDS to know the
+    /// restart did not complete, not see "success" and only find out when the network stops
+    /// responding.
     #[tokio::test]
     async fn restart_propagates_rebuild_failure() {
         let (storage, trust, _dir) = open_storage();
@@ -448,14 +448,14 @@ mod tests {
         assert_eq!(result, Err("boom".to_string()));
     }
 
-    /// Regressão do bug ao vivo: duas mudanças de relay disparadas em sequência (dois toggles,
-    /// ou o toggle e o botão manual "Reiniciar") cada uma chama `restart()` numa task própria —
-    /// Tauri não enfileira `invoke`s. Sem exclusão mútua, as duas reconstruções rodavam em
-    /// paralelo com a MESMA identidade persistida, e o relay via dois endpoints concorrentes
-    /// tentando se registrar com o mesmo id ("Another endpoint connected with the same
-    /// endpoint id" — a mensagem real vista em produção). Prova que `restart()` serializa: a
-    /// rebuild closure nunca observa mais de 1 execução concorrente, mesmo com duas chamadas
-    /// disparadas ao mesmo tempo via `tokio::join!`.
+    /// Regression for the live bug: two relay changes triggered in a row (two toggles,
+    /// or the toggle and the manual "Restart" button) each call `restart()` in their own task —
+    /// Tauri does not queue `invoke`s. Without mutual exclusion, both rebuilds ran in
+    /// parallel with the SAME persisted identity, and the relay saw two concurrent endpoints
+    /// trying to register with the same id ("Another endpoint connected with the same
+    /// endpoint id" — the real message seen in production). Proves `restart()` serializes: the
+    /// rebuild closure never observes more than 1 concurrent run, even with two calls
+    /// triggered at the same time via `tokio::join!`.
     #[tokio::test]
     async fn concurrent_restarts_are_serialized_instead_of_racing() {
         let (storage, trust, _dir) = open_storage();
@@ -476,9 +476,9 @@ mod tests {
                 rebuild_calls.fetch_add(1, Ordering::SeqCst);
                 let now_in_flight = concurrent.fetch_add(1, Ordering::SeqCst) + 1;
                 max_concurrent.fetch_max(now_in_flight, Ordering::SeqCst);
-                // Espaço suficiente pra uma segunda chamada concorrente ENTRAR em `restart()`
-                // enquanto esta ainda constrói — se o lock não estiver protegendo a operação
-                // inteira, é aqui que as duas rebuilds se sobrepõem.
+                // Enough room for a second concurrent call to ENTER `restart()`
+                // while this one is still building — if the lock is not protecting the whole
+                // operation, this is where both rebuilds overlap.
                 tokio::time::sleep(std::time::Duration::from_millis(30)).await;
                 concurrent.fetch_sub(1, Ordering::SeqCst);
                 Ok(build_test_node().await)
@@ -500,39 +500,39 @@ mod tests {
                 service_b.restart().await
             });
 
-        result_a.expect("primeira chamada de restart deveria ter sucesso");
-        result_b.expect("segunda chamada de restart deveria ter sucesso, não ser descartada");
+        result_a.expect("first restart call should succeed");
+        result_b.expect("second restart call should succeed, not be discarded");
 
         assert_eq!(
             rebuild_calls.load(Ordering::SeqCst),
             2,
-            "as duas chamadas deveriam ter reconstruído o node, nenhuma foi ignorada"
+            "both calls should have rebuilt the node, none was ignored"
         );
         assert_eq!(
             max_concurrent.load(Ordering::SeqCst),
             1,
-            "as duas rebuilds rodaram ao mesmo tempo — restart() não está serializando"
+            "both rebuilds ran at the same time — restart() is not serializing"
         );
     }
 
-    /// Testes que sobem nodes Iroh REAIS (mDNS/QUIC de verdade) e esperam reconexão dentro de um
-    /// timeout fixo (50 tentativas * 50ms = 2.5s) — rodando em paralelo com o resto da suíte (ou
-    /// entre si), a contenção de porta/mDNS sob carga pode fazer a reconexão legítima passar
-    /// desse timeout, derrubando o teste sem nenhum bug real envolvido (visto ao vivo em CI: 2-3
-    /// desses testes falham de forma alternada entre execuções). `[test-groups]
-    /// run-in-isolation` em `.config/nextest.toml` já existia pra isso (filtro
-    /// `test(::run_in_isolation::)`), mas nenhum teste usava o módulo ainda — mover os 3 testes
-    /// que dependem de reconexão cronometrada pra cá os serializa (`max-threads = 1`), tirando a
-    /// contenção que causava a flakiness. Módulo aninhado dentro de `tests` (não irmão) pra
-    /// reaproveitar os helpers privados (`build_test_node`/`open_storage`) via `use super::*`.
+    /// Tests that bring up REAL Iroh nodes (actual mDNS/QUIC) and wait for reconnection within a
+    /// fixed timeout (50 attempts * 50ms = 2.5s) — running in parallel with the rest of the suite (or
+    /// with each other), port/mDNS contention under load can push a legitimate reconnection past
+    /// that timeout, failing the test with no real bug involved (seen live in CI: 2-3
+    /// of these tests failing alternately between runs). `[test-groups]
+    /// run-in-isolation` in `.config/nextest.toml` already existed for this (filter
+    /// `test(::run_in_isolation::)`), but no test used the module yet — moving the 3 tests
+    /// that depend on timed reconnection here serializes them (`max-threads = 1`), removing the
+    /// contention that caused the flakiness. Module nested inside `tests` (not a sibling) to
+    /// reuse the private helpers (`build_test_node`/`open_storage`) via `use super::*`.
     mod run_in_isolation {
         use super::*;
 
-        /// Regressão de ponta a ponta do bug ao vivo: um restart (troca de relay, ou o botão manual)
-        /// devolvia um node com identidade/storage preservados mas ZERO conexões ativas — nada
-        /// tentava falar de novo com peers já pareados até o usuário disparar alguma ação manual
-        /// (browse library, sync, etc). Prova que `restart()` agora reconecta SOZINHO com um peer
-        /// real já pareado, sem nenhuma ação além da própria chamada de `restart()`.
+        /// End-to-end regression for the live bug: a restart (relay change, or the manual button)
+        /// returned a node with identity/storage preserved but ZERO active connections — nothing
+        /// tried to talk to already-paired peers again until the user triggered some manual action
+        /// (browse library, sync, etc). Proves `restart()` now reconnects ON ITS OWN with a real
+        /// already-paired peer, with no action other than the `restart()` call itself.
         #[tokio::test]
         async fn restart_reconnects_to_previously_paired_peers_without_further_action() {
             let (storage, trust, _dir) = open_storage();
@@ -571,17 +571,17 @@ mod tests {
 
             assert!(
                 reconnected,
-                "restart() deveria ter reconectado sozinho com o peer já pareado, sem ação manual \
-             do usuário"
+                "restart() should have reconnected on its own to the already-paired peer, without \
+             manual user action"
             );
         }
 
-        /// Caminho triste: um peer pareado pode ter saído da rede entre sessões (desligou o app,
-        /// perdeu conexão) — isso não pode fazer `restart()` falhar nem impedir a reconexão com
-        /// OUTRO peer pareado que continua acessível. `reconnect_known_peers` é best-effort por
-        /// design (ver doc em `lib/p2p`), mas só um teste no nível de integração (storage real +
-        /// dois peers reais, um deles desligado) prova que a composição dos dois lados não quebra
-        /// esse contrato.
+        /// Sad path: a paired peer may have left the network between sessions (closed the app,
+        /// lost connection) — that must not make `restart()` fail nor prevent reconnecting to
+        /// ANOTHER paired peer that is still reachable. `reconnect_known_peers` is best-effort by
+        /// design (see the docs in `lib/p2p`), but only an integration-level test (real storage +
+        /// two real peers, one of them shut down) proves the composition of both sides does not break
+        /// that contract.
         #[tokio::test]
         async fn restart_still_succeeds_and_reconnects_reachable_peer_when_another_paired_peer_is_offline(
         ) {
@@ -619,7 +619,7 @@ mod tests {
             service
                 .restart()
                 .await
-                .expect("restart should succeed mesmo com um peer pareado offline");
+                .expect("restart should succeed even with an offline paired peer");
 
             let mut reconnected = false;
             for _ in 0..50 {
@@ -633,19 +633,19 @@ mod tests {
 
             assert!(
                 reconnected,
-                "um peer pareado offline no mesmo restart não pode impedir a reconexão com o peer \
-             que continua acessível"
+                "an offline paired peer in the same restart must not prevent reconnecting to the \
+             peer that is still reachable"
             );
         }
 
-        /// Interação entre os dois fixes recentes (mutex serializando `restart()` +
-        /// `reconnect_known_peers` disparado no fim dele): a reconexão que a PRIMEIRA chamada
-        /// dispara roda contra o node que ELA construiu, mas se uma SEGUNDA chamada concorrente
-        /// entrar logo em seguida (esperando a primeira liberar o lock), o node da primeira já foi
-        /// desligado por essa segunda chamada antes de qualquer retry em background da reconexão
-        /// terminar. Isso não pode gerar pânico nem deixar o peer pareado sem NENHUMA tentativa de
-        /// reconexão no final — a reconexão disparada pela chamada que efetivamente venceu por
-        /// último (a mais recente a terminar) é a que precisa ter acontecido de verdade.
+        /// Interaction between the two recent fixes (mutex serializing `restart()` +
+        /// `reconnect_known_peers` triggered at its end): the reconnection the FIRST call
+        /// triggers runs against the node IT built, but if a SECOND concurrent call
+        /// comes in right after (waiting for the first to release the lock), the first's node was already
+        /// shut down by that second call before any background reconnection retry
+        /// finishes. That must not panic nor leave the paired peer without ANY reconnection
+        /// attempt in the end — the reconnection triggered by the call that effectively won
+        /// last (the most recent to finish) is the one that must have really happened.
         #[tokio::test]
         async fn concurrent_restarts_with_a_paired_peer_do_not_panic_and_still_reconnect() {
             let (storage, trust, _dir) = open_storage();
@@ -661,10 +661,10 @@ mod tests {
 
             let rebuild_node: NodeBuilder = Arc::new(|| {
                 Box::pin(async {
-                    // Mesmo espaçamento de `concurrent_restarts_are_serialized_instead_of_racing`
-                    // — garante que a segunda chamada de fato espera a primeira estar em pleno
-                    // rebuild antes de tentar entrar, exercitando a transição de node ANTES da
-                    // reconexão da primeira chamada ter qualquer chance de resolver.
+                    // Same spacing as `concurrent_restarts_are_serialized_instead_of_racing`
+                    // — ensures the second call really waits for the first to be in the middle of its
+                    // rebuild before trying to enter, exercising the node transition BEFORE the
+                    // first call's reconnection has any chance to resolve.
                     tokio::time::sleep(std::time::Duration::from_millis(30)).await;
                     Ok(build_test_node().await)
                 })
@@ -685,8 +685,8 @@ mod tests {
                     service_b.restart().await
                 });
 
-            result_a.expect("primeira chamada de restart deveria ter sucesso");
-            result_b.expect("segunda chamada de restart deveria ter sucesso");
+            result_a.expect("first restart call should succeed");
+            result_b.expect("second restart call should succeed");
 
             let mut reconnected = false;
             for _ in 0..50 {
@@ -700,8 +700,8 @@ mod tests {
 
             assert!(
                 reconnected,
-                "depois de dois restarts concorrentes, o node final ainda deveria ter reconectado \
-             com o peer pareado — sem pânico nem perda silenciosa da tentativa de reconexão"
+                "after two concurrent restarts, the final node should still have reconnected \
+             to the paired peer — no panic nor silent loss of the reconnection attempt"
             );
         }
     }

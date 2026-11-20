@@ -100,10 +100,10 @@ dependencies = ["copy-pdfium-dll"]
 env = {RUSTFLAGS = "-C link-arg=/MANIFEST:EMBED -C link-arg=/MANIFESTINPUT:${CARGO_MAKE_WORKING_DIRECTORY}/.config/windows/windows-app-manifest.xml"}
 
 [tasks.mutants]
-# Escopo restrito à camada de guards/allowlist (fronteira de segurança e permissão
-# de filesystem), não ao core de regra de negócio: alto sinal por linha analisada,
-# custo de execução baixo. "-- --lib" restringe cada mutante aos testes unitários
-# in-tree, evitando recompilar/rodar a suíte de integração inteira por mutante.
+# Scope limited to the guards/allowlist layer (security and filesystem permission
+# boundary), not the business-rule core: high signal per analyzed line, low run cost.
+# "-- --lib" restricts each mutant to the in-tree unit tests, avoiding rebuilding/running
+# the whole integration suite per mutant.
 args = [
   "mutants",
   "--file", "src/core/services/archive/path_guard.rs",

@@ -32,8 +32,8 @@ pub struct ComicSummaryMetadata {
     pub description: Option<String>,
     pub status: Option<String>,
     pub author: Option<String>,
-    /// Nota do AniList, já convertida para escala 0-10. `None` quando o quadrinho
-    /// não tem nota (não sincronizado via AniList, ou obra ainda sem votos).
+    /// AniList score, already converted to a 0-10 scale. `None` when the comic has
+    /// no score (not synced via AniList, or the work has no votes yet).
     pub rating: Option<f64>,
 }
 

@@ -3,7 +3,7 @@ use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
 use crate::data::repositories::{Bindable, Entity};
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico.
+/// Contract with the generic [`crate::data::repositories::Repository`].
 impl Entity for ChapterArchive {
     fn columns() -> &'static [&'static str] {
         &[
@@ -26,7 +26,7 @@ impl Entity for ChapterArchive {
     }
 }
 
-/// Garante que o código consiga serializar o sql para o objeto
+/// Ensures the code can deserialize the SQL row into the object
 impl Bindable for ChapterArchive {
     fn bind_insert<'query>(
         &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
@@ -55,7 +55,7 @@ impl Bindable for ChapterArchive {
             .bind(self.comic_directory_fk)
             .bind(self.volume_fk)
             .bind(self.last_modified)
-            .bind(self.id) // <- id pro WHERE id = ?
+            .bind(self.id) // <- id for WHERE id = ?
     }
 }
 
@@ -93,7 +93,7 @@ impl ChapterArchive {
     }
 }
 
-// NOTE: Migration em src-tauri\migrations\archive
+// NOTE: Migration in src-tauri\migrations\archive
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct ChapterArchive {
     pub id: i64,

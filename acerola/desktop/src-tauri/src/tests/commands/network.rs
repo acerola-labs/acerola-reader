@@ -307,9 +307,9 @@ async fn test_switch_to_local_serializes_service_error() -> Result<()> {
     Ok(())
 }
 
-/// `restart_p2p` (botão "Reiniciar" na tela de Rede, estilo LocalSend) delega inteiro pra
-/// `NetworkServiceApi::restart` — o comando em si não tem lógica própria além de repassar o
-/// resultado, então o teste só prova que a chamada chega até o service.
+/// `restart_p2p` (the "Restart" button on the Network screen, LocalSend style) fully delegates
+/// to `NetworkServiceApi::restart` — the command itself has no logic beyond forwarding the
+/// result, so the test only proves the call reaches the service.
 #[tokio::test(flavor = "multi_thread")]
 async fn test_restart_p2p_calls_the_service() -> Result<()> {
     let service = mock_network_service();
@@ -438,8 +438,8 @@ async fn test_get_paired_peers_returns_persisted_peers_regardless_of_active_conn
                 version: "0.0.1".to_string(),
             }),
         ),
-        // Peer pareado que nunca respondeu a entrevista de identidade (handshake antigo,
-        // versão anterior a `DeviceInfo` existir, etc.) — frontend deve cair pro id cru.
+        // Paired peer that never answered the identity exchange (old handshake,
+        // version before `DeviceInfo` existed, etc.) — the frontend must fall back to the raw id.
         (
             PeerAddr {
                 id: PeerIdentity { id: "peer-without-device-info".to_string(), device_id: None },
@@ -448,8 +448,8 @@ async fn test_get_paired_peers_returns_persisted_peers_regardless_of_active_conn
             None,
         ),
     ]);
-    // Nenhum peer conectado agora (`set_peers` não chamado) — a lista de pareados não
-    // depende disso, ao contrário de `get_network_status`.
+    // No peer connected right now (`set_peers` not called) — the paired list does not
+    // depend on that, unlike `get_network_status`.
     let (_app, webview) = build_network_app(service)?;
 
     let paired: Value = invoke_ok(&webview, "get_paired_peers", json!({}))?;

@@ -3,7 +3,7 @@ use sqlx::prelude::FromRow;
 
 use crate::data::repositories::Entity;
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico.
+/// Contract with the generic [`crate::data::repositories::Repository`].
 impl Entity for ComicSummaryView {
     fn columns() -> &'static [&'static str] {
         &[

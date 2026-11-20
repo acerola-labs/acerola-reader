@@ -25,7 +25,7 @@ impl ConverterService {
         Self
     }
 
-    /// Converte um arquivo PDF localizado em `pdf_path` para um arquivo `.cbz`.
+    /// Converts a PDF file located at `pdf_path` into a `.cbz` file.
     pub async fn convert_pdf_to_cbz(&self, pdf_path: PathBuf) -> Result<PathBuf, ComicError> {
         let cbz_path = pdf_path.with_extension("cbz");
 

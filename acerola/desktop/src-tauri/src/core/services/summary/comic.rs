@@ -63,8 +63,8 @@ impl HomeService {
                     .await?
                     .into_iter()
                     .next();
-                // Rating não é buscado aqui para evitar N+1 na grade da home;
-                // só é resolvido na tela de detalhe (get_by_folder_name).
+                // Rating is not fetched here to avoid N+1 on the home grid;
+                // it is only resolved on the detail screen (get_by_folder_name).
                 meta_map.insert(fk, (m, author, None));
             }
         }

@@ -20,8 +20,8 @@ impl ReadingHistoryRepository {
         Self { base: Repository::new(pool.clone()), pool }
     }
 
-    /// Insere ou atualiza o progresso de leitura de um quadrinho.
-    /// Faz upsert pela `comic_directory_id` (chave única da tabela).
+    /// Inserts or updates a comic's reading progress.
+    /// Upserts by `comic_directory_id` (the table's unique key).
     pub async fn upsert(&self, history: &ReadingHistory) -> Result<ReadingHistory, DbError> {
         let cols = ReadingHistory::columns().join(", ");
         let table = ReadingHistory::table_name();
@@ -48,7 +48,7 @@ impl ReadingHistoryRepository {
         Ok(result)
     }
 
-    /// Retorna o histórico de leitura de um quadrinho pelo `comic_directory_id`.
+    /// Returns a comic's reading history by `comic_directory_id`.
     pub async fn find_by_comic_id(
         &self, comic_directory_id: i64,
     ) -> Result<Option<ReadingHistory>, DbError> {
@@ -66,7 +66,7 @@ impl ReadingHistoryRepository {
         Ok(result)
     }
 
-    /// Retorna o histórico completo de leitura, ordenado pelo mais recente.
+    /// Returns the full reading history, most recent first.
     pub async fn find_all_ordered(&self) -> Result<Vec<ReadingHistory>, DbError> {
         let cols = ReadingHistory::columns().join(", ");
         let table = ReadingHistory::table_name();
@@ -81,7 +81,7 @@ impl ReadingHistoryRepository {
         Ok(result)
     }
 
-    /// Retorna o payload enriquecido de um quadrinho com dados do quadrinho e capítulo via JOIN.
+    /// Returns a comic's enriched payload with comic and chapter data via JOIN.
     pub async fn find_payload_by_comic_id(
         &self, comic_directory_id: i64,
     ) -> Result<Option<ReadingHistoryPayload>, DbError> {
@@ -112,7 +112,7 @@ impl ReadingHistoryRepository {
         Ok(result)
     }
 
-    /// Retorna todo o histórico enriquecido, ordenado pelo mais recente.
+    /// Returns the whole enriched history, most recent first.
     pub async fn find_all_payload_ordered(&self) -> Result<Vec<ReadingHistoryPayload>, DbError> {
         let result = sqlx::query_as::<_, ReadingHistoryPayload>(
             "SELECT
@@ -140,16 +140,16 @@ impl ReadingHistoryRepository {
         Ok(result)
     }
 
-    /// Apaga todo o histórico de leitura.
+    /// Deletes the whole reading history.
     pub async fn delete_all(&self) -> Result<(), DbError> {
         let table = ReadingHistory::table_name();
         sqlx::query(&format!("DELETE FROM {}", table)).execute(&self.pool).await?;
         Ok(())
     }
 
-    /// Apaga o histórico de leitura de um único quadrinho — usado ao excluir o quadrinho
-    /// (o cascade de FK não roda em runtime, ver comentário em
-    /// `VolumeRepository::delete_by_comic`). No-op se não houver histórico.
+    /// Deletes the reading history of a single comic — used when deleting the comic
+    /// (the FK cascade does not run at runtime, see the comment in
+    /// `VolumeRepository::delete_by_comic`). No-op if there is no history.
     pub async fn delete_by_comic_id(&self, comic_directory_id: i64) -> Result<(), DbError> {
         let table = ReadingHistory::table_name();
         sqlx::query(&format!("DELETE FROM {} WHERE comic_directory_id = ?", table))
@@ -266,13 +266,13 @@ mod tests {
 
         repo.upsert(&historico(1, 1, 5)).await.unwrap();
 
-        let antes = repo.find_all_ordered().await.unwrap();
-        assert_eq!(antes.len(), 1);
+        let before = repo.find_all_ordered().await.unwrap();
+        assert_eq!(before.len(), 1);
 
         repo.delete_all().await.unwrap();
 
-        let depois = repo.find_all_ordered().await.unwrap();
-        assert_eq!(depois.len(), 0);
+        let after = repo.find_all_ordered().await.unwrap();
+        assert_eq!(after.len(), 0);
     }
 
     #[tokio::test]
