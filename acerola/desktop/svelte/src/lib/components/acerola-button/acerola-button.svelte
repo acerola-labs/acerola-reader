@@ -31,8 +31,10 @@
 
 <Button
 	class={cn(
-		'font-dm-sans enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
-		ui?.class
+		'font-black enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
+		ui?.class,
+		// Acerola standard: a button is always a pill, whatever the call site passes.
+		'rounded-full'
 	)}
 	onclick={events?.onClick}
 	{...uiProps}

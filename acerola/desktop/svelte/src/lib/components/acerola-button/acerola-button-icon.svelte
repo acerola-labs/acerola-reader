@@ -53,9 +53,11 @@
 
 <Button
 	class={cn(
-		'size-10 rounded-inner p-0 enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
+		'size-11 p-0 enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
 		ui?.tone && TONE_CLASS[ui.tone],
-		ui?.class
+		ui?.class,
+		// Acerola standard: a button is always round, whatever the call site passes.
+		'rounded-full'
 	)}
 	onclick={events?.onClick}
 	{...uiProps}
