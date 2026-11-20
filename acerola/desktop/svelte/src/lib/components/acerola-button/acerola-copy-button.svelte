@@ -29,8 +29,8 @@
 		onCopy
 	}: AcerolaCopyButtonProps = $props();
 
-	let defaultLabel = $derived(label ?? m['components.copy_button.copy']());
-	let defaultCopiedLabel = $derived(copiedLabel ?? m['components.copy_button.copied']());
+	let defaultLabel = $derived(label ?? m['components.copyButton.copy']());
+	let defaultCopiedLabel = $derived(copiedLabel ?? m['components.copyButton.copied']());
 
 	let copied = $state(false);
 	let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -70,8 +70,8 @@
 	onclick={handleCopy}
 	class={cn(
 		'relative transition-all duration-200 active:scale-95',
-		size === 'icon-sm' && 'size-8 rounded-lg',
-		copied && 'border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+		size === 'icon-sm' && 'size-8 rounded-inner',
+		copied && ' bg-success-soft text-success dark:text-success',
 		className
 	)}
 	aria-label={copied ? defaultCopiedLabel : defaultLabel}

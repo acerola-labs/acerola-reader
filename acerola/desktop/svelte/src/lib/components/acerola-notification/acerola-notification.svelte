@@ -17,10 +17,10 @@
 	export const notifyVariants = tv({
 		variants: {
 			variant: {
-				warning: 'text-yellow-500 bg-yellow-500/5 border-yellow-500',
-				success: 'text-green-500 bg-green-500/5 border-green-500',
-				error: 'text-destructive bg-destructive/5 border-destructive',
-				info: 'text-blue-500 bg-blue-500/5 border-blue-500'
+				warning: 'text-warning bg-warning-soft',
+				success: 'text-success bg-success-soft',
+				error: 'text-destructive bg-destructive/5',
+				info: 'text-info bg-info-soft'
 			}
 		}
 	});
@@ -78,7 +78,7 @@
 		sideOffset: 8,
 		collisionPadding: 16,
 		contentClass:
-			'p-0 w-84 overflow-hidden rounded-2xl border-border/40 bg-card/95 backdrop-blur-md shadow-2xl'
+			'p-0 w-84 overflow-hidden rounded-inner border-border/40 bg-card/95 backdrop-blur-md shadow-float'
 	}}
 >
 	{#snippet trigger()}
@@ -86,7 +86,7 @@
 			<BellIcon size={20} />
 			{#if notifications.length > 0}
 				<span
-					class="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-background bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm"
+					class="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-background bg-primary px-1 text-[10px] font-bold text-primary-foreground"
 				>
 					{notifications.length}
 				</span>
@@ -150,7 +150,7 @@
 								animate:flip={{ duration: 200 }}
 								in:fly={{ y: 10, duration: 250, easing: cubicOut }}
 								out:fade={{ duration: 150 }}
-								class="group relative flex flex-col gap-2 rounded-xl border border-transparent p-3 transition-all hover:bg-muted/40"
+								class="group relative flex flex-col gap-2 rounded-inner border border-transparent p-3 transition-all hover:bg-muted/40"
 							>
 								<!-- Indicator Bar -->
 								<div
@@ -164,7 +164,7 @@
 								<div class="flex items-start justify-between gap-2 pl-2">
 									<div class="flex items-start gap-3">
 										<div
-											class="mt-0.5 rounded-lg p-1.5 {notifyVariants({ variant: notify.variant })
+											class="mt-0.5 rounded-inner p-1.5 {notifyVariants({ variant: notify.variant })
 												.split(' ')
 												.slice(0, 2)
 												.join(' ')}"
@@ -198,7 +198,7 @@
 										<Button
 											variant="secondary"
 											size="xs"
-											class="h-7 rounded-lg border border-border/50 px-3 text-[10px] font-bold shadow-sm"
+											class="h-7 rounded-inner border border-border/50 px-3 text-[10px] font-bold"
 											onclick={() => {
 												notify.action?.onClick();
 												pop(notify.id);
@@ -222,8 +222,8 @@
 					<button
 						onclick={scrollToBottom}
 						transition:fly={{ y: 10, duration: 200 }}
-						class="absolute bottom-4 left-1/2 flex size-8 -translate-x-1/2 items-center justify-center rounded-full border border-border/40 bg-card/90 text-foreground shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:bg-accent active:scale-95"
-						aria-label={m['components.notification.scroll_to_bottom']()}
+						class="absolute bottom-4 left-1/2 flex size-8 -translate-x-1/2 items-center justify-center rounded-full border border-border/40 bg-card/90 text-foreground shadow-lift backdrop-blur-sm transition-all hover:scale-110 hover:bg-accent active:scale-95"
+						aria-label={m['components.notification.scrollToBottom']()}
 					>
 						<ChevronDownIcon size={16} />
 					</button>

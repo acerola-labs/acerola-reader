@@ -64,20 +64,20 @@
 	});
 
 	const sortOptions = $derived<{ value: SortBy; labelKey: string }[]>([
-		{ value: 'title', labelKey: m['pages.home.filter_panel.sort_options.title']() },
+		{ value: 'title', labelKey: m['pages.home.filterPanel.sortOptions.title']() },
 		{
 			value: 'chapterCount',
-			labelKey: m['pages.home.filter_panel.sort_options.chapter_count']()
+			labelKey: m['pages.home.filterPanel.sortOptions.chapterCount']()
 		},
-		{ value: 'lastUpdated', labelKey: m['pages.home.filter_panel.sort_options.last_updated']() }
+		{ value: 'lastUpdated', labelKey: m['pages.home.filterPanel.sortOptions.lastUpdated']() }
 	]);
 
 	const metadataSources = $derived<{ value: MetadataSource; label: string }[]>([
-		{ value: 'all', label: m['pages.home.filter_panel.metadata_sources.all']() },
-		{ value: 'comicinfo', label: m['pages.home.filter_panel.metadata_sources.comicinfo']() },
-		{ value: 'mangadex', label: m['pages.home.filter_panel.metadata_sources.mangadex']() },
-		{ value: 'anilist', label: m['pages.home.filter_panel.metadata_sources.anilist']() },
-		{ value: 'no_metadata', label: m['pages.home.filter_panel.metadata_sources.no_metadata']() }
+		{ value: 'all', label: m['pages.home.filterPanel.metadataSources.all']() },
+		{ value: 'comicinfo', label: m['pages.home.filterPanel.metadataSources.comicinfo']() },
+		{ value: 'mangadex', label: m['pages.home.filterPanel.metadataSources.mangadex']() },
+		{ value: 'anilist', label: m['pages.home.filterPanel.metadataSources.anilist']() },
+		{ value: 'no_metadata', label: m['pages.home.filterPanel.metadataSources.noMetadata']() }
 	]);
 
 	function selectSort(value: SortBy) {
@@ -141,14 +141,14 @@
 	<div
 		role="dialog"
 		aria-modal="true"
-		aria-label={m['pages.home.filter_panel.aria_label']()}
-		class="fixed top-8 right-0 bottom-0 z-50 flex w-full max-w-full flex-col border-l border-border/60 bg-background/95 shadow-2xl backdrop-blur-xl sm:max-w-sm"
+		aria-label={m['pages.home.filterPanel.ariaLabel']()}
+		class="fixed top-8 right-0 bottom-0 z-50 flex w-full max-w-full flex-col border-l border-border/60 bg-background/95 shadow-float backdrop-blur-xl sm:max-w-sm"
 		transition:fly={{ x: 400, duration: 300, easing: cubicOut }}
 	>
 		<!-- Header -->
 		<div class="flex items-center justify-between border-b border-border/40 px-6 py-5">
 			<div class="flex items-center gap-3">
-				<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
+				<div class="flex h-8 w-8 items-center justify-center rounded-inner bg-primary/15 text-primary">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="16"
@@ -173,11 +173,11 @@
 				</div>
 				<div>
 					<h2 class="font-bold tracking-tight text-base text-foreground">
-						{m['pages.home.filter_panel.aria_label']()}
+						{m['pages.home.filterPanel.ariaLabel']()}
 					</h2>
 					{#if hasActiveFilters}
 						<span class="text-[10px] font-semibold tracking-wider text-primary uppercase"
-							>{m['pages.home.filter_panel.active_filters']()}</span
+							>{m['pages.home.filterPanel.activeFilters']()}</span
 						>
 					{/if}
 				</div>
@@ -188,8 +188,8 @@
 					variant: 'ghost',
 					tone: 'muted',
 					class: 'h-8 w-8',
-					title: m['pages.home.filter_panel.close_aria'](),
-					'aria-label': m['pages.home.filter_panel.close_aria']()
+					title: m['pages.home.filterPanel.closeAria'](),
+					'aria-label': m['pages.home.filterPanel.closeAria']()
 				}}
 			>
 				<X size={18} />
@@ -201,12 +201,12 @@
 			<!-- Sort Section -->
 			<section>
 				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
-					{m['pages.home.filter_panel.sort_section_title']()}
+					{m['pages.home.filterPanel.sortSectionTitle']()}
 				</p>
 				<div
 					class="space-y-1.5"
 					role="radiogroup"
-					aria-label={m['pages.home.filter_panel.sort_radiogroup_aria']()}
+					aria-label={m['pages.home.filterPanel.sortRadiogroupAria']()}
 				>
 					{#each sortOptions as option}
 						{@const isSelected = localSortBy === option.value}
@@ -214,7 +214,7 @@
 							type="button"
 							role="radio"
 							aria-checked={isSelected}
-							class="group flex w-full items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none {isSelected
+							class="group flex w-full items-center justify-between rounded-inner px-3.5 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none {isSelected
 								? 'bg-primary/15 text-foreground ring-1 ring-primary/30'
 								: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 							onclick={() => selectSort(option.value)}
@@ -223,7 +223,7 @@
 							{#if isSelected}
 								<div class="ml-2 flex shrink-0 items-center gap-1.5">
 									<div
-										class="flex items-center gap-1 rounded-md bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary"
+										class="flex items-center gap-1 rounded-inner bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary"
 									>
 										{#if localSortOrder === 'asc'}
 											<ArrowUp size={10} />
@@ -247,7 +247,7 @@
 			<!-- Filter Section -->
 			<section>
 				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
-					{m['pages.home.filter_panel.filter_section_title']()}
+					{m['pages.home.filterPanel.filterSectionTitle']()}
 				</p>
 
 				<!-- Show Hidden Toggle Row -->
@@ -255,21 +255,21 @@
 					type="button"
 					role="switch"
 					aria-checked={localShowHidden}
-					class="flex w-full cursor-pointer items-center justify-between rounded-xl px-3.5 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+					class="flex w-full cursor-pointer items-center justify-between rounded-inner px-3.5 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
 					onclick={() => (localShowHidden = !localShowHidden)}
 				>
 					<div class="flex items-center gap-3">
 						<div
-							class="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground"
+							class="flex h-8 w-8 items-center justify-center rounded-inner bg-muted/60 text-muted-foreground"
 						>
 							<Eye size={15} />
 						</div>
 						<div>
 							<p class="text-sm font-medium text-foreground">
-								{m['pages.home.filter_panel.show_hidden.title']()}
+								{m['pages.home.filterPanel.showHidden.title']()}
 							</p>
 							<p class="text-xs text-muted-foreground">
-								{m['pages.home.filter_panel.show_hidden.desc']()}
+								{m['pages.home.filterPanel.showHidden.desc']()}
 							</p>
 						</div>
 					</div>
@@ -282,20 +282,20 @@
 			<!-- Metadata Source Section -->
 			<section>
 				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
-					{m['pages.home.filter_panel.metadata_sources_title']()}
+					{m['pages.home.filterPanel.metadataSourcesTitle']()}
 				</p>
 				<div
 					class="flex flex-wrap gap-2"
 					role="group"
-					aria-label={m['pages.home.filter_panel.metadata_sources_aria']()}
+					aria-label={m['pages.home.filterPanel.metadataSourcesAria']()}
 				>
 					{#each metadataSources as source}
 						{@const isSelected = localMetadataSource === source.value}
 						<button
 							type="button"
 							aria-pressed={isSelected}
-							class="rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
-								? 'border-primary/50 bg-primary/20 text-primary shadow-sm shadow-primary/20'
+							class="rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
+								? ' bg-primary/20 text-primary'
 								: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
 							onclick={() => (localMetadataSource = source.value)}
 						>
@@ -308,35 +308,35 @@
 			<!-- Bookmark Filter Section -->
 			<section>
 				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
-					{m['pages.home.filter_panel.bookmark_filter_title']()}
+					{m['pages.home.filterPanel.bookmarkFilterTitle']()}
 				</p>
 				<div
 					class="flex flex-wrap gap-2"
 					role="group"
-					aria-label={m['pages.home.filter_panel.bookmark_filter_aria']()}
+					aria-label={m['pages.home.filterPanel.bookmarkFilterAria']()}
 				>
 					<button
 						type="button"
 						aria-pressed={localBookmarkFilter === 'all'}
-						class="rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
+						class="rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
 						'all'
-							? 'border-primary/50 bg-primary/20 text-primary shadow-sm shadow-primary/20'
+							? ' bg-primary/20 text-primary'
 							: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
 						onclick={() => (localBookmarkFilter = 'all')}
 					>
-						{m['pages.home.filter_panel.bookmark_filter.all']()}
+						{m['pages.home.filterPanel.bookmarkFilter.all']()}
 					</button>
 					<button
 						type="button"
 						aria-pressed={localBookmarkFilter === 'none'}
-						class="flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
+						class="flex items-center gap-1.5 rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
 						'none'
-							? 'border-primary/50 bg-primary/20 text-primary shadow-sm shadow-primary/20'
+							? ' bg-primary/20 text-primary'
 							: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
 						onclick={() => (localBookmarkFilter = 'none')}
 					>
 						<Bookmark size={12} class="opacity-70" />
-						{m['pages.home.filter_panel.bookmark_filter.none']()}
+						{m['pages.home.filterPanel.bookmarkFilter.none']()}
 					</button>
 					{#each data.bookmarks as category (category.id)}
 						{@const isSelected = localBookmarkFilter === category.id}
@@ -344,8 +344,8 @@
 						<button
 							type="button"
 							aria-pressed={isSelected}
-							class="flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
-								? 'border-primary/50 bg-primary/20 text-primary shadow-sm shadow-primary/20'
+							class="flex items-center gap-1.5 rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
+								? ' bg-primary/20 text-primary'
 								: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
 							onclick={() => (localBookmarkFilter = category.id)}
 						>
@@ -363,18 +363,18 @@
 			<div class="flex gap-3">
 				<button
 					type="button"
-					class="flex-1 rounded-xl border border-border/60 bg-muted/30 px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98] disabled:opacity-40"
+					class="flex-1 rounded-inner border border-border/60 bg-muted/30 px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98] disabled:opacity-40"
 					onclick={handleReset}
 					disabled={!hasChanges && !hasActiveFilters}
 				>
-					{m['pages.home.filter_panel.reset']()}
+					{m['pages.home.filterPanel.reset']()}
 				</button>
 				<button
 					type="button"
-					class="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-md shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98]"
+					class="flex-1 rounded-inner bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-lift transition-all hover:bg-primary/90 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98]"
 					onclick={handleApply}
 				>
-					{m['pages.home.filter_panel.apply']()}
+					{m['pages.home.filterPanel.apply']()}
 				</button>
 			</div>
 		</div>

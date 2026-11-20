@@ -31,14 +31,14 @@
 				success: m['pages.network.connect.success'](),
 				error: (err) =>
 					err instanceof InvalidConnectionCodeError
-						? m['pages.network.connect.invalid_code']()
+						? m['pages.network.connect.invalidCode']()
 						: m['pages.network.connect.error']()
 			});
 			pasteValue = '';
 		} catch (err) {
 			connectError =
 				err instanceof InvalidConnectionCodeError
-					? m['pages.network.connect.invalid_code']()
+					? m['pages.network.connect.invalidCode']()
 					: m['pages.network.connect.error']();
 		}
 	}
@@ -52,7 +52,7 @@
 		{m['pages.network.connect.title']()}
 	</div>
 
-	<div class="rounded-2xl border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
+	<div class="rounded-inner border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
 		<div class="flex flex-col gap-3 sm:flex-row">
 			<AcerolaInput
 				state={{ value: pasteValue }}

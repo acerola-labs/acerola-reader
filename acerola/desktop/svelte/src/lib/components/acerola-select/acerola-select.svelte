@@ -68,10 +68,10 @@
 			{#if selectedOption?.color != null}
 				{@const hex = (selectedOption.color & 0xffffff).toString(16).padStart(6, '0')}
 				<div
-					class="flex items-center gap-2 rounded-md border px-2 py-0.5 shadow-sm"
+					class="flex items-center gap-2 rounded-inner border px-2 py-0.5"
 					style="background-color: #{hex}15; border-color: #{hex}30; color: #{hex}"
 				>
-					<div class="h-2 w-2 rounded-full shadow-sm" style="background-color: #{hex}"></div>
+					<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>
 					<span class="text-xs font-bold tracking-widest uppercase">{selectedLabel}</span>
 				</div>
 			{:else}
@@ -87,7 +87,7 @@
 					{#if option.color != null}
 						{@const hex = (option.color & 0xffffff).toString(16).padStart(6, '0')}
 						<div
-							class="flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors"
+							class="flex items-center gap-2 rounded-inner px-2 py-0.5 transition-colors"
 							style="background-color: #{hex}15; color: #{hex}"
 						>
 							<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>

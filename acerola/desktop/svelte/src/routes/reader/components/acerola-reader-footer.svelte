@@ -40,7 +40,7 @@
 			class="text-overlay flex items-center justify-between gap-3 text-[10px] font-black tracking-widest uppercase"
 		>
 			<span class="shrink-0"
-				>{m['pages.reader.progress.read_percent']({ percent: data.pageProgressPercent })}</span
+				>{m['pages.reader.progress.readPercent']({ percent: data.pageProgressPercent })}</span
 			>
 			<span class="hidden min-w-0 truncate md:inline"
 				>{data.modeLabel} - {data.zoomStatusLabel}</span
@@ -66,7 +66,7 @@
 			<div class="flex items-center gap-2">
 				{#if data.hasPreviousChapter && events.onPreviousChapter}
 					<button
-						class="flex items-center gap-2 rounded-lg bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
+						class="flex items-center gap-2 rounded-inner bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
 						onclick={events.onPreviousChapter}
 					>
 						<ChevronLeft size={16} />
@@ -83,7 +83,7 @@
 
 			{#if data.hasNextChapter && events.onNextChapter}
 				<button
-					class="flex items-center gap-2 rounded-lg bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
+					class="flex items-center gap-2 rounded-inner bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
 					onclick={events.onNextChapter}
 				>
 					<span class="hidden md:inline">{m['pages.reader.actions.chapter.next']()}</span>

@@ -38,14 +38,14 @@ img {
 	backface-visibility: hidden;
 }
 
-/* O svelte-sonner aplica alinhamento do ícone via estilo inline (JS), que vence regras CSS
-   comuns por especificidade. `!important` é necessário pra sobrepor o inline e centralizar
-   o ícone com o texto (título + descrição) em vez de alinhar pelo topo. */
+/* svelte-sonner sets the icon alignment as an inline style (JS), which beats any selector.
+   Only `!important` overrides inline styles, to center the icon with the text (title +
+   description) instead of aligning it to the top. */
 [data-sonner-toast] {
-	align-items: center !important;
+	align-items: center !important; /* design-allow: overrides svelte-sonner's inline style */
 }
 
 [data-sonner-toast] [data-icon] {
-	align-self: center !important;
-	margin-top: 0 !important;
+	align-self: center !important; /* design-allow: overrides svelte-sonner's inline style */
+	margin-top: 0 !important; /* design-allow: overrides svelte-sonner's inline style */
 }

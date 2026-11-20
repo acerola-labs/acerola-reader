@@ -115,20 +115,20 @@
 	// demais fontes, e nenhuma fonte ativa cai em mDNS-only — não são combináveis entre si.
 	const summary = $derived.by(() => {
 		if (safeData.useIrohPublicNetwork) {
-			return m['pages.network.relay_settings.summary_iroh_public']();
+			return m['pages.network.relaySettings.summaryIrohPublic']();
 		}
 		if (activeSourceCount === 0) {
-			return m['pages.network.relay_settings.summary_mdns_only']();
+			return m['pages.network.relaySettings.summaryMdnsOnly']();
 		}
-		return m['pages.network.relay_settings.summary_active']({ count: activeSourceCount });
+		return m['pages.network.relaySettings.summaryActive']({ count: activeSourceCount });
 	});
 
 	// Subtítulo do card de relays próprios — dobra o texto de contagem no lugar de um parágrafo
 	// à parte, junto da lista em si (que só aparece expandida).
 	const customRelaysSubtitle = $derived(
 		safeData.customRelayUrls.length === 0
-			? m['pages.network.relay_settings.custom_relays.empty']()
-			: m['pages.network.relay_settings.custom_relays.count']({
+			? m['pages.network.relaySettings.customRelays.empty']()
+			: m['pages.network.relaySettings.customRelays.count']({
 					count: safeData.customRelayUrls.length
 				})
 	);
@@ -138,8 +138,8 @@
 	// parte, já que ele só faz sentido exatamente quando não há ticket.
 	const irohSubtitle = $derived(
 		safeData.hasIrohServicesTicket
-			? m['pages.network.relay_settings.use_iroh_public_network_desc']()
-			: m['pages.network.relay_settings.use_iroh_public_network_disabled_hint']()
+			? m['pages.network.relaySettings.useIrohPublicNetworkDesc']()
+			: m['pages.network.relaySettings.useIrohPublicNetworkDisabledHint']()
 	);
 
 	function isValidUrl(value: string): boolean {
@@ -207,7 +207,7 @@
 </script>
 
 <AcerolaAccordionCard
-	data={{ title: m['pages.network.relay_settings.title'](), description: summary }}
+	data={{ title: m['pages.network.relaySettings.title'](), description: summary }}
 	state={{ expanded }}
 	events={{ onToggle: () => (expanded = !expanded) }}
 	ui={{ iconClass: 'bg-accent-hero text-accent-hero-foreground' }}
@@ -220,8 +220,8 @@
 		<!-- Card 1: relay do Acerola — toggle puro, clicar na linha inteira liga/desliga. -->
 		<AcerolaToggleCard
 			data={{
-				title: m['pages.network.relay_settings.use_acerola_relay'](),
-				subtitle: m['pages.network.relay_settings.use_acerola_relay_desc']({
+				title: m['pages.network.relaySettings.useAcerolaRelay'](),
+				subtitle: m['pages.network.relaySettings.useAcerolaRelayDesc']({
 					url: safeData.acerolaRelayUrl
 				})
 			}}
@@ -243,7 +243,7 @@
 		     pra sempre dar pra conferir o que já está configurado. -->
 		<AcerolaToggleCard
 			data={{
-				title: m['pages.network.relay_settings.custom_relays.title'](),
+				title: m['pages.network.relaySettings.customRelays.title'](),
 				subtitle: customRelaysSubtitle
 			}}
 			state={{ active: safeData.customRelayUrls.length > 0, expanded: customExpanded }}
@@ -261,7 +261,7 @@
 				<div class="space-y-2" use:autoAnimateList>
 					{#each safeData.customRelayUrls as url (url)}
 						<div
-							class="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/50 p-3"
+							class="flex items-center justify-between gap-3 rounded-inner border border-border bg-background/50 p-3"
 						>
 							<span class="min-w-0 flex-1 truncate text-sm text-foreground">{url}</span>
 							<AcerolaButtonIcon
@@ -271,8 +271,8 @@
 									tone: 'destructive',
 									class: 'size-8',
 									disabled: safeData.useIrohPublicNetwork || restarting,
-									title: m['pages.network.relay_settings.custom_relays.remove'](),
-									'aria-label': m['pages.network.relay_settings.custom_relays.remove']()
+									title: m['pages.network.relaySettings.customRelays.remove'](),
+									'aria-label': m['pages.network.relaySettings.customRelays.remove']()
 								}}
 							>
 								<Trash2Icon size={14} />
@@ -291,7 +291,7 @@
 							}
 						}}
 						ui={{
-							placeholder: m['pages.network.relay_settings.custom_relays.add_placeholder'](),
+							placeholder: m['pages.network.relaySettings.customRelays.addPlaceholder'](),
 							class: 'flex-1',
 							disabled: safeData.useIrohPublicNetwork || restarting
 						}}
@@ -304,12 +304,12 @@
 						}}
 					>
 						<PlusIcon size={14} />
-						{m['pages.network.relay_settings.custom_relays.add_button']()}
+						{m['pages.network.relaySettings.customRelays.addButton']()}
 					</AcerolaButton>
 				</div>
 				{#if customUrlError}
 					<p class="text-xs text-destructive">
-						{m['pages.network.relay_settings.invalid_url']()}
+						{m['pages.network.relaySettings.invalidUrl']()}
 					</p>
 				{/if}
 			{/snippet}
@@ -320,10 +320,10 @@
 		     do card, pra não confundir "ativar a fonte" com "trocar a credencial". -->
 		<div
 			class={cn(
-				'overflow-hidden rounded-2xl border-2 transition-all duration-200',
+				'overflow-hidden rounded-inner border-2 transition-all duration-200',
 				safeData.useIrohPublicNetwork
-					? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
-					: 'border-border/60 bg-card hover:border-muted-foreground/50'
+					? ' bg-primary/5'
+					: 'border-border/60 bg-card'
 			)}
 		>
 			<button
@@ -333,13 +333,13 @@
 				class="flex w-full items-center gap-3 p-4 text-left enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				<div
-					class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-chart-4 text-primary-foreground"
+					class="flex size-10 shrink-0 items-center justify-center rounded-inner bg-chart-4 text-primary-foreground"
 				>
 					<GlobeIcon size={18} />
 				</div>
 				<div class="min-w-0 flex-1">
 					<p class="text-sm font-semibold text-foreground">
-						{m['pages.network.relay_settings.use_iroh_public_network']()}
+						{m['pages.network.relaySettings.useIrohPublicNetwork']()}
 					</p>
 					<p class="truncate text-xs text-muted-foreground">{irohSubtitle}</p>
 				</div>
@@ -361,8 +361,8 @@
 				>
 					<KeyRoundIcon size={12} />
 					{safeData.hasIrohServicesTicket
-						? m['pages.network.relay_settings.iroh_services_ticket.configured']()
-						: m['pages.network.relay_settings.iroh_services_ticket.not_configured']()}
+						? m['pages.network.relaySettings.irohServicesTicket.configured']()
+						: m['pages.network.relaySettings.irohServicesTicket.notConfigured']()}
 				</button>
 
 				{#if ticketExpanded}
@@ -380,7 +380,7 @@
 							}}
 							ui={{
 								type: 'password',
-								placeholder: m['pages.network.relay_settings.iroh_services_ticket.placeholder'](),
+								placeholder: m['pages.network.relaySettings.irohServicesTicket.placeholder'](),
 								class: 'w-full',
 								disabled: ticketSaving
 							}}
@@ -388,7 +388,7 @@
 
 						{#if ticketError}
 							<p class="text-xs text-destructive">
-								{m['pages.network.relay_settings.iroh_services_ticket.invalid']()}
+								{m['pages.network.relaySettings.irohServicesTicket.invalid']()}
 							</p>
 						{/if}
 
@@ -401,9 +401,9 @@
 										tone: 'destructive',
 										class: 'size-8',
 										disabled: ticketSaving,
-										title: m['pages.network.relay_settings.iroh_services_ticket.remove_button'](),
+										title: m['pages.network.relaySettings.irohServicesTicket.removeButton'](),
 										'aria-label':
-											m['pages.network.relay_settings.iroh_services_ticket.remove_button']()
+											m['pages.network.relaySettings.irohServicesTicket.removeButton']()
 									}}
 								>
 									<Trash2Icon size={14} />
@@ -414,13 +414,13 @@
 								ui={{ size: 'sm', disabled: !ticketDraft.trim() || ticketSaving }}
 							>
 								{safeData.hasIrohServicesTicket
-									? m['pages.network.relay_settings.iroh_services_ticket.replace_button']()
-									: m['pages.network.relay_settings.iroh_services_ticket.save_button']()}
+									? m['pages.network.relaySettings.irohServicesTicket.replaceButton']()
+									: m['pages.network.relaySettings.irohServicesTicket.saveButton']()}
 							</AcerolaButton>
 						</div>
 
 						<p class="text-xs text-muted-foreground italic">
-							{m['pages.network.relay_settings.iroh_services_ticket.help']()}
+							{m['pages.network.relaySettings.irohServicesTicket.help']()}
 						</p>
 					</div>
 				{/if}
@@ -429,15 +429,15 @@
 	</div>
 
 	<div
-		class="flex items-center justify-between gap-4 rounded-xl border border-border bg-background/50 p-3"
+		class="flex items-center justify-between gap-4 rounded-inner border border-border bg-background/50 p-3"
 	>
 		<div class="min-w-0">
 			<p class="text-sm font-semibold text-foreground">
-				{m['pages.network.relay_settings.restart.button']()}
+				{m['pages.network.relaySettings.restart.button']()}
 			</p>
 			{#if restartError}
 				<p class="mt-1 text-xs text-destructive">
-					{m['pages.network.relay_settings.restart.error']()}
+					{m['pages.network.relaySettings.restart.error']()}
 				</p>
 			{/if}
 		</div>
@@ -447,13 +447,13 @@
 				size: 'sm',
 				variant: 'outline',
 				disabled: restarting,
-				title: m['pages.network.relay_settings.restart.description']()
+				title: m['pages.network.relaySettings.restart.description']()
 			}}
 		>
 			<RefreshCwIcon size={14} class={cn(restarting && 'animate-spin')} />
 			{restarting
-				? m['pages.network.relay_settings.restart.restarting']()
-				: m['pages.network.relay_settings.restart.button']()}
+				? m['pages.network.relaySettings.restart.restarting']()
+				: m['pages.network.relaySettings.restart.button']()}
 		</AcerolaButton>
 	</div>
 </AcerolaAccordionCard>
@@ -461,10 +461,10 @@
 <AcerolaAlertDialog
 	state={{ open: pendingSwitch !== null }}
 	data={{
-		title: m['pages.network.relay_settings.switch_confirm.title'](),
-		description: m['pages.network.relay_settings.switch_confirm.desc'](),
-		cancelText: m['pages.network.relay_settings.switch_confirm.cancel'](),
-		actionText: m['pages.network.relay_settings.switch_confirm.action']()
+		title: m['pages.network.relaySettings.switchConfirm.title'](),
+		description: m['pages.network.relaySettings.switchConfirm.desc'](),
+		cancelText: m['pages.network.relaySettings.switchConfirm.cancel'](),
+		actionText: m['pages.network.relaySettings.switchConfirm.action']()
 	}}
 	events={{
 		onAction: () => {

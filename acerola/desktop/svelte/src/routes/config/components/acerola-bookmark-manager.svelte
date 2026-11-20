@@ -34,7 +34,7 @@
 
 <div class="space-y-4">
 	<div class="grid gap-4">
-		<div class="rounded-2xl border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
+		<div class="rounded-inner border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
 			<p class="mb-4 text-sm text-muted-foreground">{m['pages.config.bookmarks.desc']()}</p>
 
 			<div class="mb-6">
@@ -86,12 +86,12 @@
 										class="relative h-8 w-8 cursor-pointer rounded-full transition-transform hover:scale-110"
 										style="background-color: {hexLabel}"
 										onclick={() => (newBookmarkColor = hexColor)}
-										aria-label={m['pages.config.bookmarks.color_option']({ hex: hexLabel })}
+										aria-label={m['pages.config.bookmarks.colorOption']({ hex: hexLabel })}
 										aria-pressed={newBookmarkColor === hexColor}
 									>
 										{#if newBookmarkColor === hexColor}
 											<div
-												class="absolute inset-0 rounded-full border-2 border-primary ring-2 ring-background"
+												class="absolute inset-0 rounded-full border-2 ring-2 ring-background"
 											></div>
 										{/if}
 									</button>
@@ -105,18 +105,18 @@
 			<div class="space-y-2" use:autoAnimateList>
 				{#if bookmarkStore.bookmarks.length === 0}
 					<div
-						class="rounded-xl border border-dashed border-border/40 p-8 text-center text-sm text-muted-foreground"
+						class="rounded-inner border border-dashed border-border/40 p-8 text-center text-sm text-muted-foreground"
 					>
 						{m['pages.config.bookmarks.empty']()}
 					</div>
 				{:else}
 					{#each bookmarkStore.bookmarks as bookmark (bookmark.id)}
 						<div
-							class="flex items-center justify-between rounded-xl border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
+							class="flex items-center justify-between rounded-inner border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
 						>
 							<div class="flex items-center gap-3">
 								<div
-									class="h-6 w-6 rounded-full shadow-inner"
+									class="h-6 w-6 rounded-full"
 									style="background-color: #{(bookmark.color & 0xffffff)
 										.toString(16)
 										.padStart(6, '0')}"

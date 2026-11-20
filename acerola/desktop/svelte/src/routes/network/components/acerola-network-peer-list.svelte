@@ -87,25 +87,25 @@
 	<div class="grid gap-4" use:autoAnimateList>
 		{#if peers.length === 0}
 			<div
-				class="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-dashed border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background/50 p-6 backdrop-blur-xs"
+				class="relative flex flex-col justify-between overflow-hidden rounded-inner border border-dashed border-border/70 bg-gradient-to-b from-card/60 via-card/30 to-background/50 p-6 backdrop-blur-xs"
 			>
 				<!-- Scanner Radar Header -->
 				<div class="flex items-start gap-4">
 					<div
-						class="relative flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-xs"
+						class="relative flex size-12 shrink-0 items-center justify-center rounded-inner border bg-primary/10 text-primary"
 					>
 						<span
-							class="pointer-events-none absolute inline-flex size-full animate-ping rounded-2xl bg-primary/20 opacity-60"
+							class="pointer-events-none absolute inline-flex size-full animate-ping rounded-inner bg-primary/20 opacity-60"
 						></span>
 						<RadioIcon size={22} class="relative" />
 					</div>
 					<div class="space-y-1 min-w-0 flex-1">
 						<div class="flex items-center gap-2">
 							<h3 class="text-sm font-bold tracking-tight text-foreground">
-								{m['pages.network.peers.empty_title']()}
+								{m['pages.network.peers.emptyTitle']()}
 							</h3>
 							<span
-								class="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary"
+								class="inline-flex items-center gap-1.5 rounded-full border bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary"
 							>
 								<span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
 								mDNS
@@ -120,37 +120,37 @@
 				<!-- Skeleton Preview Placeholder Cards -->
 				<div class="mt-5 space-y-3">
 					<div
-						class="flex items-center justify-between rounded-xl border border-border/40 bg-card/40 p-3.5 shadow-2xs backdrop-blur-xs"
+						class="flex items-center justify-between rounded-inner border border-border/40 bg-card/40 p-3.5 shadow-2xs backdrop-blur-xs"
 					>
 						<div class="flex items-center gap-3">
 							<div
-								class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground animate-pulse"
+								class="flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted/60 text-muted-foreground animate-pulse"
 							>
 								<MonitorIcon size={18} class="opacity-40" />
 							</div>
 							<div class="space-y-1.5">
-								<div class="h-3.5 w-32 rounded-md bg-muted/70 animate-pulse"></div>
-								<div class="h-2.5 w-24 rounded-md bg-muted/40 animate-pulse"></div>
+								<div class="h-3.5 w-32 rounded-inner bg-muted/70 animate-pulse"></div>
+								<div class="h-2.5 w-24 rounded-inner bg-muted/40 animate-pulse"></div>
 							</div>
 						</div>
-						<div class="h-7 w-20 rounded-lg bg-muted/40 animate-pulse"></div>
+						<div class="h-7 w-20 rounded-inner bg-muted/40 animate-pulse"></div>
 					</div>
 
 					<div
-						class="flex items-center justify-between rounded-xl border border-border/30 bg-card/20 p-3.5 opacity-60 shadow-2xs backdrop-blur-xs"
+						class="flex items-center justify-between rounded-inner border border-border/30 bg-card/20 p-3.5 opacity-60 shadow-2xs backdrop-blur-xs"
 					>
 						<div class="flex items-center gap-3">
 							<div
-								class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted/40 text-muted-foreground animate-pulse"
+								class="flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted/40 text-muted-foreground animate-pulse"
 							>
 								<MonitorIcon size={18} class="opacity-30" />
 							</div>
 							<div class="space-y-1.5">
-								<div class="h-3.5 w-24 rounded-md bg-muted/50 animate-pulse"></div>
-								<div class="h-2.5 w-36 rounded-md bg-muted/30 animate-pulse"></div>
+								<div class="h-3.5 w-24 rounded-inner bg-muted/50 animate-pulse"></div>
+								<div class="h-2.5 w-36 rounded-inner bg-muted/30 animate-pulse"></div>
 							</div>
 						</div>
-						<div class="h-7 w-20 rounded-lg bg-muted/30 animate-pulse"></div>
+						<div class="h-7 w-20 rounded-inner bg-muted/30 animate-pulse"></div>
 					</div>
 				</div>
 			</div>
@@ -162,7 +162,7 @@
 				{@const anySyncing = historySyncing || filesSyncing}
 
 				{#if editingPeerId === peer.peerId}
-					<div class="flex items-center gap-3 rounded-3xl border border-border bg-card p-6">
+					<div class="flex items-center gap-3 rounded-tile border border-border bg-card p-6">
 						<div class="flex-1 space-y-1.5">
 							<AcerolaInput
 								state={{ value: nicknameDraft }}
@@ -219,15 +219,15 @@
 									ui={{
 										align: 'end',
 										contentClass:
-											'w-56 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-1.5 shadow-2xl backdrop-blur-md'
+											'w-56 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
 									}}
 								>
 									{#snippet trigger()}
 										<span
-											class="flex size-8 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+											class="flex size-8 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
 										>
 											<MoreVerticalIcon size={16} />
-											<span class="sr-only">{m['pages.network.peers.more_actions']()}</span>
+											<span class="sr-only">{m['pages.network.peers.moreActions']()}</span>
 										</span>
 									{/snippet}
 
@@ -244,7 +244,7 @@
 													variant: 'ghost',
 													disabled: !addrs || historySyncing,
 													class:
-														'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												{#if historySyncing}
@@ -252,7 +252,7 @@
 												{:else}
 													<HistoryIcon size={16} class="shrink-0" />
 												{/if}
-												{m['pages.network.peers.sync_history']()}
+												{m['pages.network.peers.syncHistory']()}
 											</AcerolaButton>
 
 											<AcerolaButton
@@ -266,7 +266,7 @@
 													variant: 'ghost',
 													disabled: !addrs || filesSyncing,
 													class:
-														'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												{#if filesSyncing}
@@ -274,7 +274,7 @@
 												{:else}
 													<FolderSyncIcon size={16} class="shrink-0" />
 												{/if}
-												{m['pages.network.peers.sync_files']()}
+												{m['pages.network.peers.syncFiles']()}
 											</AcerolaButton>
 
 											<AcerolaButton
@@ -288,11 +288,11 @@
 													variant: 'ghost',
 													disabled: !addrs,
 													class:
-														'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												<BookOpenIcon size={16} class="shrink-0" />
-												{m['pages.network.peers.browse_library']()}
+												{m['pages.network.peers.browseLibrary']()}
 											</AcerolaButton>
 
 											<AcerolaButton
@@ -305,7 +305,7 @@
 												ui={{
 													variant: 'ghost',
 													class:
-														'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 												}}
 											>
 												<PencilIcon size={16} class="shrink-0" />
@@ -324,7 +324,7 @@
 												ui={{
 													variant: 'ghost',
 													class:
-														'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive'
+														'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive'
 												}}
 											>
 												<UserMinusIcon size={16} class="shrink-0" />
@@ -339,7 +339,7 @@
 									ui={{ size: 'sm', class: 'gap-2', disabled: !addrs || anySyncing }}
 								>
 									<RefreshCwIcon size={14} class={anySyncing ? 'animate-spin' : ''} />
-									{m['pages.network.peers.sync_all']()}
+									{m['pages.network.peers.syncAll']()}
 								</AcerolaButton>
 							</div>
 						{/snippet}
@@ -347,7 +347,7 @@
 
 					{#if !addrs}
 						<p class="-mt-2 px-2 text-xs text-muted-foreground">
-							{m['pages.network.peers.offline_hint']()}
+							{m['pages.network.peers.offlineHint']()}
 						</p>
 					{/if}
 				{/if}

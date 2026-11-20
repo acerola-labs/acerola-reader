@@ -107,8 +107,8 @@
 	// paleta chart-N), reforçando a identidade visual de cada card no hover. Sincronização não
 	// entra aqui: fica sempre aberta, sem clique nenhum pra destacar no hover.
 	const CATEGORY_HOVER_BORDER: Record<string, string> = {
-		reading: 'hover:border-chart-2/60',
-		advanced: 'hover:border-chart-3/60'
+		reading: '',
+		advanced: ''
 	};
 </script>
 
@@ -132,8 +132,8 @@
 			{#if data?.hasVolumeStructure}
 				<AcerolaHeroButton
 					data={{
-						title: m['pages.comic.preferences.volume_highlight.title'](),
-						description: m['pages.comic.preferences.volume_highlight.desc']()
+						title: m['pages.comic.preferences.volumeHighlight.title'](),
+						description: m['pages.comic.preferences.volumeHighlight.desc']()
 					}}
 					ui={{ iconClass: 'bg-chart-2 text-primary-foreground' }}
 				>
@@ -155,14 +155,14 @@
 						>
 							{#snippet children()}
 								<ToggleGroupItem value="cover" class="px-4 py-1.5 text-[10px] font-black uppercase">
-									{m['pages.comic.preferences.volume_highlight.cover']()}
+									{m['pages.comic.preferences.volumeHighlight.cover']()}
 								</ToggleGroupItem>
 
 								<ToggleGroupItem
 									value="banner"
 									class="px-4 py-1.5 text-[10px] font-black uppercase"
 								>
-									{m['pages.comic.preferences.volume_highlight.banner']()}
+									{m['pages.comic.preferences.volumeHighlight.banner']()}
 								</ToggleGroupItem>
 							{/snippet}
 						</AcerolaToggleGroup>
@@ -233,8 +233,8 @@
 					     "Rede pública Iroh" da tela de Rede. -->
 					<AcerolaToggleCard
 						data={{
-							title: m['pages.comic.preferences.external_sync.title'](),
-							subtitle: m['pages.comic.preferences.external_sync.desc']()
+							title: m['pages.comic.preferences.externalSync.title'](),
+							subtitle: m['pages.comic.preferences.externalSync.desc']()
 						}}
 						state={{
 							active: preferences.externalSyncEnabled,
@@ -261,7 +261,7 @@
 							>
 								{#snippet icon()}
 									<span style="all: unset; display: inline-flex;">
-										<MangaDexIcon class="h-6 w-6 rounded-lg" />
+										<MangaDexIcon class="h-6 w-6 rounded-inner" />
 									</span>
 								{/snippet}
 
@@ -289,7 +289,7 @@
 							>
 								{#snippet icon()}
 									<span style="all: unset; display: inline-flex;">
-										<AniListIcon class="h-6 w-6 rounded-lg" />
+										<AniListIcon class="h-6 w-6 rounded-inner" />
 									</span>
 								{/snippet}
 
@@ -310,8 +310,8 @@
 
 					<AcerolaHeroButton
 						data={{
-							title: m['pages.comic.toast.comic_info.title'](),
-							description: m['pages.comic.toast.comic_info.desc']()
+							title: m['pages.comic.toast.comicInfo.title'](),
+							description: m['pages.comic.toast.comicInfo.desc']()
 						}}
 						events={{
 							onClick: preferences.metadataSyncing ? undefined : events.onSyncComicInfo
@@ -344,14 +344,14 @@
 					class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
 				>
 					<FolderSync size={16} />
-					{m['pages.comic.preferences.file_sync.title']()}
+					{m['pages.comic.preferences.fileSync.title']()}
 				</div>
 
 				<div class="grid gap-4">
 					<AcerolaHeroButton
 						data={{
-							title: m['pages.comic.preferences.file_sync.rescan.title'](),
-							description: m['pages.comic.preferences.file_sync.rescan.desc']()
+							title: m['pages.comic.preferences.fileSync.rescan.title'](),
+							description: m['pages.comic.preferences.fileSync.rescan.desc']()
 						}}
 						events={{ onClick: preferences.rescanning ? undefined : events.onRescanComic }}
 						ui={{ iconClass: 'bg-chart-1 text-primary-foreground' }}
@@ -376,19 +376,19 @@
 					class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
 				>
 					<Share2 size={16} />
-					{m['pages.comic.preferences.p2p_sync.title']()}
+					{m['pages.comic.preferences.p2pSync.title']()}
 				</div>
 
 				<div class="grid gap-4">
 					{#if !data?.pairedPeers || data.pairedPeers.length === 0}
 						<p class="px-2 text-xs text-muted-foreground">
-							{m['pages.comic.preferences.p2p_sync.empty']()}
+							{m['pages.comic.preferences.p2pSync.empty']()}
 						</p>
 					{:else}
 						<AcerolaHeroButton
 							data={{
-								title: m['pages.comic.preferences.p2p_sync.send.title'](),
-								description: m['pages.comic.preferences.p2p_sync.send.desc']()
+								title: m['pages.comic.preferences.p2pSync.send.title'](),
+								description: m['pages.comic.preferences.p2pSync.send.desc']()
 							}}
 							ui={{ iconClass: 'bg-chart-1 text-primary-foreground' }}
 						>
@@ -403,7 +403,7 @@
 									ui={{
 										align: 'end',
 										contentClass:
-											'w-80 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-2 shadow-2xl backdrop-blur-md'
+											'w-80 overflow-hidden rounded-inner border-border/40 bg-card/95 p-2 shadow-float backdrop-blur-md'
 									}}
 								>
 									{#snippet trigger()}
@@ -411,7 +411,7 @@
 											class={buttonVariants({ variant: 'outline', size: 'sm', class: 'gap-2' })}
 										>
 											<Share2 size={14} />
-											{m['pages.comic.preferences.p2p_sync.send.button']()}
+											{m['pages.comic.preferences.p2pSync.send.button']()}
 										</span>
 									{/snippet}
 
@@ -420,10 +420,10 @@
 											{#each data.pairedPeers as peer (peer.peerId)}
 												{@const syncing = (preferences.syncingPeerIds ?? []).includes(peer.peerId)}
 												<div
-													class="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted/30 p-3"
+													class="flex items-center gap-3 rounded-inner border border-border/50 bg-muted/30 p-3"
 												>
 													<div
-														class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground"
+														class="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground"
 													>
 														<MonitorSmartphone size={20} />
 													</div>
@@ -443,8 +443,8 @@
 																ui={{
 																	variant: 'ghost',
 																	class:
-																		'size-9 rounded-xl bg-chart-1 text-primary-foreground transition-colors hover:bg-chart-1/85',
-																	title: m['pages.comic.preferences.p2p_sync.send.push']()
+																		'size-9 rounded-inner bg-chart-1 text-primary-foreground transition-colors hover:bg-chart-1/85',
+																	title: m['pages.comic.preferences.p2pSync.send.push']()
 																}}
 																events={{
 																	onClick: () => {
@@ -459,8 +459,8 @@
 																ui={{
 																	variant: 'ghost',
 																	class:
-																		'size-9 rounded-xl bg-chart-3 text-primary-foreground transition-colors hover:bg-chart-3/85',
-																	title: m['pages.comic.preferences.p2p_sync.send.pull']()
+																		'size-9 rounded-inner bg-chart-3 text-primary-foreground transition-colors hover:bg-chart-3/85',
+																	title: m['pages.comic.preferences.p2pSync.send.pull']()
 																}}
 																events={{
 																	onClick: () => {
@@ -540,8 +540,8 @@
 					{#if data?.hasVolumeStructure}
 						<AcerolaHeroButton
 							data={{
-								title: m['pages.comic.preferences.cover.regenerate_volumes.title'](),
-								description: m['pages.comic.preferences.cover.regenerate_volumes.desc']()
+								title: m['pages.comic.preferences.cover.regenerateVolumes.title'](),
+								description: m['pages.comic.preferences.cover.regenerateVolumes.desc']()
 							}}
 							events={{
 								onClick: preferences.regeneratingVolumeCovers
@@ -575,14 +575,14 @@
 					class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
 				>
 					<Eraser size={16} />
-					{m['pages.comic.preferences.danger_zone.title']()}
+					{m['pages.comic.preferences.dangerZone.title']()}
 				</div>
 
 				<div class="grid gap-4">
 					<AcerolaHeroButton
 						data={{
-							title: m['pages.comic.preferences.danger_zone.clear_metadata.title'](),
-							description: m['pages.comic.preferences.danger_zone.clear_metadata.desc']()
+							title: m['pages.comic.preferences.dangerZone.clearMetadata.title'](),
+							description: m['pages.comic.preferences.dangerZone.clearMetadata.desc']()
 						}}
 						events={{ onClick: () => (showClearMetadataDialog = true) }}
 						ui={{ iconClass: 'bg-destructive text-destructive-foreground' }}
@@ -600,10 +600,10 @@
 <AcerolaAlertDialog
 	state={{ open: showClearMetadataDialog }}
 	data={{
-		title: m['pages.comic.preferences.danger_zone.clear_metadata.confirm.title'](),
-		description: m['pages.comic.preferences.danger_zone.clear_metadata.confirm.desc'](),
-		cancelText: m['pages.comic.preferences.danger_zone.clear_metadata.confirm.cancel'](),
-		actionText: m['pages.comic.preferences.danger_zone.clear_metadata.confirm.action']()
+		title: m['pages.comic.preferences.dangerZone.clearMetadata.confirm.title'](),
+		description: m['pages.comic.preferences.dangerZone.clearMetadata.confirm.desc'](),
+		cancelText: m['pages.comic.preferences.dangerZone.clearMetadata.confirm.cancel'](),
+		actionText: m['pages.comic.preferences.dangerZone.clearMetadata.confirm.action']()
 	}}
 	events={{
 		onAction: async () => {

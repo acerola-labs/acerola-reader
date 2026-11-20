@@ -108,7 +108,7 @@
 		} catch (err: unknown) {
 			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
 			error(`Failed to clear comics metadata: ${msg}`);
-			toast.error(m['pages.home.toast.error.clear_metadata']());
+			toast.error(m['pages.home.toast.error.clearMetadata']());
 		} finally {
 			isProcessing = false;
 			activeAction = null;
@@ -161,19 +161,19 @@
 	}}
 	ui={{
 		contentClass:
-			'w-full max-w-[calc(100vw-2rem)] sm:max-w-md border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl p-6 rounded-3xl overflow-hidden'
+			'w-full max-w-[calc(100vw-2rem)] sm:max-w-md border-border/60 bg-background/95 backdrop-blur-xl shadow-float p-6 rounded-tile overflow-hidden'
 	}}
 >
 	<div class="flex w-full min-w-0 flex-col gap-4 py-1">
 		<!-- Selection Hero Header & Select All Option -->
 		{#if events.onSelectAll && totalCount > 0}
 			<div
-				class="relative overflow-hidden rounded-2xl border border-primary/20 bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-3.5 transition-all duration-300 hover:border-primary/40"
+				class="relative overflow-hidden rounded-inner border bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-3.5 transition-all duration-300"
 			>
 				<div class="flex min-w-0 items-center justify-between gap-3">
 					<div class="flex min-w-0 flex-1 items-center gap-3">
 						<div
-							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary shadow-sm"
+							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner bg-primary/15 text-primary"
 						>
 							<Layers size={20} class="transition-transform duration-300 group-hover:scale-110" />
 						</div>
@@ -193,7 +193,7 @@
 						ui={{
 							variant: isAllSelected ? 'default' : 'outline',
 							class:
-								'h-9 px-3.5 rounded-xl font-medium text-xs transition-all duration-200 shadow-sm active:scale-95 shrink-0',
+								'h-9 px-3.5 rounded-inner font-medium text-xs transition-all duration-200 active:scale-95 shrink-0',
 							disabled: isProcessing
 						}}
 						events={{ onClick: events.onSelectAll }}
@@ -206,7 +206,7 @@
 						<span class="truncate">
 							{isAllSelected
 								? m['pages.home.selection.all.deselect']()
-								: m['pages.home.selection.all.select_total']({ total: totalCount })}
+								: m['pages.home.selection.all.selectTotal']({ total: totalCount })}
 						</span>
 					</AcerolaButton>
 				</div>
@@ -215,20 +215,20 @@
 
 		<!-- Bookmark Accordion Section -->
 		<div
-			class="group relative overflow-hidden rounded-2xl border border-border/80 bg-muted/40 transition-all duration-300 hover:border-border hover:bg-muted/60"
+			class="group relative overflow-hidden rounded-inner border border-border/80 bg-muted/40 transition-all duration-300 hover:border-border hover:bg-muted/60"
 		>
 			<AcerolaButton
 				ui={{
 					variant: 'ghost',
 					class:
-						'w-full justify-between h-auto py-3.5 px-4 rounded-2xl text-left hover:bg-transparent min-w-0',
+						'w-full justify-between h-auto py-3.5 px-4 rounded-inner text-left hover:bg-transparent min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: () => (showBookmarkMenu = !showBookmarkMenu) }}
 			>
 				<div class="flex min-w-0 flex-1 items-center gap-3 pr-2">
 					<div
-						class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground transition-[filter] group-hover:brightness-110"
+						class="flex h-9 w-9 shrink-0 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] group-hover:brightness-110"
 					>
 						<Bookmark size={18} />
 					</div>
@@ -281,9 +281,9 @@
 								/>
 								<input
 									type="text"
-									placeholder={m['pages.home.actions.filter_categories_placeholder']()}
+									placeholder={m['pages.home.actions.filterCategoriesPlaceholder']()}
 									bind:value={searchQuery}
-									class="h-8 w-full rounded-xl border border-border/60 bg-muted/60 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none"
+									class="h-8 w-full rounded-inner border border-border/60 bg-muted/60 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
 								/>
 							</div>
 						{/if}
@@ -301,14 +301,14 @@
 										ui={{
 											variant: 'ghost',
 											class:
-												'group/item w-full justify-between h-auto min-h-10 py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-surface-elevated min-w-0 overflow-hidden',
+												'group/item w-full justify-between h-auto min-h-10 py-2 px-3 rounded-inner text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-surface-elevated min-w-0 overflow-hidden',
 											disabled: isProcessing || selectedIds.length === 0
 										}}
 										events={{ onClick: () => handleBookmark(category.id) }}
 									>
 										<div class="flex min-w-0 flex-1 items-center gap-2.5 pr-2">
 											<span
-												class="h-3 w-3 shrink-0 rounded-full shadow-sm transition-transform duration-200 group-hover/item:scale-125"
+												class="h-3 w-3 shrink-0 rounded-full transition-transform duration-200 group-hover/item:scale-125"
 												style="background-color: {hexColor}; box-shadow: 0 0 8px {hexColor}66;"
 											></span>
 											<span
@@ -343,18 +343,18 @@
 				ui={{
 					variant: 'outline',
 					class:
-						'w-full justify-start h-12 px-4 rounded-2xl text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+						'w-full justify-start h-12 px-4 rounded-inner text-warning hover:text-warning hover:bg-warning-soft font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleHideClick }}
 			>
 				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/15"
+					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-warning-soft"
 				>
 					{#if isProcessing && activeAction === 'hide'}
-						<Loader2 size={18} class="shrink-0 animate-spin text-amber-500" />
+						<Loader2 size={18} class="shrink-0 animate-spin text-warning" />
 					{:else}
-						<EyeOff size={18} class="shrink-0 text-amber-500" />
+						<EyeOff size={18} class="shrink-0 text-warning" />
 					{/if}
 				</div>
 				<div class="flex min-w-0 flex-1 flex-col text-left">
@@ -367,13 +367,13 @@
 				ui={{
 					variant: 'outline',
 					class:
-						'w-full justify-start h-12 px-4 rounded-2xl text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 hover:border-destructive/50 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+						'w-full justify-start h-12 px-4 rounded-inner text-destructive hover:text-destructive hover:bg-destructive/10 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleClearMetadataClick }}
 			>
 				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-destructive/15"
+					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-destructive/15"
 				>
 					{#if isProcessing && activeAction === 'clearMetadata'}
 						<Loader2 size={18} class="shrink-0 animate-spin text-destructive" />
@@ -382,7 +382,7 @@
 					{/if}
 				</div>
 				<div class="flex min-w-0 flex-1 flex-col text-left">
-					<span class="truncate">{m['pages.home.actions.clear_metadata']()}</span>
+					<span class="truncate">{m['pages.home.actions.clearMetadata']()}</span>
 				</div>
 			</AcerolaButton>
 
@@ -391,13 +391,13 @@
 				ui={{
 					variant: 'destructive',
 					class:
-						'w-full justify-start h-12 px-4 rounded-2xl bg-destructive/15 hover:bg-destructive/25 text-destructive border border-destructive/30 hover:border-destructive/60 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+						'w-full justify-start h-12 px-4 rounded-inner bg-destructive/15 hover:bg-destructive/25 text-destructive border font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleDeleteClick }}
 			>
 				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-destructive/20"
+					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-destructive/20"
 				>
 					{#if isProcessing && activeAction === 'delete'}
 						<Loader2 size={18} class="shrink-0 animate-spin text-destructive" />
@@ -417,10 +417,10 @@
 <AcerolaAlertDialog
 	state={{ open: showHideDialog }}
 	data={{
-		title: m['pages.home.actions.hide_confirm.title'](),
-		description: m['pages.home.actions.hide_confirm.desc'](),
+		title: m['pages.home.actions.hideConfirm.title'](),
+		description: m['pages.home.actions.hideConfirm.desc'](),
 		cancelText: m['pages.home.actions.cancel'](),
-		actionText: m['pages.home.actions.hide_confirm.action']()
+		actionText: m['pages.home.actions.hideConfirm.action']()
 	}}
 	events={{
 		onAction: handleHide,
@@ -433,10 +433,10 @@
 <AcerolaAlertDialog
 	state={{ open: showDeleteDialog }}
 	data={{
-		title: m['pages.home.actions.delete_confirm.title'](),
-		description: m['pages.home.actions.delete_confirm.desc'](),
+		title: m['pages.home.actions.deleteConfirm.title'](),
+		description: m['pages.home.actions.deleteConfirm.desc'](),
 		cancelText: m['pages.home.actions.cancel'](),
-		actionText: m['pages.home.actions.delete_confirm.action']()
+		actionText: m['pages.home.actions.deleteConfirm.action']()
 	}}
 	events={{
 		onAction: handleDelete,
@@ -449,12 +449,12 @@
 <AcerolaAlertDialog
 	state={{ open: showClearMetadataDialog }}
 	data={{
-		title: m['pages.home.actions.clear_metadata_confirm.title'](),
-		description: m['pages.home.actions.clear_metadata_confirm.desc']({
+		title: m['pages.home.actions.clearMetadataConfirm.title'](),
+		description: m['pages.home.actions.clearMetadataConfirm.desc']({
 			count: selectedIds.length
 		}),
 		cancelText: m['pages.home.actions.cancel'](),
-		actionText: m['pages.home.actions.clear_metadata_confirm.action']()
+		actionText: m['pages.home.actions.clearMetadataConfirm.action']()
 	}}
 	events={{
 		onAction: handleClearMetadata,

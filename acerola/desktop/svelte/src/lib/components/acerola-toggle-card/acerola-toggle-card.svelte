@@ -55,10 +55,10 @@
 
 <div
 	class={cn(
-		'overflow-hidden rounded-2xl border-2 transition-all duration-200',
+		'overflow-hidden rounded-inner border-2 transition-all duration-200',
 		state.active
-			? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
-			: 'border-border/60 bg-card hover:border-muted-foreground/50',
+			? ' bg-primary/5'
+			: 'border-border/60 bg-card',
 		ui?.class
 	)}
 >
@@ -71,7 +71,7 @@
 		{#if icon}
 			<div
 				class={cn(
-					'flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+					'flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted text-foreground transition-[filter] group-hover:brightness-110',
 					ui?.iconClass
 				)}
 			>

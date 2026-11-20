@@ -54,7 +54,7 @@
 	{#if icon}
 		<div
 			class={cn(
-				'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+				'flex h-12 w-12 shrink-0 items-center justify-center rounded-inner bg-muted text-foreground transition-[filter] group-hover:brightness-110',
 				ui?.iconClass
 			)}
 		>
@@ -73,7 +73,7 @@
 
 <div
 	class={cn(
-		'overflow-hidden rounded-3xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-xs transition-all duration-200',
+		'overflow-hidden rounded-tile border border-border/60 bg-card/60 backdrop-blur-sm transition-all duration-200',
 		ui?.class
 	)}
 >

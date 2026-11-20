@@ -70,13 +70,13 @@
 <AcerolaDialog
 	state={{ open: dialogState?.open ?? false }}
 	data={{
-		title: m['pages.network.remote_library.title'](),
+		title: m['pages.network.remoteLibrary.title'](),
 		description: safeData.peerLabel
 	}}
 	events={{ onOpenChange: safeEvents.onOpenChange }}
 	ui={{
 		contentClass:
-			'w-full max-w-[calc(100vw-2rem)] sm:max-w-2xl border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl p-6 rounded-3xl overflow-hidden'
+			'w-full max-w-[calc(100vw-2rem)] sm:max-w-2xl border-border/60 bg-background/95 backdrop-blur-xl shadow-float p-6 rounded-tile overflow-hidden'
 	}}
 >
 	<div class="flex w-full min-w-0 flex-col gap-4 py-1">
@@ -87,15 +87,15 @@
 			/>
 			<input
 				type="text"
-				placeholder={m['pages.network.remote_library.search_placeholder']()}
+				placeholder={m['pages.network.remoteLibrary.searchPlaceholder']()}
 				bind:value={searchQuery}
-				class="h-9 w-full rounded-xl border border-border/60 bg-muted/60 pr-3 pl-8 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none"
+				class="h-9 w-full rounded-inner border border-border/60 bg-muted/60 pr-3 pl-8 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
 			/>
 		</div>
 
 		{#if safeData.isLoading}
 			<p class="p-4 text-center text-sm text-muted-foreground">
-				{m['pages.network.remote_library.loading']()}
+				{m['pages.network.remoteLibrary.loading']()}
 			</p>
 		{:else if safeData.errorMessage}
 			<p class="p-4 text-center text-sm text-destructive">
@@ -103,7 +103,7 @@
 			</p>
 		{:else if filteredComics.length === 0}
 			<p class="p-4 text-center text-sm text-muted-foreground">
-				{m['pages.network.remote_library.empty']()}
+				{m['pages.network.remoteLibrary.empty']()}
 			</p>
 		{:else}
 			<div
@@ -130,7 +130,7 @@
 								class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
 							>
 								<BookOpenIcon size={10} />
-								{m['pages.network.remote_library.chapter_count']({ count: comic.chapterCount })}
+								{m['pages.network.remoteLibrary.chapterCount']({ count: comic.chapterCount })}
 							</span>
 						{/snippet}
 

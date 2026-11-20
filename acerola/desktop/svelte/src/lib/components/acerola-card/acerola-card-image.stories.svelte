@@ -40,7 +40,7 @@
 	>
 		{#snippet floatingBadge()}
 			<div
-				class="absolute -top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-md"
+				class="absolute -top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground shadow-lift"
 			>
 				N
 			</div>
@@ -90,7 +90,7 @@
 		{#snippet overlay()}
 			<button
 				type="button"
-				class="w-full rounded-2xl bg-primary py-2 text-xs font-black text-primary-foreground"
+				class="w-full rounded-inner bg-primary py-2 text-xs font-black text-primary-foreground"
 			>
 				LER
 			</button>

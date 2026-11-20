@@ -5,11 +5,11 @@ import { m } from '$lib/paraglide/messages';
 
 describe('extractErrorMessage', () => {
 	it('returns a fallback message for null', () => {
-		expect(extractErrorMessage(null)).toBe('Unknown error occurred');
+		expect(extractErrorMessage(null)).toBe(m['error.unknown.title']());
 	});
 
 	it('returns a fallback message for undefined', () => {
-		expect(extractErrorMessage(undefined)).toBe('Unknown error occurred');
+		expect(extractErrorMessage(undefined)).toBe(m['error.unknown.title']());
 	});
 
 	it('returns a plain string unchanged', () => {
@@ -23,7 +23,7 @@ describe('extractErrorMessage', () => {
 	it('translates a recognized errorType instead of leaking the raw Rust message', () => {
 		const payload: ErrorPayload = { errorType: 'Io', message: 'disk full' };
 
-		expect(extractErrorMessage(payload)).toBe(m['tauri_errors.comic.io_error.label']());
+		expect(extractErrorMessage(payload)).toBe(m['tauriErrors.comic.ioError.label']());
 	});
 
 	it('falls back to the raw message for an unrecognized errorType', () => {

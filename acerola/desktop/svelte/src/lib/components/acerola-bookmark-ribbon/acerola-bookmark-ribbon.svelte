@@ -23,8 +23,8 @@
 	let hexColor = $derived('#' + (color & 0xffffff).toString(16).padStart(6, '0'));
 	let label = $derived(
 		name
-			? m['components.bookmark_ribbon.label']({ name })
-			: m['components.bookmark_ribbon.default_label']()
+			? m['components.bookmarkRibbon.label']({ name })
+			: m['components.bookmarkRibbon.defaultLabel']()
 	);
 </script>
 
@@ -32,6 +32,6 @@
 	role="img"
 	aria-label={label}
 	title={label}
-	class={cn('absolute -top-2.5 left-3 z-10 h-8 w-5 drop-shadow-md', className)}
+	class={cn('absolute -top-2.5 left-3 z-10 h-8 w-5', className)}
 	style="background-color: {hexColor}; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);"
 ></div>

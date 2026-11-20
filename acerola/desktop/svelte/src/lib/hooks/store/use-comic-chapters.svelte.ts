@@ -111,7 +111,7 @@ export function useComicChapters() {
 			unlistenError = await listen<ErrorPayload>(LIBRARY_EVENTS.comicChaptersError, (event) => {
 				const errorMessage = resolveErrorMessage(event.payload);
 
-				notify.error(m['hooks.comic_chapters.error.load'](), {
+				notify.error(m['hooks.comicChapters.error.load'](), {
 					description: errorMessage
 				});
 				toast.error(errorMessage);
@@ -161,7 +161,7 @@ export function useComicChapters() {
 		} catch (error) {
 			const errorMessage = error as string;
 
-			notify.error(m['hooks.comic_chapters.error.request'](), {
+			notify.error(m['hooks.comicChapters.error.request'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);

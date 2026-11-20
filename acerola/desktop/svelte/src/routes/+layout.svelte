@@ -219,7 +219,7 @@
 	<div class="relative flex flex-1 overflow-hidden">
 		<AcerolaSonner />
 
-		{#if onboarding.isCompleted}
+		{#if onboarding.isCompleted && !$page.error}
 			<AcerolaSidebar data={{ items: navItems }}>
 				{#snippet brand()}
 					<AcerolaLogo class="h-full w-full" />
@@ -228,9 +228,17 @@
 		{/if}
 
 		<main class="h-full flex-1 overflow-y-auto">
-			{#if onboarding.isLoading}
-				<div class="flex h-full w-full items-center justify-center text-muted-foreground">
-					Loading...
+			{#if $page.error}
+				<!-- Acerola standard: only the error on screen, no navigation; its two actions are the way out. -->
+				{@render children()}
+			{:else if onboarding.isLoading}
+				<div class="flex h-full w-full flex-col gap-6 p-8" role="status" aria-label={m['layout.loading']()}>
+					<div class="h-16 w-full max-w-xl animate-pulse rounded-full bg-surface"></div>
+					<div class="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-6">
+						{#each Array.from({ length: 12 }, (_, i) => i) as i (i)}
+							<div class="aspect-2/3 animate-pulse rounded-tile bg-surface"></div>
+						{/each}
+					</div>
 				</div>
 			{:else if !onboarding.isCompleted}
 				<AcerolaOnboarding />
@@ -240,7 +248,7 @@
 				>
 					<div class="max-w-xl flex-1">
 						<button
-							aria-label={m['layout.search_placeholder']()}
+							aria-label={m['layout.searchPlaceholder']()}
 							class="group relative w-full cursor-text text-left"
 							onclick={() => {
 								isSearchDialogOpen = true;
@@ -252,11 +260,11 @@
 								size={18}
 							/>
 							<div
-								class="text-overlay/50 flex w-full items-center justify-between rounded-xl border border-surface bg-mantle py-2 pr-4 pl-11 text-sm transition-all group-hover:border-primary"
+								class="text-overlay/50 flex w-full items-center justify-between rounded-inner border border-surface bg-mantle py-2 pr-4 pl-11 text-sm transition-all"
 							>
-								<span>{m['layout.search_placeholder']()}</span>
+								<span>{m['layout.searchPlaceholder']()}</span>
 								<kbd
-									class="pointer-events-none hidden items-center gap-1 rounded border border-surface/80 bg-surface/50 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground select-none sm:flex"
+									class="pointer-events-none hidden items-center gap-1 rounded-inner border border-surface/80 bg-surface/50 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground select-none sm:flex"
 								>
 									Ctrl+K
 								</kbd>
@@ -274,13 +282,13 @@
 							{@const progress = headerSync.activeProgressMessage()}
 							<button
 								type="button"
-								class="flex max-w-56 items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
-								title={progress ?? m['layout.sync_indicator.tooltip']()}
+								class="flex max-w-56 items-center gap-2 rounded-inner border bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
+								title={progress ?? m['layout.syncIndicator.tooltip']()}
 								onclick={() => goto('/network')}
 							>
 								<RefreshCwIcon size={14} class="shrink-0 animate-spin" />
 								<span class="truncate">
-									{m['layout.sync_indicator.syncing']({
+									{m['layout.syncIndicator.syncing']({
 										peer: session ? headerPeers.peerLabel(session.peerId) : ''
 									})}
 								</span>
@@ -295,12 +303,12 @@
 								side: 'bottom',
 								sideOffset: 8,
 								contentClass:
-									'w-56 p-3 rounded-2xl border-border/40 bg-card/95 backdrop-blur-md shadow-2xl'
+									'w-56 p-3 rounded-inner border-border/40 bg-card/95 backdrop-blur-md shadow-float'
 							}}
 						>
 							{#snippet trigger()}
 								<AcerolaButtonIcon
-									ui={{ title: m['layout.language_picker.title'](), tone: 'accent' }}
+									ui={{ title: m['layout.languagePicker.title'](), tone: 'accent' }}
 								>
 									<GlobeIcon size={16} />
 								</AcerolaButtonIcon>
@@ -330,7 +338,7 @@
 	events={{ onOpenChange: (open) => (isSearchDialogOpen = open) }}
 	ui={{
 		contentClass:
-			'p-0 border border-surface/50 overflow-hidden w-full max-w-4xl sm:max-w-4xl bg-base/95 backdrop-blur-xl shadow-2xl top-10 portrait:top-4 sm:top-10 translate-y-0',
+			'p-0 border border-surface/50 overflow-hidden w-full max-w-4xl sm:max-w-4xl bg-base/95 backdrop-blur-xl shadow-float top-10 portrait:top-4 sm:top-10 translate-y-0',
 		showCloseButton: false
 	}}
 >
@@ -342,18 +350,18 @@
 					size={24}
 				/>
 				<CommandPrimitive.Input
-					placeholder={m['layout.search_placeholder']()}
-					class="placeholder:text-overlay/50 h-16 w-full rounded-2xl border border-surface bg-mantle py-3 pr-4 pl-14 text-xl font-medium transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/50"
+					placeholder={m['layout.searchPlaceholder']()}
+					class="placeholder:text-overlay/50 h-16 w-full rounded-inner border border-surface bg-mantle py-3 pr-4 pl-14 text-xl font-medium transition-all outline-none focus:ring-2 focus:ring-primary/50"
 				/>
 			</div>
 		</div>
 		<Command.List class="max-h-[70vh] overflow-y-auto p-4">
 			<Command.Empty class="py-24 text-center text-lg text-muted-foreground">
-				{m['layout.command.no_results']()}
+				{m['layout.command.noResults']()}
 			</Command.Empty>
 
 			<Command.Group
-				heading={m['layout.command.navigation_group']()}
+				heading={m['layout.command.navigationGroup']()}
 				class="px-2 text-muted-foreground"
 			>
 				{#each navItems as item (item.href)}
@@ -363,7 +371,7 @@
 							isSearchDialogOpen = false;
 							goto(item.href);
 						}}
-						class="flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 transition-colors data-[selected=true]:bg-surface/50"
+						class="flex cursor-pointer items-center gap-3 rounded-inner px-4 py-3 transition-colors data-[selected=true]:bg-surface/50"
 					>
 						<item.icon size={18} />
 						<span class="text-sm font-semibold text-foreground">{item.label}</span>
@@ -373,7 +381,7 @@
 
 			{#if summary.comics && summary.comics.total > 0}
 				<Command.Group
-					heading={m['layout.command.library_group']()}
+					heading={m['layout.command.libraryGroup']()}
 					class="px-2 text-muted-foreground"
 				>
 					<div class="flex flex-col gap-2">
@@ -390,7 +398,7 @@
 										n.goto(`/comic/${comic.filesystem.folderName}`)
 									);
 								}}
-								class="flex cursor-pointer items-center gap-6 rounded-2xl px-4 py-4 transition-colors data-[selected=true]:bg-surface/50"
+								class="flex cursor-pointer items-center gap-6 rounded-inner px-4 py-4 transition-colors data-[selected=true]:bg-surface/50"
 							>
 								<AcerolaCardImage
 									data={{

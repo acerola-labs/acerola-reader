@@ -60,22 +60,22 @@
 
 {#if !data.chapterAvailable}
 	<div class="text-overlay flex h-full items-center justify-center text-sm font-black uppercase">
-		{m['pages.reader.fallback.chapter_unavailable']()}
+		{m['pages.reader.fallback.chapterUnavailable']()}
 	</div>
 {:else if data.openFailed}
 	<div class="flex h-full flex-col items-center justify-center gap-4 px-8 text-center">
 		<AlertTriangle size={40} class="text-destructive" />
 		<div class="space-y-1.5">
 			<p class="text-sm font-black tracking-widest text-foreground uppercase">
-				{m['pages.reader.fallback.open_failed.title']()}
+				{m['pages.reader.fallback.openFailed.title']()}
 			</p>
 			<p class="text-overlay max-w-sm text-xs">
-				{m['pages.reader.fallback.open_failed.desc']()}
+				{m['pages.reader.fallback.openFailed.desc']()}
 			</p>
 		</div>
 		{#if events?.onRetry}
 			<AcerolaButton
-				ui={{ variant: 'secondary', class: 'rounded-xl gap-2' }}
+				ui={{ variant: 'secondary', class: 'rounded-inner gap-2' }}
 				events={{ onClick: events.onRetry }}
 			>
 				<RefreshCw size={16} />
@@ -120,11 +120,11 @@
 							use:trackPageImage={pageIndex}
 							in:fade={{ duration: 120 }}
 							src={pageItem.url}
-							alt={m['pages.reader.pages.image_alt']({ page: pageIndex + 1 })}
+							alt={m['pages.reader.pages.imageAlt']({ page: pageIndex + 1 })}
 							class={cn(
 								'bg-base object-contain',
 								data.mode === 'webtoon' && 'w-full',
-								data.mode !== 'webtoon' && 'max-h-full max-w-full shadow-2xl shadow-base/40'
+								data.mode !== 'webtoon' && 'max-h-full max-w-full shadow-float shadow-base/40'
 							)}
 							loading={Math.abs(pageIndex - data.currentPage) <= 2 ? 'eager' : 'lazy'}
 							draggable="false"

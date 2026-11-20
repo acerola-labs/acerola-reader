@@ -14,10 +14,7 @@
 		<!-- Celebration Glowing Icon -->
 		<div class="relative flex items-center justify-center">
 			<div
-				class="absolute -inset-3 rounded-full bg-linear-to-tr from-emerald-500/30 to-teal-500/30 opacity-70 blur-xl filter animate-pulse"
-			></div>
-			<div
-				class="relative flex size-24 items-center justify-center rounded-3xl bg-linear-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white shadow-[0_8px_32px_rgba(16,185,129,0.35)] ring-1 ring-white/20"
+				class="relative flex size-24 items-center justify-center rounded-tile bg-success-soft text-success shadow-lift"
 			>
 				<CheckCircleIcon size={48} />
 			</div>
@@ -35,43 +32,43 @@
 
 		<!-- Checklist Card (VibePrompts Onboarding Checklist pattern) -->
 		<div
-			class="w-full space-y-3 rounded-3xl border border-border/50 bg-card/60 p-5 text-left shadow-xs backdrop-blur-md"
+			class="w-full space-y-3 rounded-tile border border-border/50 bg-card/60 p-5 text-left backdrop-blur-md"
 		>
 			<div class="flex items-center gap-2 border-b border-border/30 pb-3 text-xs font-semibold text-foreground">
-				<SparklesIcon size={14} class="text-emerald-500" />
-				<span>{m['onboarding.complete.checklist_title']()}</span>
+				<SparklesIcon size={14} class="text-success" />
+				<span>{m['onboarding.complete.checklistTitle']()}</span>
 			</div>
 
 			<div class="space-y-2 text-xs">
 				<div class="flex items-center gap-2.5 text-foreground/90">
-					<CheckCircle2Icon size={15} class="text-emerald-500 shrink-0" />
-					<span>{m['onboarding.complete.checklist_item_1']()}</span>
+					<CheckCircle2Icon size={15} class="text-success shrink-0" />
+					<span>{m['onboarding.complete.checklistItem1']()}</span>
 				</div>
 				<div class="flex items-center gap-2.5 text-foreground/90">
-					<CheckCircle2Icon size={15} class="text-emerald-500 shrink-0" />
-					<span>{m['onboarding.complete.checklist_item_2']()}</span>
+					<CheckCircle2Icon size={15} class="text-success shrink-0" />
+					<span>{m['onboarding.complete.checklistItem2']()}</span>
 				</div>
 				<div class="flex items-center gap-2.5 text-foreground/90">
-					<CheckCircle2Icon size={15} class="text-emerald-500 shrink-0" />
-					<span>{m['onboarding.complete.checklist_item_3']()}</span>
+					<CheckCircle2Icon size={15} class="text-success shrink-0" />
+					<span>{m['onboarding.complete.checklistItem3']()}</span>
 				</div>
 			</div>
 		</div>
 
 		<!-- Note Box -->
-		<div class="w-full rounded-2xl border border-border/40 bg-card/40 p-4 text-left backdrop-blur-sm">
+		<div class="w-full rounded-inner border border-border/40 bg-card/40 p-4 text-left backdrop-blur-sm">
 			<p class="text-xs text-muted-foreground leading-relaxed">{m['onboarding.complete.note']()}</p>
 		</div>
 
 		<!-- Action Controls -->
 		<div class="flex w-full items-center justify-between pt-2">
-			<Button onclick={onPrev} variant="outline" class="rounded-xl px-6">
+			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
 				{m['onboarding.back']()}
 			</Button>
 			<Button
 				onclick={onComplete}
 				size="lg"
-				class="group relative inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-6 text-base font-semibold text-primary-foreground shadow-[0_0_24px_rgba(var(--color-primary-rgb),0.35)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_32px_rgba(var(--color-primary-rgb),0.55)] active:scale-[0.98]"
+				class="group relative inline-flex items-center gap-2 rounded-inner bg-primary px-8 py-6 text-base font-semibold text-primary-foreground shadow-lift transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
 			>
 				<span>{m['onboarding.complete.button']()}</span>
 				<ArrowRightIcon size={18} class="transition-transform duration-200 group-hover:translate-x-1" />

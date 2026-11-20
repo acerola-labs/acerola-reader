@@ -26,7 +26,7 @@ export function useLibraryScanner(
 		const path = getPath();
 
 		if (!path) {
-			toast.error(m['hooks.comic_scanner.no_folder']());
+			toast.error(m['hooks.comicScanner.noFolder']());
 			return;
 		}
 
@@ -36,13 +36,13 @@ export function useLibraryScanner(
 		// `scan:progress` chegar do backend — dependendo de quanto o scan demora pra emitir
 		// esse primeiro evento, o toast podia aparecer bem depois do clique (às vezes quase
 		// junto com o de conclusão), num momento sem sentido pra quem clicou o botão.
-		progressId = notify.info(m['hooks.comic_scanner.in_progress'](), { duration: 0 });
-		toastId = toast.loading(m['hooks.comic_scanner.in_progress']());
+		progressId = notify.info(m['hooks.comicScanner.inProgress'](), { duration: 0 });
+		toastId = toast.loading(m['hooks.comicScanner.inProgress']());
 
 		const unlistenProgress = await listen(LIBRARY_EVENTS.scanProgress, () => {});
 
 		const unlistenConverting = await listen<string>(LIBRARY_EVENTS.scanConverting, (event) => {
-			const msg = event.payload || m['hooks.comic_scanner.converting']();
+			const msg = event.payload || m['hooks.comicScanner.converting']();
 
 			if (progressId !== undefined) {
 				pop(progressId);
@@ -58,8 +58,8 @@ export function useLibraryScanner(
 				progressId = undefined;
 			}
 
-			notify.success(m['hooks.comic_scanner.success'](), { duration: 0 });
-			toast.success(m['hooks.comic_scanner.success'](), { id: toastId });
+			notify.success(m['hooks.comicScanner.success'](), { duration: 0 });
+			toast.success(m['hooks.comicScanner.success'](), { id: toastId });
 			toastId = undefined;
 
 			scanning = false;
@@ -77,11 +77,11 @@ export function useLibraryScanner(
 			}
 
 			const description = resolveErrorMessage(it.payload);
-			notify.error(m['hooks.comic_scanner.error.title'](), {
+			notify.error(m['hooks.comicScanner.error.title'](), {
 				description,
 				duration: 0
 			});
-			toast.error(m['hooks.comic_scanner.error.title'](), {
+			toast.error(m['hooks.comicScanner.error.title'](), {
 				description,
 				id: toastId
 			});

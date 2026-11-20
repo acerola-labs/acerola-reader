@@ -222,10 +222,10 @@
 			await toastAsync(
 				() => p2pSync.syncComic(peer.peerId, peer.addrs, manga!.title, 'push', chapterIds),
 				{
-					loading: m['pages.comic.selection.send_to_peer.toast.start'](),
-					success: m['pages.comic.selection.send_to_peer.toast.success'](),
+					loading: m['pages.comic.selection.sendToPeer.toast.start'](),
+					success: m['pages.comic.selection.sendToPeer.toast.success'](),
 					error: (err) =>
-						m['pages.comic.selection.send_to_peer.toast.error']({ msg: extractErrorMessage(err) })
+						m['pages.comic.selection.sendToPeer.toast.error']({ msg: extractErrorMessage(err) })
 				}
 			);
 		} catch {
@@ -238,9 +238,9 @@
 		if (!id || !manga?.title) return;
 		try {
 			await toastAsync(() => metadataSync.syncMangadex(manga!.title, id.toString()), {
-				loading: m['pages.comic.toast.sync.start_mangadex'](),
+				loading: m['pages.comic.toast.sync.startMangadex'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.mangadex_error']({ msg: extractErrorMessage(err) })
+				error: (err) => m['pages.comic.toast.mangadexError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -254,9 +254,9 @@
 		if (!id || !manga?.title) return;
 		try {
 			await toastAsync(() => metadataSync.syncAnilist(manga!.title, id.toString()), {
-				loading: m['pages.comic.toast.sync.start_anilist'](),
+				loading: m['pages.comic.toast.sync.startAnilist'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.anilist_error']({ msg: extractErrorMessage(err) })
+				error: (err) => m['pages.comic.toast.anilistError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -270,9 +270,9 @@
 		if (!id) return;
 		try {
 			await toastAsync(() => metadataSync.syncComicInfo(id.toString()), {
-				loading: m['pages.comic.toast.sync.start_comic_info'](),
+				loading: m['pages.comic.toast.sync.startComicInfo'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.comic_info.error']({ msg: extractErrorMessage(err) })
+				error: (err) => m['pages.comic.toast.comicInfo.error']({ msg: extractErrorMessage(err) })
 			});
 			await invalidateAll();
 		} catch {
@@ -287,9 +287,9 @@
 		rescanning = true;
 		try {
 			await toastAsync(() => invoke(HOME_COMMANDS.rescanComic, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_rescan'](),
-				success: m['pages.comic.toast.sync.rescan_success'](),
-				error: (err) => m['pages.comic.toast.rescan_error']({ msg: extractErrorMessage(err) })
+				loading: m['pages.comic.toast.sync.startRescan'](),
+				success: m['pages.comic.toast.sync.rescanSuccess'](),
+				error: (err) => m['pages.comic.toast.rescanError']({ msg: extractErrorMessage(err) })
 			});
 			// `invalidateAll()` só recarrega o `load()` do SvelteKit — a lista de capítulos vive
 			// no `chapterStore` (estado Svelte à parte, com seu próprio cache LRU), que
@@ -311,10 +311,10 @@
 		if (!id) return;
 		try {
 			await toastAsync(() => metadataSync.clearMetadata(id.toString()), {
-				loading: m['pages.comic.toast.sync.start_clear_metadata'](),
-				success: m['pages.comic.toast.sync.clear_metadata_success'](),
+				loading: m['pages.comic.toast.sync.startClearMetadata'](),
+				success: m['pages.comic.toast.sync.clearMetadataSuccess'](),
 				error: (err) =>
-					m['pages.comic.toast.clear_metadata_error']({ msg: extractErrorMessage(err) })
+					m['pages.comic.toast.clearMetadataError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -329,10 +329,10 @@
 		regeneratingCover = true;
 		try {
 			await toastAsync(() => invoke(HOME_COMMANDS.regenerateComicCover, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_regenerate_cover'](),
-				success: m['pages.comic.toast.sync.regenerate_cover_success'](),
+				loading: m['pages.comic.toast.sync.startRegenerateCover'](),
+				success: m['pages.comic.toast.sync.regenerateCoverSuccess'](),
 				error: (err) =>
-					m['pages.comic.toast.regenerate_cover_error']({ msg: extractErrorMessage(err) })
+					m['pages.comic.toast.regenerateCoverError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -349,10 +349,10 @@
 		regeneratingVolumeCovers = true;
 		try {
 			await toastAsync(() => invoke(HOME_COMMANDS.regenerateVolumeCovers, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_regenerate_volume_covers'](),
-				success: m['pages.comic.toast.sync.regenerate_volume_covers_success'](),
+				loading: m['pages.comic.toast.sync.startRegenerateVolumeCovers'](),
+				success: m['pages.comic.toast.sync.regenerateVolumeCoversSuccess'](),
 				error: (err) =>
-					m['pages.comic.toast.regenerate_volume_covers_error']({ msg: extractErrorMessage(err) })
+					m['pages.comic.toast.regenerateVolumeCoversError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
@@ -370,12 +370,12 @@
 			await toastAsync(
 				() => invoke(HOME_COMMANDS.toggleComicExternalSync, { id: id.toString(), enabled: value }),
 				{
-					loading: m['pages.comic.toast.sync.start_toggle'](),
+					loading: m['pages.comic.toast.sync.startToggle'](),
 					success: value
 						? m['pages.comic.toast.sync.enabled']()
 						: m['pages.comic.toast.sync.disabled'](),
 					error: (err) =>
-						m['pages.comic.toast.sync.toggle_error']({ msg: extractErrorMessage(err) })
+						m['pages.comic.toast.sync.toggleError']({ msg: extractErrorMessage(err) })
 				}
 			);
 			if (manga) {
@@ -403,10 +403,10 @@
 	async function handleSyncToDevice(peerId: string, addrs: number[], direction: SyncDirection) {
 		if (!manga?.title) return;
 		await toastAsync(() => p2pSync.syncComic(peerId, addrs, manga!.title, direction), {
-			loading: m['pages.comic.preferences.p2p_sync.toast.start'](),
-			success: m['pages.comic.preferences.p2p_sync.toast.success'](),
+			loading: m['pages.comic.preferences.p2pSync.toast.start'](),
+			success: m['pages.comic.preferences.p2pSync.toast.success'](),
 			error: (err) =>
-				m['pages.comic.preferences.p2p_sync.toast.error']({ msg: extractErrorMessage(err) })
+				m['pages.comic.preferences.p2pSync.toast.error']({ msg: extractErrorMessage(err) })
 		}).catch(() => {
 			// Erro já foi mostrado pelo toastAsync acima.
 		});
@@ -749,7 +749,7 @@
 								<input
 									type="text"
 									bind:value={searchQuery}
-									placeholder={m['pages.comic.filter_placeholder']()}
+									placeholder={m['pages.comic.filterPlaceholder']()}
 									class="w-40 rounded-full border border-surface/30 bg-surface/20 px-6 py-2 text-[10px] font-black tracking-widest transition-all focus:w-60 focus:ring-2 focus:ring-primary/50 focus:outline-none"
 								/>
 							{/if}
@@ -761,11 +761,11 @@
 									align: 'end',
 									side: 'bottom',
 									sideOffset: 8,
-									contentClass: 'w-64 overflow-hidden rounded-xl p-2'
+									contentClass: 'w-64 overflow-hidden rounded-inner p-2'
 								}}
 							>
 								{#snippet trigger()}
-									<AcerolaButton ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}>
+									<AcerolaButton ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}>
 										<ArrowUpDown size={16} />
 										{m['pages.comic.sort.button']()}
 									</AcerolaButton>
@@ -773,7 +773,7 @@
 
 								{#snippet content()}
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
 										events={{
 											onClick: () => {
 												sortBy = 'number_asc';
@@ -790,7 +790,7 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
 										events={{
 											onClick: () => {
 												sortBy = 'number_desc';
@@ -808,7 +808,7 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_desc';
@@ -826,7 +826,7 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-inner' }}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_asc';
@@ -855,32 +855,32 @@
 							{m['pages.comic.selection.selected']({ count: chapterSelection.selectedCount })}
 						</span>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
 							events={{ onClick: handleSelectAllChapters }}
 						>
-							{m['pages.comic.selection.select_all']()}
+							{m['pages.comic.selection.selectAll']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner' }}
 							events={{ onClick: handleBatchMarkRead }}
 						>
-							{m['pages.comic.selection.mark_read']()}
+							{m['pages.comic.selection.markRead']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner' }}
 							events={{ onClick: handleBatchMarkUnread }}
 						>
-							{m['pages.comic.selection.mark_unread']()}
+							{m['pages.comic.selection.markUnread']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'gap-1.5 rounded-lg' }}
+							ui={{ variant: 'secondary', size: 'sm', class: 'gap-1.5 rounded-inner' }}
 							events={{ onClick: () => (sendToPeerPickerOpen = true) }}
 						>
 							<Share2 size={14} />
-							{m['pages.comic.selection.send_to_peer.button']()}
+							{m['pages.comic.selection.sendToPeer.button']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
 							events={{ onClick: () => chapterSelection.exitSelectionMode() }}
 						>
 							{m['pages.comic.selection.cancel']()}

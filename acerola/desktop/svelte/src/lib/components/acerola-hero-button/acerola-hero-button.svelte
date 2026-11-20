@@ -36,9 +36,9 @@
 
 <Item.Root
 	class={cn(
-		'group flex min-w-0 items-center justify-between rounded-3xl border border-border bg-card p-6 transition-colors',
+		'group flex min-w-0 items-center justify-between rounded-tile border border-border bg-card p-6 transition-colors',
 		events?.onClick
-			? 'cursor-pointer transition-transform hover:border-primary/50 active:scale-[0.98]'
+			? 'cursor-pointer transition-transform active:scale-[0.98]'
 			: '',
 		ui?.class
 	)}
@@ -48,7 +48,7 @@
 		{#if icon}
 			<Item.Media
 				class={cn(
-					'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+					'flex h-12 w-12 shrink-0 items-center justify-center rounded-inner bg-muted text-foreground transition-[filter] group-hover:brightness-110',
 					ui?.iconClass
 				)}
 			>
@@ -58,7 +58,7 @@
 
 		<Item.Content class="min-w-0 flex-1 text-left">
 			<Item.Title class="block w-full truncate text-lg font-bold text-foreground">
-				{data?.title ?? m['components.hero_button.default.title']()}
+				{data?.title ?? m['components.heroButton.default.title']()}
 			</Item.Title>
 
 			{#if data?.description}

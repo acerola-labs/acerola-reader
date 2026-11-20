@@ -122,7 +122,7 @@ export function useNetworkSync() {
 			key,
 			setTimeout(() => {
 				clearSyncing(peerId, kind);
-				const message = m['tauri_errors.sync.timed_out.label']();
+				const message = m['tauriErrors.sync.timedOut.label']();
 				// `clearSyncing` só limpa `syncingKeys` (o que desbloqueia os botões) — sem
 				// transicionar a linha correspondente do log pra um status terminal, ela ficava
 				// presa em "started"/"progress" (spinner girando) pra sempre na tela de Rede
@@ -585,7 +585,7 @@ export function useNetworkSync() {
 			// Mesmo texto traduzido do `code: "busy"` que o backend manda — este guard é
 			// local (nem chega a abrir conexão), mas é o mesmo erro do ponto de vista do
 			// usuário, então usa a mesma mensagem em vez de um texto cru em inglês.
-			throw new Error(m['tauri_errors.sync.session_busy.label']());
+			throw new Error(m['tauriErrors.sync.sessionBusy.label']());
 		}
 
 		const key = syncKey(peerId, 'comic');
@@ -624,7 +624,7 @@ export function useNetworkSync() {
 		chapterIds: string[]
 	): Promise<string> {
 		if (isSyncing(peerId, 'historyEntry')) {
-			throw new Error(m['tauri_errors.sync.session_busy.label']());
+			throw new Error(m['tauriErrors.sync.sessionBusy.label']());
 		}
 
 		const key = syncKey(peerId, 'historyEntry');

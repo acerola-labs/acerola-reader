@@ -1,0 +1,56 @@
+/* Acerola shape, shadow, scrim, font and motion tokens: the shared block of the acerola-brand
+   tokens.css (brand.acerola.app/brand/css/tokens.css). Colors come from `colors/catppuccin.css`
+   and are not redefined here.
+
+   Use only these radii: no `rounded-[…]`, `rounded-xl`, `rounded-3xl`.
+   - `rounded-sheet` (32px): whole panel/sheet.
+   - `rounded-card`  (28px): large card, toast, notice.
+   - `rounded-tile`  (24px): number block, list row, cover.
+   - `rounded-inner` (16px): something inside a card (small cover, field, icon).
+   - `rounded-full`: pill, chip, button, progress bar.
+   Shadows: `shadow-lift` (resting) and `shadow-float` (what floats: bar, panel, toast).
+   Over a cover or art: `bg-scrim/…`, `from-scrim/…`, `text-on-scrim`.
+   `font-display` (Titan One) is brand only: lettering, hero, splash, error stage. Never in a control.
+   `scripts/design/check-design.mjs` rejects anything outside this. */
+@theme {
+	--radius-sheet: 32px;
+	--radius-card: 28px;
+	--radius-tile: 24px;
+	--radius-inner: 16px;
+	--radius-huge: 2.5rem;
+
+	/* Dark veil over cover/art and the text on top of it: the same in both modes on purpose. */
+	--color-scrim: #000000;
+	--color-on-scrim: #ffffff;
+
+	--shadow-float: 0 16px 40px -12px rgb(0 0 0 / 0.55);
+	--shadow-lift: 0 10px 24px -10px rgb(0 0 0 / 0.45);
+
+	--font-display: 'Titan One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+
+	--ease-brand: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Plain variables read by components.css (the .ac-* classes), same names as the brand tokens.css. */
+:root {
+	--scrim: var(--color-scrim);
+	--on-scrim: var(--color-on-scrim);
+	--radius-full: 9999px;
+	--control-height: 44px;
+	--duration-brand: 320ms;
+}
+
+/* Fade at the ends of a scrolling strip (chips): the clipped item fades out instead of stopping
+   abruptly at the edge. Only the mask opacity counts, never its color. */
+@utility fade-x-start {
+	mask-image: linear-gradient(to right, transparent, #000 28px);
+}
+@utility fade-x-end {
+	mask-image: linear-gradient(to left, transparent, #000 28px);
+}
+@utility fade-x-both {
+	mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+}
+@utility fade-y {
+	mask-image: linear-gradient(to bottom, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+}

@@ -43,16 +43,16 @@
 		<div class="flex shrink-0 gap-4 lg:gap-6">
 			{#if data?.rating != null}
 				<div
-					class="flex items-center gap-3 rounded-2xl border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
+					class="flex items-center gap-3 rounded-inner border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
 				>
-					<Star size={20} class="fill-yellow-400 text-yellow-400" />
+					<Star size={20} class="fill-warning text-warning" />
 					<span class="text-xl font-black tracking-tighter">{data.rating.toFixed(1)}</span>
 				</div>
 			{/if}
 
 			{#if data?.chapterCount != null}
 				<div
-					class="flex items-center gap-3 rounded-2xl border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
+					class="flex items-center gap-3 rounded-inner border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
 				>
 					<BookOpen size={20} class="text-primary" />
 					<span class="text-xl font-black tracking-tighter"
@@ -71,7 +71,7 @@
 				<div class="flex gap-2 pr-6 pb-3">
 					{#each genres as genre}
 						<span
-							class="text-text rounded-full border border-surface/30 bg-surface/40 px-4 py-1.5 text-[10px] font-black tracking-widest whitespace-nowrap uppercase shadow-sm backdrop-blur-xl"
+							class="text-text rounded-full border border-surface/30 bg-surface/40 px-4 py-1.5 text-[10px] font-black tracking-widest whitespace-nowrap uppercase backdrop-blur-xl"
 							>{genre}</span
 						>
 					{/each}

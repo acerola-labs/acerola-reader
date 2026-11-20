@@ -15,34 +15,34 @@
 			extension: 'CBZ',
 			name: m['onboarding.formats.cbz.title'](),
 			badge: m['onboarding.formats.cbz.badge'](),
-			badgeClass: 'bg-primary/10 text-primary border-primary/30',
-			cardClass: 'border-primary/40 bg-gradient-to-b from-primary/5 to-card/50 shadow-md',
+			badgeClass: 'bg-primary/10 text-primary',
+			cardClass: ' bg-gradient-to-b from-primary/5 to-card/50 shadow-lift',
 			icon: FileArchiveIcon,
 			iconColor: 'text-primary bg-primary/10',
 			description: m['onboarding.formats.cbz.desc'](),
-			features: [m['onboarding.formats.cbz.feature_1'](), m['onboarding.formats.cbz.feature_2']()]
+			features: [m['onboarding.formats.cbz.feature1'](), m['onboarding.formats.cbz.feature2']()]
 		},
 		{
 			extension: 'CBR',
 			name: m['onboarding.formats.cbr.title'](),
 			badge: m['onboarding.formats.cbr.badge'](),
-			badgeClass: 'bg-chart-3/10 text-chart-3 border-chart-3/30',
-			cardClass: 'border-border/40 bg-card/50 hover:border-chart-3/40 transition-all',
+			badgeClass: 'bg-chart-3/10 text-chart-3',
+			cardClass: 'border-border/40 bg-card/50 transition-all',
 			icon: LayersIcon,
 			iconColor: 'text-chart-3 bg-chart-3/10',
 			description: m['onboarding.formats.cbr.desc'](),
-			features: [m['onboarding.formats.cbr.feature_1'](), m['onboarding.formats.cbr.feature_2']()]
+			features: [m['onboarding.formats.cbr.feature1'](), m['onboarding.formats.cbr.feature2']()]
 		},
 		{
 			extension: 'PDF',
 			name: m['onboarding.formats.pdf.title'](),
 			badge: m['onboarding.formats.pdf.badge'](),
-			badgeClass: 'bg-chart-1/10 text-chart-1 border-chart-1/30',
-			cardClass: 'border-border/40 bg-card/50 hover:border-chart-1/40 transition-all',
+			badgeClass: 'bg-chart-1/10 text-chart-1',
+			cardClass: 'border-border/40 bg-card/50 transition-all',
 			icon: FileTextIcon,
 			iconColor: 'text-chart-1 bg-chart-1/10',
 			description: m['onboarding.formats.pdf.desc'](),
-			features: [m['onboarding.formats.pdf.feature_1'](), m['onboarding.formats.pdf.feature_2']()]
+			features: [m['onboarding.formats.pdf.feature1'](), m['onboarding.formats.pdf.feature2']()]
 		}
 	]);
 </script>
@@ -52,7 +52,7 @@
 		<!-- Header -->
 		<div class="space-y-2 text-center">
 			<div
-				class="mb-2 inline-flex size-14 items-center justify-center rounded-2xl bg-chart-5/10 text-chart-5 shadow-inner"
+				class="mb-2 inline-flex size-14 items-center justify-center rounded-inner bg-chart-5/10 text-chart-5"
 			>
 				<FileArchiveIcon size={30} />
 			</div>
@@ -67,8 +67,8 @@
 			{#each formats as item}
 				<div
 					class={cn(
-						'group relative flex flex-col justify-between rounded-3xl border p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
-						'shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_8px_24px_rgba(0,0,0,0.4)]',
+						'group relative flex flex-col justify-between rounded-tile border p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-float',
+						'shadow-lift',
 						item.cardClass
 					)}
 				>
@@ -77,7 +77,7 @@
 						<div class="mb-5 flex items-center justify-between">
 							<div
 								class={cn(
-									'flex size-12 items-center justify-center rounded-2xl p-3 shadow-inner',
+									'flex size-12 items-center justify-center rounded-inner p-3',
 									item.iconColor
 								)}
 							>
@@ -85,7 +85,7 @@
 							</div>
 							<span
 								class={cn(
-									'rounded-full border px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-xs',
+									'rounded-full border px-3 py-1 text-[11px] font-bold tracking-wider uppercase',
 									item.badgeClass
 								)}
 							>
@@ -120,29 +120,29 @@
 
 		<!-- Bottom callout -->
 		<div
-			class="flex items-center gap-3.5 rounded-2xl border border-border/50 bg-card/40 p-4.5 text-xs text-muted-foreground backdrop-blur-md shadow-xs"
+			class="flex items-center gap-3.5 rounded-inner border border-border/50 bg-card/40 p-4.5 text-xs text-muted-foreground backdrop-blur-md"
 		>
 			<div
-				class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner"
+				class="flex size-9 shrink-0 items-center justify-center rounded-inner bg-primary/10 text-primary"
 			>
 				<SparklesIcon size={20} />
 			</div>
 			<p class="leading-normal">
 				<strong class="font-semibold text-foreground"
-					>{m['onboarding.formats.sync_note.title']()}</strong
+					>{m['onboarding.formats.syncNote.title']()}</strong
 				>
-				{m['onboarding.formats.sync_note.content']()}
+				{m['onboarding.formats.syncNote.content']()}
 			</p>
 		</div>
 
 		<!-- Actions -->
 		<div class="flex items-center justify-between pt-2">
-			<Button onclick={onPrev} variant="outline" class="rounded-xl px-6">
+			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
 				{m['onboarding.back']()}
 			</Button>
 			<Button
 				onclick={onNext}
-				class="rounded-xl px-8 font-semibold shadow-md transition-all hover:shadow-lg"
+				class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift"
 			>
 				{m['onboarding.next']()}
 			</Button>

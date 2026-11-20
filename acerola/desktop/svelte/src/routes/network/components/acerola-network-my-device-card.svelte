@@ -74,10 +74,10 @@
 		savingName = true;
 		try {
 			await events.onRenameDevice(trimmed);
-			toast.success(m['pages.network.my_device.rename.success']());
+			toast.success(m['pages.network.myDevice.rename.success']());
 			editingName = false;
 		} catch (err) {
-			toast.error(m['pages.network.my_device.rename.error']({ msg: String(err) }));
+			toast.error(m['pages.network.myDevice.rename.error']({ msg: String(err) }));
 		} finally {
 			savingName = false;
 		}
@@ -89,16 +89,16 @@
 		class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
 	>
 		<Share2Icon size={16} />
-		{m['pages.network.my_device.title']()}
+		{m['pages.network.myDevice.title']()}
 	</div>
 
 	{#if editingName}
-		<div class="flex items-center gap-3 rounded-3xl border border-border bg-card p-6">
+		<div class="flex items-center gap-3 rounded-tile border border-border bg-card p-6">
 			<AcerolaInput
 				state={{ value: nameDraft }}
 				events={{ onValueChange: (value) => (nameDraft = value) }}
 				ui={{
-					placeholder: m['pages.network.my_device.rename.placeholder'](),
+					placeholder: m['pages.network.myDevice.rename.placeholder'](),
 					class: 'flex-1',
 					disabled: savingName
 				}}
@@ -108,7 +108,7 @@
 				ui={{ size: 'sm', disabled: !nameDraft.trim() || savingName }}
 			>
 				<CheckIcon size={14} />
-				{m['pages.network.my_device.rename.save']()}
+				{m['pages.network.myDevice.rename.save']()}
 			</AcerolaButton>
 			<AcerolaButtonIcon
 				events={{ onClick: cancelEditingName }}
@@ -116,8 +116,8 @@
 					variant: 'ghost',
 					tone: 'muted',
 					disabled: savingName,
-					title: m['pages.network.my_device.rename.cancel'](),
-					'aria-label': m['pages.network.my_device.rename.cancel']()
+					title: m['pages.network.myDevice.rename.cancel'](),
+					'aria-label': m['pages.network.myDevice.rename.cancel']()
 				}}
 			>
 				<XIcon size={16} />
@@ -142,8 +142,8 @@
 						ui={{
 							variant: 'outline',
 							tone: 'accent',
-							title: m['pages.network.my_device.rename.action'](),
-							'aria-label': m['pages.network.my_device.rename.action']()
+							title: m['pages.network.myDevice.rename.action'](),
+							'aria-label': m['pages.network.myDevice.rename.action']()
 						}}
 					>
 						<PencilIcon size={14} />
@@ -158,7 +158,7 @@
 					{:else}
 						<CopyIcon size={14} />
 					{/if}
-					{m['pages.network.my_device.copy_id']()}
+					{m['pages.network.myDevice.copyId']()}
 				</AcerolaButton>
 			{/snippet}
 		</AcerolaHeroButton>
@@ -166,7 +166,7 @@
 
 	<p class="px-2 text-xs text-muted-foreground">
 		{safeData.mode === 'relay'
-			? m['pages.network.my_device.mode_relay']()
-			: m['pages.network.my_device.mode_local']()}
+			? m['pages.network.myDevice.modeRelay']()
+			: m['pages.network.myDevice.modeLocal']()}
 	</p>
 </section>

@@ -51,14 +51,14 @@
 	<div class="absolute inset-0 z-40">
 		<button
 			type="button"
-			aria-label={m['pages.reader.actions.close_commands']()}
+			aria-label={m['pages.reader.actions.closeCommands']()}
 			class="absolute inset-0 bg-base/20 backdrop-blur-[2px]"
 			onclick={closeCommand}
 			transition:fade={{ duration: 120 }}
 		></button>
 
 		<div
-			class="absolute top-1/2 left-1/2 w-[min(34rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-surface/50 bg-base/95 shadow-2xl shadow-crust/60"
+			class="absolute top-1/2 left-1/2 w-[min(34rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-inner border border-surface/50 bg-base/95 shadow-float shadow-crust/60"
 			transition:scale={{ start: 0.97, duration: 120 }}
 		>
 			<AcerolaCommand
@@ -69,23 +69,23 @@
 					<Command.Input placeholder={m['pages.reader.command.placeholder']()} autofocus />
 
 					<Command.List class="p-1">
-						<Command.Group heading={m['pages.reader.command.zoom_group']()}>
+						<Command.Group heading={m['pages.reader.command.zoomGroup']()}>
 							<Command.Item
-								value={m['pages.reader.command.search.toggle_zoom']()}
+								value={m['pages.reader.command.search.toggleZoom']()}
 								class="cursor-pointer"
 								onSelect={() => runCommand(events.onToggleZoomMode)}
 							>
 								<Focus size={16} />
 								<span>
 									{data.zoomMode
-										? m['pages.reader.command.mode.disable_zoom']()
-										: m['pages.reader.command.mode.enable_zoom']()}
+										? m['pages.reader.command.mode.disableZoom']()
+										: m['pages.reader.command.mode.enableZoom']()}
 								</span>
 								<Command.Shortcut>Z</Command.Shortcut>
 							</Command.Item>
 
 							<Command.Item
-								value={m['pages.reader.command.search.zoom_in']()}
+								value={m['pages.reader.command.search.zoomIn']()}
 								class="cursor-pointer"
 								onSelect={() => runCommand(events.onZoomIn)}
 							>
@@ -95,7 +95,7 @@
 							</Command.Item>
 
 							<Command.Item
-								value={m['pages.reader.command.search.zoom_out']()}
+								value={m['pages.reader.command.search.zoomOut']()}
 								class="cursor-pointer"
 								onSelect={() => runCommand(events.onZoomOut)}
 							>
@@ -105,7 +105,7 @@
 							</Command.Item>
 
 							<Command.Item
-								value={m['pages.reader.command.search.reset_zoom']()}
+								value={m['pages.reader.command.search.resetZoom']()}
 								class="cursor-pointer"
 								onSelect={() => runCommand(events.onResetZoom)}
 							>
@@ -115,7 +115,7 @@
 							</Command.Item>
 						</Command.Group>
 
-						<Command.Group heading={m['pages.reader.command.reading_group']()}>
+						<Command.Group heading={m['pages.reader.command.readingGroup']()}>
 							<Command.Item
 								value={m['pages.reader.command.search.vertical']()}
 								class="cursor-pointer"

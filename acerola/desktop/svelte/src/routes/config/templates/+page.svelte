@@ -54,7 +54,7 @@
 
 	onMount(() => {
 		templateStore.loadTemplates().catch((err: unknown) => {
-			toast.error(m['pages.config.templates.toast.load_error']({ msg: extractErrorMessage(err) }));
+			toast.error(m['pages.config.templates.toast.loadError']({ msg: extractErrorMessage(err) }));
 		});
 	});
 
@@ -76,12 +76,12 @@
 		try {
 			const fullPattern = newSortType === 'Chapter' ? `${newPattern}{extension}` : newPattern;
 			const created = await templateStore.createTemplate(newLabel, fullPattern, newSortType);
-			toast.success(m['pages.config.templates.toast.create_success']({ label: created.label }));
+			toast.success(m['pages.config.templates.toast.createSuccess']({ label: created.label }));
 			newLabel = '';
 			newPattern = '';
 		} catch (err: unknown) {
 			toast.error(
-				m['pages.config.templates.toast.create_error']({ msg: extractErrorMessage(err) })
+				m['pages.config.templates.toast.createError']({ msg: extractErrorMessage(err) })
 			);
 		} finally {
 			isCreating = false;
@@ -93,10 +93,10 @@
 
 		try {
 			await templateStore.deleteTemplate(templateToDelete.id);
-			toast.success(m['pages.config.templates.toast.delete_success']());
+			toast.success(m['pages.config.templates.toast.deleteSuccess']());
 		} catch (err: unknown) {
 			toast.error(
-				m['pages.config.templates.toast.delete_error']({ msg: extractErrorMessage(err) })
+				m['pages.config.templates.toast.deleteError']({ msg: extractErrorMessage(err) })
 			);
 		} finally {
 			templateToDelete = null;
@@ -131,55 +131,55 @@
 
 		{#snippet children()}
 			<div class="grid gap-3 sm:grid-cols-2">
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
 					<code class="text-sm font-bold text-primary">{'{chapter}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_chapter_desc']()}
+						{m['pages.config.templates.help.macroChapterDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
 					<code class="text-sm font-bold text-primary">{'{volume}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_volume_desc']()}
+						{m['pages.config.templates.help.macroVolumeDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
 					<code class="text-sm font-bold text-primary">{'{decimal}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_decimal_desc']()}
+						{m['pages.config.templates.help.macroDecimalDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
 					<code class="text-sm font-bold text-primary">{'{extension}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_extension_desc']()}
+						{m['pages.config.templates.help.macroExtensionDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3 sm:col-span-2">
+				<div class="rounded-inner border border-border/40 bg-background/50 p-3 sm:col-span-2">
 					<code class="text-sm font-bold text-primary">*</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.wildcard_desc']()}
+						{m['pages.config.templates.help.wildcardDesc']()}
 					</p>
 				</div>
 			</div>
 
 			<div class="mt-5 grid gap-3 sm:grid-cols-2">
-				<div class="rounded-xl bg-muted/30 p-3">
+				<div class="rounded-inner bg-muted/30 p-3">
 					<p class="text-xs font-semibold text-foreground">
-						{m['pages.config.templates.help.example_chapter_label']()}
+						{m['pages.config.templates.help.exampleChapterLabel']()}
 					</p>
 					<code class="mt-1 block truncate text-xs text-muted-foreground">{CHAPTER_EXAMPLE}</code>
 					<p class="mt-1 text-xs text-muted-foreground/80">
-						{m['pages.config.templates.help.example_chapter_match']()}
+						{m['pages.config.templates.help.exampleChapterMatch']()}
 					</p>
 				</div>
-				<div class="rounded-xl bg-muted/30 p-3">
+				<div class="rounded-inner bg-muted/30 p-3">
 					<p class="text-xs font-semibold text-foreground">
-						{m['pages.config.templates.help.example_volume_label']()}
+						{m['pages.config.templates.help.exampleVolumeLabel']()}
 					</p>
 					<code class="mt-1 block truncate text-xs text-muted-foreground">{VOLUME_EXAMPLE}</code>
 					<p class="mt-1 text-xs text-muted-foreground/80">
-						{m['pages.config.templates.help.example_volume_match']()}
+						{m['pages.config.templates.help.exampleVolumeMatch']()}
 					</p>
 				</div>
 			</div>
@@ -190,7 +190,7 @@
 	<AcerolaCard data={{ title: m['pages.config.templates.form.title']() }}>
 		<div class="space-y-4">
 			<div class="space-y-1">
-				<span class="text-xs font-semibold">{m['pages.config.templates.form.sort_type']()}</span>
+				<span class="text-xs font-semibold">{m['pages.config.templates.form.sortType']()}</span>
 				<AcerolaToggleGroup
 					state={{ value: newSortType }}
 					events={{
@@ -200,10 +200,10 @@
 					ui={{ variant: 'outline' }}
 				>
 					<ToggleGroup.Item value="Chapter" class="px-4">
-						{m['pages.config.templates.form.sort_type_chapter']()}
+						{m['pages.config.templates.form.sortTypeChapter']()}
 					</ToggleGroup.Item>
 					<ToggleGroup.Item value="Volume" class="px-4">
-						{m['pages.config.templates.form.sort_type_volume']()}
+						{m['pages.config.templates.form.sortTypeVolume']()}
 					</ToggleGroup.Item>
 				</AcerolaToggleGroup>
 			</div>
@@ -218,7 +218,7 @@
 						events={{ onValueChange: (value) => (newLabel = value) }}
 						ui={{
 							id: 'templateLabel',
-							placeholder: m['pages.config.templates.form.label_placeholder'](),
+							placeholder: m['pages.config.templates.form.labelPlaceholder'](),
 							class: 'w-full bg-background'
 						}}
 					/>
@@ -283,7 +283,7 @@
 
 					{#if newSortType === 'Chapter'}
 						<p class="text-xs text-muted-foreground/80">
-							{m['pages.config.templates.form.extension_auto_hint']()}
+							{m['pages.config.templates.form.extensionAutoHint']()}
 						</p>
 					{/if}
 				</div>
@@ -308,7 +308,7 @@
 
 	<!-- Listagem -->
 	<section class="grid gap-8 sm:grid-cols-2">
-		{#each [{ title: m['pages.config.templates.list.chapter_title'](), items: chapterTemplates, empty: m['pages.config.templates.list.empty_chapter']() }, { title: m['pages.config.templates.list.volume_title'](), items: volumeTemplates, empty: m['pages.config.templates.list.empty_volume']() }] as group (group.title)}
+		{#each [{ title: m['pages.config.templates.list.chapterTitle'](), items: chapterTemplates, empty: m['pages.config.templates.list.emptyChapter']() }, { title: m['pages.config.templates.list.volumeTitle'](), items: volumeTemplates, empty: m['pages.config.templates.list.emptyVolume']() }] as group (group.title)}
 			<div class="space-y-3">
 				<h2 class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
 					{group.title}
@@ -316,7 +316,7 @@
 
 				{#if group.items.length === 0}
 					<div
-						class="rounded-xl border border-dashed border-border/40 p-6 text-center text-sm text-muted-foreground"
+						class="rounded-inner border border-dashed border-border/40 p-6 text-center text-sm text-muted-foreground"
 					>
 						{group.empty}
 					</div>
@@ -324,18 +324,18 @@
 					<div class="space-y-2" use:autoAnimateList>
 						{#each group.items as template (template.id)}
 							<div
-								class="flex items-center justify-between gap-3 rounded-xl border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
+								class="flex items-center justify-between gap-3 rounded-inner border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
 							>
 								<div class="min-w-0">
 									<div class="flex items-center gap-2">
 										<span class="truncate font-medium">{template.label}</span>
 										{#if template.is_default}
 											<span
-												title={m['pages.config.templates.list.default_hint']()}
+												title={m['pages.config.templates.list.defaultHint']()}
 												class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary uppercase"
 											>
 												<LockIcon size={10} />
-												{m['pages.config.templates.list.default_badge']()}
+												{m['pages.config.templates.list.defaultBadge']()}
 											</span>
 										{/if}
 									</div>
@@ -369,12 +369,12 @@
 <AcerolaAlertDialog
 	state={{ open: templateToDelete !== null }}
 	data={{
-		title: m['pages.config.templates.delete_confirm.title'](),
+		title: m['pages.config.templates.deleteConfirm.title'](),
 		description: templateToDelete
-			? m['pages.config.templates.delete_confirm.desc']({ label: templateToDelete.label })
+			? m['pages.config.templates.deleteConfirm.desc']({ label: templateToDelete.label })
 			: '',
-		cancelText: m['pages.config.templates.delete_confirm.cancel'](),
-		actionText: m['pages.config.templates.delete_confirm.action']()
+		cancelText: m['pages.config.templates.deleteConfirm.cancel'](),
+		actionText: m['pages.config.templates.deleteConfirm.action']()
 	}}
 	events={{
 		onAction: handleDelete,
