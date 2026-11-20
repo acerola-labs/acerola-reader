@@ -138,12 +138,12 @@ fun Comic.Component.ChapterItem(
                                     shape = CircleShape,
                                 ),
                     )
-                // Mesma ideia do círculo de "lido" (ícone principal + cor diferente), mas com
-                // preenchimento tintado (alpha) em vez de sólido: testei `onError` sobre `error`
-                // sólido (o par que seria o equivalente direto de onPrimary/primary) e ele falha
-                // contraste em dois temas — Dracula (2.95:1) e Alucard (1.01:1, praticamente sem
-                // distinção). Tintado, o ícone continua na cor `error` pura (não `onError`), que
-                // já passa em todos os temas contra o fundo por trás.
+                // Same idea as the "read" circle (main icon + different color), but with a
+                // tinted fill (alpha) instead of solid: I tested `onError` over solid `error`
+                // (the pair that would be the direct equivalent of onPrimary/primary) and it fails
+                // contrast in two themes — Dracula (2.95:1) and Alucard (1.01:1, practically no
+                // distinction). Tinted, the icon stays in pure `error` color (not `onError`), which
+                // already passes in every theme against the background behind it.
                 hasConflict ->
                     ChapterLeadingIcon(
                         icon = Icons.Default.Warning,
@@ -183,10 +183,10 @@ fun Comic.Component.ChapterItem(
                 )
             }
 
-            // Mesma estrutura do pill de "Lido" (só texto, sem ícone repetido — o ícone já
-            // aparece no círculo principal à esquerda). `error` como texto falha 4.5:1 em
-            // Nord (3.03~3.55:1), por isso o texto usa `onSurfaceVariant` (par já confiável
-            // em todo o app) — só o círculo à esquerda carrega a cor de alerta.
+            // Same structure as the "Read" pill (text only, no repeated icon — the icon already
+            // shows in the main circle on the left). `error` as text fails 4.5:1 in
+            // Nord (3.03~3.55:1), so the text uses `onSurfaceVariant` (a pair already trusted
+            // across the app) — only the circle on the left carries the alert color.
             if (hasConflict) {
                 Surface(
                     shape = AcerolaShapes.Full,

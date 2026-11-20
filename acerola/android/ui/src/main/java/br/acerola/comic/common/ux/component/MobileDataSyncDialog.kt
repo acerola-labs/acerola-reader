@@ -25,11 +25,11 @@ import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
 
 /**
- * Diálogo compartilhado por QUALQUER tela que dispare uma sincronização P2P enquanto o
- * dispositivo está em dados móveis (ver `MobileDataSyncGate`/`MobileDataSyncViewModel`) — montado
- * uma única vez na raiz do app (`br.acerola.comic.common.activity.BaseActivity`), não dentro de
- * uma tela específica, já que Home/Histórico/Quadrinho/Biblioteca remota/Sync podem disparar essa
- * confirmação cada uma pelo seu próprio caminho.
+ * Dialog shared by ANY screen that fires a P2P sync while the
+ * device is on mobile data (see `MobileDataSyncGate`/`MobileDataSyncViewModel`) — mounted
+ * only once at the app root (`br.acerola.comic.common.activity.BaseActivity`), not inside
+ * a specific screen, since Home/History/Comic/Remote library/Sync can each fire this
+ * confirmation through their own path.
  */
 @Composable
 fun Acerola.Component.MobileDataSyncDialog(

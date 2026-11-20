@@ -50,7 +50,7 @@ class ChapterSectionPaginationTest {
             )
 
         composeTestRule.setContent {
-            // Altura pequena para simular que o final NÃO está visível
+            // Small height to simulate that the end is NOT visible
             LazyColumn(modifier = Modifier.height(200.dp)) {
                 Comic.Template.chapterSection(
                     scope = this,
@@ -61,7 +61,7 @@ class ChapterSectionPaginationTest {
                     onToggleRead = {},
                     onPageChange = {},
                     volumeViewMode = VolumeViewType.VOLUME,
-                    activeVolumeId = 10L, // Expandido
+                    activeVolumeId = 10L, // Expanded
                     onLoadVolumeChaptersPage = { _, page -> calls.add(page) },
                 )
             }
@@ -77,7 +77,7 @@ class ChapterSectionPaginationTest {
         val calls = mutableListOf<Int>()
         val volume1 = VolumeArchiveDto(id = 10L, name = "Vol. 1", volumeSort = "1", isSpecial = false)
 
-        // Simula uma lista pequena que cabe na tela
+        // Simulates a small list that fits on the screen
         val chapters =
             ChapterDto(
                 archive =
@@ -103,7 +103,7 @@ class ChapterSectionPaginationTest {
             )
 
         composeTestRule.setContent {
-            // Altura grande para garantir que o trigger esteja visível
+            // Large height to make sure the trigger is visible
             LazyColumn(modifier = Modifier.height(1000.dp)) {
                 Comic.Template.chapterSection(
                     scope = this,

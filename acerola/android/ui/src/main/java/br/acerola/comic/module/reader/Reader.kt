@@ -1,7 +1,7 @@
 package br.acerola.comic.module.reader
 
 /**
- * Namespace para componentes, layouts e gestos específicos do Leitor.
+ * Namespace for components, layouts and gestures specific to the Reader.
  */
 object Reader {
     object Component

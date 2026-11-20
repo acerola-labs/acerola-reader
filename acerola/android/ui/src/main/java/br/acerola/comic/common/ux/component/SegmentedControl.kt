@@ -24,10 +24,10 @@ import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
-/** Pílula de N opções mutuamente exclusivas — para trocar de aba dentro de um mesmo
- *  contexto (ex.: "Meu código" / "Conectar" no sheet de pareamento), diferente de
- *  [Acerola.Component.RadioGroup], que representa a seleção de uma entre várias opções
- *  de uma lista de configuração. */
+/** Pill of N mutually exclusive options — for switching tabs within the same
+ *  context (e.g. "My code" / "Connect" in the pairing sheet), unlike
+ *  [Acerola.Component.RadioGroup], which represents picking one of several options
+ *  in a settings list. */
 @Composable
 fun Acerola.Component.SegmentedControl(
     options: List<String>,

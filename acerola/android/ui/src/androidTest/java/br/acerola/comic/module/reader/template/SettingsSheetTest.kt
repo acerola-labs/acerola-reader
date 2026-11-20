@@ -23,7 +23,7 @@ class SettingsSheetTest {
             )
         }
 
-        // Os textos devem coincidir com strings.xml (Paginado para Horizontal)
+        // The texts must match strings.xml (Paginated for Horizontal)
         composeTestRule.onNodeWithText("Layout de Leitura", substring = true, useUnmergedTree = true).assertExists()
         composeTestRule.onNodeWithText("Paginado", substring = true, useUnmergedTree = true).assertExists()
         composeTestRule.onNodeWithText("Vertical", substring = true, useUnmergedTree = true).assertExists()

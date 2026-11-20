@@ -26,7 +26,7 @@ class TabsTest {
             }
         }
 
-        // Verifica se o texto formatado com o número de capítulos aparece
+        // Checks that the text formatted with the chapter count shows up
         composeTestRule.onNodeWithText("150", substring = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Capítulos", substring = true).assertIsDisplayed()
     }
@@ -44,7 +44,7 @@ class TabsTest {
             }
         }
 
-        // Clica na aba de configurações (ou a segunda aba)
+        // Clicks the settings tab (or the second tab)
         composeTestRule.onNodeWithText("Configurações", substring = true).performClick()
 
         assert(selectedTab == MainTab.SETTINGS)

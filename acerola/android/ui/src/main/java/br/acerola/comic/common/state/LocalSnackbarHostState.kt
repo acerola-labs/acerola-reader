@@ -5,6 +5,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 val LocalSnackbarHostState =
     staticCompositionLocalOf<SnackbarHostState> {
         error(
-            "LocalSnackbarHostState não foi provido. Envolva o conteúdo com CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState).",
+            "LocalSnackbarHostState was not provided. Wrap the content with CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState).",
         )
     }

@@ -199,8 +199,8 @@ private fun SyncLayout(
         snackbarHostState.showSnackbar(message, SnackbarVariant.Error)
     }
 
-    // Um código válido já resolve o propósito do sheet (o diálogo de confirmação assume
-    // o resto do fluxo) — sem isso, o sheet ficava aberto atrás do diálogo sem necessidade.
+    // A valid code already fulfills the sheet's purpose (the confirmation dialog takes over
+    // the rest of the flow) — without this, the sheet stayed open behind the dialog needlessly.
     LaunchedEffect(uiState.pendingConnect) {
         if (uiState.pendingConnect != null) {
             showAddDeviceSheet = false
@@ -251,10 +251,10 @@ private fun SyncLayout(
             }
         },
     ) { paddingValues ->
-        // `MainActivity` renderiza a `BottomBar` como irmã, fora do Scaffold de cada tela
-        // (`applyScaffoldPadding = false`) — o `paddingValues` daqui só cobre os insets do
-        // sistema, não os 64dp da barra em si. Mesmo tratamento de `HistoryScreen.kt`/
-        // `HomeScreen.kt`: escondida em paisagem (vira `SideBar`), então não reserva nada aí.
+        // `MainActivity` renders the `BottomBar` as a sibling, outside each screen's Scaffold
+        // (`applyScaffoldPadding = false`) — the `paddingValues` here only cover the system
+        // insets, not the bar's own 64dp. Same handling as `HistoryScreen.kt`/
+        // `HomeScreen.kt`: hidden in landscape (becomes `SideBar`), so nothing is reserved there.
         val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         val bottomBarClearance = if (isLandscape) 0.dp else 64.dp
 
@@ -417,9 +417,9 @@ private fun ThisDeviceSection(
         }
     }
 
-    // Apelido custom estilo LocalSend — edição inline em vez de um dialog separado, já que é
-    // um campo único e essa tela já é o lugar natural pra mexer nisso (mesma abordagem do
-    // lado desktop, ver `acerola-network-my-device-card.svelte`).
+    // LocalSend-style custom alias — inline editing instead of a separate dialog, since it's
+    // a single field and this screen is already the natural place to change it (same approach as
+    // the desktop side, see `acerola-network-my-device-card.svelte`).
     var editingName by remember { mutableStateOf(false) }
     var nameDraft by remember { mutableStateOf("") }
 
@@ -559,14 +559,13 @@ private fun RelaySettingsCard(
         onToggleExpanded = { expanded = !expanded },
         modifier = Modifier.fillMaxWidth(),
     ) {
-        // 3 cards ativados (borda/fundo destacados + selo de check quando ativo) no lugar dos
-        // switches crus — mesmo formato do acerola-network-relay-settings-card.svelte do
-        // desktop.
+        // 3 toggle cards (highlighted border/background + check badge when active) instead of
+        // raw switches — same format as the desktop's acerola-network-relay-settings-card.svelte.
         var customExpanded by remember { mutableStateOf(false) }
         var ticketExpanded by remember { mutableStateOf(!relaySettings.hasIrohServicesTicket) }
-        // Trocar a fonte de relay ativa reconstrói o node P2P com um `RelayMap` diferente —
-        // peers pareados que não convergirem pro mesmo relay ficam inalcançáveis até isso
-        // acontecer. Confirma antes de aplicar, em vez de trocar direto no clique.
+        // Switching the active relay source rebuilds the P2P node with a different `RelayMap` —
+        // paired peers that don't converge on the same relay stay unreachable until that
+        // happens. Confirms before applying, instead of switching right on click.
         var pendingRelayAction by remember { mutableStateOf<SyncAction?>(null) }
 
         Acerola.Component.ToggleCard(
@@ -687,7 +686,7 @@ private fun RelaySettingsCard(
     }
 }
 
-/** Confirma antes de trocar a fonte de relay ativa — ver comentário em [RelaySettingsCard]. */
+/** Confirms before switching the active relay source — see the comment in [RelaySettingsCard]. */
 @Composable
 private fun SwitchRelayConfirmDialog(
     onConfirm: () -> Unit,
@@ -714,10 +713,10 @@ private fun SwitchRelayConfirmDialog(
     }
 }
 
-/** Botão manual "Reiniciar" (estilo LocalSend) — desliga o node P2P atual e sobe um novo do
- *  zero, mesma identidade/storage/peers pareados. Escape hatch pra quando a troca ao vivo de
- *  relay (switches acima) não é suficiente sozinha, ex: conexão presa depois de uma troca de
- *  rede física do SO que [P2pService.notifyNetworkChange] não resolveu. */
+/** Manual "Restart" button (LocalSend style) — shuts down the current P2P node and starts a new one
+ *  from scratch, same identity/storage/paired peers. Escape hatch for when the live relay switch
+ *  (switches above) isn't enough on its own, e.g. a connection stuck after an OS physical
+ *  network change that [P2pService.notifyNetworkChange] didn't resolve. */
 @Composable
 private fun RestartSection(
     restarting: Boolean,
@@ -788,10 +787,10 @@ private fun RestartSection(
     }
 }
 
-/** Ticket da conta do PRÓPRIO usuário em `services.iroh.computer` — nunca um secret de projeto
- *  embutido no build (ver `RelayModeConfig::IrohDefault` do lado Rust). O valor em si nunca é
- *  exibido de volta (é uma credencial real, guardada no cofre criptografado do node) — só
- *  [hasTicket] chega aqui. */
+/** Ticket for the user's OWN account at `services.iroh.computer` — never a project secret
+ *  embedded in the build (see `RelayModeConfig::IrohDefault` on the Rust side). The value itself is
+ *  never shown back (it's a real credential, stored in the node's encrypted vault) — only
+ *  [hasTicket] reaches here. */
 @Composable
 private fun IrohServicesTicketSection(
     hasTicket: Boolean,
@@ -831,9 +830,9 @@ private fun IrohServicesTicketSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        // Campo em linha própria, largura cheia — na versão anterior ele dividia a linha com o
-        // botão "Salvar ticket", o que espremia o campo a ponto do placeholder (bem mais longo
-        // que qualquer URL de relay) quebrar em 4 linhas e inflar a caixa inteira.
+        // Field on its own row, full width — in the previous version it shared the row with the
+        // "Save ticket" button, which squeezed the field so much that the placeholder (much longer
+        // than any relay URL) wrapped into 4 lines and inflated the whole box.
         OutlinedTextField(
             value = draft,
             onValueChange = {
@@ -862,8 +861,8 @@ private fun IrohServicesTicketSection(
             )
         }
 
-        // Ações numa linha própria, alinhadas à direita — evita competir por espaço com o campo
-        // acima em telas estreitas.
+        // Actions on their own row, right-aligned — avoids competing for space with the field
+        // above on narrow screens.
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -908,9 +907,9 @@ private fun IrohServicesTicketSection(
     }
 }
 
-/** Espelha o comportamento das listas de relay próprio/Iroh do Desktop
- *  (`acerola-network-relay-settings-card.svelte`): valida a URL (http/https) antes de aceitar,
- *  desabilita edição enquanto a rede pública do Iroh estiver ativa (mutuamente exclusiva). */
+/** Mirrors the behavior of the Desktop's own/Iroh relay lists
+ *  (`acerola-network-relay-settings-card.svelte`): validates the URL (http/https) before accepting,
+ *  disables editing while the Iroh public network is active (mutually exclusive). */
 @Composable
 private fun RelayUrlListEditor(
     title: String,
@@ -1082,12 +1081,12 @@ private fun PeerRow(
     val filesSyncing = syncKey(peer.peerId, SYNC_KIND_FILES) in syncingKeys
     val anySyncing = historySyncing || filesSyncing
     var menuExpanded by remember { mutableStateOf(false) }
-    // "Sincronizar tudo" dispara histórico + arquivos de uma vez — pedido explícito de
-    // confirmação antes, já que não dá pra saber de antemão o volume de dados envolvido.
+    // "Sync all" fires history + files at once — asks for explicit confirmation first,
+    // since there's no way to know the data volume involved beforehand.
     var showSyncAllConfirm by remember { mutableStateOf(false) }
 
-    // Apelido local — edição inline substitui o card do peer, mesmo padrão de
-    // `ThisDeviceSection` pro nome do próprio dispositivo.
+    // Local nickname — inline editing replaces the peer card, same pattern as
+    // `ThisDeviceSection` for the device's own name.
     var editingNickname by remember { mutableStateOf(false) }
     var nicknameDraft by remember { mutableStateOf("") }
 
@@ -1136,9 +1135,9 @@ private fun PeerRow(
         return
     }
 
-    // Pisca o ícone de sucesso por um instante quando uma sessão termina bem — mesma ideia
-    // do SyncActionIcon usado em SyncLibraryArchive — em vez de voltar direto pro ícone
-    // ocioso sem nenhum feedback de que a sync deu certo.
+    // Flashes the success icon for a moment when a session ends well — same idea as the
+    // SyncActionIcon used in SyncLibraryArchive — instead of going straight back to the idle
+    // icon with no feedback that the sync worked.
     var showSuccess by remember(peer.peerId) { mutableStateOf(false) }
     LaunchedEffect(lastResult) {
         if (lastResult?.state == LogState.SUCCESS) {
@@ -1295,11 +1294,11 @@ private fun PeerRow(
                     modifier =
                         Modifier
                             .align(Alignment.BottomEnd)
-                            // O ícone fica dentro de uma Surface arredondada (AcerolaShapes.Inner,
-                            // 16dp) que recorta o próprio conteúdo — encostada em (0, 0) do
-                            // BottomEnd, a bolinha cai fora do arco do canto e é cortada. Esse
-                            // deslocamento pra dentro é o suficiente pra ela ficar inteira dentro
-                            // da curva.
+                            // The icon sits inside a rounded Surface (AcerolaShapes.Inner,
+                            // 16dp) that clips its own content — flush at (0, 0) of
+                            // BottomEnd, the dot falls outside the corner arc and gets clipped. This
+                            // inward offset is enough for it to stay whole inside
+                            // the curve.
                             .offset(x = (-4).dp, y = (-4).dp)
                             .size(12.dp)
                             .background(MaterialTheme.colorScheme.surface, CircleShape)
@@ -1325,7 +1324,7 @@ private fun PeerRow(
     }
 }
 
-/** Confirma antes de disparar histórico + arquivos de uma vez — ver comentário em [PeerRow]. */
+/** Confirms before firing history + files at once — see the comment in [PeerRow]. */
 @Composable
 private fun SyncAllConfirmDialog(
     peer: PairedPeer,
@@ -1669,11 +1668,11 @@ private fun SecurityNote() {
     }
 }
 
-/** Gatilho pro histórico completo — igual ao localSend: uma tela própria (ver
+/** Entry point to the full history — like LocalSend: its own screen (see
  *  [br.acerola.comic.module.main.transferlog.TransferLogActivity]/
- *  [br.acerola.comic.module.main.transferlog.TransferLogViewModel]), não um dialog/sheet/
- *  accordion espremido dentro da tela de Rede. Aqui só mostra a última entrada conhecida como
- *  prévia. */
+ *  [br.acerola.comic.module.main.transferlog.TransferLogViewModel]), not a dialog/sheet/
+ *  accordion squeezed inside the Network screen. Here it only shows the latest known entry as a
+ *  preview. */
 @Composable
 private fun ActivityLogCard(uiState: SyncUiState) {
     val context = LocalContext.current
@@ -1821,9 +1820,9 @@ private fun previewUiState() =
             ),
     )
 
-/** [SyncLayout] (e as telas que ele monta, como [MyCodeTabContent]) lê [LocalSnackbarHostState]
- *  incondicionalmente, que não tem default e lança se não for provido — todo preview precisa
- *  de um, mesmo os que nunca mostram de fato um snackbar. */
+/** [SyncLayout] (and the screens it builds, like [MyCodeTabContent]) reads [LocalSnackbarHostState]
+ *  unconditionally, which has no default and throws if not provided — every preview needs
+ *  one, even those that never actually show a snackbar. */
 @Composable
 private fun PreviewSyncLayout(uiState: SyncUiState) {
     AcerolaTheme {
@@ -1869,13 +1868,13 @@ private fun SyncLayoutEmptyPreview() {
     PreviewSyncLayout(uiState = SyncUiState())
 }
 
-@Preview(name = "Add device - Meu código", showBackground = true)
+@Preview(name = "Add device - My code", showBackground = true)
 @Composable
 private fun AddDeviceSheetMyCodePreview() {
     PreviewAddDeviceSheetContent(uiState = previewUiState(), selectedTab = 0)
 }
 
-@Preview(name = "Add device - Conectar (erro)", showBackground = true)
+@Preview(name = "Add device - Connect (error)", showBackground = true)
 @Composable
 private fun AddDeviceSheetConnectErrorPreview() {
     PreviewAddDeviceSheetContent(uiState = previewUiState().copy(connectError = ConnectError.INVALID_CODE), selectedTab = 1)

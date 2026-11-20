@@ -65,9 +65,9 @@ fun Comic.Component.SyncMetadata(
     }
 }
 
-// Mangadex+AniList isolados do ComicInfo (que não depende de sync externa) — usados dentro do
-// `content` expansível do ToggleCard de sync externa em ConfigSection.kt, mesmo agrupamento do
-// `AcerolaToggleCard` do desktop (acerola-comic-preferences.svelte).
+// Mangadex+AniList split from ComicInfo (which doesn't depend on external sync) — used inside the
+// expandable `content` of the external sync ToggleCard in ConfigSection.kt, same grouping as the
+// desktop's `AcerolaToggleCard` (acerola-comic-preferences.svelte).
 @Composable
 fun Comic.Component.ExternalMetadataSync(
     remoteInfo: ComicMetadataDto?,

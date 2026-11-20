@@ -212,14 +212,14 @@ fun Main.Home.Component.HomeFilterSheet(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Opção Todos
+                // "All" option
                 FilterChip(
                     selected = filterSettings.metadataSource == null,
                     onClick = { onFilterChange(filterSettings.copy(metadataSource = null)) },
                     label = { Text(stringResource(id = R.string.label_filter_all)) },
                 )
 
-                // Fontes do Enum
+                // Sources from the Enum
                 MetadataSource.entries.forEach { source ->
                     val label =
                         when (source) {
@@ -235,7 +235,7 @@ fun Main.Home.Component.HomeFilterSheet(
                     )
                 }
 
-                // Opção Sem metadados
+                // "No metadata" option
                 FilterChip(
                     selected = filterSettings.metadataSource == "NONE",
                     onClick = { onFilterChange(filterSettings.copy(metadataSource = "NONE")) },

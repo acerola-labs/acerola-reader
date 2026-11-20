@@ -71,9 +71,9 @@ class ConfigScreenTest {
             }
         }
 
-        // Categorias agora são cabeçalhos de Acerola.Component.AccordionCard (ver
-        // ConfigScreen.kt) em vez do antigo SectionHeader com .uppercase() — o texto exibido
-        // é o valor exato do strings.xml, sem transformação de caixa.
+        // Categories are now Acerola.Component.AccordionCard headers (see
+        // ConfigScreen.kt) instead of the old SectionHeader with .uppercase() — the displayed text
+        // is the exact strings.xml value, with no case transformation.
         composeTestRule
             .onNodeWithText("Categorias e Marcações", useUnmergedTree = true)
             .performScrollTo()

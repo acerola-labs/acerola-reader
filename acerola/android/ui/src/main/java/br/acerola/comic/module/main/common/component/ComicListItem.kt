@@ -348,9 +348,9 @@ fun Main.Common.Component.ComicListItem(
                     }
                 }
 
-                // Pending sync conflicts — mesma receita do Rating/Chapter Count (ícone +
-                // texto sem chip preenchido): `error` sozinho sobre o fundo da linha já passa
-                // em todos os temas (verificado), um fundo atrás do ícone não passava no
+                // Pending sync conflicts — same recipe as Rating/Chapter Count (icon +
+                // text with no filled chip): `error` alone over the row background already passes
+                // in every theme (verified), a background behind the icon didn't pass in
                 // Catppuccin Light.
                 if (conflictCount > 0) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {

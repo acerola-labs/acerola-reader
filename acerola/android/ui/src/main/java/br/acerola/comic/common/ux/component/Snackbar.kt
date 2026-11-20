@@ -53,11 +53,11 @@ fun Acerola.Component.SnackbarError(
     )
 }
 
-// `successContainer`/`onSuccessContainer` não `secondaryContainer`/`tertiaryContainer` do tema:
-// na paleta esses papéis mapeiam pra tons neutros de superfície ou pra cores de destaque sem
-// nada de verde — "sucesso" precisa ler como sucesso. Os papéis extras vêm de
-// AcerolaExtendedTheme, com o par `--success-soft`/`--success` da paleta (ver Theme.kt), então
-// a cor acompanha o claro/escuro em vez de ser um verde fixo que destoa do resto da UI.
+// `successContainer`/`onSuccessContainer`, not the theme's `secondaryContainer`/`tertiaryContainer`:
+// in the palette those roles map to neutral surface tones or to accent colors with
+// no green at all — "success" needs to read as success. The extra roles come from
+// AcerolaExtendedTheme, with the palette's `--success-soft`/`--success` pair (see Theme.kt), so
+// the color follows light/dark instead of being a fixed green that clashes with the rest of the UI.
 @Composable
 fun Acerola.Component.SnackbarSuccess(
     message: String,

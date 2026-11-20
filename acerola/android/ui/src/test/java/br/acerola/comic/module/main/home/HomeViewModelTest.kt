@@ -356,9 +356,9 @@ class HomeViewModelTest {
 
             viewModel.syncComicWithPeer("peer-1", "One Piece", SyncDirection.PULL)
 
-            // Confirma que a coroutine em `Dispatchers.IO` já rodou até o fim antes de checar
-            // "nada mais aconteceu" — sem isso a asserção abaixo poderia passar só por ainda
-            // não ter dado tempo.
+            // Confirms the coroutine on `Dispatchers.IO` already ran to completion before checking
+            // "nothing else happened" — without this the assertion below could pass just because
+            // there wasn't enough time yet.
             coVerify(timeout = 2000) { syncComicWithPeerUseCase("peer-1", "One Piece", SyncDirection.PULL) }
 
             viewModel.uiEvents.test {

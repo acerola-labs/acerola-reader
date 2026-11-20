@@ -57,11 +57,11 @@ import br.acerola.comic.ui.R
 
 private val categoryModifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
 
-// Mesmas 3 categorias do desktop (Leitura/Sincronização/Avançado, ver
-// acerola-comic-preferences.svelte): Sincronização é a única flat (sempre aberta, é a parte
-// mais usada — metadados, arquivos e dispositivos pareados); Leitura e Avançado colapsam.
-// `expandedCategories`/`onToggleCategory` vêm do `ComicScreen` porque este arquivo não é
-// `@Composable` (só monta `scope.item {}`), então não pode ter seu próprio `remember`.
+// Same 3 categories as the desktop (Reading/Sync/Advanced, see
+// acerola-comic-preferences.svelte): Sync is the only flat one (always open, it's the most
+// used part — metadata, files and paired devices); Reading and Advanced collapse.
+// `expandedCategories`/`onToggleCategory` come from `ComicScreen` because this file isn't
+// `@Composable` (it only builds `scope.item {}`), so it can't have its own `remember`.
 fun Comic.Template.configSection(
     scope: LazyListScope,
     uiState: ComicUiState,
@@ -76,7 +76,7 @@ fun Comic.Template.configSection(
 ) {
     scope.item { Spacer(modifier = Modifier.height(16.dp)) }
 
-    // NOTE: Leitura
+    // NOTE: Reading
     scope.item {
         Acerola.Component.AccordionCard(
             title = stringResource(id = R.string.title_comic_preferences_reading),
@@ -107,8 +107,8 @@ fun Comic.Template.configSection(
         }
     }
 
-    // NOTE: Sincronização — fica sempre aberta (flat): metadados, arquivos e dispositivos
-    // pareados são a parte mais usada dessa tela, não vale esconder atrás de um clique.
+    // NOTE: Sync — always open (flat): metadata, files and paired devices are the
+    // most used part of this screen, not worth hiding behind a click.
     scope.item {
         Acerola.Component.AccordionCard(
             title = stringResource(id = R.string.title_comic_preferences_sync),
@@ -191,7 +191,7 @@ fun Comic.Template.configSection(
         }
     }
 
-    // NOTE: Avançado
+    // NOTE: Advanced
     scope.item {
         Acerola.Component.AccordionCard(
             title = stringResource(id = R.string.title_comic_preferences_advanced),
@@ -251,8 +251,8 @@ fun Comic.Template.configSection(
     scope.item { Spacer(modifier = Modifier.height(32.dp)) }
 }
 
-// Rótulo de subgrupo dentro de uma categoria flat (ícone 16dp + texto uppercase) — mesmo
-// padrão visual das `<section>` do desktop dentro de "Sincronização"/"Avançado".
+// Subgroup label inside a flat category (16dp icon + uppercase text) — same visual
+// pattern as the desktop's `<section>`s inside "Sync"/"Advanced".
 @Composable
 private fun SectionLabel(
     icon: ImageVector,

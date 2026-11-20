@@ -77,11 +77,11 @@ abstract class BaseActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     value = LocalSnackbarHostState provides snackbarHostState,
                 ) {
-                    // Montado uma única vez aqui (raiz do app) — não em nenhuma tela específica
-                    // — porque Home/Histórico/Quadrinho/Biblioteca remota/Sync podem disparar
-                    // uma sincronização P2P cada uma pelo seu próprio caminho (ver
-                    // `MobileDataSyncGate`). Um diálogo só na tela de Sync não cobriria os
-                    // outros quatro.
+                    // Mounted only once here (app root) — not in any specific screen
+                    // — because Home/History/Comic/Remote library/Sync can each fire
+                    // a P2P sync through their own path (see
+                    // `MobileDataSyncGate`). A dialog only on the Sync screen wouldn't cover the
+                    // other four.
                     val awaitingMobileDataConfirmation by mobileDataSyncViewModel.awaitingConfirmation.collectAsState()
                     if (awaitingMobileDataConfirmation) {
                         Acerola.Component.MobileDataSyncDialog(
@@ -91,9 +91,9 @@ abstract class BaseActivity : ComponentActivity() {
                     }
 
                     if (isLandscape) {
-                        // Em modo landscape: sidebar fora do Scaffold para ocupar toda a altura
-                        // (status bar + conteúdo + nav bar), igual ao Spotify
-                        // applyStatusBarPadding=false para que a sidebar gerencie seus próprios insets
+                        // In landscape mode: sidebar outside the Scaffold to take the full height
+                        // (status bar + content + nav bar), like Spotify
+                        // applyStatusBarPadding=false so the sidebar handles its own insets
                         Acerola.Component.Scaffold(applyStatusBarPadding = false) {
                             Row(modifier = Modifier.fillMaxHeight()) {
                                 SideBar(navController)
@@ -110,8 +110,8 @@ abstract class BaseActivity : ComponentActivity() {
                                             }
                                         }
                                     },
-                                    // Em landscape, o Scaffold M3 deve respeitar apenas os insets
-                                    // do topo e da direita (a sidebar já cuida do lado esquerdo)
+                                    // In landscape, the M3 Scaffold should only respect the top
+                                    // and right insets (the sidebar already handles the left side)
                                     contentWindowInsets =
                                         WindowInsets.safeDrawing.only(
                                             WindowInsetsSides.Top + WindowInsetsSides.End + WindowInsetsSides.Bottom,
@@ -125,7 +125,7 @@ abstract class BaseActivity : ComponentActivity() {
                             }
                         }
                     } else {
-                        // Em modo portrait: layout original com bottom bar
+                        // In portrait mode: original layout with bottom bar
                         Acerola.Component.Scaffold {
                             val hazeState = rememberHazeState()
                             Scaffold(

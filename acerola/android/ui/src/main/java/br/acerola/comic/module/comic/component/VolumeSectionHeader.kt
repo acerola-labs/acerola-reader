@@ -57,8 +57,8 @@ private val IdentitySquareSize = 44.dp
 private val IdentityCoverWidth = 44.dp
 private val IdentityCoverHeight = 64.dp
 
-// Cabeçalho de seção, não card: sem borda/fundo próprios, para refletir que ele abre uma
-// lista de capítulos que segue *fora* dele, em vez de prometer contê-la (ver HeroButton).
+// Section header, not a card: no border/background of its own, to reflect that it opens a
+// chapter list that follows *outside* it, instead of promising to contain it (see HeroButton).
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Comic.Component.VolumeSectionHeader(
@@ -297,8 +297,8 @@ private val previewGroup3 =
 private val previewGroup4 =
     VolumeChapterGroupDto(volume = previewVolume4, items = emptyList(), totalChapters = 5, loadedCount = 3, hasMore = true)
 
-@Preview(name = "Colapsado - Light", showBackground = true)
-@Preview(name = "Colapsado - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Collapsed - Light", showBackground = true)
+@Preview(name = "Collapsed - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun VolumeSectionHeaderCollapsedPreview() {
     AcerolaTheme {
@@ -306,8 +306,8 @@ private fun VolumeSectionHeaderCollapsedPreview() {
     }
 }
 
-@Preview(name = "Expandido - Light", showBackground = true)
-@Preview(name = "Expandido - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Expanded - Light", showBackground = true)
+@Preview(name = "Expanded - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun VolumeSectionHeaderExpandedPreview() {
     AcerolaTheme {
@@ -315,8 +315,8 @@ private fun VolumeSectionHeaderExpandedPreview() {
     }
 }
 
-@Preview(name = "Especial (colapsado) - Light", showBackground = true)
-@Preview(name = "Especial (colapsado) - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Special (collapsed) - Light", showBackground = true)
+@Preview(name = "Special (collapsed) - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun VolumeSectionHeaderSpecialPreview() {
     AcerolaTheme {
@@ -324,8 +324,8 @@ private fun VolumeSectionHeaderSpecialPreview() {
     }
 }
 
-@Preview(name = "Modo capa (sem capa) - Light", showBackground = true)
-@Preview(name = "Modo capa (sem capa) - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Cover mode (no cover) - Light", showBackground = true)
+@Preview(name = "Cover mode (no cover) - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun CoverVolumeSectionHeaderPreview() {
     AcerolaTheme {
@@ -338,8 +338,8 @@ private fun CoverVolumeSectionHeaderPreview() {
     }
 }
 
-@Preview(name = "Lista completa - Light", showBackground = true, heightDp = 480)
-@Preview(name = "Lista completa - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, heightDp = 480)
+@Preview(name = "Full list - Light", showBackground = true, heightDp = 480)
+@Preview(name = "Full list - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, heightDp = 480)
 @Composable
 private fun VolumeSectionHeaderListPreview() {
     AcerolaTheme {

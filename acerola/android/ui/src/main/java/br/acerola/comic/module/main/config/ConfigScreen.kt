@@ -220,9 +220,9 @@ private fun ConfigScreenContent(
 ) {
     val scrollState = rememberScrollState()
 
-    // Categorias colapsam/expandem inline na própria lista, mesmo padrão da tela de config
-    // do desktop (ver acerola-accordion-card.svelte) — mais de uma pode ficar aberta ao
-    // mesmo tempo, por isso é um Set em vez de uma categoria única selecionada.
+    // Categories collapse/expand inline in the list itself, same pattern as the desktop's config
+    // screen (see acerola-accordion-card.svelte) — more than one can be open at the
+    // same time, that's why it's a Set instead of a single selected category.
     var expandedCategories by remember { mutableStateOf(setOf<String>()) }
 
     fun toggleCategory(id: String) {
@@ -289,7 +289,7 @@ private fun ConfigScreenContent(
 
                 val categoryModifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small)
 
-                // NOTE: Arquivos Locais
+                // NOTE: Local Files
                 Acerola.Component.AccordionCard(
                     title = stringResource(id = R.string.title_text_archive_configs_in_app),
                     icon = Icons.Default.Folder,
@@ -313,7 +313,7 @@ private fun ConfigScreenContent(
                     )
                 }
 
-                // NOTE: Biblioteca
+                // NOTE: Library
                 Acerola.Component.AccordionCard(
                     title = stringResource(id = R.string.label_library_context),
                     icon = Icons.Default.Refresh,
@@ -330,8 +330,8 @@ private fun ConfigScreenContent(
                     )
                 }
 
-                // NOTE: Categorias — fica sempre aberta (flat), mesmo raciocínio do card
-                // Marcadores no desktop.
+                // NOTE: Categories — always open (flat), same reasoning as the desktop's
+                // Bookmarks card.
                 Acerola.Component.AccordionCard(
                     title = stringResource(id = R.string.title_config_categories),
                     icon = Icons.Rounded.Bookmark,
@@ -348,7 +348,7 @@ private fun ConfigScreenContent(
                     )
                 }
 
-                // NOTE: Metadados
+                // NOTE: Metadata
                 Acerola.Component.AccordionCard(
                     title = stringResource(id = R.string.label_sync_group),
                     icon = Icons.Default.Public,

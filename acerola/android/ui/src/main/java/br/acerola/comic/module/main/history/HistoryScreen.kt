@@ -70,9 +70,9 @@ fun Main.History.Template.Screen(viewModel: HistoryViewModel = hiltViewModel()) 
         }
     }
 
-    // Mesma máquina de "flash de sucesso" do `ComicScreen` pro sync com peer — um único botão
-    // (não um por peer), então não dá pra reaproveitar o rastreio genérico por instância usado
-    // pros outros syncs desta tela.
+    // Same "success flash" machinery as `ComicScreen` for peer sync — a single button
+    // (not one per peer), so the generic per-instance tracking used for the other syncs on
+    // this screen can't be reused.
     var syncWithPeerSuccess by remember { mutableStateOf(false) }
     var wasSyncingWithPeer by remember { mutableStateOf(false) }
 

@@ -14,13 +14,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Ponte entre [MobileDataSyncGate] (singleton fora de qualquer ViewModel) e a UI Compose —
- * instanciada em dois lugares por motivos diferentes, sem problema já que ambos só espelham o
- * mesmo singleton/DataStore por baixo:
- * - `BaseActivity` (raiz do app): observa [awaitingConfirmation] pra mostrar o diálogo global,
- *   não importa qual tela esteja aberta.
- * - Tela de Config: lê/escreve [allowMobileDataSync] pro switch "Sincronizar usando dados
- *   móveis", que existe pra reverter a escolha "sempre permitir" feita uma vez no diálogo.
+ * Bridge between [MobileDataSyncGate] (singleton outside any ViewModel) and the Compose UI —
+ * instantiated in two places for different reasons, which is fine since both just mirror the
+ * same singleton/DataStore underneath:
+ * - `BaseActivity` (app root): observes [awaitingConfirmation] to show the global dialog,
+ *   no matter which screen is open.
+ * - Config screen: reads/writes [allowMobileDataSync] for the "Sync using mobile
+ *   data" switch, which exists to revert the "always allow" choice made once in the dialog.
  */
 @HiltViewModel
 class MobileDataSyncViewModel
