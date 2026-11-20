@@ -14,12 +14,12 @@ use tokio::sync::RwLock;
 
 use super::{decrypt, encrypt};
 
-/// Colapsa entradas com o mesmo `id.id`, mantendo a última (mesma regra de "mais recente
-/// vence" do upsert em `save_peer`). Migração pra arquivos `peers.enc` gravados antes da
-/// correção do upsert (que comparava `PeerId` inteira, então `device_id: None` vs
-/// `device_id: Some(..)` pro mesmo peer virava duas entradas) — sem isso, quem já tem uma
-/// duplicata persistida continuaria vendo `pairedPeers` quebrar `{#each ... (peer.peerId)}`
-/// no frontend mesmo depois de atualizar.
+/// Collapses entries with the same `id.id`, keeping the last one (same "most recent
+/// wins" rule as the upsert in `save_peer`). Migration for `peers.enc` files written before the
+/// upsert fix (which compared the whole `PeerId`, so `device_id: None` vs
+/// `device_id: Some(..)` for the same peer became two entries) — without this, anyone who
+/// already has a persisted duplicate would keep seeing `pairedPeers` break `{#each ... (peer.peerId)}`
+/// in the frontend even after updating.
 fn dedupe_by_id(peers: Vec<PeerAddr>) -> Vec<PeerAddr> {
     let mut deduped: Vec<PeerAddr> = Vec::with_capacity(peers.len());
     for peer in peers {
@@ -31,11 +31,11 @@ fn dedupe_by_id(peers: Vec<PeerAddr>) -> Vec<PeerAddr> {
     deduped
 }
 
-/// Implementação de `P2PStorage` (identidade do nó + cache de peers pareados) com
-/// criptografia em repouso — ver `infra::security` pro esquema (chave mestra no
-/// keyring do SO, AES-256-GCM pro resto). Layout dentro de `base_dir`:
-/// - `identity.enc` — seed de identidade do nó, criptografada.
-/// - `peers.enc`    — lista de `PeerAddr` conhecidos (JSON antes de criptografar).
+/// `P2PStorage` implementation (node identity + paired peers cache) with
+/// encryption at rest — see `infra::security` for the scheme (master key in the
+/// OS keyring, AES-256-GCM for the rest). Layout inside `base_dir`:
+/// - `identity.enc` — the node's identity seed, encrypted.
+/// - `peers.enc`    — list of known `PeerAddr`s (JSON before encryption).
 pub struct SecureP2pStorage {
     base_dir: PathBuf,
     master_key: [u8; 32],
@@ -75,11 +75,11 @@ impl SecureP2pStorage {
         base_dir.join("iroh_services_ticket.enc")
     }
 
-    /// Lê e descriptografa `peers.enc`. Diferente da versão anterior, uma falha real de
-    /// descriptografia (chave mestra errada/corrompida) vira `Err` daqui — não pode
-    /// silenciosamente virar "lista vazia", porque `save_peer` reescreve o arquivo inteiro
-    /// com o que estiver em memória: um cache vazio por engano apaga todo peer pareado
-    /// anterior assim que a próxima sincronização salvar algo.
+    /// Reads and decrypts `peers.enc`. Unlike the previous version, a real decryption
+    /// failure (wrong/corrupted master key) becomes `Err` from here — it must not
+    /// silently become an "empty list", because `save_peer` rewrites the whole file
+    /// with whatever is in memory: a mistakenly empty cache wipes every previously paired
+    /// peer as soon as the next sync saves something.
     fn read_peers(base_dir: &Path, master_key: &[u8; 32]) -> std::io::Result<Vec<PeerAddr>> {
         let peers = match std::fs::read(Self::peers_path(base_dir)) {
             Ok(encrypted) => {
@@ -103,10 +103,10 @@ impl SecureP2pStorage {
         Ok(dedupe_by_id(peers))
     }
 
-    /// Lê e descriptografa `device_info.enc` — mesma lógica de `read_peers`, mas pro nome do
-    /// dispositivo trocado no handshake. Antes desta persistência, esse dado só existia em
-    /// memória (`NetworkState`) e sumia da UI (caindo pro ID cru) até o peer reconectar e
-    /// refazer o handshake nesta sessão.
+    /// Reads and decrypts `device_info.enc` — same logic as `read_peers`, but for the device
+    /// name exchanged in the handshake. Before this persistence, that data only existed in
+    /// memory (`NetworkState`) and disappeared from the UI (falling back to the raw ID) until the
+    /// peer reconnected and redid the handshake in this session.
     fn read_device_info(
         base_dir: &Path, master_key: &[u8; 32],
     ) -> std::io::Result<Vec<(PeerIdentity, DeviceInfo)>> {
@@ -157,13 +157,13 @@ impl P2PStorage for SecureP2pStorage {
 
     async fn save_peer(&self, peer: &PeerAddr) -> Result<(), P2pError> {
         let mut peers = self.peers_cache.write().await;
-        // Compara só `id.id` (a string de identidade), não a `PeerId` inteira — `PeerId` deriva
-        // `PartialEq` incluindo `device_id`, que nem sempre é conhecido em quem chama (ex:
-        // comandos do frontend montam `PeerIdentity { id, device_id: None }` porque só têm a
-        // string). Comparar a struct inteira faz uma reconexão sem `device_id` duplicar o peer
-        // já pareado (que tem `device_id: Some(..)` do handshake original) em vez de atualizá-lo
-        // — e a lista de pareados vira o `pairedPeers` que a UI usa como chave de `{#each}`, então
-        // a duplicata quebra a renderização (`each_key_duplicate`) em vez de só ser um dado feio.
+        // Compare only `id.id` (the identity string), not the whole `PeerId` — `PeerId` derives
+        // `PartialEq` including `device_id`, which the caller does not always know (e.g.
+        // frontend commands build `PeerIdentity { id, device_id: None }` because they only have the
+        // string). Comparing the whole struct makes a reconnection without `device_id` duplicate the
+        // already-paired peer (which has `device_id: Some(..)` from the original handshake) instead of
+        // updating it — and the paired list becomes the `pairedPeers` the UI uses as the `{#each}` key,
+        // so the duplicate breaks rendering (`each_key_duplicate`) instead of just being ugly data.
         match peers.iter_mut().find(|cached| cached.id.id == peer.id.id) {
             Some(cached) => *cached = peer.clone(),
             None => peers.push(peer.clone()),
@@ -204,10 +204,10 @@ impl P2PStorage for SecureP2pStorage {
 }
 
 impl SecureP2pStorage {
-    /// Remove um peer da lista de pareados — usado por "desparear". Idempotente: id
-    /// desconhecido não é erro, só não reescreve o arquivo à toa. Não faz parte de
-    /// `P2PStorage` (trait compartilhada com o lado Android) de propósito — a lib nunca
-    /// precisa remover um peer sozinha, só a UI de "desparear" chama isso.
+    /// Removes a peer from the paired list — used by "unpair". Idempotent: an
+    /// unknown id is not an error, it just does not rewrite the file needlessly. Not part of
+    /// `P2PStorage` (trait shared with the Android side) on purpose — the lib never
+    /// needs to remove a peer on its own, only the "unpair" UI calls this.
     pub async fn remove_peer(&self, id: &str) -> std::io::Result<()> {
         let mut peers = self.peers_cache.write().await;
         let before = peers.len();
@@ -218,8 +218,8 @@ impl SecureP2pStorage {
             std::fs::write(Self::peers_path(&self.base_dir), encrypt(&self.master_key, &json))?;
         }
 
-        // Limpa também o nome persistido — sem isso, reparear o mesmo `id` de volta faria o
-        // nome antigo "ressuscitar" antes do próximo handshake atualizar de verdade.
+        // Also clears the persisted name — without this, re-pairing the same `id` would make the
+        // old name "come back to life" before the next handshake really updates it.
         let mut device_info = self.device_info_cache.write().await;
         let before = device_info.len();
         device_info.retain(|(cached_id, _)| cached_id.id != id);
@@ -235,11 +235,11 @@ impl SecureP2pStorage {
         Ok(())
     }
 
-    /// Persiste o ticket da conta do usuário em `services.iroh.computer` (colado por ele na
-    /// tela de configuração de rede) — não faz parte de `P2PStorage` (trait compartilhada com o
-    /// Android) porque é específico da UI de relay do Desktop, não algo que a lib em si precisa
-    /// ler/escrever sozinha. Só tem efeito no próximo início do app (mesma regra das outras
-    /// fontes de relay em `RelaySettings::resolve`), porque a lib não suporta trocar relay em
+    /// Persists the ticket of the user's `services.iroh.computer` account (pasted on the
+    /// network settings screen) — not part of `P2PStorage` (trait shared with
+    /// Android) because it is specific to the Desktop relay UI, not something the lib itself needs
+    /// to read/write on its own. Only takes effect on the next app start (same rule as the other
+    /// relay sources in `RelaySettings::resolve`), because the lib does not support changing relay at
     /// runtime.
     pub async fn save_iroh_services_ticket(&self, ticket: &str) -> std::io::Result<()> {
         std::fs::write(
@@ -248,10 +248,10 @@ impl SecureP2pStorage {
         )
     }
 
-    /// `None` quando o usuário nunca colou um ticket, ou quando o arquivo existe mas não
-    /// descriptografa (chave mestra trocada) — nesse caso trata como "não configurado" em vez
-    /// de propagar erro, já que a rede pública do Iroh sendo indisponível não deveria travar a
-    /// inicialização do resto da rede P2P (peers/histórico continuam funcionando sem ela).
+    /// `None` when the user never pasted a ticket, or when the file exists but does not
+    /// decrypt (master key changed) — in that case it is treated as "not configured" instead
+    /// of propagating an error, since the Iroh public network being unavailable should not block
+    /// the startup of the rest of the P2P network (peers/history keep working without it).
     pub async fn load_iroh_services_ticket(&self) -> std::io::Result<Option<String>> {
         let encrypted = match std::fs::read(Self::iroh_services_ticket_path(&self.base_dir)) {
             Ok(bytes) => bytes,
@@ -265,8 +265,8 @@ impl SecureP2pStorage {
         Ok(ticket)
     }
 
-    /// Remove o ticket salvo — usado quando o usuário desmarca a fonte ou cola um valor novo
-    /// que substitui o antigo.
+    /// Removes the saved ticket — used when the user unchecks the source or pastes a new value
+    /// that replaces the old one.
     pub async fn clear_iroh_services_ticket(&self) -> std::io::Result<()> {
         match std::fs::remove_file(Self::iroh_services_ticket_path(&self.base_dir)) {
             Ok(()) => Ok(()),
@@ -276,10 +276,10 @@ impl SecureP2pStorage {
     }
 }
 
-/// Delega pra um `Arc<SecureP2pStorage>` — deixa o mesmo storage passado ao builder
-/// (`AcerolaP2p::builder().storage(...)`, que exige posse por valor) também acessível fora
-/// dele. Sem isso, `paired_peers()` (`NetworkServiceApi`) não teria como ler os peers
-/// persistidos: a lib não devolve o storage de volta depois do `build()`.
+/// Delegates to an `Arc<SecureP2pStorage>` — makes the same storage passed to the builder
+/// (`AcerolaP2p::builder().storage(...)`, which requires ownership) also reachable outside
+/// of it. Without this, `paired_peers()` (`NetworkServiceApi`) would have no way to read the
+/// persisted peers: the lib does not hand the storage back after `build()`.
 pub struct SharedP2pStorage(pub Arc<SecureP2pStorage>);
 
 #[async_trait]
@@ -331,7 +331,7 @@ mod tests {
         storage.save_identity(b"my secret seed").await.unwrap();
         assert_eq!(storage.load_identity().await.unwrap(), Some(b"my secret seed".to_vec()));
 
-        // O arquivo no disco não pode conter o segredo em texto puro.
+        // The file on disk must not contain the secret in plain text.
         let raw = std::fs::read(dir.path().join("identity.enc")).unwrap();
         assert!(!raw.windows(b"my secret seed".len()).any(|window| window == b"my secret seed"));
     }
@@ -344,12 +344,12 @@ mod tests {
         {
             let storage = SecureP2pStorage::open(dir.path(), key).unwrap();
             storage.save_peer(&peer("peer-a")).await.unwrap();
-            storage.save_peer(&peer("peer-a")).await.unwrap(); // upsert, não duplica
+            storage.save_peer(&peer("peer-a")).await.unwrap(); // upsert, does not duplicate
             storage.save_peer(&peer("peer-b")).await.unwrap();
             assert_eq!(storage.load_peers().await.unwrap().len(), 2);
         }
 
-        // Reabre (simula restart do app) — o cache tem que vir do arquivo criptografado.
+        // Reopen (simulates an app restart) — the cache must come from the encrypted file.
         let reopened = SecureP2pStorage::open(dir.path(), key).unwrap();
         let peers = reopened.load_peers().await.unwrap();
         assert_eq!(peers.len(), 2);
@@ -357,11 +357,11 @@ mod tests {
         assert!(peers.iter().any(|p| p.id.id == "peer-b"));
     }
 
-    /// Regressão: `sync_comic`/`query_remote_library`/etc. montam `PeerIdentity { id, device_id:
-    /// None }` porque o frontend só manda a string do peer — mas o pareamento inicial (handshake)
-    /// salva com `device_id: Some(uuid)`. Se o upsert comparasse `PeerId` inteira (como fazia
-    /// antes), essas duas chamadas para o MESMO peer virariam duas entradas na lista, e a UI
-    /// (`{#each pairedPeers as peer (peer.peerId)}`) quebra com chave duplicada.
+    /// Regression: `sync_comic`/`query_remote_library`/etc. build `PeerIdentity { id, device_id:
+    /// None }` because the frontend only sends the peer string — but the initial pairing (handshake)
+    /// saves with `device_id: Some(uuid)`. If the upsert compared the whole `PeerId` (as it did
+    /// before), these two calls for the SAME peer would become two list entries, and the UI
+    /// (`{#each pairedPeers as peer (peer.peerId)}`) breaks with a duplicate key.
     #[tokio::test]
     async fn save_peer_upserts_by_id_string_even_when_device_id_differs() {
         let dir = tempfile::tempdir().unwrap();
@@ -380,14 +380,14 @@ mod tests {
         storage.save_peer(&reconnected_via_action).await.unwrap();
 
         let peers = storage.load_peers().await.unwrap();
-        assert_eq!(peers.len(), 1, "mesmo peer.id.id deveria atualizar, não duplicar");
+        assert_eq!(peers.len(), 1, "the same peer.id.id should update, not duplicate");
         assert_eq!(peers[0].addrs, vec![4, 5, 6]);
     }
 
-    /// Migração: um `peers.enc` já gravado ANTES da correção do upsert pode ter duplicatas
-    /// persistidas no disco (mesmo `id.id`, `device_id` diferente). `open()` tem que limpar
-    /// isso na leitura — sem isso, quem já pegou o bug continuaria vendo `pairedPeers` quebrar
-    /// a UI mesmo depois de atualizar o app, porque a duplicata já estava salva antes do fix.
+    /// Migration: a `peers.enc` written BEFORE the upsert fix may have duplicates
+    /// persisted on disk (same `id.id`, different `device_id`). `open()` must clean
+    /// that up on read — without this, anyone who already hit the bug would keep seeing `pairedPeers`
+    /// break the UI even after updating the app, because the duplicate was saved before the fix.
     #[tokio::test]
     async fn open_deduplicates_peers_already_persisted_before_the_fix() {
         let dir = tempfile::tempdir().unwrap();
@@ -411,8 +411,8 @@ mod tests {
 
         let storage = SecureP2pStorage::open(dir.path(), key).unwrap();
         let peers = storage.load_peers().await.unwrap();
-        assert_eq!(peers.len(), 1, "duplicata pré-existente deveria ser colapsada na leitura");
-        assert_eq!(peers[0].addrs, vec![4, 5, 6], "mantém a última entrada, mesma regra do upsert");
+        assert_eq!(peers.len(), 1, "a pre-existing duplicate should be collapsed on read");
+        assert_eq!(peers[0].addrs, vec![4, 5, 6], "keeps the last entry, same rule as the upsert");
     }
 
     #[tokio::test]
@@ -459,8 +459,8 @@ mod tests {
                 .unwrap();
         }
 
-        // Reabre (simula restart do app) — o nome tem que vir do arquivo criptografado, não
-        // só existir enquanto o processo estava de pé.
+        // Reopen (simulates an app restart) — the name must come from the encrypted file, not
+        // only exist while the process was running.
         let reopened = SecureP2pStorage::open(dir.path(), key).unwrap();
         let loaded = reopened.load_device_info().await.unwrap();
         assert_eq!(loaded.len(), 1);
@@ -518,7 +518,7 @@ mod tests {
             Some("services-fake-ticket".to_string())
         );
 
-        // O arquivo no disco não pode conter o ticket em texto puro.
+        // The file on disk must not contain the ticket in plain text.
         let raw = std::fs::read(dir.path().join("iroh_services_ticket.enc")).unwrap();
         assert!(!raw
             .windows("services-fake-ticket".len())
@@ -551,7 +551,7 @@ mod tests {
         storage.clear_iroh_services_ticket().await.unwrap();
         assert_eq!(storage.load_iroh_services_ticket().await.unwrap(), None);
 
-        // Chamar de novo sem nada salvo não é erro.
+        // Calling again with nothing saved is not an error.
         storage.clear_iroh_services_ticket().await.unwrap();
     }
 
@@ -561,18 +561,18 @@ mod tests {
         let storage = SecureP2pStorage::open(dir.path(), [1u8; 32]).unwrap();
         storage.save_peer(&peer("secret-peer")).await.unwrap();
 
-        // Chave errada (ex: keyring resolveu outra chave nessa execução) — decrypt falha.
-        // Regressão: antes isso degradava pra uma lista vazia em silêncio, e a próxima
-        // `save_peer` reescrevia `peers.enc` do zero, apagando pra sempre o que estava
-        // salvo com a chave antiga. Agora tem que falhar alto no `open()`, não abrir com
-        // um cache vazio como se nada tivesse acontecido.
+        // Wrong key (e.g. the keyring resolved another key in this run) — decrypt fails.
+        // Regression: this used to silently degrade into an empty list, and the next
+        // `save_peer` rewrote `peers.enc` from scratch, wiping forever what was
+        // saved with the old key. Now it must fail loudly in `open()`, not open with
+        // an empty cache as if nothing had happened.
         let reopen_result = SecureP2pStorage::open(dir.path(), [2u8; 32]);
         assert!(
             reopen_result.is_err(),
-            "abrir com a chave errada deveria falhar, não degradar em silêncio"
+            "opening with the wrong key should fail, not silently degrade"
         );
 
-        // E o arquivo original continua intacto no disco — nada foi sobrescrito.
+        // And the original file stays intact on disk — nothing was overwritten.
         let reopened_with_correct_key = SecureP2pStorage::open(dir.path(), [1u8; 32]).unwrap();
         assert_eq!(reopened_with_correct_key.load_peers().await.unwrap().len(), 1);
     }

@@ -32,10 +32,10 @@ impl VolumeRepository {
         Self { base: Repository::new(pool.clone()), pool }
     }
 
-    /// Remove todos os volumes vinculados a um quadrinho específico.
+    /// Removes every volume linked to a specific comic.
     ///
-    /// Usado pelo rescan profundo, já que o cascade de FK não roda em runtime
-    /// (`PRAGMA foreign_keys` não é habilitado no pool de produção).
+    /// Used by the deep rescan, since the FK cascade does not run at runtime
+    /// (`PRAGMA foreign_keys` is not enabled in the production pool).
     pub async fn delete_by_comic(&self, comic_directory_fk: i64) -> Result<u64, DbError> {
         let result = sqlx::query("DELETE FROM volume_archive WHERE comic_directory_fk = ?")
             .bind(comic_directory_fk)
@@ -60,7 +60,7 @@ impl VolumeRepository {
         Ok(result)
     }
 
-    /// Atualiza a capa de um volume especifico.
+    /// Updates the cover of a specific volume.
     pub async fn update_cover(&self, id: i64, cover: &str) -> Result<VolumeArchive, DbError> {
         let cols = VolumeArchive::columns().join(", ");
 

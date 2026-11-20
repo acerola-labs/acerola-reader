@@ -57,10 +57,10 @@ pub fn run() {
     let application_context = tauri::generate_context!();
     let app = bios::build()
         .build(application_context)
-        .expect("Erro ao construir a aplicação Tauri");
+        .expect("Failed to build the Tauri application");
 
-    // `RunEvent::Exit` (não `.run(context)` direto) só pra poder desligar o node P2P de forma
-    // graciosa antes do processo terminar — ver `bios::shutdown_network`.
+    // `RunEvent::Exit` (not a direct `.run(context)`) just so the P2P node can be shut down
+    // gracefully before the process exits — see `bios::shutdown_network`.
     app.run(|app_handle, event| {
         if let tauri::RunEvent::Exit = event {
             bios::shutdown_network(app_handle);

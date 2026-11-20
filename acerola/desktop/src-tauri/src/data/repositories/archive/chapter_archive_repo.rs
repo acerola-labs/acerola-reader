@@ -135,10 +135,10 @@ impl ChapterRepository {
             .map_err(Into::into)
     }
 
-    /// Remove todos os capítulos vinculados a um quadrinho específico.
+    /// Removes every chapter linked to a specific comic.
     ///
-    /// Usado pelo rescan profundo, já que o cascade de FK não roda em runtime
-    /// (`PRAGMA foreign_keys` não é habilitado no pool de produção).
+    /// Used by the deep rescan, since the FK cascade does not run at runtime
+    /// (`PRAGMA foreign_keys` is not enabled in the production pool).
     pub async fn delete_by_comic(&self, comic_directory_fk: i64) -> Result<u64, DbError> {
         let result = sqlx::query("DELETE FROM chapter_archive WHERE comic_directory_fk = ?")
             .bind(comic_directory_fk)
@@ -148,7 +148,7 @@ impl ChapterRepository {
         Ok(result.rows_affected())
     }
 
-    /// Retorna todos os IDs de capítulo de um quadrinho, sem paginação.
+    /// Returns every chapter ID of a comic, without pagination.
     pub async fn find_all_ids_by_directory(
         &self, comic_directory_fk: i64,
     ) -> Result<Vec<i64>, DbError> {
@@ -162,9 +162,9 @@ impl ChapterRepository {
         Ok(rows.into_iter().map(|(id,)| id).collect())
     }
 
-    /// Busca um capítulo pelo id determinístico (`path_hash` do arquivo) — usado pelo
-    /// scanner pra decidir, antes de tocar o disco, se um capítulo é novo, mudou
-    /// (`last_modified` diferente) ou só precisa de backfill de checksum.
+    /// Fetches a chapter by its deterministic id (the file's `path_hash`) — used by the
+    /// scanner to decide, before touching the disk, whether a chapter is new, changed
+    /// (different `last_modified`) or only needs a checksum backfill.
     pub async fn find_by_id(&self, id: i64) -> Result<Option<ChapterArchive>, DbError> {
         let result = sqlx::query_as::<_, ChapterArchive>(
             "SELECT id, chapter, path, chapter_sort, is_special, checksum, comic_directory_fk, volume_fk, last_modified
@@ -177,10 +177,10 @@ impl ChapterRepository {
         Ok(result)
     }
 
-    /// Busca um capítulo pela chave natural (nome do quadrinho + rótulo do capítulo),
-    /// já garantida única pelo `UNIQUE(comic_directory_fk, chapter)` da tabela. Usado pelo
-    /// sync P2P pra resolver entradas recebidas de outro device, que não compartilha os
-    /// mesmos IDs autoincrement locais.
+    /// Fetches a chapter by its natural key (comic name + chapter label), already
+    /// guaranteed unique by the table's `UNIQUE(comic_directory_fk, chapter)`. Used by
+    /// P2P sync to resolve entries received from another device, which does not share
+    /// the same local autoincrement IDs.
     pub async fn find_by_comic_and_chapter(
         &self, comic_directory_fk: i64, chapter: &str,
     ) -> Result<Option<ChapterArchive>, DbError> {
@@ -196,12 +196,12 @@ impl ChapterRepository {
         Ok(result)
     }
 
-    /// Busca um capítulo por `chapter_sort` em vez do rótulo — usado pelo sync P2P de
-    /// **histórico**, não de arquivos. O rótulo (`chapter`) não é comparável entre devices
-    /// (cada um nomeia o arquivo como quiser), mas `chapter_sort` é derivado do mesmo jeito
-    /// nos dois apps a partir do nome, então funciona como chave natural cross-device — é
-    /// também o que o Android usa pra resolver `chapter_archive_id` depois de receber um
-    /// manifesto (via `updateHistoryChapterIdBySort`).
+    /// Fetches a chapter by `chapter_sort` instead of the label — used by P2P **history**
+    /// sync, not file sync. The label (`chapter`) is not comparable across devices (each
+    /// one names the file however it wants), but `chapter_sort` is derived the same way in
+    /// both apps from the name, so it works as a cross-device natural key — it is also what
+    /// Android uses to resolve `chapter_archive_id` after receiving a manifest
+    /// (via `updateHistoryChapterIdBySort`).
     pub async fn find_by_comic_and_chapter_sort(
         &self, comic_directory_fk: i64, chapter_sort: &str,
     ) -> Result<Option<ChapterArchive>, DbError> {
@@ -217,13 +217,13 @@ impl ChapterRepository {
         Ok(result)
     }
 
-    /// Retorna todos os capítulos indexados junto do nome do quadrinho, usado pelo sync de
-    /// arquivos pra montar o manifesto local sem depender de N+1 queries por quadrinho.
-    /// Só SQL, de propósito — nenhum `tokio::fs::metadata` por capítulo. Usada por
-    /// `browse-library` (P2P) pra listar título + contagem de capítulos + versão de capa sem
-    /// pagar o custo de I/O de disco por capítulo, que já estourou o timeout do protocolo numa
-    /// biblioteca grande (ver `FileSyncService::build_manifest`, usado até então). `cover_version`
-    /// reaproveita `comic_directory.last_modified`, já existente — sem hash novo.
+    /// Returns every indexed chapter along with the comic name, used by file sync to
+    /// build the local manifest without N+1 queries per comic.
+    /// SQL only, on purpose — no `tokio::fs::metadata` per chapter. Used by
+    /// `browse-library` (P2P) to list title + chapter count + cover version without paying
+    /// the per-chapter disk I/O cost, which already blew the protocol timeout on a large
+    /// library (see `FileSyncService::build_manifest`, used until then). `cover_version`
+    /// reuses the existing `comic_directory.last_modified` — no new hash.
     pub async fn get_library_summary(&self) -> Result<Vec<LibrarySummaryRow>, DbError> {
         let result = sqlx::query_as::<_, LibrarySummaryRow>(
             "SELECT cd.name AS comic_name, COUNT(ca.id) AS chapter_count, cd.last_modified AS cover_version
@@ -429,7 +429,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::UniqueViolation)),
-            "Deveria ter retornado UniqueViolation, mas veio: {:?}",
+            "Should have returned UniqueViolation, but got: {:?}",
             result
         );
     }
@@ -443,7 +443,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::NotFound)),
-            "Deveria ter retornado NotFound, mas veio: {:?}",
+            "Should have returned NotFound, but got: {:?}",
             result
         );
     }
@@ -500,7 +500,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::ForeignKeyViolation)),
-            "Deveria ter retornado ForeignKeyViolation, mas veio: {:?}",
+            "Should have returned ForeignKeyViolation, but got: {:?}",
             result
         );
     }

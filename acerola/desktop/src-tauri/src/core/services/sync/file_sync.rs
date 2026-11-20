@@ -31,7 +31,7 @@ fn now_secs() -> i64 {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs() as i64
 }
 
-/// Substitui caracteres inválidos em nomes de pasta no Windows/Unix por `_`.
+/// Replaces characters invalid in Windows/Unix folder names with `_`.
 fn sanitize_folder_name(name: &str) -> String {
     name.chars()
         .map(|c| if r#"\/:*?"<>|"#.contains(c) { '_' } else { c })
@@ -45,12 +45,12 @@ fn sha256_hex(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
-/// Restringe um manifesto (já escopado a UM quadrinho, via `build_manifest_for_comic`) aos
-/// rótulos de capítulo pedidos — lista vazia significa "sem filtro" (quadrinho inteiro),
-/// preservando o comportamento do sync completo (`sync_comic`/"Sincronizar com dispositivo").
-/// Itens extra (capa/banner/`ComicInfo.xml`) nunca são filtrados aqui: são metadado do
-/// quadrinho como um todo, não de um capítulo específico, então continuam acompanhando
-/// qualquer sessão escopada (útil pra exibir o quadrinho recém-criado no destino).
+/// Restricts a manifest (already scoped to ONE comic, via `build_manifest_for_comic`) to the
+/// requested chapter labels — an empty list means "no filter" (whole comic),
+/// preserving the full sync behavior (`sync_comic`/"Sync with device").
+/// Extra items (cover/banner/`ComicInfo.xml`) are never filtered here: they are metadata of
+/// the comic as a whole, not of a specific chapter, so they keep going along with
+/// any scoped session (useful to display the newly created comic on the destination).
 pub fn restrict_manifest_to_chapters(
     mut manifest: FileManifest, chapters: &[String],
 ) -> FileManifest {
@@ -63,24 +63,24 @@ pub fn restrict_manifest_to_chapters(
     manifest
 }
 
-/// Monta e aplica manifestos de arquivos (os `.cbz`/`.cbr` reais) entre dois devices.
+/// Builds and applies file manifests (the actual `.cbz`/`.cbr`) between two devices.
 ///
-/// Diferente do sync de histórico, este PODE criar quadrinhos novos localmente — é o
-/// mecanismo que efetivamente "leva a biblioteca" de um device pro outro. Quadrinho novo
-/// (sem entrada local ainda) é gravado direto em `<library_root>/<nome sanitizado>/` —
-/// mesmo lugar que o scanner normal da biblioteca criaria se o usuário tivesse adicionado
-/// manualmente, sem pasta `synced/` intermediária.
+/// Unlike history sync, this one CAN create new comics locally — it is the
+/// mechanism that actually "carries the library" from one device to the other. A new comic
+/// (no local entry yet) is written directly to `<library_root>/<sanitized name>/` —
+/// the same place the regular library scanner would use if the user had added it
+/// manually, with no intermediate `synced/` folder.
 #[derive(Clone)]
 pub struct FileSyncService {
     comic_repo: ComicRepository,
     chapter_repo: ChapterRepository,
-    /// Resolvido sob demanda (nunca guardado como `PathBuf` fixo) porque `FileSyncService`
-    /// é construído uma única vez, numa task em background, no boot do app
-    /// (`bios::network::setup_network`) — se guardássemos um `PathBuf` já resolvido aqui,
-    /// qualquer troca de `library_path` feita pelo usuário depois do boot (em
-    /// `settings.json`) seria ignorada até o próximo restart, e o sync continuaria
-    /// gravando no destino antigo (foi exatamente o bug: arquivos indo pro fallback
-    /// `<app_data>/library` mesmo com o path certo já configurado).
+    /// Resolved on demand (never stored as a fixed `PathBuf`) because `FileSyncService`
+    /// is built only once, in a background task, at app boot
+    /// (`bios::network::setup_network`) — if we stored an already-resolved `PathBuf` here,
+    /// any `library_path` change made by the user after boot (in
+    /// `settings.json`) would be ignored until the next restart, and sync would keep
+    /// writing to the old destination (that was exactly the bug: files going to the fallback
+    /// `<app_data>/library` even with the right path already configured).
     library_root: Arc<dyn Fn() -> PathBuf + Send + Sync>,
 }
 
@@ -95,8 +95,8 @@ impl FileSyncService {
         }
     }
 
-    /// Monta o manifesto local completo, com tamanho de arquivo lido do disco sob demanda
-    /// (só roda quando uma sessão de sync de arquivos começa, não a cada scan).
+    /// Builds the full local manifest, with file size read from disk on demand
+    /// (only runs when a file sync session starts, not on every scan).
     pub async fn build_manifest(&self) -> Result<FileManifest, ComicError> {
         let rows = self.chapter_repo.find_all_with_comic_name().await?;
         let mut by_comic: HashMap<String, Vec<FileChapterInfo>> = HashMap::new();
@@ -117,10 +117,10 @@ impl FileSyncService {
             });
         }
 
-        // Capa/banner/ComicInfo.xml vivem em `comic_directory`, não em `chapter_archive` —
-        // precisa da linha inteira do quadrinho (não só o nome) pra montar os três, então
-        // itera `comic_directory` em vez de só os nomes já coletados em `by_comic` acima
-        // (cobre também um quadrinho com capa mas ainda sem nenhum capítulo indexado).
+        // Cover/banner/ComicInfo.xml live in `comic_directory`, not in `chapter_archive` —
+        // the whole comic row is needed (not just the name) to build all three, so it
+        // iterates `comic_directory` instead of only the names already collected in `by_comic` above
+        // (it also covers a comic with a cover but no indexed chapter yet).
         let all_comics = self.comic_repo.base.find_all().await?;
         let mut comics = Vec::with_capacity(all_comics.len());
 
@@ -141,9 +141,9 @@ impl FileSyncService {
             });
         }
 
-        // Defensivo: um capítulo cujo `comic_name` não bateu com nenhuma linha de
-        // `comic_directory` não deveria existir (a FK garante consistência), mas não descarta
-        // silenciosamente se acontecer.
+        // Defensive: a chapter whose `comic_name` matched no `comic_directory` row
+        // should not exist (the FK guarantees consistency), but do not silently drop it
+        // if it happens.
         comics.extend(by_comic.into_iter().map(|(comic_name, chapters)| FileComicInfo {
             comic_name,
             chapters,
@@ -153,9 +153,9 @@ impl FileSyncService {
         Ok(FileManifest { comics })
     }
 
-    /// Lê e hasheia (se existir) a capa, o banner e o `ComicInfo.xml` locais de um quadrinho —
-    /// arquivos pequenos (thumbnail/xml), diferente de capítulos, então ok recalcular o
-    /// checksum a cada `build_manifest()` em vez de depender de uma coluna cacheada.
+    /// Reads and hashes (if present) a comic's local cover, banner and `ComicInfo.xml` —
+    /// small files (thumbnail/xml), unlike chapters, so it is fine to recompute the
+    /// checksum on every `build_manifest()` instead of relying on a cached column.
     async fn build_comic_extras(
         &self, comic: &ComicDirectory,
     ) -> (Option<FileExtraInfo>, Option<FileExtraInfo>, Option<FileExtraInfo>) {
@@ -175,11 +175,11 @@ impl FileSyncService {
         Some(FileExtraInfo { file_name, checksum: sha256_hex(&bytes), size: bytes.len() as u64 })
     }
 
-    /// Resumo da biblioteca (título + contagem de capítulos + versão de capa) via
-    /// `ChapterRepository::get_library_summary` — SQL puro, sem tocar disco. Usado só por
-    /// `acerola/browse-library/1` (`LibraryBrowseInbound`); `build_manifest()` continua sendo
-    /// o que a transferência de arquivos (`sync-files`/`sync-comic`) usa, já que essa fase
-    /// precisa mesmo dos bytes/checksum de cada capítulo.
+    /// Library summary (title + chapter count + cover version) via
+    /// `ChapterRepository::get_library_summary` — pure SQL, no disk access. Only used by
+    /// `acerola/browse-library/1` (`LibraryBrowseInbound`); `build_manifest()` is still
+    /// what file transfer (`sync-files`/`sync-comic`) uses, since that phase
+    /// really needs each chapter's bytes/checksum.
     pub async fn get_library_summary(&self) -> Result<Vec<ComicSummaryEntry>, ComicError> {
         let rows = self.chapter_repo.get_library_summary().await?;
         Ok(rows
@@ -192,12 +192,12 @@ impl FileSyncService {
             .collect())
     }
 
-    /// Mesmo manifesto de `build_manifest()`, mas filtrado pra um único quadrinho — usado pelo
-    /// sync individual (`acerola/sync-comic/1`) pra não trocar a biblioteca inteira quando só
-    /// um `comic_name` foi pedido. Reaproveita a query completa em vez de uma busca dedicada
-    /// no repositório: bibliotecas pessoais são pequenas o bastante pra isso não importar, e
-    /// evita duplicar a lógica de montagem de `FileChapterInfo` (tamanho em disco, nome do
-    /// arquivo) em dois lugares.
+    /// Same manifest as `build_manifest()`, but filtered to a single comic — used by the
+    /// individual sync (`acerola/sync-comic/1`) to avoid exchanging the whole library when only
+    /// one `comic_name` was requested. Reuses the full query instead of a dedicated lookup
+    /// in the repository: personal libraries are small enough for this not to matter, and
+    /// it avoids duplicating the `FileChapterInfo` building logic (size on disk, file
+    /// name) in two places.
     pub async fn build_manifest_for_comic(
         &self, comic_name: &str,
     ) -> Result<FileManifest, ComicError> {
@@ -206,13 +206,13 @@ impl FileSyncService {
         Ok(manifest)
     }
 
-    /// Resolve `chapter_archive_id`s locais (a unidade que a UI de seleção múltipla já usa,
-    /// ex. `markChaptersReadBatch`/`HistoryEntryScope`) pros RÓTULOS de capítulo
-    /// (`FileChapterInfo.chapter`) — diferente de `HistorySyncService::resolve_chapter_sorts`,
-    /// que resolve pra `chapter_sort`: o sync de arquivos já usa o rótulo como chave
-    /// cross-device (ver contrato documentado em `persist_received_chapter`), então é essa a
-    /// chave que precisa viajar no `ComicSyncRequest.chapters`. IDs que não existem ou que
-    /// pertencem a outro quadrinho são ignorados silenciosamente, mesma postura de
+    /// Resolves local `chapter_archive_id`s (the unit the multi-selection UI already uses,
+    /// e.g. `markChaptersReadBatch`/`HistoryEntryScope`) to chapter LABELS
+    /// (`FileChapterInfo.chapter`) — unlike `HistorySyncService::resolve_chapter_sorts`,
+    /// which resolves to `chapter_sort`: file sync already uses the label as the
+    /// cross-device key (see the contract documented in `persist_received_chapter`), so that is
+    /// the key that must travel in `ComicSyncRequest.chapters`. IDs that do not exist or that
+    /// belong to another comic are silently ignored, same stance as
     /// `resolve_chapter_sorts`.
     pub async fn resolve_chapter_labels(
         &self, comic_name: &str, chapter_ids: &[i64],
@@ -234,16 +234,16 @@ impl FileSyncService {
         Ok(labels)
     }
 
-    /// Calcula o que EU quero, comparando o manifesto do peer contra a base local: capítulos
-    /// ausentes ou com checksum diferente (arquivo desatualizado/corrompido localmente), mais
-    /// os itens extra (capa/banner/ComicInfo.xml) ausentes ou desatualizados. Retorna
-    /// `(wanted, wanted_extras, conflicts)` — capítulos e extras são conceitos independentes,
-    /// então vetores separados em vez de misturar tudo numa única lista com um discriminador.
-    /// `conflicts` é um subconjunto de `wanted`: capítulos que já EXISTEM localmente mas com um
-    /// checksum diferente do peer (os dois lados divergiram de verdade, não é só "eu não tenho
-    /// ainda") — continuam sendo puxados normalmente (sem mudar o comportamento de sobrescrita
-    /// atual), só passam a ser contados separadamente pra sessão poder reportar que um
-    /// conflito real aconteceu, em vez de tratar como uma atualização silenciosa qualquer.
+    /// Computes what I want, comparing the peer's manifest against the local database: chapters
+    /// that are missing or have a different checksum (file outdated/corrupted locally), plus
+    /// missing or outdated extra items (cover/banner/ComicInfo.xml). Returns
+    /// `(wanted, wanted_extras, conflicts)` — chapters and extras are independent concepts,
+    /// so separate vectors instead of mixing everything in a single list with a discriminator.
+    /// `conflicts` is a subset of `wanted`: chapters that already EXIST locally but with a
+    /// checksum different from the peer's (both sides really diverged, it is not just "I don't have
+    /// it yet") — they are still pulled normally (without changing the current overwrite
+    /// behavior), they are just counted separately so the session can report that a
+    /// real conflict happened, instead of treating it as just another silent update.
     pub async fn diff_wanted(
         &self, peer_manifest: &FileManifest,
     ) -> Result<(Vec<(String, String)>, Vec<(String, String)>, Vec<(String, String)>), ComicError>
@@ -273,8 +273,8 @@ impl FileSyncService {
                     continue;
                 }
 
-                // Um capítulo local com checksum já registrado, mas diferente do que o peer
-                // tem, é um conflito de verdade — diferente de "nunca tive esse capítulo".
+                // A local chapter with an already-recorded checksum that differs from what the peer
+                // has is a real conflict — unlike "I never had this chapter".
                 if local_chapter.as_ref().is_some_and(|local| local.checksum.is_some()) {
                     conflicts.push((comic.comic_name.clone(), chapter.chapter.clone()));
                 }
@@ -319,7 +319,7 @@ impl FileSyncService {
         }
     }
 
-    /// Resolve o path local + metadados de um capítulo já existente, pra enviar ao peer.
+    /// Resolves the local path + metadata of an existing chapter, to send to the peer.
     pub async fn resolve_local_file(
         &self, comic_name: &str, chapter: &str,
     ) -> Result<Option<(PathBuf, u64, Option<String>, String)>, ComicError> {
@@ -340,10 +340,10 @@ impl FileSyncService {
         Ok(Some((path, size, chapter_row.checksum, file_name)))
     }
 
-    /// Resolve path + metadados de um item extra (capa/banner/ComicInfo.xml) local já
-    /// existente, pra enviar ao peer — mesmo shape de retorno de `resolve_local_file`. O
-    /// checksum não vem de uma coluna cacheada (não existe uma pra extras): é recalculado
-    /// aqui, do mesmo jeito que em `build_comic_extras`/`local_extra_info`.
+    /// Resolves path + metadata of an existing local extra item (cover/banner/ComicInfo.xml),
+    /// to send to the peer — same return shape as `resolve_local_file`. The
+    /// checksum does not come from a cached column (there is none for extras): it is recomputed
+    /// here, the same way as in `build_comic_extras`/`local_extra_info`.
     pub async fn resolve_local_extra(
         &self, comic_name: &str, kind: &str,
     ) -> Result<Option<(PathBuf, u64, Option<String>, String)>, ComicError> {
@@ -369,9 +369,9 @@ impl FileSyncService {
         Ok(Some((path, bytes.len() as u64, Some(sha256_hex(&bytes)), file_name)))
     }
 
-    /// Capa local (versão + bytes) de `comic_name`, usada por `acerola/browse-cover/1`. `None`
-    /// cobre tanto "quadrinho não existe" quanto "existe mas não tem capa salva" — os dois casos
-    /// resultam na mesma resposta pro peer, não há necessidade de distinguir.
+    /// Local cover (version + bytes) of `comic_name`, used by `acerola/browse-cover/1`. `None`
+    /// covers both "comic does not exist" and "exists but has no saved cover" — both cases
+    /// result in the same answer to the peer, there is no need to tell them apart.
     pub async fn get_local_cover(
         &self, comic_name: &str,
     ) -> Result<Option<(i64, Vec<u8>)>, ComicError> {
@@ -390,12 +390,12 @@ impl FileSyncService {
         Ok(Some((comic.last_modified, bytes)))
     }
 
-    /// Resolve o `ComicDirectory` de um quadrinho por nome, criando-o (via
-    /// `create_synced_comic`) se ainda não existir localmente, e garante que a pasta exista
-    /// em disco. Público pra quem recebe bytes (`transfer::receive_files`) poder gravar o
-    /// arquivo temporário JÁ dentro dessa pasta antes de saber que o download terminou —
-    /// evita depender de uma pasta de staging à parte (`rename` teria que ser garantido no
-    /// mesmo volume de qualquer forma) e não deixa nenhuma pasta extra visível na biblioteca.
+    /// Resolves a comic's `ComicDirectory` by name, creating it (via
+    /// `create_synced_comic`) if it does not exist locally yet, and ensures the folder exists
+    /// on disk. Public so whoever receives bytes (`transfer::receive_files`) can write the
+    /// temporary file ALREADY inside that folder before knowing the download finished —
+    /// avoids relying on a separate staging folder (`rename` would have to be guaranteed on the
+    /// same volume anyway) and leaves no extra folder visible in the library.
     pub async fn resolve_comic_dir(&self, comic_name: &str) -> Result<ComicDirectory, ComicError> {
         let comic = match self.comic_repo.find_by_name(comic_name).await? {
             Some(existing) => existing,
@@ -408,26 +408,26 @@ impl FileSyncService {
         Ok(comic)
     }
 
-    /// Move o arquivo já recebido (e verificado) de `temp_path` pro destino final dentro da
-    /// biblioteca, criando o quadrinho no banco se ainda não existir, e indexa o capítulo
-    /// reaproveitando o mesmo padrão de insert/update do scanner.
+    /// Moves the already received (and verified) file from `temp_path` to its final destination
+    /// inside the library, creating the comic in the database if it does not exist yet, and indexes
+    /// the chapter reusing the scanner's same insert/update pattern.
     ///
-    /// **Contrato pro rótulo do capítulo** (o mesmo que qualquer peer, incluindo o Android,
-    /// precisa seguir pro `chapter` recebido bater com o que esse desktop já produz no scan
-    /// local via `Path::file_stem` — ver `chapter_scanner_engine.rs::scan_chapter`):
-    /// o rótulo exibido é o nome do arquivo **sem a última extensão** — tudo antes do
-    /// último `.`, exceto quando esse `.` é o primeiro caractere do nome (dotfile sem
-    /// extensão de verdade, ex: `.gitignore`, que fica igual). `"Ch. 1.cbz"` → `"Ch. 1"`;
-    /// `"archive.tar.gz"` → `"archive.tar"` (só a ÚLTIMA extensão sai).
+    /// **Chapter label contract** (the same one any peer, including Android, must follow
+    /// for the received `chapter` to match what this desktop already produces in the local
+    /// scan via `Path::file_stem` — see `chapter_scanner_engine.rs::scan_chapter`):
+    /// the displayed label is the file name **without the last extension** — everything before
+    /// the last `.`, except when that `.` is the first character of the name (a dotfile with no
+    /// real extension, e.g. `.gitignore`, which stays as is). `"Ch. 1.cbz"` → `"Ch. 1"`;
+    /// `"archive.tar.gz"` → `"archive.tar"` (only the LAST extension is removed).
     ///
-    /// Por isso ignoramos o `chapter` que veio no `FileHeader` pra montar o rótulo — ele é
-    /// só a chave natural que o peer usou pra decidir QUAL capítulo mandar (via
-    /// `resolve_local_file`/`find_by_comic_and_chapter`), não necessariamente já vem nesse
-    /// formato. Um peer com esse contrato quebrado (era o caso: o Android manda o
-    /// `DocumentsContract` `DISPLAY_NAME` cru, com extensão, sem passar por um `file_stem`
-    /// equivalente) não devia contaminar a biblioteca local — recalculamos aqui a partir do
-    /// `file_name` real do arquivo, que é sempre confiável (é literalmente o nome do arquivo
-    /// que acabamos de gravar em disco).
+    /// That is why we ignore the `chapter` that came in the `FileHeader` to build the label — it is
+    /// only the natural key the peer used to decide WHICH chapter to send (via
+    /// `resolve_local_file`/`find_by_comic_and_chapter`), it does not necessarily come in that
+    /// format. A peer with this contract broken (that was the case: Android sends the raw
+    /// `DocumentsContract` `DISPLAY_NAME`, with the extension, without going through a `file_stem`
+    /// equivalent) should not pollute the local library — we recompute it here from the
+    /// file's real `file_name`, which is always reliable (it is literally the name of the file
+    /// we just wrote to disk).
     pub async fn persist_received_chapter(
         &self, comic_name: &str, chapter: &str, file_name: &str, temp_path: &Path, checksum: String,
     ) -> Result<(), ComicError> {
@@ -439,20 +439,20 @@ impl FileSyncService {
         let display_chapter =
             Path::new(file_name).file_stem().and_then(|stem| stem.to_str()).unwrap_or(chapter);
 
-        // `(comic_directory_fk, chapter)` já existente cobre um reenvio (sync interrompido e
-        // retomado, ou o mesmo capítulo pedido duas vezes) — nesse caso precisa ser um UPDATE
-        // na linha existente, não um INSERT novo: o `id` dela é o `path_hash` do path ANTIGO,
-        // que só bate com o `path_hash(&dest_path)` calculado abaixo se o nome do arquivo não
-        // mudou entre as duas tentativas. Sem isso, o INSERT colide na constraint UNIQUE, e
-        // como o arquivo já foi renomeado em disco (linha acima), a linha do banco fica
-        // desatualizada silenciosamente (path/checksum antigos) mesmo com o conteúdo novo já
-        // gravado — era exatamente esse o bug: `Err(DbError::UniqueViolation) => Ok(())`
-        // descartava o conflito em vez de propagar o dado novo pra linha existente.
+        // An existing `(comic_directory_fk, chapter)` covers a resend (sync interrupted and
+        // resumed, or the same chapter requested twice) — in that case it must be an UPDATE
+        // on the existing row, not a new INSERT: its `id` is the `path_hash` of the OLD path,
+        // which only matches the `path_hash(&dest_path)` computed below if the file name did not
+        // change between both attempts. Without this, the INSERT hits the UNIQUE constraint, and
+        // since the file was already renamed on disk (line above), the database row silently
+        // becomes stale (old path/checksum) even with the new content already
+        // written — that was exactly the bug: `Err(DbError::UniqueViolation) => Ok(())`
+        // discarded the conflict instead of propagating the new data to the existing row.
         let existing =
             self.chapter_repo.find_by_comic_and_chapter(comic.id, display_chapter).await?;
 
-        // Caminho antigo só é removido depois que o registro novo está de pé — nunca antes,
-        // pra um erro no meio do caminho não deixar nem arquivo nem linha de banco.
+        // The old path is only removed after the new record is in place — never before,
+        // so an error midway leaves neither a file nor a database row behind.
         if let Some(existing) = &existing {
             if existing.path != dest_path.to_string_lossy() {
                 tokio::fs::remove_file(&existing.path).await.ok();
@@ -475,22 +475,22 @@ impl FileSyncService {
             self.chapter_repo.base.update(&chapter_row).await.map(|_| ()).map_err(ComicError::from)
         } else {
             match self.chapter_repo.base.insert(&chapter_row).await {
-                // Corrida genuína (duas inserções concorrentes pro mesmo par no mesmo
-                // instante) ainda pode colidir aqui mesmo depois do `find_by_comic_and_chapter`
-                // não achar nada — janela entre o SELECT e o INSERT sem transação. Continua
-                // sendo um no-op aceitável nesse caso raríssimo: a outra sessão já gravou dado
-                // equivalente (mesmo capítulo, mesmo transfer).
+                // A genuine race (two concurrent inserts for the same pair at the same
+                // instant) can still collide here even after `find_by_comic_and_chapter`
+                // found nothing — window between the SELECT and the INSERT without a transaction. It is
+                // still an acceptable no-op in this very rare case: the other session already wrote
+                // equivalent data (same chapter, same transfer).
                 Ok(_) | Err(DbError::UniqueViolation) => Ok(()),
                 Err(error) => Err(ComicError::from(error)),
             }
         }
     }
 
-    /// Persiste um item extra recebido (capa/banner/ComicInfo.xml) — contraparte de
-    /// `persist_received_chapter` pra itens que não são capítulos. Retorna o `ComicDirectory`
-    /// já atualizado (com o novo path de capa/banner, quando for o caso), pra quem chama em
-    /// `transfer.rs` saber o `id` sem uma segunda consulta e decidir se dispara o
-    /// reprocessamento de metadata do `ComicInfo.xml`.
+    /// Persists a received extra item (cover/banner/ComicInfo.xml) — counterpart of
+    /// `persist_received_chapter` for items that are not chapters. Returns the already updated
+    /// `ComicDirectory` (with the new cover/banner path, when applicable), so the caller in
+    /// `transfer.rs` knows the `id` without a second query and decides whether to trigger
+    /// metadata reprocessing of `ComicInfo.xml`.
     pub async fn persist_received_extra(
         &self, comic_name: &str, kind: &str, file_name: &str, temp_path: &Path,
     ) -> Result<ComicDirectory, ComicError> {
@@ -507,11 +507,11 @@ impl FileSyncService {
             EXTRA_KIND_COMIC_INFO => {
                 let dest_path = comic_dir.join("ComicInfo.xml");
 
-                // Um `ComicInfo.xml` pré-existente com capitalização diferente (o guard que
-                // valida esse nome é case-insensitive, mas o filesystem pode ter mais de uma
-                // entrada em disco em sistemas case-sensitive) precisa sumir antes de gravar o
-                // nome canônico — senão as duas coexistem e o próximo `find_comic_info_path`
-                // vira ambíguo sobre qual é a "verdadeira".
+                // A pre-existing `ComicInfo.xml` with different casing (the guard that
+                // validates this name is case-insensitive, but the filesystem may have more than one
+                // entry on disk on case-sensitive systems) must go away before writing the
+                // canonical name — otherwise both coexist and the next `find_comic_info_path`
+                // becomes ambiguous about which one is the "real" one.
                 if let Some(existing_path) = find_comic_info_path(&comic_dir) {
                     if existing_path != dest_path {
                         let _ = tokio::fs::remove_file(&existing_path).await;
@@ -525,11 +525,11 @@ impl FileSyncService {
         }
     }
 
-    /// Renomeia `temp_path` pra `<stem>.<extensão>` na raiz do diretório do quadrinho, limpa
-    /// qualquer `<stem>.<outra extensão>` órfão (mesma limpeza que
-    /// `cover_extractor::persist_cover` já faz pra capa, replicada aqui em vez de generalizar
-    /// aquela função pública — evita mexer num contrato já usado pelo fluxo manual de
-    /// metadata), e atualiza a coluna correspondente (`cover`/`banner`) + `last_modified`.
+    /// Renames `temp_path` to `<stem>.<extension>` at the root of the comic directory, cleans
+    /// up any orphan `<stem>.<other extension>` (same cleanup
+    /// `cover_extractor::persist_cover` already does for the cover, replicated here instead of
+    /// generalizing that public function — avoids touching a contract already used by the manual
+    /// metadata flow), and updates the matching column (`cover`/`banner`) + `last_modified`.
     async fn persist_artwork_extra(
         &self, comic: &ComicDirectory, comic_dir: &Path, stem: &str, file_name: &str,
         temp_path: &Path,
@@ -563,10 +563,10 @@ impl FileSyncService {
         self.comic_repo.base.update(&updated).await.map_err(ComicError::from)
     }
 
-    /// Cria um novo `comic_directory` sob `<library_root>/<nome>` — usado quando um
-    /// capítulo recebido pertence a um quadrinho que ainda não existe localmente. Mesmo
-    /// path que o scanner normal da biblioteca usaria pra um quadrinho adicionado
-    /// manualmente — sem pasta `synced/` intermediária.
+    /// Creates a new `comic_directory` under `<library_root>/<name>` — used when a
+    /// received chapter belongs to a comic that does not exist locally yet. Same
+    /// path the regular library scanner would use for a manually added comic
+    /// — with no intermediate `synced/` folder.
     async fn create_synced_comic(&self, comic_name: &str) -> Result<ComicDirectory, ComicError> {
         let comic_dir = self.library_root().join(sanitize_folder_name(comic_name));
 
@@ -591,8 +591,8 @@ impl FileSyncService {
         }
     }
 
-    /// Resolvido a cada chamada — nunca cacheado — pra sempre refletir o `library_path`
-    /// atual em `settings.json`, mesmo que o usuário tenha trocado depois do boot.
+    /// Resolved on every call — never cached — to always reflect the current `library_path`
+    /// in `settings.json`, even if the user changed it after boot.
     pub fn library_root(&self) -> PathBuf {
         (self.library_root)()
     }
@@ -675,7 +675,7 @@ mod tests {
         assert_eq!(
             conflicts,
             vec![("Test".to_string(), "Cap 1".to_string())],
-            "checksum local diferente do peer é um conflito de verdade, não só uma atualização"
+            "a local checksum different from the peer's is a real conflict, not just an update"
         );
     }
 
@@ -698,7 +698,7 @@ mod tests {
 
         let (wanted, _, conflicts) = service.diff_wanted(&peer_manifest).await.unwrap();
         assert_eq!(wanted, vec![("Novo Quadrinho".to_string(), "Cap 1".to_string())]);
-        assert!(conflicts.is_empty(), "quadrinho nunca visto localmente não é um conflito");
+        assert!(conflicts.is_empty(), "a comic never seen locally is not a conflict");
     }
 
     #[tokio::test]
@@ -758,10 +758,10 @@ mod tests {
         assert!(!temp_path.exists(), "temp file should have been moved, not copied");
     }
 
-    /// Trava o contrato do rótulo de capítulo: mesmo que o peer mande `chapter` sujo (com
-    /// extensão, exatamente o bug reproduzido com o Android — `DocumentsContract`
-    /// `DISPLAY_NAME` cru), o desktop nunca grava a extensão. O rótulo persistido é sempre
-    /// recalculado a partir do `file_name` real do arquivo, via `file_stem`.
+    /// Locks the chapter label contract: even if the peer sends a dirty `chapter` (with the
+    /// extension, exactly the bug reproduced with Android — raw `DocumentsContract`
+    /// `DISPLAY_NAME`), the desktop never stores the extension. The persisted label is always
+    /// recomputed from the file's real `file_name`, via `file_stem`.
     #[tokio::test]
     async fn persist_received_chapter_ignores_extension_in_dirty_chapter_from_peer() {
         let (pool, dir, service) = setup().await;
@@ -772,7 +772,7 @@ mod tests {
         service
             .persist_received_chapter(
                 "Mato Seihei no Slave",
-                "Ch. 1.cbz", // <- rótulo sujo, exatamente como veio no log real do Android
+                "Ch. 1.cbz", // <- dirty label, exactly as it came in the real Android log
                 "Ch. 1.cbz",
                 &temp_path,
                 "checksum456".to_string(),
@@ -787,16 +787,16 @@ mod tests {
         .await
         .unwrap();
 
-        assert_eq!(chapter.0, "Ch. 1", "chapter não pode carregar a extensão do arquivo");
+        assert_eq!(chapter.0, "Ch. 1", "chapter must not carry the file extension");
         assert_eq!(chapter.1, "1");
     }
 
-    /// Regressão do bug reportado em 22/08/2026: sync de "Omoide Emanon" reenviando um
-    /// capítulo já indexado (retry de uma sessão anterior interrompida) colidia no
-    /// `UNIQUE(comic_directory_fk, chapter)` e o conflito era descartado silenciosamente
-    /// (`Err(DbError::UniqueViolation) => Ok(())`), deixando o checksum/path antigos no banco
-    /// mesmo com o arquivo novo já sobrescrito em disco. Recebimento repetido do mesmo
-    /// `(comic_name, chapter)` precisa fazer UPDATE na linha existente, não descartar.
+    /// Regression for the bug reported on 2026-08-22: syncing "Omoide Emanon" resending an
+    /// already-indexed chapter (retry of a previous interrupted session) collided on
+    /// `UNIQUE(comic_directory_fk, chapter)` and the conflict was silently discarded
+    /// (`Err(DbError::UniqueViolation) => Ok(())`), leaving the old checksum/path in the database
+    /// even with the new file already overwritten on disk. Receiving the same
+    /// `(comic_name, chapter)` again must UPDATE the existing row, not discard it.
     #[tokio::test]
     async fn persist_received_chapter_updates_existing_row_on_resend_instead_of_dropping_it() {
         let (pool, dir, service) = setup().await;
@@ -834,8 +834,8 @@ mod tests {
         .await
         .unwrap();
 
-        assert_eq!(rows.len(), 1, "reenvio não pode criar uma segunda linha pro mesmo capítulo");
-        assert_eq!(rows[0].0, "checksum-novo", "o reenvio precisa sobrescrever o checksum antigo");
+        assert_eq!(rows.len(), 1, "a resend must not create a second row for the same chapter");
+        assert_eq!(rows[0].0, "checksum-novo", "the resend must overwrite the old checksum");
     }
 
     #[tokio::test]
@@ -852,7 +852,7 @@ mod tests {
 
         assert!(comic.cover.as_deref().is_some_and(|path| path.ends_with("cover.jpg")));
         assert!(tokio::fs::metadata(comic.cover.as_deref().unwrap()).await.is_ok());
-        assert!(!temp_path.exists(), "arquivo temporário deveria ter sido movido, não copiado");
+        assert!(!temp_path.exists(), "temporary file should have been moved, not copied");
 
         let row: (Option<String>,) =
             sqlx::query_as("SELECT cover FROM comic_directory WHERE name = 'Quadrinho Com Capa'")
@@ -862,9 +862,9 @@ mod tests {
         assert!(row.0.as_deref().is_some_and(|path| path.ends_with("cover.jpg")));
     }
 
-    /// Trocar a extensão da capa (ex.: `cover.png` -> `cover.jpg`) não pode deixar as duas
-    /// coexistindo — mesma limpeza de órfão que `cover_extractor::persist_cover` já garante
-    /// pro fluxo manual, replicada em `persist_artwork_extra`.
+    /// Changing the cover extension (e.g. `cover.png` -> `cover.jpg`) must not leave both
+    /// coexisting — same orphan cleanup `cover_extractor::persist_cover` already guarantees
+    /// for the manual flow, replicated in `persist_artwork_extra`.
     #[tokio::test]
     async fn persist_received_extra_cover_removes_stale_extension() {
         let (_, dir, service) = setup().await;
@@ -890,7 +890,7 @@ mod tests {
         assert!(tokio::fs::metadata(comic_dir.join("cover.jpg")).await.is_ok());
         assert!(
             tokio::fs::metadata(comic_dir.join("cover.png")).await.is_err(),
-            "cover.png órfão deveria ter sido removido"
+            "orphan cover.png should have been removed"
         );
     }
 
@@ -922,7 +922,7 @@ mod tests {
             .unwrap();
 
         let resolved = service.resolve_local_extra("Quadrinho Resolve", "cover").await.unwrap();
-        let (path, size, checksum, file_name) = resolved.expect("capa deveria ter sido encontrada");
+        let (path, size, checksum, file_name) = resolved.expect("cover should have been found");
         assert!(path.ends_with("cover.jpg"));
         assert_eq!(size, b"fake jpeg bytes".len() as u64);
         assert!(checksum.is_some());

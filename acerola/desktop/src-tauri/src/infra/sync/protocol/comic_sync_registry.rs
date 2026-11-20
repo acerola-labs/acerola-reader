@@ -5,23 +5,23 @@ use std::{
 
 use crate::infra::sync::messages::SyncDirection;
 
-/// `Handler::handle()` (trait do `acerola-p2p`) é chamado sem nenhum parâmetro específico da
-/// invocação — os handlers `acerola/sync-comic/1` são singletons registrados uma única vez no
-/// boot (`bios::network::setup_network`). Pra o lado que INICIA um sync individual (o comando
-/// Tauri `sync_comic`) conseguir dizer ao `ComicSyncOutbound` qual `comic_name`/`direction` usar
-/// nessa chamada específica de `connect()`, esse registro funciona como um side-channel: o
-/// comando grava a tripla (peer_id, comic_name, direction) antes de chamar `connect()`, e o
-/// handler consome (`take`) esse valor assim que a sessão começa. Só o lado outbound precisa
-/// disso — o lado inbound recebe `comic_name`/`direction` pelo próprio `ComicSyncRequest` no
-/// wire.
+/// `Handler::handle()` (`acerola-p2p` trait) is called without any invocation-specific
+/// parameter — the `acerola/sync-comic/1` handlers are singletons registered only once at
+/// boot (`bios::network::setup_network`). So that the side that STARTS an individual sync (the
+/// Tauri command `sync_comic`) can tell `ComicSyncOutbound` which `comic_name`/`direction` to use
+/// for that specific `connect()` call, this registry works as a side channel: the
+/// command writes the triple (peer_id, comic_name, direction) before calling `connect()`, and the
+/// handler consumes (`take`) that value as soon as the session starts. Only the outbound side
+/// needs this — the inbound side receives `comic_name`/`direction` through the `ComicSyncRequest`
+/// itself on the wire.
 ///
-/// `chapter_ids` (`chapter_archive_id`s locais, vazio = quadrinho inteiro) escopa a sessão a um
-/// subconjunto de capítulos — mesma unidade que `HistoryEntryScope::chapter_ids` usa pro push de
-/// histórico. `ComicSyncOutbound::run` resolve esses IDs pros rótulos (`FileChapterInfo.chapter`)
-/// antes de montar o `ComicSyncRequest`, porque só o outbound tem os IDs locais; o inbound recebe
-/// os rótulos já resolvidos pelo wire.
-/// `(comic_name, direction, chapter_ids)` pendente pra um peer — extraído num alias porque o
-/// clippy (`type_complexity`) reclama da tupla tripla aninhada direto em `Mutex<HashMap<...>>`.
+/// `chapter_ids` (local `chapter_archive_id`s, empty = whole comic) scopes the session to a
+/// subset of chapters — the same unit `HistoryEntryScope::chapter_ids` uses for the history
+/// push. `ComicSyncOutbound::run` resolves these IDs to labels (`FileChapterInfo.chapter`)
+/// before building the `ComicSyncRequest`, because only the outbound has the local IDs; the
+/// inbound receives the labels already resolved over the wire.
+/// Pending `(comic_name, direction, chapter_ids)` for a peer — extracted into an alias because
+/// clippy (`type_complexity`) complains about the nested triple tuple directly in `Mutex<HashMap<...>>`.
 type PendingComicSync = (String, SyncDirection, Vec<i64>);
 
 #[derive(Default)]
@@ -44,9 +44,9 @@ impl PendingComicSyncRegistry {
             .insert(peer_id, (comic_name, direction, chapter_ids));
     }
 
-    /// Consome (remove) o `(comic_name, direction, chapter_ids)` pendente pro peer — cada
-    /// chamada de `connect()` só serve pra uma sessão, então não faz sentido deixar o valor lá
-    /// depois de lido.
+    /// Consumes (removes) the pending `(comic_name, direction, chapter_ids)` for the peer — each
+    /// `connect()` call only serves one session, so there is no point keeping the value there
+    /// after it is read.
     pub fn take(&self, peer_id: &str) -> Option<PendingComicSync> {
         self.pending.lock().expect("pending comic sync registry mutex poisoned").remove(peer_id)
     }

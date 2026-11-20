@@ -1,18 +1,18 @@
-//! Criptografia em repouso pra tudo que o `acerola-p2p` persiste (identidade do nó,
-//! cache de peers, lista de confiança TOFU) — ver [`p2p_storage`] e [`trusted_store`].
+//! Encryption at rest for everything `acerola-p2p` persists (node identity,
+//! peer cache, TOFU trust list) — see [`p2p_storage`] and [`trusted_store`].
 //!
-//! Design: o keystore do SO (Credential Manager no Windows, Secret Service no Linux,
-//! via crate `keyring`) protege só uma chave mestra AES-256 pequena, gerada uma vez.
-//! Essa chave mestra criptografa (AES-256-GCM) todo o resto antes de tocar o disco —
-//! não dá pra guardar listas que crescem direto no keyring do SO (não é feito pra
-//! blobs grandes), mas dá pra guardar uma chave de 32 bytes tranquilamente.
+//! Design: the OS keystore (Credential Manager on Windows, Secret Service on Linux,
+//! via the `keyring` crate) only protects a small AES-256 master key, generated once.
+//! That master key encrypts (AES-256-GCM) everything else before it touches the disk —
+//! growing lists cannot be stored directly in the OS keyring (it is not meant for
+//! large blobs), but a 32-byte key fits just fine.
 //!
-//! **Fallback sem keyring**: em Linux sem um provider de Secret Service rodando (ex:
-//! Hyprland/sway sem gnome-keyring/kwallet configurado), a chave mestra cai pra um
-//! arquivo local sem a proteção do SO — funciona, mas com segurança reduzida. Isso
-//! NUNCA falha silenciosamente: [`get_or_create_master_key`] retorna de qual fonte a
-//! chave veio, e o chamador (`bios::network::setup_network`) emite um evento pro
-//! frontend avisar o usuário — mesmo princípio do VS Code quando não acha um keyring.
+//! **Fallback without keyring**: on Linux without a running Secret Service provider (e.g.
+//! Hyprland/sway without gnome-keyring/kwallet configured), the master key falls back to a
+//! local file without the OS protection — it works, but with reduced security. This
+//! NEVER fails silently: [`get_or_create_master_key`] returns which source the
+//! key came from, and the caller (`bios::network::setup_network`) emits an event for the
+//! frontend to warn the user — same principle as VS Code when it cannot find a keyring.
 
 pub mod p2p_storage;
 pub mod trusted_store;
@@ -31,25 +31,25 @@ const KEYRING_SERVICE: &str = "Acerola Reader";
 const LEGACY_KEYRING_SERVICES: &[&str] = &["br.acerola.reader", "br.acerola.comic"];
 const KEYRING_USERNAME: &str = "p2p-master-key";
 const MASTER_KEY_LEN: usize = 32;
-/// Nome propositalmente explícito — se alguém ver esse arquivo no disco, o nome já
-/// avisa que não está protegido pelo keyring do sistema.
+/// Deliberately explicit name — if someone sees this file on disk, the name already
+/// warns that it is not protected by the system keyring.
 const FALLBACK_KEY_FILE_NAME: &str = "master.key.insecure";
 
-/// De onde a chave mestra efetivamente veio — o chamador usa isso pra decidir se
-/// precisa avisar o usuário.
+/// Where the master key actually came from — the caller uses this to decide whether
+/// it needs to warn the user.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MasterKeySource {
-    /// Protegida pelo keystore do SO (Credential Manager / Secret Service).
+    /// Protected by the OS keystore (Credential Manager / Secret Service).
     Keyring,
-    /// O SO não tem um backend de keyring utilizável agora — chave caiu pra um
-    /// arquivo local sem essa camada extra de proteção.
+    /// The OS has no usable keyring backend right now — the key fell back to a
+    /// local file without that extra layer of protection.
     FallbackFile,
 }
 
-/// Obtém a chave mestra, tentando primeiro o keyring do SO e caindo pra um arquivo
-/// local (`master.key.insecure` em `fallback_dir`) só se o keyring realmente não
-/// estiver disponível — não confunde "ainda não existe entrada" (primeiro uso normal)
-/// com "não tem backend nenhum" (aí sim precisa avisar o usuário).
+/// Gets the master key, trying the OS keyring first and falling back to a local
+/// file (`master.key.insecure` in `fallback_dir`) only if the keyring is really not
+/// available — it does not confuse "no entry exists yet" (normal first use)
+/// with "there is no backend at all" (that is when the user must be warned).
 pub fn get_or_create_master_key(
     fallback_dir: &Path,
 ) -> Result<([u8; MASTER_KEY_LEN], MasterKeySource), ComicError> {
@@ -68,9 +68,9 @@ pub fn get_or_create_master_key(
     }
 }
 
-/// Só retorna `Ok` se a chave veio de verdade do keyring do SO. Qualquer falha real de
-/// backend (não simplesmente "entrada não existe ainda") vira `Err`, sinalizando pro
-/// chamador cair no fallback.
+/// Only returns `Ok` if the key really came from the OS keyring. Any real backend
+/// failure (not simply "entry does not exist yet") becomes `Err`, signaling the
+/// caller to fall back.
 fn try_keyring_master_key() -> keyring::Result<[u8; MASTER_KEY_LEN]> {
     let entry = keyring::Entry::new(KEYRING_SERVICE, KEYRING_USERNAME)?;
 
@@ -80,8 +80,8 @@ fn try_keyring_master_key() -> keyring::Result<[u8; MASTER_KEY_LEN]> {
             key.copy_from_slice(&bytes);
             Ok(key)
         },
-        // Ausente (primeiro uso) ou corrompida/tamanho errado — tenta migrar de serviços antigos
-        // antes de gerar uma nova.
+        // Missing (first use) or corrupted/wrong size — try migrating from old services
+        // before generating a new one.
         Ok(_) | Err(keyring::Error::NoEntry) => {
             for &legacy_service in LEGACY_KEYRING_SERVICES {
                 if let Ok(old_entry) = keyring::Entry::new(legacy_service, KEYRING_USERNAME) {
@@ -136,12 +136,12 @@ fn get_or_create_fallback_master_key(dir: &Path) -> Result<[u8; MASTER_KEY_LEN],
     }
 }
 
-/// Criptografa `plaintext` com AES-256-GCM. O nonce (96 bits, aleatório por chamada) é
-/// prefixado no blob retornado — não precisa ser guardado à parte pra decriptar depois.
+/// Encrypts `plaintext` with AES-256-GCM. The nonce (96 bits, random per call) is
+/// prefixed to the returned blob — it does not need to be stored separately to decrypt later.
 pub fn encrypt(key: &[u8; MASTER_KEY_LEN], plaintext: &[u8]) -> Vec<u8> {
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
     let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
-    // Só falha se o buffer for absurdamente grande (>2^36 bytes) — não é um caso real aqui.
+    // Only fails if the buffer is absurdly large (>2^36 bytes) — not a real case here.
     let ciphertext = cipher
         .encrypt(&nonce, plaintext)
         .expect("AES-GCM encryption should not fail for small blobs");
@@ -152,7 +152,7 @@ pub fn encrypt(key: &[u8; MASTER_KEY_LEN], plaintext: &[u8]) -> Vec<u8> {
     out
 }
 
-/// Decriptografa um blob produzido por [`encrypt`] (nonce prefixado + ciphertext).
+/// Decrypts a blob produced by [`encrypt`] (prefixed nonce + ciphertext).
 pub fn decrypt(key: &[u8; MASTER_KEY_LEN], blob: &[u8]) -> Result<Vec<u8>, ComicError> {
     const NONCE_LEN: usize = 12;
 

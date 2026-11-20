@@ -7,8 +7,8 @@ where
     serializer.serialize_str(&val.to_string())
 }
 
-/// Payload de histórico de leitura enriquecido com dados do quadrinho e capítulo,
-/// serializado para o frontend via command invoke.
+/// Reading history payload enriched with comic and chapter data,
+/// serialized to the frontend via command invoke.
 #[derive(Debug, Serialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct ReadingHistoryPayload {

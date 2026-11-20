@@ -3,8 +3,8 @@ use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
 use crate::data::repositories::{Bindable, Entity};
 
-/// Dados brutos vindos do AniList para um quadrinho sincronizado (tabela `anilist_source`).
-/// `average_score` é a nota crua do AniList (escala 0-100) — a UI converte para /10.
+/// Raw AniList data for a synced comic (`anilist_source` table).
+/// `average_score` is the raw AniList score (0-100 scale) — the UI converts it to /10.
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct AnilistSource {
     pub id: i64,
