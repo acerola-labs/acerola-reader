@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import type { Preview } from '@storybook/sveltekit';
-import { overwriteSetLocale } from '$lib/paraglide/runtime';
+import { overwriteSetLocale } from '#lib/paraglide/runtime.js';
 import './storybook.css';
 
 // setLocale() real navega/recarrega a página (ver src/lib/paraglide/runtime.js) — dentro do

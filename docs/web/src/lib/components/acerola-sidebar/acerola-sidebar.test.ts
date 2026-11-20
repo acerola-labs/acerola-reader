@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import type { SidebarGroup } from '$lib/content/docs';
+import type { SidebarGroup } from '#lib/content/docs.ts';
 import AcerolaSidebar from './acerola-sidebar.svelte';
 
 // Doc titles are deliberately different from their section names below — the sidebar renders

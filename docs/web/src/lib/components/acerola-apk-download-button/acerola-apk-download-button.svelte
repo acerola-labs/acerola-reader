@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import AndroidIcon from '$lib/assets/icons/android.svg?component';
+	import AndroidIcon from '#lib/assets/icons/android.svg?component';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
-	import { APK_URL, GITHUB_RELEASES_URL } from '$lib/constants/site';
+	import { APK_URL, GITHUB_RELEASES_URL } from '#lib/constants/site.ts';
 
 	let {
 		label = 'Get the',

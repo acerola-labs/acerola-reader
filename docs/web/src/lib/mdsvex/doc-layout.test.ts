@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import DocLayout from './doc-layout.svelte';
-import { DOC_RAW_CONTEXT_KEY } from '$lib/content/doc-raw-context';
+import { DOC_RAW_CONTEXT_KEY } from '#lib/content/doc-raw-context.ts';
 
 const { mockMermaidRun, mockMermaidInitialize } = vi.hoisted(() => ({
 	// O mermaid.run() real substitui o conteúdo de cada nó por um `<svg>`

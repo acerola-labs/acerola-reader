@@ -4,9 +4,9 @@
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import MailIcon from '@lucide/svelte/icons/mail';
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-	import { Button } from '$lib/components/ui/button/index';
-	import * as Card from '$lib/components/ui/card/index';
-	import { m } from '$lib/paraglide/messages';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		label,

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { getDoc, getPrevNext } from '$lib/content/docs';
-import { getLocale } from '$lib/paraglide/runtime';
+import { getDoc, getPrevNext } from '#lib/content/docs.ts';
+import { getLocale } from '#lib/paraglide/runtime.js';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = ({ params }) => {

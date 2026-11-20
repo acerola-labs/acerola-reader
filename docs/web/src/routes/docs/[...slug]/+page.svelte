@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
-	import AcerolaPrevNextNav from '$lib/components/acerola-prev-next-nav/acerola-prev-next-nav.svelte';
-	import { DOC_RAW_CONTEXT_KEY } from '$lib/content/doc-raw-context';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaPrevNextNav from '#lib/components/acerola-prev-next-nav/acerola-prev-next-nav.svelte';
+	import { DOC_RAW_CONTEXT_KEY } from '#lib/content/doc-raw-context.ts';
+	import { m } from '#lib/paraglide/messages.js';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import * as Card from '$lib/components/ui/card/index';
-	import { card3D } from '$lib/actions/card-3d';
-	import { cn } from '$lib/cn.util';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { card3D } from '#lib/actions/card-3d.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import type { Component, Snippet } from 'svelte';
 
 	let {

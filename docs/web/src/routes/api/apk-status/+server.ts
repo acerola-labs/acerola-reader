@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { resolveLatestApkKey } from '$lib/server/apk-bucket';
+import { resolveLatestApkKey } from '#lib/server/apk-bucket.ts';
 import type { RequestHandler } from './$types';
 
 // Cacheado na borda da Cloudflare por alguns minutos: a checagem ao vivo passa a rodar de

@@ -1,6 +1,6 @@
-import { SITE_URL } from '$lib/constants/site';
-import { FALLBACK_LOCALE, getFlatOrder } from '$lib/content/docs';
-import { locales, localizeHref } from '$lib/paraglide/runtime';
+import { SITE_URL } from '#lib/constants/site.ts';
+import { FALLBACK_LOCALE, getFlatOrder } from '#lib/content/docs.ts';
+import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {

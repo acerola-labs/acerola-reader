@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import AcerolaErrorScreen from '$lib/components/acerola-error-screen/acerola-error-screen.svelte';
-	import { BRAND_MASCOT_URL } from '$lib/constants/site';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { errorKind } from '$lib/utils/error.utils';
+	import AcerolaErrorScreen from '#lib/components/acerola-error-screen/acerola-error-screen.svelte';
+	import { BRAND_MASCOT_URL } from '#lib/constants/site.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { errorKind } from '#lib/utils/error.util.ts';
 
 	// Any status lands here: 404 from the router, 5xx from a load.
 	const kind = $derived(

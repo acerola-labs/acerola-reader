@@ -2,7 +2,11 @@
 	"name": "acerola-docs",
 	"version": "1.0.24",
 	"private": true,
+	"license": "MPL-2.0",
 	"type": "module",
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
 	"scripts": {
 		"dev": "npm run paraglide:compile && vite dev",
 		"build": "npm run paraglide:compile && vite build && pagefind --site .svelte-kit/cloudflare --output-subdir pagefind",

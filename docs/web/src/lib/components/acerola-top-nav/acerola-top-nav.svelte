@@ -1,11 +1,11 @@
 <script lang="ts">
 	import MenuIcon from '@lucide/svelte/icons/menu';
 	import SearchIcon from '@lucide/svelte/icons/search';
-	import { Button } from '$lib/components/ui/button/index';
-	import AcerolaNavControls from '$lib/components/acerola-nav-controls/acerola-nav-controls.svelte';
-	import { BRAND_LOGO_URL } from '$lib/constants/site';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaNavControls from '#lib/components/acerola-nav-controls/acerola-nav-controls.svelte';
+	import { BRAND_LOGO_URL } from '#lib/constants/site.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
 	let { onOpenSearch, onOpenMobileNav }: { onOpenSearch: () => void; onOpenMobileNav: () => void } =
 		$props();

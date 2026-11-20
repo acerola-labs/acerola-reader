@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { DocEntry } from '$lib/content/docs';
+	import type { DocEntry } from '#lib/content/docs.ts';
 	import AcerolaPrevNextNav from './acerola-prev-next-nav.svelte';
 
 	function doc(slug: string, title: string): DocEntry {

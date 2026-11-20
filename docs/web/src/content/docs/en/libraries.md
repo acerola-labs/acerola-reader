@@ -6,8 +6,8 @@ order: 1
 ---
 
 <script>
-	import Callout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import LibraryTable from '$lib/mdsvex/library-table.svelte';
+	import Callout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import LibraryTable from '#lib/mdsvex/library-table.svelte';
 
 	const desktopRust = [
 		{ name: 'acerola-p2p', url: 'https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/tree/main/lib/p2p', license: 'MPL-2.0' },
