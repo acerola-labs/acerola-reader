@@ -28,17 +28,31 @@ img {
 code[data-theme*=' '],
 code[data-theme*=' '] span {
 	color: var(--shiki-light);
-	background-color: var(--shiki-light-bg);
 }
 
 .dark code[data-theme*=' '],
 .dark code[data-theme*=' '] span {
 	color: var(--shiki-dark);
-	background-color: var(--shiki-dark-bg);
 }
 
-figure[data-rehype-pretty-code-figure] pre {
-	@apply overflow-x-auto rounded-tile bg-card p-5 text-sm leading-relaxed;
+/* Code block = the brand code panel (AcerolaCode): solid crust block, rounded-tile, shadow-lift,
+   the window bar (dots + language + copy pill) on top; the token colors come from shiki but
+   the background is always the panel's, never the shiki theme's. */
+figure[data-rehype-pretty-code-figure],
+[data-code-box] {
+	@apply my-6 flex min-w-0 flex-col overflow-hidden rounded-tile bg-crust shadow-lift;
+}
+
+figure[data-rehype-pretty-code-figure] pre,
+[data-code-box] pre {
+	@apply m-0 overflow-x-auto bg-transparent p-4 text-sm leading-relaxed sm:p-5;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface) transparent;
+}
+
+figure[data-rehype-pretty-code-figure] pre,
+figure[data-rehype-pretty-code-figure] code {
+	background-color: transparent;
 }
 
 figure[data-rehype-pretty-code-figure] code {
@@ -100,15 +114,15 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
    `prose` is based on a fixed gray palette, and the site switches between light and
    dark via these custom properties. */
 .doc-content :where(h2) {
-	@apply mt-10 mb-4 font-heading text-2xl font-semibold first:mt-0;
+	@apply mt-12 mb-4 text-2xl leading-tight font-black tracking-tight first:mt-0;
 }
 
 .doc-content :where(h3) {
-	@apply mt-8 mb-3 font-heading text-xl font-semibold;
+	@apply mt-8 mb-3 text-lg font-black tracking-tight;
 }
 
 .doc-content :where(h4) {
-	@apply mt-6 mb-2 font-heading text-lg font-semibold;
+	@apply mt-6 mb-2 font-black tracking-tight text-base;
 }
 
 .doc-content :where(p) {
@@ -140,7 +154,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 }
 
 .doc-content :where(strong) {
-	@apply font-semibold text-foreground;
+	@apply font-black text-foreground;
 }
 
 .doc-content :where(blockquote) {
@@ -158,7 +172,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
    of the container width. */
 .doc-content :where([data-slot='table-container']),
 .doc-content :where(.table-container) {
-	@apply relative my-6 w-full overflow-x-auto rounded-tile bg-card;
+	@apply relative my-6 w-full overflow-x-auto rounded-tile bg-card shadow-lift;
 }
 
 .doc-content :where(table) {
@@ -171,7 +185,7 @@ figure[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::be
 }
 
 .doc-content :where(th) {
-	@apply border-b border-border px-4 py-2 text-left align-middle font-semibold whitespace-nowrap text-foreground;
+	@apply border-b border-border px-4 py-2 text-left align-middle font-black whitespace-nowrap text-foreground;
 }
 
 .doc-content :where(td) {

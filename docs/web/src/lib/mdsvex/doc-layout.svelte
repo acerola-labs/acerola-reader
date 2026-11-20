@@ -172,60 +172,93 @@
 		for (const node of nodes) addZoomControls(node);
 	}
 
+	// The brand code panel (AcerolaCode) for the markdown code blocks: rehype already rendered the
+	// <pre>, so the window bar (dots + language + copy pill) is built here, with the same classes.
+	const COPY_IDLE = 'bg-surface text-muted-foreground hover:text-foreground';
+	const COPY_DONE = 'bg-success-soft text-success';
+
 	function addCodeCopyButtons() {
 		if (!container) return;
 		const pres = container.querySelectorAll<HTMLPreElement>('pre');
 		for (const pre of pres) {
-			if (pre.closest('.mermaid') || pre.querySelector('[data-code-copy-button]')) continue;
+			if (pre.closest('.mermaid')) continue;
+			const parent = pre.parentElement;
+			const wrapped =
+				parent?.tagName.toLowerCase() === 'figure' || parent?.dataset.codeBox !== undefined;
+			if (wrapped && parent?.querySelector('[data-code-copy-button]')) continue;
 
-			const wrapper =
-				pre.parentElement?.tagName.toLowerCase() === 'figure' ? pre.parentElement : pre;
-			wrapper.style.position = 'relative';
+			// rehype-pretty-code wraps every block in a <figure>; a bare <pre> gets its own box.
+			let box = wrapped ? parent : null;
+			if (!box) {
+				box = document.createElement('div');
+				box.dataset.codeBox = '';
+				pre.before(box);
+				box.append(pre);
+			}
+
+			const bar = document.createElement('div');
+			bar.dataset.codeBar = '';
+			bar.className = 'flex items-center justify-between gap-3 bg-mantle px-3 py-2';
+
+			const left = document.createElement('div');
+			left.className = 'flex min-w-0 items-center gap-3';
+			const dots = document.createElement('span');
+			dots.className = 'flex shrink-0 items-center gap-1.5 pl-1';
+			dots.setAttribute('aria-hidden', 'true');
+			for (const tone of ['bg-destructive', 'bg-warning', 'bg-success']) {
+				const dot = document.createElement('span');
+				dot.className = `size-2.5 rounded-full ${tone}`;
+				dots.append(dot);
+			}
+			const language = document.createElement('span');
+			language.className = 'truncate font-mono text-xs font-bold text-muted-foreground';
+			language.textContent =
+				pre.dataset.language ?? pre.querySelector('code')?.dataset.language ?? 'code';
+			left.append(dots, language);
 
 			const btn = document.createElement('button');
 			btn.type = 'button';
 			btn.dataset.codeCopyButton = '';
-			btn.setAttribute('aria-label', m['marketingCode.copyAria']());
-			btn.title = m['marketingCode.copy']();
-			btn.className =
-				'absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full border border-border/80 bg-card/90 px-2.5 py-1 text-xs font-medium text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-card hover:text-foreground active:scale-95 cursor-pointer';
+			btn.setAttribute('aria-label', m['code.copy']());
+			btn.className = `flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition-all duration-200 ease-brand active:scale-95 ${COPY_IDLE}`;
 
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'flex items-center justify-center';
-			mount(CopyIcon, { target: iconSpan, props: { size: 14 } });
-
+			mount(CopyIcon, { target: iconSpan, props: { size: 13 } });
 			const labelSpan = document.createElement('span');
-			labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-			labelSpan.textContent = m['marketingCode.copy']();
-
+			labelSpan.textContent = m['common.copy']();
 			btn.append(iconSpan, labelSpan);
 
 			let resetTimeout: ReturnType<typeof setTimeout> | undefined;
-
 			btn.addEventListener('click', async (e) => {
 				e.stopPropagation();
 				const codeEl = pre.querySelector('code') ?? pre;
-				const textToCopy = codeEl.innerText.trim();
-				await navigator.clipboard.writeText(textToCopy);
+				try {
+					await navigator.clipboard.writeText(codeEl.innerText.trim());
+				} catch {
+					return; // no clipboard permission: the code stays visible to copy by hand
+				}
 
 				iconSpan.innerHTML = '';
-				mount(CheckIcon, { target: iconSpan, props: { size: 14, class: 'text-success' } });
-				labelSpan.textContent = m['marketingCode.copied']();
-				labelSpan.className =
-					'text-[11px] font-mono text-success select-none hidden sm:inline';
-				btn.classList.add('bg-success-soft');
+				mount(CheckIcon, { target: iconSpan, props: { size: 13, strokeWidth: 2.75 } });
+				labelSpan.textContent = m['common.copied']();
+				btn.setAttribute('aria-label', m['common.copied']());
+				btn.classList.remove(...COPY_IDLE.split(' '));
+				btn.classList.add(...COPY_DONE.split(' '));
 
 				clearTimeout(resetTimeout);
 				resetTimeout = setTimeout(() => {
 					iconSpan.innerHTML = '';
-					mount(CopyIcon, { target: iconSpan, props: { size: 14 } });
-					labelSpan.textContent = m['marketingCode.copy']();
-					labelSpan.className = 'text-[11px] font-mono select-none hidden sm:inline';
-					btn.classList.remove('bg-success-soft');
+					mount(CopyIcon, { target: iconSpan, props: { size: 13 } });
+					labelSpan.textContent = m['common.copy']();
+					btn.setAttribute('aria-label', m['code.copy']());
+					btn.classList.remove(...COPY_DONE.split(' '));
+					btn.classList.add(...COPY_IDLE.split(' '));
 				}, 2000);
 			});
 
-			wrapper.appendChild(btn);
+			bar.append(left, btn);
+			box.prepend(bar);
 		}
 	}
 
@@ -239,8 +272,10 @@
 
 <article bind:this={container} class="doc-content max-w-none">
 	{#if title}
-		<div class="mb-2 flex items-center justify-between gap-2">
-			<h1 class="font-heading text-4xl font-semibold">{title}</h1>
+		<div class="mb-3 flex items-start justify-between gap-4">
+			<h1 class="m-0 text-4xl leading-none font-black tracking-tighter sm:text-[44px]">
+				{title}
+			</h1>
 			{#if docRaw}
 				<AcerolaCopyMarkdownButton
 					raw={docRaw.value}
@@ -253,7 +288,7 @@
 		</div>
 	{/if}
 	{#if description}
-		<p class="mb-8 text-lg text-muted-foreground">{description}</p>
+		<p class="mb-10 max-w-2xl text-lg text-pretty text-muted-foreground">{description}</p>
 	{/if}
 	{@render children()}
 </article>

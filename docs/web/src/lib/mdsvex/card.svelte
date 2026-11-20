@@ -1,7 +1,5 @@
 <script lang="ts">
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import * as Card from '#lib/components/ui/card/index.ts';
-	import { card3D } from '#lib/actions/card-3d.ts';
 	import { cn } from '#lib/utils/cn.util.ts';
 	import type { Component, Snippet } from 'svelte';
 
@@ -21,89 +19,66 @@
 		children?: Snippet;
 	} = $props();
 
-	let cardEl = $state<HTMLDivElement | null>(null);
-
-	$effect(() => {
-		if (!cardEl) return;
-		const action = card3D(cardEl, { maxRotation: 4, hoverScale: 1.012 });
-		return () => action?.destroy?.();
-	});
-
 	const isExternal = $derived(href?.startsWith('http') ?? false);
 </script>
 
 {#snippet body()}
-	<!-- Glowing ambient background highlight -->
-	<div
-		class="pointer-events-none absolute -top-16 -right-16 size-44 rounded-full bg-primary/10 opacity-30 blur-3xl transition-opacity duration-500 group-hover:bg-primary/20 group-hover:opacity-100"
-	></div>
-
-	<Card.Header class="relative z-10 p-0">
-		<Card.Title class="flex items-center gap-3">
-			{#if icon}
-				{@const Icon = icon}
-				<div
-					class="flex size-10 shrink-0 items-center justify-center rounded-inner border bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary transition-all duration-300 group-hover:scale-105"
-				>
-					<Icon size={18} />
-				</div>
-			{/if}
-			<div class="flex min-w-0 flex-1 items-center justify-between gap-2">
+	<div class="flex items-center gap-3">
+		{#if icon}
+			{@const Icon = icon}
+			<span
+				class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+			>
+				<Icon size={20} />
+			</span>
+		{/if}
+		<div class="flex min-w-0 flex-1 items-center justify-between gap-2">
+			<span class="leading-tight font-black tracking-tight text-foreground">{title}</span>
+			{#if badge}
 				<span
-					class="font-heading leading-tight font-bold text-base text-foreground transition-colors group-hover:text-primary"
+					class="shrink-0 rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-black whitespace-nowrap text-primary"
 				>
-					{title}
+					{badge}
 				</span>
-				{#if badge}
-					<span
-						class="shrink-0 rounded-full border bg-primary/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider whitespace-nowrap text-primary uppercase backdrop-blur-xs transition-colors group-hover:bg-primary/25"
-					>
-						{badge}
-					</span>
-				{/if}
-			</div>
-			{#if href}
-				<ArrowRightIcon
-					size={16}
-					class="shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary"
-				/>
 			{/if}
-		</Card.Title>
-	</Card.Header>
+		</div>
+		{#if href}
+			<ArrowRightIcon
+				size={18}
+				class="shrink-0 text-muted-foreground transition-transform duration-200 ease-brand group-hover:translate-x-1 group-hover:text-foreground"
+			/>
+		{/if}
+	</div>
 	{#if children}
-		<Card.Content
-			class="relative z-10 p-0 text-sm leading-relaxed text-muted-foreground transition-colors group-hover:text-foreground/90 [&>p]:my-0"
-		>
+		<div class="text-sm leading-relaxed text-muted-foreground [&>p]:my-0">
 			{@render children()}
-		</Card.Content>
+		</div>
 	{/if}
 {/snippet}
 
+<!-- Acerola card (brand book `.ac-card`): solid block, rounded-card, no border, shadow-lift.
+     As a link it rises to shadow-float on hover. -->
 {#if href}
 	<a
 		{href}
 		target={isExternal ? '_blank' : undefined}
 		rel={isExternal ? 'noopener noreferrer' : undefined}
-		class="group contents"
-	>
-		<Card.Root
-			bind:ref={cardEl}
-			class={cn(
-				'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-inner border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift hover:ring-1 hover:ring-primary/40',
-				className
-			)}
-		>
-			{@render body()}
-		</Card.Root>
-	</a>
-{:else}
-	<Card.Root
-		bind:ref={cardEl}
+		data-slot="card"
 		class={cn(
-			'group relative box-border w-full max-w-full min-w-0 gap-3 overflow-hidden rounded-inner border border-border/80 bg-gradient-to-b from-card/95 via-card/80 to-card/50 p-4.5 ring-0 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift',
+			'group grid min-w-0 content-start gap-3 rounded-card bg-card p-5 no-underline shadow-lift transition-all duration-200 ease-brand hover:-translate-y-0.5 hover:shadow-float',
 			className
 		)}
 	>
 		{@render body()}
-	</Card.Root>
+	</a>
+{:else}
+	<div
+		data-slot="card"
+		class={cn(
+			'grid min-w-0 content-start gap-3 rounded-card bg-card p-5 shadow-lift',
+			className
+		)}
+	>
+		{@render body()}
+	</div>
 {/if}

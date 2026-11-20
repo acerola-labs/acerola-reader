@@ -19,7 +19,9 @@
 		"menuToggle": "Toggle menu",
 		"skipToContent": "Skip to content",
 		"menuTitle": "Menu",
-		"menuDescription": "Documentation navigation"
+		"menuDescription": "Documentation navigation",
+		"home": "Home",
+		"switchLanguage": "Switch language"
 	},
 	"themePicker": {
 		"title": "Change theme",
@@ -91,7 +93,8 @@
 			"openSource": {
 				"title": "Open source",
 				"desc": "Every platform — Android, desktop, and the sync libraries — is MPL-2.0 and open for anyone to read, build, or audit."
-			}
+			},
+			"eyebrow": "Principles"
 		},
 		"howItWorks": {
 			"title": "From install to synced, in three steps",
@@ -99,7 +102,8 @@
 			"pair": "Open Network on both devices and scan the QR code shown on one with the other.",
 			"confirm": "Confirm the pairing. From then on, your library and reading progress sync automatically, device to device.",
 			"noteTitle": "No local network?",
-			"noteDesc": "Acerola falls back to a relay (self-hosted or ours) just to help peers find each other — no port forwarding needed, and it never touches your library."
+			"noteDesc": "Acerola falls back to a relay (self-hosted or ours) just to help peers find each other — no port forwarding needed, and it never touches your library.",
+			"eyebrow": "How it works"
 		},
 		"platformsTitle": "One ecosystem, many platforms",
 		"platform": {
@@ -148,7 +152,8 @@
 				"caddyLabel": "Caddy Relay",
 				"caddyComment": "# Caddy reverse proxy for your self-hosted Acerola relay"
 			}
-		}
+		},
+		"platformsEyebrow": "Platforms"
 	},
 	"marketingCode": {
 		"copy": "Copy",
@@ -209,5 +214,13 @@
 			"title": "Something went wrong",
 			"text": "We're not sure what happened. Try again; if it keeps happening, go back to the start."
 		}
+	},
+	"common": {
+		"copy": "Copy",
+		"copied": "Copied"
+	},
+	"code": {
+		"copy": "Copy code",
+		"tabs": "Files"
 	}
 }

@@ -4,8 +4,7 @@
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import MailIcon from '@lucide/svelte/icons/mail';
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-	import { Button } from '#lib/components/ui/button/index.ts';
-	import * as Card from '#lib/components/ui/card/index.ts';
+	import { useCopy } from '#lib/hooks/use-copy/use-copy.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	let {
@@ -36,64 +35,54 @@
 					: CopyIcon)
 	);
 
-	let copied = $state(false);
-	// Module, not a per-instance closure — if two CopyCards copy at almost the same
-	// time, the first one's timeout must not clear the second one's "copied" state.
-	let resetTimeout: ReturnType<typeof setTimeout> | undefined;
-
-	async function copy() {
-		await navigator.clipboard.writeText(value);
-		copied = true;
-		clearTimeout(resetTimeout);
-		resetTimeout = setTimeout(() => (copied = false), 2000);
-	}
+	const clipboard = useCopy(2000);
+	const copied = $derived(clipboard.copied === value);
 </script>
 
-<Card.Root
-	class="group relative flex-row items-center justify-between gap-4 overflow-hidden rounded-inner border border-border/70 bg-gradient-to-b from-card/90 via-card/60 to-card/40 p-4 ring-0 backdrop-blur-md transition-all duration-200 hover:shadow-lift"
+<!-- Acerola card (solid block, rounded-card, no border) with the brand copy pill (AcerolaCode). -->
+<div
+	data-slot="card"
+	class="flex items-center justify-between gap-4 rounded-card bg-card p-5 shadow-lift"
 >
-	<div class="flex min-w-0 flex-1 items-center gap-3.5">
+	<div class="flex min-w-0 flex-1 items-center gap-4">
 		{#if IconComponent}
 			{@const ResolvedIcon = IconComponent}
-			<div
-				class="flex size-11 shrink-0 items-center justify-center rounded-inner border bg-primary/10 text-primary transition-transform duration-200 group-hover:scale-105"
+			<span
+				class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
 			>
 				<ResolvedIcon size={20} />
-			</div>
+			</span>
 		{/if}
 
-		<Card.Header class="[container-type:normal] min-w-0 gap-0.5 p-0">
-			<Card.Title class="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-				{label}
-			</Card.Title>
-			<Card.Description>
-				{#if href}
-					<a
-						{href}
-						class="text-sm font-semibold text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-					>
-						{value}
-					</a>
-				{:else}
-					<span class="text-sm font-semibold text-foreground">{value}</span>
-				{/if}
-			</Card.Description>
-		</Card.Header>
+		<div class="grid min-w-0 gap-0.5">
+			<span class="text-xs font-semibold text-muted-foreground">{label}</span>
+			{#if href}
+				<a
+					{href}
+					class="truncate font-black tracking-tight text-foreground underline-offset-4 hover:text-primary hover:underline"
+				>
+					{value}
+				</a>
+			{:else}
+				<span class="truncate font-black tracking-tight text-foreground">{value}</span>
+			{/if}
+		</div>
 	</div>
 
-	<Button
-		variant="outline"
-		size="sm"
-		class="gap-1.5 rounded-inner border-border/70 bg-background/70 px-3 py-1.5 text-xs font-medium transition-all active:scale-95"
-		onclick={copy}
+	<button
+		type="button"
+		onclick={() => clipboard.copy(value)}
 		aria-label={copied ? resolvedCopiedLabel : resolvedCopyLabel}
+		class="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black transition-all duration-200 ease-brand active:scale-95 {copied
+			? 'bg-success-soft text-success'
+			: 'bg-surface text-muted-foreground hover:text-foreground'}"
 	>
 		{#if copied}
-			<CheckIcon size={14} class="animate-in text-success zoom-in-50" strokeWidth={2.5} />
-			<span class="text-xs font-semibold text-success">{resolvedCopiedLabel}</span>
+			<CheckIcon size={13} strokeWidth={2.75} />
+			<span>{resolvedCopiedLabel}</span>
 		{:else}
-			<CopyIcon size={14} class="transition-transform group-hover:scale-105" />
-			<span class="text-xs font-semibold">{resolvedCopyLabel}</span>
+			<CopyIcon size={13} />
+			<span>{resolvedCopyLabel}</span>
 		{/if}
-	</Button>
-</Card.Root>
+	</button>
+</div>
