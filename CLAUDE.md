@@ -31,8 +31,12 @@ Antes de mexer, carregue a skill certa e siga-a:
 - `lib/p2p` é dependência por caminho do Android e do desktop: mudou ali, vale para os dois no
   mesmo PR.
 - Cores em `theme/colors/catppuccin.css` (web e desktop), cópia exata das cores do
-  `tokens.css` do acerola-brand; raio e sombra no `theme/tokens.css`. No Android, `Color.kt` e
-  `Shape.kt` são gerados do `tokens.json` do acerola-brand.
+  `tokens.css` do acerola-brand; raio, sombra, fonte e movimento no `theme/tokens.css`; classes
+  `.ac-*` no `theme/components.css` (cópia do brand book).
+- **Android**: `Color.kt` e `Shape.kt` são gerados do `tokens.json` da marca por
+  `node scripts/design/android-theme.mjs` (nunca editar à mão); a mascote vira VectorDrawable com
+  `node scripts/design/android-mascot.mjs <svg> <xml>`. Fontes (DM Sans e Titan One, SIL OFL 1.1)
+  em `ui/src/main/res/font/`, licenças em `ui/src/main/assets/licenses/`.
 - **Logo e mascote**: Android e desktop levam os arquivos da marca como asset local (o app é open
   source e não depende da CDN). Só o `docs/web` puxa da CDN da marca, e só o que é da marca.
 - Cada app tem o seu guia: `acerola/desktop/CONTRIBUTING.md`, `lib/p2p/CONTRIBUTING.md`.
@@ -49,6 +53,9 @@ Antes de mexer, carregue a skill certa e siga-a:
 - **Pastas**: os apps moram em `acerola/<app>/`; o portal fica em `docs/web/` com local de commit
   `web`; o front do desktop fica em `acerola/desktop/svelte/` (o `src-tauri/` é a outra metade);
   `monorepo` é o local da configuração da raiz e de `scripts/`, para manter o histórico.
-- **Chaves do Android**: o nome de recurso do `strings.xml` não aninha; o nível vira `_`
-  (`library_search_placeholder`), que é a convenção do Android. Cada `_` separa um nível, nunca
-  emenda palavras de um mesmo nível (essas vão em camelCase).
+- **Chaves do Android**: nome de recurso do `strings.xml` não aninha, então a chave é em inglês e
+  em snake_case (`action_home_select_folder`), a convenção do Android. O idioma base é o
+  `values/` (pt-br) e o inglês fica em `values-en/`, com as mesmas chaves.
+- **Estrutura do Android**: o app é multi-módulo (`app`, `ui`, `core`, `data`, `infra`,
+  `native`), não um `app/` só. O tema mora em `ui/…/common/ux/theme/` (`Color.kt`, `Shape.kt`,
+  `Type.kt`), e as telas em `ui/…/module/<área>/`.
