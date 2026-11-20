@@ -36,7 +36,9 @@ describe('AcerolaOnboarding', () => {
 		render(AcerolaOnboarding);
 
 		expect(screen.getByText('Acerola')).toBeInTheDocument();
-		expect(screen.getByText('Bem-vindo ao Acerola, seu leitor de quadrinhos.')).toBeInTheDocument();
+		expect(
+			screen.getByText('Bem-vindo ao Acerola, seu leitor de quadrinhos.')
+		).toBeInTheDocument();
 		expect(screen.getByText('Começar')).toBeInTheDocument();
 	});
 
@@ -47,7 +49,9 @@ describe('AcerolaOnboarding', () => {
 		await user.click(screen.getByText('Começar'));
 
 		expect(screen.getByText('Selecionar idioma')).toBeInTheDocument();
-		expect(screen.getByText('Escolha o idioma preferido para a aplicação.')).toBeInTheDocument();
+		expect(
+			screen.getByText('Escolha o idioma preferido para a aplicação.')
+		).toBeInTheDocument();
 	});
 
 	it('advances through Language steps to Formats when clicking Next', async () => {

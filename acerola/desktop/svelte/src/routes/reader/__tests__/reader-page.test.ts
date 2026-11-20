@@ -200,6 +200,8 @@ describe('reader +page', () => {
 
 		renderReaderPage();
 
-		expect(await screen.findByText(/não foi possível abrir|unable to open/i)).toBeInTheDocument();
+		expect(
+			await screen.findByText(/não foi possível abrir|unable to open/i)
+		).toBeInTheDocument();
 	});
 });

@@ -109,7 +109,9 @@ export function useComicSummary() {
 				const idStrs = new Set(ids.map(String));
 				comics = {
 					...comics,
-					comics: comics.comics.filter((c) => !idStrs.has(String(c.relations.directoryId))),
+					comics: comics.comics.filter(
+						(c) => !idStrs.has(String(c.relations.directoryId))
+					),
 					total: comics.total - count
 				};
 			} else {
@@ -135,7 +137,9 @@ export function useComicSummary() {
 				const idStrs = new Set(ids.map(String));
 				comics = {
 					...comics,
-					comics: comics.comics.filter((c) => !idStrs.has(String(c.relations.directoryId))),
+					comics: comics.comics.filter(
+						(c) => !idStrs.has(String(c.relations.directoryId))
+					),
 					total: comics.total - count
 				};
 			}

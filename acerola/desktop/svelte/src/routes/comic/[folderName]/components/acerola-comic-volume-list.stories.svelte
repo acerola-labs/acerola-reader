@@ -33,7 +33,9 @@
 			title: 'Volume 2',
 			totalChapters: 1,
 			hasMore: false,
-			chapters: [{ id: 'c3', title: 'Capítulo 3: O Desafio', fileName: '003.cbz', isRead: false }]
+			chapters: [
+				{ id: 'c3', title: 'Capítulo 3: O Desafio', fileName: '003.cbz', isRead: false }
+			]
 		}
 	];
 </script>

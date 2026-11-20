@@ -59,7 +59,9 @@
 	const filteredBookmarks = $derived(
 		searchQuery.trim() === ''
 			? bookmarks
-			: bookmarks.filter((b) => b.name.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+			: bookmarks.filter((b) =>
+					b.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+				)
 	);
 
 	async function handleHide() {
@@ -176,7 +178,10 @@
 						<div
 							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner bg-primary/15 text-primary"
 						>
-							<Layers size={20} class="transition-transform duration-300 group-hover:scale-110" />
+							<Layers
+								size={20}
+								class="transition-transform duration-300 group-hover:scale-110"
+							/>
 						</div>
 						<div class="flex min-w-0 flex-1 flex-col">
 							<span
@@ -185,7 +190,9 @@
 								{selectedIds.length} / {totalCount} Selecionados
 							</span>
 							<span class="truncate text-sm font-bold tracking-tight text-foreground">
-								{isAllSelected ? m['pages.home.actions.selection.all']() : m['pages.home.actions.selection.partial']()}
+								{isAllSelected
+									? m['pages.home.actions.selection.all']()
+									: m['pages.home.actions.selection.partial']()}
 							</span>
 						</div>
 					</div>
@@ -193,8 +200,7 @@
 					<AcerolaButton
 						ui={{
 							variant: isAllSelected ? 'default' : 'outline',
-							class:
-								'h-9 px-3.5 rounded-inner font-medium text-xs transition-all duration-200 active:scale-95 shrink-0',
+							class: 'h-9 px-3.5 rounded-inner font-medium text-xs transition-all duration-200 active:scale-95 shrink-0',
 							disabled: isProcessing
 						}}
 						events={{ onClick: events.onSelectAll }}
@@ -221,8 +227,7 @@
 			<AcerolaButton
 				ui={{
 					variant: 'ghost',
-					class:
-						'w-full justify-between h-auto py-3.5 px-4 rounded-inner text-left hover:bg-transparent min-w-0',
+					class: 'w-full justify-between h-auto py-3.5 px-4 rounded-inner text-left hover:bg-transparent min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: () => (showBookmarkMenu = !showBookmarkMenu) }}
@@ -267,7 +272,9 @@
 					class="min-w-0 border-t border-border/60 bg-background/60 p-2.5"
 				>
 					{#if bookmarks.length === 0}
-						<div class="flex flex-col items-center justify-center gap-1.5 py-4 text-center">
+						<div
+							class="flex flex-col items-center justify-center gap-1.5 py-4 text-center"
+						>
 							<span class="text-xs font-medium text-muted-foreground">
 								Nenhuma categoria de bookmark criada
 							</span>
@@ -282,7 +289,9 @@
 								/>
 								<input
 									type="text"
-									placeholder={m['pages.home.actions.filterCategoriesPlaceholder']()}
+									placeholder={m[
+										'pages.home.actions.filterCategoriesPlaceholder'
+									]()}
 									bind:value={searchQuery}
 									class="h-8 w-full rounded-inner border border-border/60 bg-muted/60 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
 								/>
@@ -291,18 +300,20 @@
 
 						<div class="max-h-52 w-full min-w-0 space-y-1 overflow-y-auto pr-1">
 							{#if filteredBookmarks.length === 0}
-								<div class="truncate px-2 py-3 text-center text-xs text-muted-foreground">
+								<div
+									class="truncate px-2 py-3 text-center text-xs text-muted-foreground"
+								>
 									Nenhuma categoria encontrada para "{searchQuery}"
 								</div>
 							{:else}
 								{#each filteredBookmarks as category}
 									{@const hexColor =
-										'#' + (category.color & 0xffffff).toString(16).padStart(6, '0')}
+										'#' +
+										(category.color & 0xffffff).toString(16).padStart(6, '0')}
 									<AcerolaButton
 										ui={{
 											variant: 'ghost',
-											class:
-												'group/item w-full justify-between h-auto min-h-10 py-2 px-3 rounded-inner text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-surface-elevated min-w-0 overflow-hidden',
+											class: 'group/item w-full justify-between h-auto min-h-10 py-2 px-3 rounded-inner text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-surface-elevated min-w-0 overflow-hidden',
 											disabled: isProcessing || selectedIds.length === 0
 										}}
 										events={{ onClick: () => handleBookmark(category.id) }}
@@ -321,7 +332,10 @@
 										</div>
 
 										{#if isProcessing && activeAction === 'bookmark' && activeCategoryId === category.id}
-											<Loader2 size={16} class="shrink-0 animate-spin text-primary" />
+											<Loader2
+												size={16}
+												class="shrink-0 animate-spin text-primary"
+											/>
 										{:else}
 											<Check
 												size={14}
@@ -343,8 +357,7 @@
 			<AcerolaButton
 				ui={{
 					variant: 'outline',
-					class:
-						'w-full justify-start h-12 px-4 rounded-inner text-warning hover:text-warning hover:bg-warning-soft font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+					class: 'w-full justify-start h-12 px-4 rounded-inner text-warning hover:text-warning hover:bg-warning-soft font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleHideClick }}
@@ -367,8 +380,7 @@
 			<AcerolaButton
 				ui={{
 					variant: 'outline',
-					class:
-						'w-full justify-start h-12 px-4 rounded-inner text-destructive hover:text-destructive hover:bg-destructive/10 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+					class: 'w-full justify-start h-12 px-4 rounded-inner text-destructive hover:text-destructive hover:bg-destructive/10 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleClearMetadataClick }}
@@ -391,8 +403,7 @@
 			<AcerolaButton
 				ui={{
 					variant: 'destructive',
-					class:
-						'w-full justify-start h-12 px-4 rounded-inner bg-destructive/15 hover:bg-destructive/25 text-destructive border font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
+					class: 'w-full justify-start h-12 px-4 rounded-inner bg-destructive/15 hover:bg-destructive/25 text-destructive border font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
 					disabled: isProcessing || selectedIds.length === 0
 				}}
 				events={{ onClick: handleDeleteClick }}

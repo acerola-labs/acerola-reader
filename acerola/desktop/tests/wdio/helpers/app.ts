@@ -69,7 +69,8 @@ export async function navigateToWithState(route: string, state: Record<string, u
 			const currentState = window.history.state ?? {};
 			const fallbackIndex = Date.now();
 			const currentHistoryIndex = Number(currentState['sveltekit:history']) || fallbackIndex;
-			const currentNavigationIndex = Number(currentState['sveltekit:navigation']) || fallbackIndex;
+			const currentNavigationIndex =
+				Number(currentState['sveltekit:navigation']) || fallbackIndex;
 
 			const nextState = {
 				...currentState,
@@ -115,7 +116,11 @@ export async function setStoreValues(entries: Record<string, unknown>) {
 				options: {}
 			});
 			for (const [k, v] of Object.entries(items)) {
-				await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|set', { rid, key: k, value: v });
+				await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|set', {
+					rid,
+					key: k,
+					value: v
+				});
 			}
 			await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|save', { rid });
 		}

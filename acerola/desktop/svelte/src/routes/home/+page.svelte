@@ -186,9 +186,9 @@
 		if (!addrs) return;
 		// Comes from remote library browsing (`RemoteLibrarySheet`-like flow) — the user can
 		// only pick a comic they don't have yet, so it is always a pull.
-		sync
-			.syncComic(browsingPeerId, addrs, comicName, 'pull')
-			.catch((err) => toast.error(extractErrorMessage(err)));
+		sync.syncComic(browsingPeerId, addrs, comicName, 'pull').catch((err) =>
+			toast.error(extractErrorMessage(err))
+		);
 	}
 
 	async function handleHide(ids: (string | number)[]) {
@@ -302,7 +302,9 @@
 			? (summary.comics?.comics ?? [])
 			: bookmarkFilter === 'none'
 				? (summary.comics?.comics.filter((comic) => comic.bookmark == null) ?? [])
-				: (summary.comics?.comics.filter((comic) => comic.bookmark?.id === bookmarkFilter) ?? [])
+				: (summary.comics?.comics.filter(
+						(comic) => comic.bookmark?.id === bookmarkFilter
+					) ?? [])
 	);
 </script>
 
@@ -321,7 +323,10 @@
 	<div class="p-8">
 		<div class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive">
 			<p class="flex-1 text-sm font-semibold">{m['pages.home.error.text']()}</p>
-			<AcerolaButton ui={{ variant: 'secondary', class: 'rounded-full font-black' }} events={{ onClick: () => summary.fetch() }}>
+			<AcerolaButton
+				ui={{ variant: 'secondary', class: 'rounded-full font-black' }}
+				events={{ onClick: () => summary.fetch() }}
+			>
 				{m['pages.home.error.retry']()}
 			</AcerolaButton>
 		</div>
@@ -344,11 +349,17 @@
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner font-semibold gap-1.5' }}
+						ui={{
+							variant: 'secondary',
+							size: 'sm',
+							class: 'rounded-inner font-semibold gap-1.5'
+						}}
 						events={{ onClick: () => (showActionDialog = true) }}
 					>
 						<SlidersHorizontal size={14} />
-						{m['pages.home.selection.actionsButton']({ count: selection.selectedCount })}
+						{m['pages.home.selection.actionsButton']({
+							count: selection.selectedCount
+						})}
 					</AcerolaButton>
 
 					<AcerolaButton
@@ -457,7 +468,8 @@
 								class: 'size-8 translate-x-1.5 -mr-1.5 text-muted-foreground hover:text-foreground'
 							}}
 							events={{
-								onClick: (event) => handleActionClick(event, comic.relations.directoryId)
+								onClick: (event) =>
+									handleActionClick(event, comic.relations.directoryId)
 							}}
 						>
 							<MoreVertical size={16} />

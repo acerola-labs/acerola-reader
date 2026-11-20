@@ -263,7 +263,9 @@
 						<div
 							class="flex items-center justify-between gap-3 rounded-inner border border-border bg-background/50 p-3"
 						>
-							<span class="min-w-0 flex-1 truncate text-sm text-foreground">{url}</span>
+							<span class="min-w-0 flex-1 truncate text-sm text-foreground"
+								>{url}</span
+							>
 							<AcerolaButtonIcon
 								events={{ onClick: () => removeCustomUrl(url) }}
 								ui={{
@@ -272,7 +274,8 @@
 									class: 'size-8',
 									disabled: safeData.useIrohPublicNetwork || restarting,
 									title: m['pages.network.relaySettings.customRelays.remove'](),
-									'aria-label': m['pages.network.relaySettings.customRelays.remove']()
+									'aria-label':
+										m['pages.network.relaySettings.customRelays.remove']()
 								}}
 							>
 								<Trash2Icon size={14} />
@@ -291,7 +294,8 @@
 							}
 						}}
 						ui={{
-							placeholder: m['pages.network.relaySettings.customRelays.addPlaceholder'](),
+							placeholder:
+								m['pages.network.relaySettings.customRelays.addPlaceholder'](),
 							class: 'flex-1',
 							disabled: safeData.useIrohPublicNetwork || restarting
 						}}
@@ -300,7 +304,10 @@
 						events={{ onClick: submitCustomUrl }}
 						ui={{
 							size: 'sm',
-							disabled: !customUrlDraft.trim() || safeData.useIrohPublicNetwork || restarting
+							disabled:
+								!customUrlDraft.trim() ||
+								safeData.useIrohPublicNetwork ||
+								restarting
 						}}
 					>
 						<PlusIcon size={14} />
@@ -321,9 +328,7 @@
 		<div
 			class={cn(
 				'overflow-hidden rounded-inner border-2 transition-all duration-200',
-				safeData.useIrohPublicNetwork
-					? ' bg-primary/5'
-					: 'border-border/60 bg-card'
+				safeData.useIrohPublicNetwork ? ' bg-primary/5' : 'border-border/60 bg-card'
 			)}
 		>
 			<button
@@ -380,7 +385,10 @@
 							}}
 							ui={{
 								type: 'password',
-								placeholder: m['pages.network.relaySettings.irohServicesTicket.placeholder'](),
+								placeholder:
+									m[
+										'pages.network.relaySettings.irohServicesTicket.placeholder'
+									](),
 								class: 'w-full',
 								disabled: ticketSaving
 							}}
@@ -401,9 +409,13 @@
 										tone: 'destructive',
 										class: 'size-8',
 										disabled: ticketSaving,
-										title: m['pages.network.relaySettings.irohServicesTicket.removeButton'](),
+										title: m[
+											'pages.network.relaySettings.irohServicesTicket.removeButton'
+										](),
 										'aria-label':
-											m['pages.network.relaySettings.irohServicesTicket.removeButton']()
+											m[
+												'pages.network.relaySettings.irohServicesTicket.removeButton'
+											]()
 									}}
 								>
 									<Trash2Icon size={14} />
@@ -414,8 +426,12 @@
 								ui={{ size: 'sm', disabled: !ticketDraft.trim() || ticketSaving }}
 							>
 								{safeData.hasIrohServicesTicket
-									? m['pages.network.relaySettings.irohServicesTicket.replaceButton']()
-									: m['pages.network.relaySettings.irohServicesTicket.saveButton']()}
+									? m[
+											'pages.network.relaySettings.irohServicesTicket.replaceButton'
+										]()
+									: m[
+											'pages.network.relaySettings.irohServicesTicket.saveButton'
+										]()}
 							</AcerolaButton>
 						</div>
 

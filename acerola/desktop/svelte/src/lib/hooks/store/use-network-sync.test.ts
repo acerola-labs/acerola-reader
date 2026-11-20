@@ -221,7 +221,11 @@ describe('useNetworkSync', () => {
 		expect(hook.log[0]).toMatchObject({ peerId: 'peer-1', kind: 'history', status: 'started' });
 
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-1' });
-		expect(hook.log[0]).toMatchObject({ peerId: 'peer-1', kind: 'history', status: 'complete' });
+		expect(hook.log[0]).toMatchObject({
+			peerId: 'peer-1',
+			kind: 'history',
+			status: 'complete'
+		});
 		expect(hook.log).toHaveLength(1);
 	});
 
@@ -484,7 +488,14 @@ describe('useNetworkSync', () => {
 		hook.stopListening();
 
 		resolveLoad([
-			{ id: 1, peerId: 'peer-1', kind: 'history', status: 'complete', message: null, createdAt: 1 }
+			{
+				id: 1,
+				peerId: 'peer-1',
+				kind: 'history',
+				status: 'complete',
+				message: null,
+				createdAt: 1
+			}
 		]);
 		await startPromise;
 
@@ -804,7 +815,9 @@ describe('useNetworkSync', () => {
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-15' });
 
 		expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
-		const deleteCallsForKey = deleteSpy.mock.calls.filter((call) => call[0] === 'peer-15:history');
+		const deleteCallsForKey = deleteSpy.mock.calls.filter(
+			(call) => call[0] === 'peer-15:history'
+		);
 		expect(deleteCallsForKey).toHaveLength(2);
 
 		clearTimeoutSpy.mockRestore();

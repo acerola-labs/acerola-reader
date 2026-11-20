@@ -132,7 +132,9 @@
 					{#if notifications.length === 0}
 						<div class="flex flex-col items-center justify-center py-12 text-center">
 							<div class="relative mb-4">
-								<div class="absolute inset-0 animate-ping rounded-full bg-primary/10"></div>
+								<div
+									class="absolute inset-0 animate-ping rounded-full bg-primary/10"
+								></div>
 								<div class="relative rounded-full bg-muted/30 p-4">
 									<BellIcon size={28} class="text-muted-foreground/30" />
 								</div>
@@ -140,7 +142,9 @@
 							<p class="text-sm font-semibold text-foreground/60">
 								{m['components.notification.empty']()}
 							</p>
-							<p class="mt-1 text-xs text-muted-foreground/60">{m['components.notification.emptyHint']()}</p>
+							<p class="mt-1 text-xs text-muted-foreground/60">
+								{m['components.notification.emptyHint']()}
+							</p>
 						</div>
 					{:else}
 						{#each notifications as notify (notify.id)}
@@ -154,9 +158,11 @@
 							>
 								<!-- Indicator Bar -->
 								<div
-									class="absolute top-3 bottom-3 left-0 w-1 rounded-full {notifyVariants({
-										variant: notify.variant
-									})
+									class="absolute top-3 bottom-3 left-0 w-1 rounded-full {notifyVariants(
+										{
+											variant: notify.variant
+										}
+									)
 										.split(' ')
 										.pop()}"
 								></div>
@@ -164,7 +170,9 @@
 								<div class="flex items-start justify-between gap-2 pl-2">
 									<div class="flex items-start gap-3">
 										<div
-											class="mt-0.5 rounded-inner p-1.5 {notifyVariants({ variant: notify.variant })
+											class="mt-0.5 rounded-inner p-1.5 {notifyVariants({
+												variant: notify.variant
+											})
 												.split(' ')
 												.slice(0, 2)
 												.join(' ')}"
@@ -172,7 +180,9 @@
 											<Icon size={14} />
 										</div>
 										<div class="min-w-0 flex-1">
-											<p class="text-sm leading-snug font-semibold text-foreground">
+											<p
+												class="text-sm leading-snug font-semibold text-foreground"
+											>
 												{notify.message}
 											</p>
 											{#if notify.description}

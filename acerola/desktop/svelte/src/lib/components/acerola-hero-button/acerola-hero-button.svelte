@@ -37,9 +37,7 @@
 <Item.Root
 	class={cn(
 		'group flex min-w-0 items-center justify-between rounded-tile border border-border bg-card p-6 transition-colors',
-		events?.onClick
-			? 'cursor-pointer transition-transform active:scale-[0.98]'
-			: '',
+		events?.onClick ? 'cursor-pointer transition-transform active:scale-[0.98]' : '',
 		ui?.class
 	)}
 	onclick={events?.onClick}

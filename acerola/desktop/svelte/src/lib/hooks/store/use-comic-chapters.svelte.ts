@@ -52,7 +52,8 @@ export function useComicChapters() {
 	let currentKey: string | null = null;
 
 	let metadata = $state<
-		(Omit<ChapterPayload, 'archive'> & { archive: Omit<ChapterPagePayload, 'items'> }) | undefined
+		| (Omit<ChapterPayload, 'archive'> & { archive: Omit<ChapterPagePayload, 'items'> })
+		| undefined
 	>(undefined);
 
 	function applyPayload(payload: ChapterPayload) {
@@ -98,26 +99,32 @@ export function useComicChapters() {
 		let unlistenError: (() => void) | undefined;
 
 		const setupListeners = async () => {
-			unlistenChapters = await listen<ChapterPayload>(LIBRARY_EVENTS.comicChapters, (event) => {
-				const payload = event.payload;
+			unlistenChapters = await listen<ChapterPayload>(
+				LIBRARY_EVENTS.comicChapters,
+				(event) => {
+					const payload = event.payload;
 
-				applyPayload(payload);
+					applyPayload(payload);
 
-				if (currentKey) {
-					chapterCache.set(currentKey, payload);
+					if (currentKey) {
+						chapterCache.set(currentKey, payload);
+					}
 				}
-			});
+			);
 
-			unlistenError = await listen<ErrorPayload>(LIBRARY_EVENTS.comicChaptersError, (event) => {
-				const errorMessage = resolveErrorMessage(event.payload);
+			unlistenError = await listen<ErrorPayload>(
+				LIBRARY_EVENTS.comicChaptersError,
+				(event) => {
+					const errorMessage = resolveErrorMessage(event.payload);
 
-				notify.error(m['hooks.comicChapters.error.load'](), {
-					description: errorMessage
-				});
-				toast.error(errorMessage);
+					notify.error(m['hooks.comicChapters.error.load'](), {
+						description: errorMessage
+					});
+					toast.error(errorMessage);
 
-				loading = false;
-			});
+					loading = false;
+				}
+			);
 		};
 
 		setupListeners();

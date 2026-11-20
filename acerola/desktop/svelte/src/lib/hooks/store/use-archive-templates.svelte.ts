@@ -29,7 +29,9 @@ export function useArchiveTemplates() {
 		if (isInitialized) return;
 		isLoading = true;
 		try {
-			templates = await invoke<ArchiveTemplate[]>(ARCHIVE_TEMPLATE_COMMANDS.getArchiveTemplates);
+			templates = await invoke<ArchiveTemplate[]>(
+				ARCHIVE_TEMPLATE_COMMANDS.getArchiveTemplates
+			);
 			isInitialized = true;
 		} catch (err) {
 			error(`Failed to load archive templates: ${err}`);
@@ -39,7 +41,11 @@ export function useArchiveTemplates() {
 		}
 	}
 
-	async function createTemplate(label: string, pattern: string, sortType: ArchiveTemplateSortType) {
+	async function createTemplate(
+		label: string,
+		pattern: string,
+		sortType: ArchiveTemplateSortType
+	) {
 		try {
 			const created = await invoke<ArchiveTemplate>(
 				ARCHIVE_TEMPLATE_COMMANDS.createArchiveTemplate,

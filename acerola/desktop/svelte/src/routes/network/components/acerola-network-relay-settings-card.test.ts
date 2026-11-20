@@ -199,7 +199,9 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		await fireEvent.input(input, { target: { value: 'not-a-valid-ticket' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Save ticket|Salvar ticket/i }));
 
-		expect(await screen.findByText(/[Ii]nvalid ticket|[Tt]icket inválido/i)).toBeInTheDocument();
+		expect(
+			await screen.findByText(/[Ii]nvalid ticket|[Tt]icket inválido/i)
+		).toBeInTheDocument();
 	});
 
 	it('removes a configured iroh services ticket', async () => {
@@ -211,7 +213,9 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		// Ticket already configured — the section comes collapsed by default, expand it first.
 		await expandTicketSection();
 
-		await fireEvent.click(screen.getByRole('button', { name: /Remove ticket|Remover ticket/i }));
+		await fireEvent.click(
+			screen.getByRole('button', { name: /Remove ticket|Remover ticket/i })
+		);
 
 		expect(handlers.onClearIrohServicesTicket).toHaveBeenCalled();
 	});
@@ -222,7 +226,9 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		await expandCard();
 		await expandCustomRelaysSection();
 
-		const input = screen.getByPlaceholderText(/your-relay\.example\.com|seu-relay\.exemplo\.com/i);
+		const input = screen.getByPlaceholderText(
+			/your-relay\.example\.com|seu-relay\.exemplo\.com/i
+		);
 		await fireEvent.input(input, { target: { value: 'https://relay-a.test.local' } });
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Add custom relay|Adicionar relay próprio/i })
@@ -237,7 +243,9 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		await expandCard();
 		await expandCustomRelaysSection();
 
-		const input = screen.getByPlaceholderText(/your-relay\.example\.com|seu-relay\.exemplo\.com/i);
+		const input = screen.getByPlaceholderText(
+			/your-relay\.example\.com|seu-relay\.exemplo\.com/i
+		);
 		await fireEvent.input(input, { target: { value: 'not-a-url' } });
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Add custom relay|Adicionar relay próprio/i })

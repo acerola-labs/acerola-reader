@@ -126,7 +126,10 @@ describe('ComicPage Scroll Integration', () => {
 		vi.stubGlobal(
 			'IntersectionObserver',
 			class extends MockIntersectionObserver {
-				constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+				constructor(
+					callback: IntersectionObserverCallback,
+					options?: IntersectionObserverInit
+				) {
 					super(callback, options);
 					intersectionObservers.push(this);
 				}

@@ -47,7 +47,9 @@
 
 		{#snippet command()}
 			<div class="absolute inset-0 grid place-items-center bg-base/30">
-				<div class="rounded-inner border border-surface/40 bg-base p-6">Command palette</div>
+				<div class="rounded-inner border border-surface/40 bg-base p-6">
+					Command palette
+				</div>
 			</div>
 		{/snippet}
 	</AcerolaReaderShell>

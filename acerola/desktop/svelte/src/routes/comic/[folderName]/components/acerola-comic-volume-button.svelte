@@ -42,7 +42,9 @@
 				class="h-full w-full scale-105 object-cover opacity-20 blur-[2px] transition-all duration-300 group-hover:scale-110 group-hover:opacity-30"
 			/>
 
-			<div class="absolute inset-0 bg-linear-to-r from-mantle via-mantle/90 to-transparent"></div>
+			<div
+				class="absolute inset-0 bg-linear-to-r from-mantle via-mantle/90 to-transparent"
+			></div>
 		</div>
 	{/if}
 

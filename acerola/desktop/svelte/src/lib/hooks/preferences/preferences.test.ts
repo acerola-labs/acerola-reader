@@ -338,7 +338,9 @@ describe('useRelaySettings', () => {
 
 	it('ignores blank or duplicate custom relay urls', async () => {
 		const store = mockStore();
-		invokeMock.mockResolvedValue(relayInfo({ customRelayUrls: ['https://relay-a.test.local'] }));
+		invokeMock.mockResolvedValue(
+			relayInfo({ customRelayUrls: ['https://relay-a.test.local'] })
+		);
 		const hook = await renderHook(useRelaySettings);
 		await hook.loadRelayInfo();
 
@@ -351,7 +353,9 @@ describe('useRelaySettings', () => {
 	it('removes a custom relay url', async () => {
 		const store = mockStore();
 		invokeMock.mockResolvedValue(
-			relayInfo({ customRelayUrls: ['https://relay-a.test.local', 'https://relay-b.test.local'] })
+			relayInfo({
+				customRelayUrls: ['https://relay-a.test.local', 'https://relay-b.test.local']
+			})
 		);
 		const hook = await renderHook(useRelaySettings);
 		await hook.loadRelayInfo();

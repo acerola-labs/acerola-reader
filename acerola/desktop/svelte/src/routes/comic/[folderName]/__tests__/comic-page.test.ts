@@ -241,10 +241,10 @@ describe('comic/[folderName] +page', () => {
 		})) as unknown as typeof Element.prototype.animate;
 	});
 
-	it('shows the loading spinner while there is no comic data', () => {
+	it('shows the loading skeleton while there is no comic data', () => {
 		renderComicPage({ comic: null });
 
-		expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toBeInTheDocument();
 	});
 
 	it('renders the comic header and chapter list once data arrives', async () => {
@@ -300,7 +300,9 @@ describe('comic/[folderName] +page', () => {
 		setupInvokeMock({}, [METADATA_COMMANDS.syncMangadex]);
 
 		const user = userEvent.setup();
-		renderComicPage({ comic: comic({ metadata: { ...comic().metadata, externalSync: true } }) });
+		renderComicPage({
+			comic: comic({ metadata: { ...comic().metadata, externalSync: true } })
+		});
 
 		await waitForTitle('Acerola Vol. 1');
 		await emitChapters(chapterPayload());

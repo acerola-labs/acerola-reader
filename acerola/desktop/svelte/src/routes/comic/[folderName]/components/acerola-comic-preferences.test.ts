@@ -82,7 +82,7 @@ describe('AcerolaComicPreferences', () => {
 
 		await openCategory(user, /^leitura$/i);
 
-		expect(screen.queryByText('Destaque do Volume')).not.toBeInTheDocument();
+		expect(screen.queryByText('Destaque do volume')).not.toBeInTheDocument();
 		expect(screen.queryByRole('radio', { name: 'Capa' })).not.toBeInTheDocument();
 	});
 
@@ -97,14 +97,17 @@ describe('AcerolaComicPreferences', () => {
 
 		await openCategory(user, /^leitura$/i);
 
-		expect(screen.getByText('Destaque do Volume')).toBeInTheDocument();
+		expect(screen.getByText('Destaque do volume')).toBeInTheDocument();
 		expect(screen.getByRole('radio', { name: 'Capa' })).toBeInTheDocument();
 		expect(screen.getByRole('radio', { name: 'Banner' })).toBeInTheDocument();
 	});
 
 	it('shows the mangadex/anilist sync buttons only while external sync is active', () => {
 		render(AcerolaComicPreferences, {
-			props: { ...defaultProps(), state: { ...defaultProps().state, externalSyncEnabled: false } }
+			props: {
+				...defaultProps(),
+				state: { ...defaultProps().state, externalSyncEnabled: false }
+			}
 		});
 
 		expect(screen.getByText(/sincronização externa/i)).toBeInTheDocument();

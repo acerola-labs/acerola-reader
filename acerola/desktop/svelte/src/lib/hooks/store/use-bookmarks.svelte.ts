@@ -69,11 +69,16 @@ export function useBookmarks() {
 
 	async function assignToComic(comicId: string | number, categoryId: number) {
 		try {
-			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, { comicId: comicId.toString() });
-			const assignment = await invoke<MangaCategory>(BOOKMARKS_COMMANDS.assignCategoryToComic, {
-				comicId: comicId.toString(),
-				categoryId: Number(categoryId)
+			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, {
+				comicId: comicId.toString()
 			});
+			const assignment = await invoke<MangaCategory>(
+				BOOKMARKS_COMMANDS.assignCategoryToComic,
+				{
+					comicId: comicId.toString(),
+					categoryId: Number(categoryId)
+				}
+			);
 
 			const comicIdStr = String(comicId);
 			assignments = [
@@ -90,7 +95,9 @@ export function useBookmarks() {
 
 	async function removeComicBookmark(comicId: string | number) {
 		try {
-			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, { comicId: comicId.toString() });
+			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, {
+				comicId: comicId.toString()
+			});
 			const comicIdStr = String(comicId);
 			assignments = assignments.filter((a) => String(a.comic_directory_fk) !== comicIdStr);
 		} catch (err) {

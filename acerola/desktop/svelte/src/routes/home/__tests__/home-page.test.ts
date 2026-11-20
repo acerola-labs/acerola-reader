@@ -45,7 +45,12 @@ vi.mock('@tauri-apps/plugin-store', () => ({ load: mockStoreLoad }));
 vi.mock('@tauri-apps/plugin-log', () => ({ error: vi.fn(), debug: vi.fn() }));
 
 vi.mock('svelte-sonner', () => ({
-	toast: { info: vi.fn(), loading: vi.fn(() => 'mock-toast-id'), success: vi.fn(), error: vi.fn() }
+	toast: {
+		info: vi.fn(),
+		loading: vi.fn(() => 'mock-toast-id'),
+		success: vi.fn(),
+		error: vi.fn()
+	}
 }));
 
 function setupInvokeMock(overrides: Record<string, unknown> = {}, rejects: string[] = []) {
@@ -159,7 +164,9 @@ describe('home +page', () => {
 
 		await emitSummary(summaryPayload({ total: 0, comics: [] }));
 
-		expect(screen.getByRole('button', { name: /filtrar e ordenar|^filter/i })).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', { name: /filtrar e ordenar|^filter/i })
+		).toBeInTheDocument();
 		expect(
 			await screen.findByText(/nenhum quadrinho encontrado para o filtro|no results.*filter/i)
 		).toBeInTheDocument();

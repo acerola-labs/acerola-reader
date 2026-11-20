@@ -67,7 +67,7 @@ describe('AcerolaComicChapterList', () => {
 			props: { data: { pagesData: [], totalChapters: 0, pageSize: 2 } }
 		});
 
-		expect(screen.getByText('Carregando...')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toBeInTheDocument();
 	});
 
 	it('mounts real content only when page enters rendering window', async () => {

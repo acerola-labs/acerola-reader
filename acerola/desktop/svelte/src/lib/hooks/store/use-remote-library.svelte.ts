@@ -85,7 +85,8 @@ export function useRemoteLibrary() {
 			await listen<string>(NETWORK_EVENTS.coverQueryResult, (event) => {
 				const payload = JSON.parse(event.payload) as CoverQueryResultPayload;
 				const key = coverKey(payload.peerId, payload.comicName);
-				if (payload.coverVersion !== null) knownCoverVersions.set(key, payload.coverVersion);
+				if (payload.coverVersion !== null)
+					knownCoverVersions.set(key, payload.coverVersion);
 				if (payload.status === 'changed' && payload.path) {
 					const resolved = resolveArtworkPath(payload.path);
 					if (resolved) coverPaths.set(key, resolved);

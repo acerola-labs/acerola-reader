@@ -19,9 +19,9 @@
 	let createExpanded = $state(false);
 
 	const CATEGORY_COLORS = [
-		0xfff44336, 0xffe91e63, 0xff9c27b0, 0xff673ab7, 0xff3f51b5, 0xff2196f3, 0xff03a9f4, 0xff00bcd4,
-		0xff009688, 0xff4caf50, 0xff8bc34a, 0xffcddc39, 0xffffeb3b, 0xffffc107, 0xffff9800, 0xffff5722,
-		0xff795548, 0xff9e9e9e, 0xff607d8b
+		0xfff44336, 0xffe91e63, 0xff9c27b0, 0xff673ab7, 0xff3f51b5, 0xff2196f3, 0xff03a9f4,
+		0xff00bcd4, 0xff009688, 0xff4caf50, 0xff8bc34a, 0xffcddc39, 0xffffeb3b, 0xffffc107,
+		0xffff9800, 0xffff5722, 0xff795548, 0xff9e9e9e, 0xff607d8b
 	];
 
 	let newBookmarkName = $state('');
@@ -65,7 +65,10 @@
 							<Button
 								disabled={!newBookmarkName.trim() || bookmarkStore.isLoading}
 								onclick={async () => {
-									await bookmarkStore.createBookmark(newBookmarkName, newBookmarkColor);
+									await bookmarkStore.createBookmark(
+										newBookmarkName,
+										newBookmarkColor
+									);
 									newBookmarkName = '';
 								}}
 								class="h-10 gap-2 px-6"
@@ -77,16 +80,21 @@
 
 						<!-- Row 2: Colors -->
 						<div class="space-y-2">
-							<span class="block text-xs font-semibold">{m['pages.config.bookmarks.color']()}</span>
+							<span class="block text-xs font-semibold"
+								>{m['pages.config.bookmarks.color']()}</span
+							>
 							<div class="flex flex-wrap gap-2">
 								{#each CATEGORY_COLORS as hexColor}
-									{@const hexLabel = '#' + (hexColor & 0xffffff).toString(16).padStart(6, '0')}
+									{@const hexLabel =
+										'#' + (hexColor & 0xffffff).toString(16).padStart(6, '0')}
 									<button
 										type="button"
 										class="relative h-8 w-8 cursor-pointer rounded-full transition-transform hover:scale-110"
 										style="background-color: {hexLabel}"
 										onclick={() => (newBookmarkColor = hexColor)}
-										aria-label={m['pages.config.bookmarks.colorOption']({ hex: hexLabel })}
+										aria-label={m['pages.config.bookmarks.colorOption']({
+											hex: hexLabel
+										})}
 										aria-pressed={newBookmarkColor === hexColor}
 									>
 										{#if newBookmarkColor === hexColor}
@@ -124,7 +132,9 @@
 								<span class="font-medium">{bookmark.name}</span>
 							</div>
 							<AcerolaButtonIcon
-								events={{ onClick: () => bookmarkStore.deleteBookmark(bookmark.id) }}
+								events={{
+									onClick: () => bookmarkStore.deleteBookmark(bookmark.id)
+								}}
 								ui={{ variant: 'ghost', tone: 'destructive', class: 'h-8 w-8' }}
 							>
 								<Trash2Icon size={16} />

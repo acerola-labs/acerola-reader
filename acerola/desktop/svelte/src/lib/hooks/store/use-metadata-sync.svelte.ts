@@ -9,12 +9,16 @@ import { isSyncingAll } from '#lib/state/metadata-sync-all.svelte.ts';
 export function useMetadataSync() {
 	let isSyncing = $state(false);
 
-	async function syncMangadex(title: string, comicId: string): Promise<ComicMetadataEvent | null> {
+	async function syncMangadex(
+		title: string,
+		comicId: string
+	): Promise<ComicMetadataEvent | null> {
 		isSyncing = true;
 		try {
 			const store = await load(STORE_FILE);
 			const language = (await store.get<string>(STORE_KEYS.metadataLanguage)) || 'pt-br';
-			const generateComicInfo = (await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
+			const generateComicInfo =
+				(await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
 			const result = await invoke<ComicMetadataEvent>(METADATA_COMMANDS.syncMangadex, {
 				title,
 				comicId,
@@ -35,7 +39,8 @@ export function useMetadataSync() {
 		try {
 			const store = await load(STORE_FILE);
 			const language = (await store.get<string>(STORE_KEYS.metadataLanguage)) || 'pt-br';
-			const generateComicInfo = (await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
+			const generateComicInfo =
+				(await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
 			const result = await invoke<ComicMetadataEvent>(METADATA_COMMANDS.syncAnilist, {
 				title,
 				comicId,

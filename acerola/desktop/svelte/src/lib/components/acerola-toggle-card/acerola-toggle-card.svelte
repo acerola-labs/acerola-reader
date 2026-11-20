@@ -56,9 +56,7 @@
 <div
 	class={cn(
 		'overflow-hidden rounded-inner border-2 transition-all duration-200',
-		state.active
-			? ' bg-primary/5'
-			: 'border-border/60 bg-card',
+		state.active ? ' bg-primary/5' : 'border-border/60 bg-card',
 		ui?.class
 	)}
 >

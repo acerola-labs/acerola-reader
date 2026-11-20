@@ -73,8 +73,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'This example mounts the toaster and exposes a button to fire a success toast. In real use, `AcerolaSonner` must stay mounted in a main layout or shell, while toasts can be called with `toast.success(...)`, `toast.error(...)` and similar variants on action events, form feedback and async operations.'
+				story: 'This example mounts the toaster and exposes a button to fire a success toast. In real use, `AcerolaSonner` must stay mounted in a main layout or shell, while toasts can be called with `toast.success(...)`, `toast.error(...)` and similar variants on action events, form feedback and async operations.'
 			}
 		}
 	}}

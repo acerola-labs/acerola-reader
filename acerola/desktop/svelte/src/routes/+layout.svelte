@@ -120,7 +120,10 @@
 		if (import.meta.env.DEV) {
 			try {
 				const packageFamilyName = await invoke<string>('get_package_family_name');
-				if (packageFamilyName !== 'No package identity' && !packageFamilyName.startsWith('Error')) {
+				if (
+					packageFamilyName !== 'No package identity' &&
+					!packageFamilyName.startsWith('Error')
+				) {
 					packageIdentity = `Package: ${packageFamilyName}`;
 				} else {
 					packageIdentity = `Not running with package identity`;
@@ -233,7 +236,11 @@
 				<!-- Acerola standard: only the error on screen, no navigation; its two actions are the way out. -->
 				{@render children()}
 			{:else if onboarding.isLoading}
-				<div class="flex h-full w-full flex-col gap-6 p-8" role="status" aria-label={m['layout.loading']()}>
+				<div
+					class="flex h-full w-full flex-col gap-6 p-8"
+					role="status"
+					aria-label={m['layout.loading']()}
+				>
 					<div class="h-16 w-full max-w-xl animate-pulse rounded-full bg-surface"></div>
 					<div class="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-6">
 						{#each Array.from({ length: 12 }, (_, i) => i) as i (i)}
@@ -309,7 +316,10 @@
 						>
 							{#snippet trigger()}
 								<AcerolaButtonIcon
-									ui={{ title: m['layout.languagePicker.title'](), tone: 'accent' }}
+									ui={{
+										title: m['layout.languagePicker.title'](),
+										tone: 'accent'
+									}}
 								>
 									<GlobeIcon size={16} />
 								</AcerolaButtonIcon>
@@ -319,7 +329,9 @@
 								<AcerolaSelect
 									data={{ options: localeOptions }}
 									state={{ value: currentLocale }}
-									events={{ onValueChange: (value) => (currentLocale = value as Locale) }}
+									events={{
+										onValueChange: (value) => (currentLocale = value as Locale)
+									}}
 								/>
 							{/snippet}
 						</AcerolaPopover>
@@ -421,7 +433,9 @@
 									<span class="truncate text-xl font-bold text-foreground">
 										{comic.metadata.title || comic.filesystem.folderName}
 									</span>
-									<span class="truncate text-sm font-medium text-muted-foreground">
+									<span
+										class="truncate text-sm font-medium text-muted-foreground"
+									>
 										{comic.filesystem.folderName}
 									</span>
 								</div>

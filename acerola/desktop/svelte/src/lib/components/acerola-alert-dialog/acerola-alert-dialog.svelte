@@ -45,7 +45,9 @@
 	</AlertDialog.Trigger>
 	<AlertDialog.Content class="font-dm-sans rounded-inner">
 		<AlertDialog.Header>
-			<AlertDialog.Title class="text-xl font-bold tracking-tight">{data?.title}</AlertDialog.Title>
+			<AlertDialog.Title class="text-xl font-bold tracking-tight"
+				>{data?.title}</AlertDialog.Title
+			>
 			<AlertDialog.Description class="opacity-80">
 				{data?.description}
 			</AlertDialog.Description>

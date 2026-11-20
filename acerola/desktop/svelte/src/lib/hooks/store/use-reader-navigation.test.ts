@@ -444,7 +444,10 @@ describe('useReaderNavigation', () => {
 		// chapterIndex/totalChapters from the received list.
 		callbacks.get(LIBRARY_EVENTS.comicChapters)?.({
 			payload: {
-				archive: { items: [chapterFile({ id: 'ch-0' }), chapterFile({ id: 'ch-1' })], total: 2 }
+				archive: {
+					items: [chapterFile({ id: 'ch-0' }), chapterFile({ id: 'ch-1' })],
+					total: 2
+				}
 			}
 		});
 		await tick();
@@ -484,7 +487,10 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('does not update chapterIndex/totalChapters or persist anything when the pending chapter id is not found in the loaded items', async () => {
-		page.state = { chapter: readerChapter({ id: 'ch-missing' }), comicDirectoryId: 'dir-notfound' };
+		page.state = {
+			chapter: readerChapter({ id: 'ch-missing' }),
+			comicDirectoryId: 'dir-notfound'
+		};
 		const { callbacks } = setupListeners();
 		const hook = await renderHook();
 

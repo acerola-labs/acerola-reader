@@ -337,7 +337,9 @@ export function useNetworkSync() {
 		// the array can exceed `MAX_LOG_ENTRIES` by at most the number of concurrent sessions
 		// still open, which is always small.
 		const pendingIds = new Set(inFlightEntryId.values());
-		log = [entry, ...log].filter((row, index) => index < MAX_LOG_ENTRIES || pendingIds.has(row.id));
+		log = [entry, ...log].filter(
+			(row, index) => index < MAX_LOG_ENTRIES || pendingIds.has(row.id)
+		);
 		if (peerId && isOpenStatus(status)) inFlightEntryId.set(key, entry.id);
 	}
 
@@ -556,7 +558,10 @@ export function useNetworkSync() {
 	}
 
 	async function syncAll(peerId: string, addrs: number[]) {
-		await withSyncGuard(peerId, ['history', 'files'], NETWORK_COMMANDS.syncAll, { peerId, addrs });
+		await withSyncGuard(peerId, ['history', 'files'], NETWORK_COMMANDS.syncAll, {
+			peerId,
+			addrs
+		});
 	}
 
 	/// Individual sync of ONE comic (push or pull, see `comic_handler.rs` in the backend) — the
@@ -651,7 +656,8 @@ export function useNetworkSync() {
 	/// Timestamp of the last successfully completed session for this peer (any `kind`), or
 	/// `undefined` if it never synced — used to show "Last sync: ..." per peer.
 	function lastSyncedAt(peerId: string): number | undefined {
-		return log.find((entry) => entry.peerId === peerId && entry.status === 'complete')?.timestamp;
+		return log.find((entry) => entry.peerId === peerId && entry.status === 'complete')
+			?.timestamp;
 	}
 
 	/// Most recent live session still in progress (`status: 'started'`), from ANY peer —

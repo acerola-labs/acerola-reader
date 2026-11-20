@@ -281,11 +281,15 @@
 												: 'LIDO'}
 										</span>
 									{/if}
-									<div role="presentation" onclick={(event) => event.stopPropagation()}>
+									<div
+										role="presentation"
+										onclick={(event) => event.stopPropagation()}
+									>
 										<AcerolaPopover
 											state={{ open: openMenuId === chapter.id }}
 											events={{
-												onOpenChange: (open) => (openMenuId = open ? chapter.id : null)
+												onOpenChange: (open) =>
+													(openMenuId = open ? chapter.id : null)
 											}}
 											ui={{
 												align: 'end',
@@ -307,8 +311,7 @@
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-warning hover:bg-warning-soft hover:text-warning'
+																class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-warning hover:bg-warning-soft hover:text-warning'
 															}}
 															events={{
 																onClick: () => {
@@ -318,14 +321,15 @@
 															}}
 														>
 															<BookOpen size={16} class="shrink-0" />
-															{m['pages.comic.selection.markUnread']()}
+															{m[
+																'pages.comic.selection.markUnread'
+															]()}
 														</AcerolaButton>
 													{:else}
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
 															}}
 															events={{
 																onClick: () => {
@@ -344,8 +348,7 @@
 													<AcerolaButton
 														ui={{
 															variant: 'ghost',
-															class:
-																'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+															class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
 														}}
 														events={{
 															onClick: () => {
@@ -354,7 +357,10 @@
 															}
 														}}
 													>
-														<CheckSquare size={16} class="shrink-0 text-muted-foreground" />
+														<CheckSquare
+															size={16}
+															class="shrink-0 text-muted-foreground"
+														/>
 														{m['pages.comic.selection.select']()}
 													</AcerolaButton>
 												</div>

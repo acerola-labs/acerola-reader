@@ -202,7 +202,9 @@ describe('useMetadataSync', () => {
 		const hook = await renderMetadataSyncHook();
 		const result = await hook.syncComicInfo('789');
 
-		expect(invokeMock).toHaveBeenCalledWith(METADATA_COMMANDS.syncComicInfo, { comicId: '789' });
+		expect(invokeMock).toHaveBeenCalledWith(METADATA_COMMANDS.syncComicInfo, {
+			comicId: '789'
+		});
 		expect(result).toEqual(mockResponse);
 		expect(hook.isSyncing).toBe(false);
 	});

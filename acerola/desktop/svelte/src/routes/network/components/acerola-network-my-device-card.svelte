@@ -78,7 +78,9 @@
 			toast.success(m['pages.network.myDevice.rename.success']());
 			editingName = false;
 		} catch (err) {
-			toast.error(m['pages.network.myDevice.rename.error']({ msg: extractErrorMessage(err) }));
+			toast.error(
+				m['pages.network.myDevice.rename.error']({ msg: extractErrorMessage(err) })
+			);
 		} finally {
 			savingName = false;
 		}
@@ -152,7 +154,12 @@
 				{/if}
 				<AcerolaButton
 					events={{ onClick: copyLocalId }}
-					ui={{ variant: 'outline', size: 'sm', class: 'gap-2', disabled: !safeData.localId }}
+					ui={{
+						variant: 'outline',
+						size: 'sm',
+						class: 'gap-2',
+						disabled: !safeData.localId
+					}}
 				>
 					{#if idJustCopied}
 						<CheckIcon size={14} class="text-chart-3" />

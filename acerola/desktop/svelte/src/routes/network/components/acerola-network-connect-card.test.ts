@@ -79,7 +79,9 @@ describe('AcerolaNetworkConnectCard', () => {
 		await fireEvent.input(input, { target: { value: 'some-code' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Connect|Conectar/i }));
 
-		expect(await screen.findByRole('button', { name: /Connect|Conectar/i })).toBeInTheDocument();
+		expect(
+			await screen.findByRole('button', { name: /Connect|Conectar/i })
+		).toBeInTheDocument();
 	});
 
 	it('disables the connect button while connecting is true', () => {

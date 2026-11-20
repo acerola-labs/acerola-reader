@@ -54,7 +54,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: () => false
 				}}
-				events={{ onOpenChange: (isOpen) => (openDefault = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openDefault = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}
@@ -79,7 +82,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: () => false
 				}}
-				events={{ onOpenChange: (isOpen) => (openLoading = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openLoading = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}
@@ -155,7 +161,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: (name) => name === 'One Piece'
 				}}
-				events={{ onOpenChange: (isOpen) => (openSyncing = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openSyncing = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}

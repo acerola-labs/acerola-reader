@@ -48,14 +48,20 @@
 	const messageByKind = $derived<Record<TransferLogEntry['kind'], EntryMessageByStatus>>({
 		history: {
 			started: (entry) =>
-				m['pages.network.transfers.historyStarted']({ peer: data.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyStarted']({
+					peer: data.peerLabel(entry.message)
+				}),
 			complete: (entry) =>
-				m['pages.network.transfers.historyComplete']({ peer: data.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyComplete']({
+					peer: data.peerLabel(entry.message)
+				}),
 			error: (entry) => m['pages.network.transfers.historyError']({ msg: entry.message })
 		},
 		historyEntry: {
 			started: (entry) =>
-				m['pages.network.transfers.historyEntryStarted']({ peer: data.peerLabel(entry.message) }),
+				m['pages.network.transfers.historyEntryStarted']({
+					peer: data.peerLabel(entry.message)
+				}),
 			complete: (entry) =>
 				m['pages.network.transfers.historyEntryComplete']({
 					peer: data.peerLabel(entry.message)
@@ -65,7 +71,8 @@
 		files: {
 			started: (entry) =>
 				m['pages.network.transfers.filesStarted']({ peer: data.peerLabel(entry.message) }),
-			progress: (entry) => m['pages.network.transfers.filesProgress']({ item: entry.message }),
+			progress: (entry) =>
+				m['pages.network.transfers.filesProgress']({ item: entry.message }),
 			complete: (entry) =>
 				m['pages.network.transfers.filesComplete']({ peer: data.peerLabel(entry.message) }),
 			error: (entry) => m['pages.network.transfers.filesError']({ msg: entry.message })
@@ -73,7 +80,8 @@
 		comic: {
 			started: (entry) =>
 				m['pages.network.transfers.comicStarted']({ peer: data.peerLabel(entry.message) }),
-			progress: (entry) => m['pages.network.transfers.comicProgress']({ item: entry.message }),
+			progress: (entry) =>
+				m['pages.network.transfers.comicProgress']({ item: entry.message }),
 			complete: (entry) =>
 				m['pages.network.transfers.comicComplete']({ peer: data.peerLabel(entry.message) }),
 			error: (entry) => m['pages.network.transfers.comicError']({ msg: entry.message })

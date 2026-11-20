@@ -183,7 +183,9 @@
 					? rightRect.left + rightRect.width / 2
 					: rightRect.top + rightRect.height / 2;
 
-				return Math.abs(leftCenter - viewportCenter) - Math.abs(rightCenter - viewportCenter);
+				return (
+					Math.abs(leftCenter - viewportCenter) - Math.abs(rightCenter - viewportCenter)
+				);
 			})
 			.map(([pageIndex]) => pageIndex);
 	}
@@ -421,7 +423,10 @@
 	>
 		<div class="flex flex-col items-center gap-4">
 			<!-- Loading skeleton in the shape of a page, never a loose spinner (Acerola standard). -->
-			<div class="aspect-2/3 h-[60vh] animate-pulse rounded-tile bg-surface" aria-hidden="true"></div>
+			<div
+				class="aspect-2/3 h-[60vh] animate-pulse rounded-tile bg-surface"
+				aria-hidden="true"
+			></div>
 			<p class="animate-pulse text-sm font-black text-muted-foreground" role="status">
 				{m['pages.reader.fallback.loading']()}
 			</p>

@@ -28,7 +28,8 @@
 				control: 'object'
 			},
 			children: {
-				description: 'Snippet with the command internal composition, such as input, list and items.',
+				description:
+					'Snippet with the command internal composition, such as input, list and items.',
 				control: false
 			}
 		}
@@ -56,8 +57,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Base example of a command palette with an empty search field and a short item list. A starting point for local search and internal navigation scenarios.'
+				story: 'Base example of a command palette with an empty search field and a short item list. A starting point for local search and internal navigation scenarios.'
 			}
 		}
 	}}
@@ -70,8 +70,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Example with a prefilled initial value. Useful to demonstrate controlled state, filter restoration and screens where the search arrives preconfigured from a previous context.'
+				story: 'Example with a prefilled initial value. Useful to demonstrate controlled state, filter restoration and screens where the search arrives preconfigured from a previous context.'
 			}
 		}
 	}}

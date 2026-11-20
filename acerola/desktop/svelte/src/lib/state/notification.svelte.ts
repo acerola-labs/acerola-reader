@@ -56,7 +56,8 @@ export function createNotifications<V extends string>(variants: readonly V[]) {
 	const notify = Object.fromEntries(
 		variants.map((variant) => [
 			variant,
-			(message: string, options?: NotificationOptions) => add(message, { ...options, variant })
+			(message: string, options?: NotificationOptions) =>
+				add(message, { ...options, variant })
 		])
 	) as NotifyMethods<V>;
 

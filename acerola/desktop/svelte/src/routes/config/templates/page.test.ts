@@ -116,7 +116,9 @@ describe('config/templates +page', () => {
 		await user.click(screen.getByRole('button', { name: '+ {chapter}' }));
 		await user.click(screen.getByRole('button', { name: '+ {decimal}' }));
 
-		const createButton = screen.getByRole('button', { name: /create template|criar template/i });
+		const createButton = screen.getByRole('button', {
+			name: /create template|criar template/i
+		});
 		await user.click(createButton);
 
 		expect(invokeMock).toHaveBeenCalledWith(
@@ -168,7 +170,9 @@ describe('config/templates +page', () => {
 		render(TemplatesPage);
 		await screen.findByText(/how to build a template|como montar um template/i);
 
-		const createButton = screen.getByRole('button', { name: /create template|criar template/i });
+		const createButton = screen.getByRole('button', {
+			name: /create template|criar template/i
+		});
 		await fireEvent.click(createButton);
 
 		expect(invokeMock).toHaveBeenCalledTimes(1); // only the initial getArchiveTemplates call

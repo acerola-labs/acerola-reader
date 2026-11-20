@@ -87,7 +87,10 @@ describe('Reader Navigation E2E', () => {
 
 		// 5. Go to the history and check the entry exists
 		await navigateTo('/history');
-		const resumeBtn = await firstDisplayed('//*[contains(normalize-space(), "Continuar")]', 10_000);
+		const resumeBtn = await firstDisplayed(
+			'//*[contains(normalize-space(), "Continuar")]',
+			10_000
+		);
 		expect(await resumeBtn.isExisting()).toBe(true);
 
 		// Simulate resuming by navigating straight to chapter 2

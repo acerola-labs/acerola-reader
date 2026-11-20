@@ -46,7 +46,8 @@
 					class="flex items-center gap-3 rounded-inner border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
 				>
 					<Star size={20} class="fill-warning text-warning" />
-					<span class="text-xl font-black tracking-tighter">{data.rating.toFixed(1)}</span>
+					<span class="text-xl font-black tracking-tighter">{data.rating.toFixed(1)}</span
+					>
 				</div>
 			{/if}
 
@@ -56,7 +57,9 @@
 				>
 					<BookOpen size={20} class="text-primary" />
 					<span class="text-xl font-black tracking-tighter"
-						>{m['pages.comic.metadata.chapters.count']({ count: data.chapterCount })}</span
+						>{m['pages.comic.metadata.chapters.count']({
+							count: data.chapterCount
+						})}</span
 					>
 				</div>
 			{/if}

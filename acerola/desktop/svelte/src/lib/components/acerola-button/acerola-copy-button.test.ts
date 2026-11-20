@@ -6,7 +6,9 @@ import AcerolaCopyButton from './acerola-copy-button.svelte';
 describe('AcerolaCopyButton', () => {
 	it('renders button with label and responds to click', async () => {
 		const user = userEvent.setup();
-		const writeTextMock = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+		const writeTextMock = vi
+			.spyOn(navigator.clipboard, 'writeText')
+			.mockResolvedValue(undefined);
 
 		render(AcerolaCopyButton, {
 			props: {

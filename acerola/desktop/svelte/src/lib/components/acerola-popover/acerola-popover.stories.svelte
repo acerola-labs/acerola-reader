@@ -39,7 +39,10 @@
 {#snippet template(args: Record<string, unknown>)}
 	<AcerolaPopover {...args}>
 		{#snippet trigger()}
-			<button type="button" class="rounded-inner bg-primary px-4 py-2 text-primary-foreground">
+			<button
+				type="button"
+				class="rounded-inner bg-primary px-4 py-2 text-primary-foreground"
+			>
 				Abrir Popover
 			</button>
 		{/snippet}
@@ -57,8 +60,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Initially closed. This is the default behavior for context menus, expanded hints and secondary actions revealed on demand.'
+				story: 'Initially closed. This is the default behavior for context menus, expanded hints and secondary actions revealed on demand.'
 			}
 		}
 	}}
@@ -71,8 +73,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Initially open. Useful for visual inspection, layout validation and cases where the content must show immediately due to a business rule or onboarding.'
+				story: 'Initially open. Useful for visual inspection, layout validation and cases where the content must show immediately due to a business rule or onboarding.'
 			}
 		}
 	}}
