@@ -1,6 +1,7 @@
 package br.acerola.comic.common.ux.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -21,6 +22,8 @@ object AcerolaFonts {
         listOf(FontWeight.Normal, FontWeight.Medium, FontWeight.SemiBold, FontWeight.Bold, FontWeight.Black)
 
     // DM Sans is a variable font: one file, each weight picked through the `wght` axis.
+    // `variationSettings` on a resource font is still marked experimental in Compose.
+    @OptIn(ExperimentalTextApi::class)
     val Sans =
         FontFamily(
             sansWeights.map { weight ->

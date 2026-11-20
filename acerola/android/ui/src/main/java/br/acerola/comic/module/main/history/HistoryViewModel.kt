@@ -59,25 +59,25 @@ class HistoryViewModel
         val pairedPeers: StateFlow<List<PairedPeer>> = _pairedPeers.asStateFlow()
 
         // History only fires ONE sync session at a time (a single button, not one per peer) —
-        // same simplified form used by `ComicViewModel._syncingPeerId`, which also doesn't
+        // same simplified form used by `ComicViewModel.syncingPeerId`, which also doesn't
         // need per-peer granularity in that context.
-        private val _syncingPeerId = MutableStateFlow<String?>(null)
+        private val syncingPeerId = MutableStateFlow<String?>(null)
         val isSyncingWithPeer: StateFlow<Boolean> =
-            _syncingPeerId
+            syncingPeerId
                 .map { it != null }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
         init {
             viewModelScope.launch {
                 p2pEventBus.events.collect { event ->
-                    val pendingPeerId = _syncingPeerId.value ?: return@collect
+                    val pendingPeerId = syncingPeerId.value ?: return@collect
                     when (event) {
                         is P2pEvent.HistorySyncComplete ->
-                            if (event.peerId == pendingPeerId) _syncingPeerId.value = null
+                            if (event.peerId == pendingPeerId) syncingPeerId.value = null
 
                         is P2pEvent.HistorySyncError ->
                             if (event.peerId == pendingPeerId) {
-                                _syncingPeerId.value = null
+                                syncingPeerId.value = null
                                 _uiEvents.send(
                                     UserMessage.Raw(event.error?.uiMessage ?: UiText.DynamicString(event.message)),
                                 )
@@ -105,7 +105,7 @@ class HistoryViewModel
                     SyncWithPeerResult.NOT_PAIRED ->
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_sync_comic_peer_not_paired)))
                     SyncWithPeerResult.DECLINED_MOBILE_DATA -> Unit
-                    SyncWithPeerResult.STARTED -> _syncingPeerId.value = peerId
+                    SyncWithPeerResult.STARTED -> syncingPeerId.value = peerId
                 }
             }
         }

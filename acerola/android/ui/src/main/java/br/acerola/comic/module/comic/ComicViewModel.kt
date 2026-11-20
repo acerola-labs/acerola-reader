@@ -118,9 +118,9 @@ class ComicViewModel
          *  `null` if none. `null` is also the idle value — there's never more than one active
          *  peer sync session at a time on this screen (the Rust-side guard itself already prevents
          *  two simultaneous sessions to the same peer). */
-        private val _syncingPeerId = MutableStateFlow<String?>(null)
+        private val syncingPeerId = MutableStateFlow<String?>(null)
         val isSyncingWithPeer: StateFlow<Boolean> =
-            _syncingPeerId
+            syncingPeerId
                 .map { it != null }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
@@ -129,21 +129,21 @@ class ComicViewModel
 
         /** `peerId` of an in-progress `acerola/sync-history-entry/1` push (sending the
          *  selected chapter(s)), or `null` if none — same reasoning as
-         *  `_syncingPeerId`, but separate from it: they're different protocols (this one doesn't
+         *  `syncingPeerId`, but separate from it: they're different protocols (this one doesn't
          *  exchange files), so they can't share the same guard. */
-        private val _sendingChaptersPeerId = MutableStateFlow<String?>(null)
+        private val sendingChaptersPeerId = MutableStateFlow<String?>(null)
         val isSendingChaptersToPeer: StateFlow<Boolean> =
-            _sendingChaptersPeerId
+            sendingChaptersPeerId
                 .map { it != null }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
         /** `peerId` of an in-progress `acerola/sync-history-entry/1` push from the
-         *  "sync progress" action — same reasoning as [_sendingChaptersPeerId], but separate
+         *  "sync progress" action — same reasoning as [sendingChaptersPeerId], but separate
          *  from it: that one uses the file protocol ([syncComicWithPeerUseCase]), this one uses
          *  [syncHistoryEntryWithPeerUseCase] and completes on the `HistoryEntrySync*` events. */
-        private val _sendingHistoryPeerId = MutableStateFlow<String?>(null)
+        private val sendingHistoryPeerId = MutableStateFlow<String?>(null)
         val isSendingHistoryToPeer: StateFlow<Boolean> =
-            _sendingHistoryPeerId
+            sendingHistoryPeerId
                 .map { it != null }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
@@ -309,15 +309,15 @@ class ComicViewModel
                 p2pEventBus.events.collect { event ->
                     when (event) {
                         is P2pEvent.FileSyncComplete -> {
-                            if (event.peerId == _syncingPeerId.value) _syncingPeerId.value = null
+                            if (event.peerId == syncingPeerId.value) syncingPeerId.value = null
 
                             // `sendSelectedChaptersToPeer` uses the same file protocol
                             // (`syncComicWithPeerUseCase`, not `syncHistoryEntryWithPeerUseCase`),
                             // so it completes on the same event — this used to listen to
                             // `HistoryEntrySyncComplete`, which this flow never fires, and the
                             // chapter icon's loading stayed stuck forever.
-                            if (event.peerId == _sendingChaptersPeerId.value) {
-                                _sendingChaptersPeerId.value = null
+                            if (event.peerId == sendingChaptersPeerId.value) {
+                                sendingChaptersPeerId.value = null
                                 _uiEvents.send(
                                     UserMessage.Raw(
                                         UiText.StringResource(R.string.message_send_chapters_peer_success),
@@ -333,13 +333,13 @@ class ComicViewModel
                             val isSessionFailure = event.comicName.isEmpty() && event.chapter.isEmpty()
                             if (!isSessionFailure) return@collect
 
-                            if (event.peerId == _syncingPeerId.value) {
-                                _syncingPeerId.value = null
+                            if (event.peerId == syncingPeerId.value) {
+                                syncingPeerId.value = null
                                 _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_sync_comic_peer_failed)))
                             }
 
-                            if (event.peerId == _sendingChaptersPeerId.value) {
-                                _sendingChaptersPeerId.value = null
+                            if (event.peerId == sendingChaptersPeerId.value) {
+                                sendingChaptersPeerId.value = null
                                 // `event.error` is already a `SyncProtocolError` (e.g. `ComicNotFound`)
                                 // when the wire `code` was recognized — shows the specific
                                 // cause instead of the generic message whenever possible.
@@ -351,8 +351,8 @@ class ComicViewModel
                         }
 
                         is P2pEvent.HistoryEntrySyncComplete -> {
-                            if (event.peerId == _sendingHistoryPeerId.value) {
-                                _sendingHistoryPeerId.value = null
+                            if (event.peerId == sendingHistoryPeerId.value) {
+                                sendingHistoryPeerId.value = null
                                 _uiEvents.send(
                                     UserMessage.Raw(
                                         UiText.StringResource(R.string.message_send_history_peer_success),
@@ -363,8 +363,8 @@ class ComicViewModel
                         }
 
                         is P2pEvent.HistoryEntrySyncError -> {
-                            if (event.peerId == _sendingHistoryPeerId.value) {
-                                _sendingHistoryPeerId.value = null
+                            if (event.peerId == sendingHistoryPeerId.value) {
+                                sendingHistoryPeerId.value = null
                                 _uiEvents.send(
                                     event.error
                                         ?: UserMessage.Raw(UiText.StringResource(R.string.error_send_history_peer_failed)),
@@ -666,7 +666,7 @@ class ComicViewModel
                     SyncWithPeerResult.NOT_PAIRED ->
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_sync_comic_peer_not_paired)))
                     SyncWithPeerResult.DECLINED_MOBILE_DATA -> Unit
-                    SyncWithPeerResult.STARTED -> _syncingPeerId.value = peerId
+                    SyncWithPeerResult.STARTED -> syncingPeerId.value = peerId
                 }
             }
         }
@@ -701,7 +701,7 @@ class ComicViewModel
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_send_chapters_peer_not_paired)))
                     SyncWithPeerResult.DECLINED_MOBILE_DATA -> Unit
                     SyncWithPeerResult.STARTED -> {
-                        _sendingChaptersPeerId.value = peerId
+                        sendingChaptersPeerId.value = peerId
                         clearChapterSelection()
                     }
                 }
@@ -732,7 +732,7 @@ class ComicViewModel
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_send_history_peer_not_paired)))
                     SyncWithPeerResult.DECLINED_MOBILE_DATA -> Unit
                     SyncWithPeerResult.STARTED -> {
-                        _sendingHistoryPeerId.value = peerId
+                        sendingHistoryPeerId.value = peerId
                         clearChapterSelection()
                     }
                 }
