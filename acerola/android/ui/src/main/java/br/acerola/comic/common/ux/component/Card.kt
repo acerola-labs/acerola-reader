@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaColors
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
@@ -89,7 +90,7 @@ private fun ImageCardContent(
                     Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .background(Color.Black.copy(alpha = 0.6f))
+                        .background(AcerolaColors.Scrim.copy(alpha = 0.6f))
                         .padding(horizontal = SpacingTokens.Medium, vertical = SpacingTokens.Small),
             ) {
                 Text(

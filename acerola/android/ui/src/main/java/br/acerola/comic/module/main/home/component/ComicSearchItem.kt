@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ImageCard
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.dto.ComicDto
 import br.acerola.comic.dto.archive.ComicDirectoryDto
@@ -159,7 +160,7 @@ fun Main.Home.Component.ComicSearchItem(
                         Icon(
                             imageVector = Icons.Rounded.Star,
                             contentDescription = null,
-                            tint = Color(0xFFFFC107),
+                            tint = AcerolaExtendedTheme.colors.warning,
                             modifier = Modifier.width(18.dp).height(18.dp),
                         )
                         Text(

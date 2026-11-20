@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">core</string>
+    <string name="p2p_sync_notification_title">Syncing with a device</string>
+    <string name="p2p_sync_notification_description">P2P transfer running: keeping the connection alive in the background.</string>
+    <string name="notification_sync_files_complete_title">File sync done</string>
+    <string name="notification_sync_files_complete_content">%1$d received, %2$d sent</string>
+    <string name="notification_sync_files_complete_content_with_failures">%1$d received, %2$d sent, %3$d failed</string>
+    <string name="notification_sync_files_complete_conflicts_suffix">· %1$d conflict(s) (kept the other device\'s version)</string>
+    <string name="notification_sync_files_error_title">File sync failed</string>
+    <string name="notification_sync_history_complete_title">History sync done</string>
+    <string name="notification_sync_history_complete_content">%1$d progress and %2$d read mark(s) applied</string>
+    <string name="notification_sync_history_error_title">History sync failed</string>
+</resources>

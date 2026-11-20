@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.ui.R
 
@@ -76,9 +76,9 @@ fun Acerola.Component.AdaptiveSheet(
                 contentColor = contentColor,
                 shape =
                     if (isLandscape) {
-                        ShapeTokens.Large.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
+                        AcerolaShapes.Inner.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
                     } else {
-                        ShapeTokens.Large.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
+                        AcerolaShapes.Inner.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
                     },
             ) {
                 Column(
@@ -115,7 +115,7 @@ fun Acerola.Component.AdaptiveSheet(
                             .align(Alignment.CenterEnd),
                     color = containerColor,
                     contentColor = contentColor,
-                    shape = ShapeTokens.Large.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                    shape = AcerolaShapes.Inner.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
                 ) {
                     Column(
                         modifier =

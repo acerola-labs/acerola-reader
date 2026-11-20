@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -37,8 +36,8 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.GlassButton
 import br.acerola.comic.common.ux.modifier.glass
 import br.acerola.comic.common.ux.modifier.glassContainer
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.logging.AcerolaLogger
@@ -70,7 +69,7 @@ fun Reader.Template.BottomControls(
 
     val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
     val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-    val shape = ShapeTokens.Giant
+    val shape = AcerolaShapes.Sheet
 
     Box(
         modifier =
@@ -155,7 +154,7 @@ private fun PageIndicator(
                 Modifier
                     .fillMaxWidth()
                     .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
+                    .clip(AcerolaShapes.Full),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
         )
@@ -217,7 +216,7 @@ private fun PreviousChapterButton(
         Box(
             modifier =
                 Modifier
-                    .clip(ShapeTokens.ExtraLarge)
+                    .clip(AcerolaShapes.Tile)
                     .background(
                         MaterialTheme.colorScheme.onSurface.copy(alpha = if (isLoading) 0.05f else 0.1f),
                     ).clickable(enabled = !isLoading, onClick = onClick)
@@ -267,7 +266,7 @@ private fun NextChapterButton(
         Box(
             modifier =
                 Modifier
-                    .clip(ShapeTokens.ExtraLarge)
+                    .clip(AcerolaShapes.Tile)
                     .background(
                         if (isLoading) {
                             MaterialTheme.colorScheme.primary.copy(

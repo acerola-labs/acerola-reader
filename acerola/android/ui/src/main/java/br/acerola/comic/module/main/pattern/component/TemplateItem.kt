@@ -29,8 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.archive.ArchiveTemplateDto
@@ -49,7 +49,7 @@ fun Main.Pattern.Component.TemplateItem(
             Modifier
                 .fillMaxWidth()
                 .padding(vertical = SpacingTokens.ExtraSmall),
-        shape = ShapeTokens.Medium,
+        shape = AcerolaShapes.Inner,
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -88,7 +88,7 @@ fun Main.Pattern.Component.TemplateItem(
                     }
                 } else {
                     Surface(
-                        shape = ShapeTokens.Full,
+                        shape = AcerolaShapes.Full,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                     ) {
                         Row(

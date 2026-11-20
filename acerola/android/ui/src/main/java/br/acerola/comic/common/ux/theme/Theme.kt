@@ -2,29 +2,18 @@ package br.acerola.comic.common.ux.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import br.acerola.comic.common.ux.theme.color.CatppuccinLatte
-import br.acerola.comic.common.ux.theme.color.CatppuccinMocha
 
-// Ícones de ação seguem o mesmo formato do desktop: fundo SÓLIDO na cor semântica/de destaque +
-// ícone numa cor neutra por cima (o fundo "contorna" o ícone, nunca o contrário) — por isso
-// success/accent aqui são a cor cheia da paleta, não um container translúcido. onSuccess/onAccent
-// recebem o `--primary-foreground`, do mesmo jeito que o desktop reaproveita esse token pros
-// `--accent-hero-foreground`/`--destructive-foreground`. Material3 não tem papéis nativos de
-// "sucesso" nem de "accent vibrante", então eles são expostos via
-// LocalAcerolaExtraColors/AcerolaExtendedTheme. successContainer/onSuccessContainer são a exceção:
-// só o Snackbar de sucesso usa (banner cheio, não ícone-em-quadrado), com o par `--success-soft`
-// + `--success` da paleta — o mesmo tom suave do Error (errorContainer = `--destructive-soft`).
+// Roles Material3 does not have (success, warning, vibrant accent), exposed through
+// AcerolaExtendedTheme. Action icons follow the desktop: SOLID background in the semantic color
+// with a neutral icon on top, so success/accent are the full tone and on* is
+// `--primary-foreground`. The *Container pairs are the soft background + tone text
+// (`--success-soft` + `--success`), the same as errorContainer (`--destructive-soft`).
 data class AcerolaExtraColors(
     val success: Color,
     val onSuccess: Color,
@@ -32,11 +21,14 @@ data class AcerolaExtraColors(
     val onAccent: Color,
     val successContainer: Color,
     val onSuccessContainer: Color,
+    val warning: Color,
+    val warningContainer: Color,
+    val onWarningContainer: Color,
 )
 
 private val LocalAcerolaExtraColors =
     staticCompositionLocalOf<AcerolaExtraColors> {
-        error("AcerolaExtraColors não fornecido — use dentro de AcerolaTheme")
+        error("AcerolaExtraColors not provided: use it inside AcerolaTheme")
     }
 
 object AcerolaExtendedTheme {
@@ -44,144 +36,102 @@ object AcerolaExtendedTheme {
         @Composable get() = LocalAcerolaExtraColors.current
 }
 
-// Tema único do app: só existe a troca claro/escuro (seguindo o sistema). Os papéis do
-// Material3 são preenchidos com os tokens da paleta (ver color/Catppuccin.kt) seguindo o mesmo
-// papel que cada token tem no CSS: `background`/`card`/`surface` pros níveis de superfície,
-// `border` pras bordas, `*-soft` pros containers.
+// One theme: only light/dark changes (following the system). Material3 roles take the brand
+// tokens (Color.kt, generated from the acerola-brand tokens.json) with the same role each token
+// has in CSS: background/card/surface for the surface levels, border for dividers, *Soft for
+// containers.
 private val DarkColorScheme =
     darkColorScheme(
-        primary = CatppuccinMocha.Primary,
-        onPrimary = CatppuccinMocha.PrimaryForeground,
-        primaryContainer = CatppuccinMocha.PrimarySoft,
-        onPrimaryContainer = CatppuccinMocha.Primary,
-        secondary = CatppuccinMocha.AccentHero,
-        onSecondary = CatppuccinMocha.PrimaryForeground,
-        secondaryContainer = CatppuccinMocha.Secondary,
-        onSecondaryContainer = CatppuccinMocha.AccentHero,
-        tertiary = CatppuccinMocha.Chart5,
-        onTertiary = CatppuccinMocha.PrimaryForeground,
-        tertiaryContainer = CatppuccinMocha.Secondary,
-        onTertiaryContainer = CatppuccinMocha.Chart5,
-        background = CatppuccinMocha.Background,
-        onBackground = CatppuccinMocha.Foreground,
-        surface = CatppuccinMocha.Background,
-        onSurface = CatppuccinMocha.Foreground,
-        surfaceVariant = CatppuccinMocha.Surface,
-        onSurfaceVariant = CatppuccinMocha.MutedForeground,
-        surfaceContainerLowest = CatppuccinMocha.Crust,
-        surfaceContainerLow = CatppuccinMocha.Mantle,
-        surfaceContainer = CatppuccinMocha.Card,
-        surfaceContainerHigh = CatppuccinMocha.Surface,
-        surfaceContainerHighest = CatppuccinMocha.Border,
-        outline = CatppuccinMocha.Border,
-        outlineVariant = CatppuccinMocha.Border,
-        error = CatppuccinMocha.Destructive,
-        onError = CatppuccinMocha.PrimaryForeground,
-        errorContainer = CatppuccinMocha.DestructiveSoft,
-        onErrorContainer = CatppuccinMocha.Destructive,
+        primary = AcerolaColors.Dark.Primary,
+        onPrimary = AcerolaColors.Dark.PrimaryForeground,
+        primaryContainer = AcerolaColors.Dark.PrimarySoft,
+        onPrimaryContainer = AcerolaColors.Dark.Primary,
+        secondary = AcerolaColors.Dark.AccentHero,
+        onSecondary = AcerolaColors.Dark.PrimaryForeground,
+        secondaryContainer = AcerolaColors.Dark.Secondary,
+        onSecondaryContainer = AcerolaColors.Dark.AccentHero,
+        tertiary = AcerolaColors.Dark.Chart5,
+        onTertiary = AcerolaColors.Dark.PrimaryForeground,
+        tertiaryContainer = AcerolaColors.Dark.Secondary,
+        onTertiaryContainer = AcerolaColors.Dark.Chart5,
+        background = AcerolaColors.Dark.Background,
+        onBackground = AcerolaColors.Dark.Foreground,
+        surface = AcerolaColors.Dark.Background,
+        onSurface = AcerolaColors.Dark.Foreground,
+        surfaceVariant = AcerolaColors.Dark.Surface,
+        onSurfaceVariant = AcerolaColors.Dark.MutedForeground,
+        surfaceContainerLowest = AcerolaColors.Dark.Crust,
+        surfaceContainerLow = AcerolaColors.Dark.Mantle,
+        surfaceContainer = AcerolaColors.Dark.Card,
+        surfaceContainerHigh = AcerolaColors.Dark.Surface,
+        surfaceContainerHighest = AcerolaColors.Dark.Border,
+        outline = AcerolaColors.Dark.Border,
+        outlineVariant = AcerolaColors.Dark.Border,
+        error = AcerolaColors.Dark.Destructive,
+        onError = AcerolaColors.Dark.PrimaryForeground,
+        errorContainer = AcerolaColors.Dark.DestructiveSoft,
+        onErrorContainer = AcerolaColors.Dark.Destructive,
+        scrim = AcerolaColors.Scrim,
     )
 
 private val DarkExtraColors =
     AcerolaExtraColors(
-        success = CatppuccinMocha.Success,
-        onSuccess = CatppuccinMocha.PrimaryForeground,
-        accent = CatppuccinMocha.AccentHero,
-        onAccent = CatppuccinMocha.PrimaryForeground,
-        successContainer = CatppuccinMocha.SuccessSoft,
-        onSuccessContainer = CatppuccinMocha.Success,
+        success = AcerolaColors.Dark.Success,
+        onSuccess = AcerolaColors.Dark.PrimaryForeground,
+        accent = AcerolaColors.Dark.AccentHero,
+        onAccent = AcerolaColors.Dark.PrimaryForeground,
+        successContainer = AcerolaColors.Dark.SuccessSoft,
+        onSuccessContainer = AcerolaColors.Dark.Success,
+        warning = AcerolaColors.Dark.Warning,
+        warningContainer = AcerolaColors.Dark.WarningSoft,
+        onWarningContainer = AcerolaColors.Dark.Warning,
     )
 
 private val LightColorScheme =
     lightColorScheme(
-        primary = CatppuccinLatte.Primary,
-        onPrimary = CatppuccinLatte.PrimaryForeground,
-        primaryContainer = CatppuccinLatte.PrimarySoft,
-        onPrimaryContainer = CatppuccinLatte.Primary,
-        secondary = CatppuccinLatte.AccentHero,
-        onSecondary = CatppuccinLatte.PrimaryForeground,
-        secondaryContainer = CatppuccinLatte.Secondary,
-        onSecondaryContainer = CatppuccinLatte.AccentHero,
-        tertiary = CatppuccinLatte.Chart5,
-        onTertiary = CatppuccinLatte.PrimaryForeground,
-        tertiaryContainer = CatppuccinLatte.Secondary,
-        onTertiaryContainer = CatppuccinLatte.Chart5,
-        background = CatppuccinLatte.Background,
-        onBackground = CatppuccinLatte.Foreground,
-        surface = CatppuccinLatte.Background,
-        onSurface = CatppuccinLatte.Foreground,
-        surfaceVariant = CatppuccinLatte.Surface,
-        onSurfaceVariant = CatppuccinLatte.MutedForeground,
-        surfaceContainerLowest = CatppuccinLatte.Card,
-        surfaceContainerLow = CatppuccinLatte.Base,
-        surfaceContainer = CatppuccinLatte.Mantle,
-        surfaceContainerHigh = CatppuccinLatte.Surface,
-        surfaceContainerHighest = CatppuccinLatte.Crust,
-        outline = CatppuccinLatte.Border,
-        outlineVariant = CatppuccinLatte.Border,
-        error = CatppuccinLatte.Destructive,
-        onError = CatppuccinLatte.PrimaryForeground,
-        errorContainer = CatppuccinLatte.DestructiveSoft,
-        onErrorContainer = CatppuccinLatte.Destructive,
+        primary = AcerolaColors.Light.Primary,
+        onPrimary = AcerolaColors.Light.PrimaryForeground,
+        primaryContainer = AcerolaColors.Light.PrimarySoft,
+        onPrimaryContainer = AcerolaColors.Light.Primary,
+        secondary = AcerolaColors.Light.AccentHero,
+        onSecondary = AcerolaColors.Light.PrimaryForeground,
+        secondaryContainer = AcerolaColors.Light.Secondary,
+        onSecondaryContainer = AcerolaColors.Light.AccentHero,
+        tertiary = AcerolaColors.Light.Chart5,
+        onTertiary = AcerolaColors.Light.PrimaryForeground,
+        tertiaryContainer = AcerolaColors.Light.Secondary,
+        onTertiaryContainer = AcerolaColors.Light.Chart5,
+        background = AcerolaColors.Light.Background,
+        onBackground = AcerolaColors.Light.Foreground,
+        surface = AcerolaColors.Light.Background,
+        onSurface = AcerolaColors.Light.Foreground,
+        surfaceVariant = AcerolaColors.Light.Surface,
+        onSurfaceVariant = AcerolaColors.Light.MutedForeground,
+        surfaceContainerLowest = AcerolaColors.Light.Card,
+        surfaceContainerLow = AcerolaColors.Light.Base,
+        surfaceContainer = AcerolaColors.Light.Mantle,
+        surfaceContainerHigh = AcerolaColors.Light.Surface,
+        surfaceContainerHighest = AcerolaColors.Light.Crust,
+        outline = AcerolaColors.Light.Border,
+        outlineVariant = AcerolaColors.Light.Border,
+        error = AcerolaColors.Light.Destructive,
+        onError = AcerolaColors.Light.PrimaryForeground,
+        errorContainer = AcerolaColors.Light.DestructiveSoft,
+        onErrorContainer = AcerolaColors.Light.Destructive,
+        scrim = AcerolaColors.Scrim,
     )
 
 private val LightExtraColors =
     AcerolaExtraColors(
-        success = CatppuccinLatte.Success,
-        onSuccess = CatppuccinLatte.PrimaryForeground,
-        accent = CatppuccinLatte.AccentHero,
-        onAccent = CatppuccinLatte.PrimaryForeground,
-        successContainer = CatppuccinLatte.SuccessSoft,
-        onSuccessContainer = CatppuccinLatte.Success,
-    )
-
-// Escala tipográfica completa do Material3, explícita para toda a hierarquia (antes só
-// bodyLarge era definido e o restante herdava o default do Material3 sem decisão consciente).
-// Ter os 13 estilos aqui, num único lugar, é o que permite trocar fontFamily/pesos do app
-// inteiro futuramente sem caçar overrides espalhados pelos componentes.
-val Typography =
-    Typography(
-        displayLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 57.sp,
-                lineHeight = 64.sp,
-                letterSpacing = (-0.25).sp,
-            ),
-        displayMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 45.sp, lineHeight = 52.sp, letterSpacing = 0.sp),
-        displaySmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 36.sp, lineHeight = 44.sp, letterSpacing = 0.sp),
-        headlineLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 32.sp, lineHeight = 40.sp, letterSpacing = 0.sp),
-        headlineMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 28.sp, lineHeight = 36.sp, letterSpacing = 0.sp),
-        headlineSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 24.sp, lineHeight = 32.sp, letterSpacing = 0.sp),
-        titleLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp),
-        titleMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.15.sp),
-        titleSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
-        bodyLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp,
-            ),
-        bodyMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.25.sp),
-        bodySmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp),
-        labelLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
-        labelMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp),
-        labelSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp),
+        success = AcerolaColors.Light.Success,
+        onSuccess = AcerolaColors.Light.PrimaryForeground,
+        accent = AcerolaColors.Light.AccentHero,
+        onAccent = AcerolaColors.Light.PrimaryForeground,
+        successContainer = AcerolaColors.Light.SuccessSoft,
+        onSuccessContainer = AcerolaColors.Light.Success,
+        warning = AcerolaColors.Light.Warning,
+        warningContainer = AcerolaColors.Light.WarningSoft,
+        onWarningContainer = AcerolaColors.Light.Warning,
     )
 
 @Composable

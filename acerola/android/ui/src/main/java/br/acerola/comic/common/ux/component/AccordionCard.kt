@@ -37,12 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
-private val AccordionShape = ShapeTokens.Huge
+private val AccordionShape = AcerolaShapes.Tile
 
 // Card colapsável que agrupa vários HeroButton por categoria — mesmo comportamento do
 // AcerolaAccordionCard do desktop (ver acerola-accordion-card.svelte): cabeçalho clicável
@@ -91,7 +91,7 @@ fun Acerola.Component.AccordionCard(
             ) {
                 if (icon != null) {
                     Surface(
-                        shape = ShapeTokens.Large,
+                        shape = AcerolaShapes.Inner,
                         color = accentColor.copy(alpha = 0.12f),
                         modifier = Modifier.size(SizeTokens.ClickTarget),
                     ) {

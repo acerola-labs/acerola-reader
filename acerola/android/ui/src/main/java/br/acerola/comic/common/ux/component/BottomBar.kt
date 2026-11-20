@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -37,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import br.acerola.comic.common.navigation.Destination
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -152,7 +152,7 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(AcerolaShapes.Inner)
                             .background(itemBackground)
                             .clickable {
                                 if (currentRoute != routeString) {

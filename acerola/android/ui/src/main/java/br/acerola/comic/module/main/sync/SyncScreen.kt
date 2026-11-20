@@ -93,10 +93,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
-import br.acerola.comic.common.viewmodel.network.MobileDataSyncViewModel
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.AccordionCard
+import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.AdaptiveSheet
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
@@ -106,11 +105,13 @@ import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.SyncActionIcon
 import br.acerola.comic.common.ux.component.ToggleCard
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaColors
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
+import br.acerola.comic.common.viewmodel.network.MobileDataSyncViewModel
 import br.acerola.comic.config.preference.RelayPreference
 import br.acerola.comic.logging.AcerolaLogger
 import br.acerola.comic.logging.LogSource
@@ -218,7 +219,7 @@ private fun SyncLayout(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Inner,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                     modifier = Modifier.size(SizeTokens.ClickTarget),
                 ) {
@@ -423,7 +424,7 @@ private fun ThisDeviceSection(
     var nameDraft by remember { mutableStateOf("") }
 
     if (editingName) {
-        Card(shape = ShapeTokens.Huge, modifier = Modifier.fillMaxWidth()) {
+        Card(shape = AcerolaShapes.Tile, modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier.padding(SpacingTokens.Large),
                 verticalAlignment = Alignment.CenterVertically,
@@ -489,7 +490,7 @@ private fun ThisDeviceSection(
                         idCopiedRecently = true
                         scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
                     },
-                    shape = ShapeTokens.Medium,
+                    shape = AcerolaShapes.Full,
                 ) {
                     Icon(
                         imageVector = if (idCopiedRecently) Icons.Default.Check else Icons.Default.ContentCopy,
@@ -727,7 +728,7 @@ private fun RestartSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(ShapeTokens.Medium)
+                .clip(AcerolaShapes.Inner)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                 .padding(SpacingTokens.Medium),
         verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
@@ -805,7 +806,7 @@ private fun IrohServicesTicketSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(ShapeTokens.Medium)
+                .clip(AcerolaShapes.Inner)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                 .padding(SpacingTokens.Medium),
         verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
@@ -951,7 +952,7 @@ private fun RelayUrlListEditor(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .clip(ShapeTokens.Medium)
+                        .clip(AcerolaShapes.Inner)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                         .padding(start = SpacingTokens.Medium, end = SpacingTokens.ExtraSmall),
                 verticalAlignment = Alignment.CenterVertically,
@@ -1091,7 +1092,7 @@ private fun PeerRow(
     var nicknameDraft by remember { mutableStateOf("") }
 
     if (editingNickname) {
-        Card(shape = ShapeTokens.Huge, modifier = Modifier.fillMaxWidth()) {
+        Card(shape = AcerolaShapes.Tile, modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(SpacingTokens.Large),
                 verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
@@ -1294,7 +1295,7 @@ private fun PeerRow(
                     modifier =
                         Modifier
                             .align(Alignment.BottomEnd)
-                            // O ícone fica dentro de uma Surface arredondada (ShapeTokens.Large,
+                            // O ícone fica dentro de uma Surface arredondada (AcerolaShapes.Inner,
                             // 16dp) que recorta o próprio conteúdo — encostada em (0, 0) do
                             // BottomEnd, a bolinha cai fora do arco do canto e é cortada. Esse
                             // deslocamento pra dentro é o suficiente pra ela ficar inteira dentro
@@ -1404,7 +1405,7 @@ private fun PairingSideCard(
     onScanClick: () -> Unit,
 ) {
     Card(
-        shape = ShapeTokens.Huge,
+        shape = AcerolaShapes.Tile,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
@@ -1423,7 +1424,7 @@ private fun PairingSideCard(
                 )
                 OutlinedButton(
                     onClick = onScanClick,
-                    shape = ShapeTokens.Medium,
+                    shape = AcerolaShapes.Full,
                 ) {
                     Icon(
                         imageVector = Icons.Default.QrCodeScanner,
@@ -1468,8 +1469,9 @@ private fun MyCodeTabContent(uiState: SyncUiState) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
         val code = uiState.pairingCode
         Surface(
-            shape = ShapeTokens.Large,
-            color = Color.White,
+            shape = AcerolaShapes.Inner,
+            // The QR code needs a white background to scan, in both modes.
+            color = AcerolaColors.OnScrim,
             tonalElevation = 2.dp,
             shadowElevation = 2.dp,
             modifier = Modifier.size(240.dp),
@@ -1506,7 +1508,7 @@ private fun MyCodeTabContent(uiState: SyncUiState) {
                 }
             },
             enabled = code != null,
-            shape = ShapeTokens.Medium,
+            shape = AcerolaShapes.Full,
         ) {
             Icon(
                 imageVector = if (codeCopiedRecently) Icons.Default.Check else Icons.Default.ContentCopy,
@@ -1547,7 +1549,7 @@ private fun MyCodeTabContent(uiState: SyncUiState) {
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh, ShapeTokens.Small)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh, AcerolaShapes.Inner)
                         .padding(SpacingTokens.Small),
             )
         }
@@ -1649,7 +1651,7 @@ private fun SecurityNote() {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f), ShapeTokens.Small)
+                .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f), AcerolaShapes.Inner)
                 .padding(SpacingTokens.Small),
     ) {
         Icon(

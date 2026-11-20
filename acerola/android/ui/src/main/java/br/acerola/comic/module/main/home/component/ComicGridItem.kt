@@ -45,9 +45,10 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.BookmarkRibbon
 import br.acerola.comic.common.ux.component.ImageCard
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SemanticColors
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -148,10 +149,10 @@ fun Main.Home.Component.ComicGridItem(
                         .fillMaxWidth()
                         .height(40.dp)
                         .align(Alignment.BottomCenter)
-                        .clip(ShapeTokens.Medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
+                        .clip(AcerolaShapes.Inner.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.5f)),
+                                colors = listOf(Color.Transparent, AcerolaColors.Scrim.copy(alpha = 0.5f)),
                             ),
                         ),
             )
@@ -195,15 +196,15 @@ fun Main.Home.Component.ComicGridItem(
                 Icon(
                     imageVector = Icons.Rounded.VisibilityOff,
                     contentDescription = stringResource(id = R.string.description_icon_comic_hidden),
-                    tint = Color.White,
+                    tint = AcerolaColors.OnScrim,
                     modifier =
                         Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = SpacingTokens.Small, start = SpacingTokens.Small)
                             .size(SizeTokens.IconExtraSmall)
                             .background(
-                                color = Color.Black.copy(alpha = 0.5f),
-                                shape = ShapeTokens.ExtraSmall,
+                                color = AcerolaColors.Scrim.copy(alpha = 0.5f),
+                                shape = AcerolaShapes.Inner,
                             ).padding(2.dp),
                 )
             }
@@ -215,7 +216,7 @@ fun Main.Home.Component.ComicGridItem(
                             Modifier
                                 .fillMaxSize()
                                 .padding(top = SpacingTokens.Small)
-                                .clip(ShapeTokens.Medium)
+                                .clip(AcerolaShapes.Inner)
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -243,7 +244,7 @@ fun Main.Home.Component.ComicGridItem(
                             Modifier
                                 .fillMaxSize()
                                 .padding(top = SpacingTokens.Small)
-                                .clip(ShapeTokens.Medium)
+                                .clip(AcerolaShapes.Inner)
                                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -252,11 +253,11 @@ fun Main.Home.Component.ComicGridItem(
                                 Modifier
                                     .size(36.dp)
                                     .background(
-                                        color = Color.Black.copy(alpha = 0.3f),
+                                        color = AcerolaColors.Scrim.copy(alpha = 0.3f),
                                         shape = CircleShape,
                                     ).border(
                                         width = 2.dp,
-                                        color = Color.White.copy(alpha = 0.8f),
+                                        color = AcerolaColors.OnScrim.copy(alpha = 0.8f),
                                         shape = CircleShape,
                                     ),
                         )
@@ -288,7 +289,7 @@ fun Main.Home.Component.ComicGridItem(
                     Icon(
                         imageVector = Icons.Rounded.Star,
                         contentDescription = null,
-                        tint = SemanticColors.Rating,
+                        tint = AcerolaExtendedTheme.colors.warning,
                         modifier = Modifier.size(14.dp),
                     )
                     Text(

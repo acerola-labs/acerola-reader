@@ -47,6 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -162,8 +164,8 @@ fun Main.Home.Component.HomeContinueBanner(
                                     colors =
                                         listOf(
                                             Color.Transparent,
-                                            Color.Black.copy(alpha = 0.4f),
-                                            Color.Black.copy(alpha = 0.8f),
+                                            AcerolaColors.Scrim.copy(alpha = 0.4f),
+                                            AcerolaColors.Scrim.copy(alpha = 0.8f),
                                         ),
                                 ),
                             ),
@@ -193,7 +195,7 @@ fun Main.Home.Component.HomeContinueBanner(
                             modifier =
                                 Modifier
                                     .size(64.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
+                                    .clip(AcerolaShapes.Inner),
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                     }
@@ -232,7 +234,7 @@ fun Main.Home.Component.HomeContinueBanner(
                     androidx.compose.material3.FilledIconButton(
                         onClick = onContinueClick,
                         modifier = Modifier.size(56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = AcerolaShapes.Inner,
                         colors =
                             androidx.compose.material3.IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
@@ -257,7 +259,7 @@ fun Main.Home.Component.HomeContinueBanner(
                         style =
                             MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = if (bannerUri != null) Color.White else MaterialTheme.colorScheme.onSurface,
+                                color = if (bannerUri != null) AcerolaColors.OnScrim else MaterialTheme.colorScheme.onSurface,
                             ),
                         maxLines = if (isLandscape) 1 else 2,
                         overflow = TextOverflow.Ellipsis,
@@ -269,7 +271,7 @@ fun Main.Home.Component.HomeContinueBanner(
                         text = stringResource(R.string.label_banner_chapter_progress, history.chapterSort),
                         style =
                             MaterialTheme.typography.bodyLarge.copy(
-                                color = if (bannerUri != null) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (bannerUri != null) AcerolaColors.OnScrim.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
                             ),
                         maxLines = 1,
                     )
@@ -282,7 +284,7 @@ fun Main.Home.Component.HomeContinueBanner(
                             Modifier
                                 .fillMaxWidth()
                                 .height(if (isLandscape) 40.dp else 56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = AcerolaShapes.Full,
                         colors =
                             ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
@@ -312,10 +314,10 @@ fun Main.Home.Component.HomeContinueBanner(
                         Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 12.dp)
-                            .clip(RoundedCornerShape(50))
+                            .clip(AcerolaShapes.Full)
                             .background(
                                 if (isExpanded && bannerUri != null) {
-                                    Color.White.copy(alpha = 0.4f)
+                                    AcerolaColors.OnScrim.copy(alpha = 0.4f)
                                 } else {
                                     MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                                 },

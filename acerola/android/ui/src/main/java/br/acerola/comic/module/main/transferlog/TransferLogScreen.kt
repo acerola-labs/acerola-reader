@@ -52,8 +52,8 @@ import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
@@ -245,7 +245,7 @@ private fun TransferLogCard(entry: TransferLogEntry) {
     }
 
     Surface(
-        shape = ShapeTokens.Large,
+        shape = AcerolaShapes.Inner,
         color = MaterialTheme.colorScheme.surfaceContainer,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -254,7 +254,7 @@ private fun TransferLogCard(entry: TransferLogEntry) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
-                shape = ShapeTokens.Medium,
+                shape = AcerolaShapes.Inner,
                 color = containerColor,
                 modifier = Modifier.size(SizeTokens.ClickTarget),
             ) {

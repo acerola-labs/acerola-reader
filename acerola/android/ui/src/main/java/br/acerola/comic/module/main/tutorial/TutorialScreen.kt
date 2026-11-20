@@ -1,5 +1,6 @@
 package br.acerola.comic.module.main.tutorial
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,9 +49,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import android.net.Uri
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.common.viewmodel.archive.FileSystemAccessViewModel
 import br.acerola.comic.module.main.Main
@@ -112,7 +112,7 @@ private fun TutorialScreenContent(
                     modifier =
                         Modifier
                             .size(32.dp)
-                            .clip(ShapeTokens.Full)
+                            .clip(AcerolaShapes.Full)
                             .background(bgColor),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -238,7 +238,7 @@ fun FormatsSlide() {
             modifier =
                 Modifier
                     .size(56.dp)
-                    .clip(ShapeTokens.Large)
+                    .clip(AcerolaShapes.Inner)
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)),
         ) {
             Icon(
@@ -324,7 +324,7 @@ fun FormatsSlide() {
                 CardDefaults.outlinedCardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                 ),
-            shape = ShapeTokens.Medium,
+            shape = AcerolaShapes.Inner,
         ) {
             Row(
                 modifier = Modifier.padding(SpacingTokens.Medium),
@@ -335,7 +335,7 @@ fun FormatsSlide() {
                     modifier =
                         Modifier
                             .size(36.dp)
-                            .clip(ShapeTokens.Medium)
+                            .clip(AcerolaShapes.Inner)
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
                 ) {
                     Icon(
@@ -399,7 +399,7 @@ private fun FormatCard(
 
     OutlinedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = ShapeTokens.Medium,
+        shape = AcerolaShapes.Inner,
         colors = CardDefaults.outlinedCardColors(containerColor = containerBg),
         border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
     ) {
@@ -414,7 +414,7 @@ private fun FormatCard(
                     modifier =
                         Modifier
                             .size(40.dp)
-                            .clip(ShapeTokens.Medium)
+                            .clip(AcerolaShapes.Inner)
                             .background(badgeBg),
                 ) {
                     Icon(
@@ -426,7 +426,7 @@ private fun FormatCard(
                 }
 
                 Surface(
-                    shape = ShapeTokens.Full,
+                    shape = AcerolaShapes.Full,
                     color = badgeBg,
                     border = androidx.compose.foundation.BorderStroke(1.dp, badgeTextColor.copy(alpha = 0.3f)),
                 ) {

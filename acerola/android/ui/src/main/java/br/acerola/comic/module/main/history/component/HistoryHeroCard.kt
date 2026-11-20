@@ -34,8 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -58,7 +59,7 @@ fun Main.History.Component.HistoryHeroCard(
 
     Card(
         onClick = onClick,
-        shape = ShapeTokens.Huge,
+        shape = AcerolaShapes.Tile,
         modifier =
             modifier
                 .fillMaxWidth()
@@ -89,8 +90,8 @@ fun Main.History.Component.HistoryHeroCard(
                                 colors =
                                     listOf(
                                         Color.Transparent,
-                                        Color.Black.copy(alpha = 0.4f),
-                                        Color.Black.copy(alpha = 0.9f),
+                                        AcerolaColors.Scrim.copy(alpha = 0.4f),
+                                        AcerolaColors.Scrim.copy(alpha = 0.9f),
                                     ),
                                 startY = 0f,
                             ),
@@ -112,8 +113,8 @@ fun Main.History.Component.HistoryHeroCard(
                         modifier =
                             Modifier
                                 .background(
-                                    color = Color.White.copy(alpha = 0.2f),
-                                    shape = ShapeTokens.Large,
+                                    color = AcerolaColors.OnScrim.copy(alpha = 0.2f),
+                                    shape = AcerolaShapes.Inner,
                                 ).padding(horizontal = SpacingTokens.Small, vertical = SpacingTokens.ExtraSmall),
                     ) {
                         Text(
@@ -123,7 +124,7 @@ fun Main.History.Component.HistoryHeroCard(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.sp,
                                 ),
-                            color = Color.White,
+                            color = AcerolaColors.OnScrim,
                         )
                     }
                 }
@@ -135,7 +136,7 @@ fun Main.History.Component.HistoryHeroCard(
                     style =
                         MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color.White,
+                            color = AcerolaColors.OnScrim,
                         ),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -149,7 +150,7 @@ fun Main.History.Component.HistoryHeroCard(
                         Modifier
                             .fillMaxWidth()
                             .height(SizeTokens.FabDefault),
-                    shape = ShapeTokens.Large,
+                    shape = AcerolaShapes.Full,
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,

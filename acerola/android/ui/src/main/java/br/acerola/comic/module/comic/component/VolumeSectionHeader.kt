@@ -39,8 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.archive.ChapterFileDto
@@ -192,7 +192,7 @@ private fun VolumeNumberBadge(
         modifier =
             modifier
                 .size(IdentitySquareSize)
-                .clip(ShapeTokens.Medium)
+                .clip(AcerolaShapes.Inner)
                 .background(MaterialTheme.colorScheme.tertiaryContainer),
         contentAlignment = Alignment.Center,
     ) {
@@ -217,7 +217,7 @@ private fun VolumeCoverIdentity(
             modifier
                 .width(IdentityCoverWidth)
                 .height(IdentityCoverHeight)
-                .clip(ShapeTokens.Small),
+                .clip(AcerolaShapes.Inner),
     ) {
         if (coverUri != null) {
             val context = LocalContext.current
@@ -268,7 +268,7 @@ private fun SpecialPill(modifier: Modifier = Modifier) {
     Box(
         modifier =
             modifier
-                .clip(ShapeTokens.Full)
+                .clip(AcerolaShapes.Full)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
                 .padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
     ) {

@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
@@ -52,7 +52,7 @@ fun Acerola.Component.ActionListItem(
     ListItem(
         leadingContent = {
             if (iconBackground != null) {
-                Surface(shape = ShapeTokens.Medium, color = iconBackground, modifier = Modifier.size(SizeTokens.ClickTargetSmall)) {
+                Surface(shape = AcerolaShapes.Inner, color = iconBackground, modifier = Modifier.size(SizeTokens.ClickTargetSmall)) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(imageVector = icon, contentDescription = null, tint = tint)
                     }

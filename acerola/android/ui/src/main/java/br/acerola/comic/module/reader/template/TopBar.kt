@@ -29,8 +29,8 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.GlassButton
 import br.acerola.comic.common.ux.modifier.glass
 import br.acerola.comic.common.ux.modifier.glassContainer
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.reader.Reader
@@ -104,7 +104,7 @@ fun Reader.Template.TitleCapsule(
 ) {
     val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
     val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
-    val shape = ShapeTokens.Huge
+    val shape = AcerolaShapes.Tile
 
     Box(
         modifier =
