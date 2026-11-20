@@ -1161,10 +1161,8 @@ private fun PeerRow(
 
     Acerola.Component.HeroButton(
         title = peer.nickname ?: peer.deviceName ?: PairingCode.shortId(peer.peerId),
-        icon = Icons.Default.PhoneAndroid,
         modifier = Modifier.fillMaxWidth(),
         description = description,
-        iconTint = if (isOnline) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
         iconBackground = if (isOnline) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         bottomContent =
             if (isErrorIdle) {
@@ -1285,7 +1283,7 @@ private fun PeerRow(
                 Icon(
                     imageVector = Icons.Default.PhoneAndroid,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = if (isOnline) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center).size(SizeTokens.IconMedium),
                 )
                 Box(
