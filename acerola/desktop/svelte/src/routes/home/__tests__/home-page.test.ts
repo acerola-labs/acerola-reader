@@ -26,9 +26,9 @@ vi.mock('@tauri-apps/api/core', () => ({
 	convertFileSrc: (path: string) => `asset://${path}`
 }));
 
-// Assim como na tela do quadrinho: o back-end responde `getComicSummarySorted` via evento
-// (`home:data`/`home:error`), não pelo retorno do invoke — capturamos os callbacks por nome
-// de evento pra poder simular a chegada dos dados.
+// Just like on the comic screen: the backend answers `getComicSummarySorted` via an event
+// (`home:data`/`home:error`), not through the invoke return — we capture the callbacks by
+// event name to simulate the data arriving.
 const listenCallbacks = new Map<string, (event: { payload: unknown }) => void>();
 
 vi.mock('@tauri-apps/api/event', () => ({
@@ -81,10 +81,10 @@ function summaryPayload(overrides: Partial<ComicSummaryPayload> = {}): ComicSumm
 	};
 }
 
-// `sync`/`p2pSync` agora vem do contexto compartilhado com `+layout.svelte` (ver
-// `CONTEXT_KEYS.networkSync`), não de uma instância própria da página — sem prover esse
-// contexto aqui, `getContext(...)` devolve `undefined` e o primeiro acesso a `sync.log`
-// (dentro do `$effect` da página) explode.
+// `sync`/`p2pSync` now comes from the context shared with `+layout.svelte` (see
+// `CONTEXT_KEYS.networkSync`), not from a page-owned instance — without providing that
+// context here, `getContext(...)` returns `undefined` and the first access to `sync.log`
+// (inside the page's `$effect`) blows up.
 function networkSyncStub() {
 	return {
 		log: [],
@@ -103,9 +103,9 @@ function networkSyncStub() {
 
 function renderHomePage(networkSyncOverrides: Record<string, unknown> = {}) {
 	const activeComic = new ActiveComicState();
-	// `Map<symbol, unknown>` explícito: sem isso, TS infere o tipo a partir da PRIMEIRA tupla
-	// (`ActiveComicState`) e rejeita a segunda entrada, cujo valor tem um shape diferente —
-	// os dois lados de `getContext<T>(...)` já fazem o cast pro tipo certo na leitura.
+	// Explicit `Map<symbol, unknown>`: without it, TS infers the type from the FIRST tuple
+	// (`ActiveComicState`) and rejects the second entry, whose value has a different shape —
+	// both sides of `getContext<T>(...)` already cast to the right type on read.
 	return render(HomePage, {
 		context: new Map<symbol, unknown>([
 			[CONTEXT_KEYS.activeComic, activeComic],
@@ -186,8 +186,8 @@ describe('home +page', () => {
 
 		await emitSummary(summaryPayload());
 
-		// O título fica FORA do <button> clicável (só a imagem/placeholder é clicável, ver
-		// acerola-card-image.svelte) — sobe até o card e clica no botão dentro dele.
+		// The title sits OUTSIDE the clickable <button> (only the image/placeholder is clickable,
+		// see acerola-card-image.svelte) — go up to the card and click the button inside it.
 		const title = await screen.findByText('Acerola');
 		const cardButton = title.closest('.group')?.querySelector('button');
 		await user.click(cardButton as HTMLElement);
@@ -213,8 +213,8 @@ describe('home +page', () => {
 		await emitSummary(summaryPayload());
 		await screen.findByText('Acerola');
 
-		// O botão de ações do card é só o ícone MoreVertical (sem nome acessível) —
-		// localiza pelo svg do lucide em vez de por texto/role.
+		// The card actions button is just the MoreVertical icon (no accessible name) —
+		// locate it by the lucide svg instead of by text/role.
 		const actionButton = document
 			.querySelector('svg.lucide-more-vertical, svg.lucide-ellipsis-vertical')
 			?.closest('button');

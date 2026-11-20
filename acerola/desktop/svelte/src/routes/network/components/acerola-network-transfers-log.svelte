@@ -28,23 +28,23 @@
 
 	let { data, events }: NetworkTransfersLogProps = $props();
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `data` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba
-	// a suíte mesmo com todos os asserts passando.
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `data` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings
+	// down the suite even with every assert passing.
 	let entries = $derived(data?.entries ?? []);
 
-	// Fechado por padrão, expande em linha — mesmo componente e mesma ideia do card de
-	// Configurações de Relay logo acima nessa tela, em vez de um dialog à parte.
+	// Closed by default, expands inline — same component and same idea as the Relay
+	// Settings card right above on this screen, instead of a separate dialog.
 	let expanded = $state(false);
 
 	type EntryMessageByStatus = Partial<
 		Record<TransferLogEntry['status'], (entry: TransferLogEntry) => string>
 	>;
 
-	// Agrupada por kind e depois por status (em vez de um switch sobre a string
-	// concatenada "kind:status") pra deixar visível quais combinações existem de fato —
-	// nem todo kind tem "progress", por exemplo.
+	// Grouped by kind and then by status (instead of a switch over the concatenated
+	// "kind:status" string) to make visible which combinations actually exist —
+	// not every kind has "progress", for example.
 	const messageByKind = $derived<Record<TransferLogEntry['kind'], EntryMessageByStatus>>({
 		history: {
 			started: (entry) =>
@@ -82,24 +82,24 @@
 
 	function describeEntry(entry: TransferLogEntry): string {
 		const base = messageByKind[entry.kind][entry.status]?.(entry) ?? entry.message;
-		// Sem toast/notificação própria pra isso (ver `use-network-sync.svelte.ts`) — o
-		// conflito só precisa aparecer aqui, na linha da sessão que já ia ser mostrada de
-		// qualquer forma, um total por sessão em vez de uma notificação por capítulo.
+		// No dedicated toast/notification for this (see `use-network-sync.svelte.ts`) — the
+		// conflict only needs to show here, on the session line that was going to be shown
+		// anyway, one total per session instead of one notification per chapter.
 		if (entry.status === 'complete' && entry.conflicts) {
 			return `${base} ${m['pages.network.transfers.conflictsSuffix']({ count: entry.conflicts })}`;
 		}
 		return base;
 	}
 
-	// Resumo mostrado no cabeçalho do accordion fechado — a entrada mais recente
-	// (`entries[0]`, ver `use-network-sync.svelte.ts`) ou o texto de vazio.
+	// Summary shown in the closed accordion header — the most recent entry
+	// (`entries[0]`, see `use-network-sync.svelte.ts`) or the empty text.
 	let summary = $derived(
 		entries.length > 0 ? describeEntry(entries[0]) : m['pages.network.transfers.empty']()
 	);
 
-	// Fundo do círculo do ícone SÓLIDO tintado pelo status (o bg contorna o ícone, que fica
-	// numa cor de foreground neutra por cima) — não o `bg-muted` genérico padrão do
-	// AcerolaHeroButton.
+	// SOLID icon circle background tinted by status (the bg outlines the icon, which sits in
+	// a neutral foreground color on top) — not AcerolaHeroButton's generic default
+	// `bg-muted`.
 	function iconBackgroundClass(entry: TransferLogEntry): string {
 		if (entry.status === 'error') return 'bg-destructive text-destructive-foreground';
 		if (entry.status === 'complete') return 'bg-chart-3 text-primary-foreground';

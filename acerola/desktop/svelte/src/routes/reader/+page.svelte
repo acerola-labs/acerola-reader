@@ -209,7 +209,7 @@
 		zoom.resetPan();
 
 		await tick();
-		// Se for um salto muito grande, não use scroll suave para evitar disparar o observer em dezenas de páginas intermediárias
+		// For a very large jump, don't smooth scroll, to avoid firing the observer on dozens of intermediate pages
 		scrollPageIntoView(targetPage, distance > 3 ? 'auto' : 'smooth');
 	}
 
@@ -223,14 +223,14 @@
 
 		try {
 			await reader.open(nav.chapter, nav.state.startPage ?? 0);
-			nav.state.startPage = undefined; // Reseta a página inicial para que as próximas aberturas comecem do 0
+			nav.state.startPage = undefined; // Reset the start page so the next openings start from 0
 			await tick();
 
-			// Pequeno atraso para garantir que o DOM está pronto e o IntersectionObserver pegue o estado inicial
+			// Small delay to make sure the DOM is ready and the IntersectionObserver picks up the initial state
 			setTimeout(() => {
 				scrollPageIntoView(reader.currentPage, 'auto');
 
-				// Outro tick para permitir que o observer registre o pulo antes de exibir a interface
+				// Another tick so the observer can register the jump before showing the interface
 				setTimeout(() => {
 					nav.initializing = false;
 				}, 50);
@@ -383,8 +383,8 @@
 		};
 	}
 
-	// Mantém a imagem "em foco" pro pan/zoom sempre em sincronia com a página atual do leitor —
-	// sem isso, trocar de página com zoom ativo continuaria limitando o pan pela imagem antiga.
+	// Keeps the "focused" image for pan/zoom always in sync with the reader's current page —
+	// without this, changing pages with zoom active would keep bounding the pan by the old image.
 	$effect(() => {
 		const currentPage = reader.currentPage;
 

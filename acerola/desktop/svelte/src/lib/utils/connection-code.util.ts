@@ -1,5 +1,5 @@
-/// Espelha `acerola_p2p::api::peer::PeerAddr` — sem `rename_all` no Rust, então os campos
-/// vêm em snake_case direto do backend (diferente dos nossos próprios payloads).
+/// Mirrors `acerola_p2p::api::peer::PeerAddr` — no `rename_all` on the Rust side, so the
+/// fields come in snake_case straight from the backend (unlike our own payloads).
 export type LocalPeerAddr = {
 	id: { id: string; device_id: string | null };
 	addrs: number[];
@@ -17,21 +17,21 @@ function bytesToBase64(bytes: number[]): string {
 
 function base64ToBytes(base64: string): number[] {
 	const binary = atob(base64);
-	// Stryker disable next-line ArrayDeclaration : `new Array()` sem tamanho fica byte-a-byte
-	// idêntico depois que o loop abaixo preenche cada índice em sequência (0..length-1) sem
-	// pular nenhum — não existe entrada observável pela API pública que distinga os dois.
+	// Stryker disable next-line ArrayDeclaration : a sizeless `new Array()` ends up byte-for-byte
+	// identical after the loop below fills each index in sequence (0..length-1) without
+	// skipping any — no input observable through the public API tells the two apart.
 	const bytes: number[] = new Array(binary.length);
 	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 	return bytes;
 }
 
 /**
- * Empacota um `PeerAddr` num token opaco pra QR Code/copiar-colar. `addrs` é um `Vec<u8>`
- * no Rust — sem isso, `JSON.stringify` serializa cada byte como um número decimal separado
- * por vírgula (~4 caracteres por byte). Codificando os bytes em base64 primeiro, e só então
- * empacotando tudo num único blob base64, o código fica bem mais curto e sem caracteres
- * "assustadores" tipo colchetes/vírgulas — só uma string opaca, do jeito que um código de
- * convite deveria parecer.
+ * Packs a `PeerAddr` into an opaque token for QR Code/copy-paste. `addrs` is a `Vec<u8>`
+ * in Rust — without this, `JSON.stringify` serializes each byte as a comma-separated decimal
+ * number (~4 characters per byte). Encoding the bytes in base64 first, and only then packing
+ * everything into a single base64 blob, makes the code much shorter and free of "scary"
+ * characters like brackets/commas — just an opaque string, the way an invite code should
+ * look.
  */
 export function encodeConnectionCode(addr: LocalPeerAddr): string {
 	const envelope: ConnectionEnvelope = {
@@ -43,7 +43,7 @@ export function encodeConnectionCode(addr: LocalPeerAddr): string {
 	return CODE_PREFIX + btoa(JSON.stringify(envelope));
 }
 
-/** Erro específico pra distinguir "código mal formado" de outras falhas na UI. */
+/** Specific error to tell a "malformed code" apart from other failures in the UI. */
 export class InvalidConnectionCodeError extends Error {
 	constructor() {
 		super('invalid_connection_code');
@@ -60,10 +60,10 @@ export function decodeConnectionCode(code: string): LocalPeerAddr {
 	try {
 		const envelope = JSON.parse(atob(trimmed.slice(CODE_PREFIX.length))) as ConnectionEnvelope;
 
-		// Stryker disable next-line OptionalChaining : o catch-all logo abaixo normaliza QUALQUER
-		// erro (inclusive o TypeError de acessar `.i` num envelope null/undefined) pra um
-		// InvalidConnectionCodeError idêntico — trocar `?.` por `.` aqui não muda o que a API
-		// pública observa.
+		// Stryker disable next-line OptionalChaining : the catch-all right below normalizes ANY
+		// error (including the TypeError from accessing `.i` on a null/undefined envelope) into
+		// an identical InvalidConnectionCodeError — swapping `?.` for `.` here does not change
+		// what the public API observes.
 		if (!envelope?.i || typeof envelope.a !== 'string') {
 			throw new InvalidConnectionCodeError();
 		}
@@ -77,7 +77,7 @@ export function decodeConnectionCode(code: string): LocalPeerAddr {
 	}
 }
 
-/** Trunca um id longo (peer id, device id) pra exibição: `909b713a…6511a8`. */
+/** Truncates a long id (peer id, device id) for display: `909b713a…6511a8`. */
 export function shortId(id: string, keepStart = 8, keepEnd = 6): string {
 	if (id.length <= keepStart + keepEnd + 1) return id;
 	return `${id.slice(0, keepStart)}…${id.slice(-keepEnd)}`;

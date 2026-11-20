@@ -102,8 +102,8 @@ describe('useNetworkSync', () => {
 			peerId: 'peer-1',
 			kind: 'history',
 			status: 'complete',
-			// Não-erro: `message` carrega o peer id (usado por `peers.peerLabel`), não o
-			// texto de erro (que nem existe aqui, é `null`).
+			// Non-error: `message` carries the peer id (used by `peers.peerLabel`), not the
+			// error text (which doesn't even exist here, it is `null`).
 			message: 'peer-1',
 			timestamp: 1000
 		});
@@ -112,7 +112,7 @@ describe('useNetworkSync', () => {
 			peerId: 'peer-2',
 			kind: 'history',
 			status: 'error',
-			// Erro: `message` carrega o texto de erro de verdade, NÃO o peerId.
+			// Error: `message` carries the real error text, NOT the peerId.
 			message: 'boom',
 			timestamp: 2000
 		});
@@ -125,7 +125,7 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// Sessão ao vivo ainda em andamento (id >= 0) — não pode sumir num refresh.
+		// Live session still in progress (id >= 0) — must not vanish on a refresh.
 		callbacks.get(NETWORK_EVENTS.historyStarted)?.({ payload: 'peer-live' });
 		const liveId = hook.log[0].id;
 
@@ -232,8 +232,8 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// `isSyncing` reflete um sync que ESTE cliente iniciou (via `withSyncGuard`), não o
-		// evento `historyStarted` recebido do backend — esse evento só alimenta `log`.
+		// `isSyncing` reflects a sync THIS client started (via `withSyncGuard`), not the
+		// `historyStarted` event received from the backend — that event only feeds `log`.
 		await hook.syncHistory('peer-1', [1, 2, 3]);
 		expect(hook.isSyncing('peer-1', 'history')).toBe(true);
 
@@ -276,8 +276,8 @@ describe('useNetworkSync', () => {
 		callbacks.get(NETWORK_EVENTS.filesProgress)?.({ payload: '20%' });
 
 		expect(hook.log).toHaveLength(2);
-		// Prepended (mais recente primeiro) com id sempre crescente: a 2ª entrada (topo) tem
-		// id maior que a 1ª (mais antiga, agora em baixo).
+		// Prepended (most recent first) with an ever-growing id: the 2nd entry (top) has a
+		// greater id than the 1st (older, now below).
 		expect(hook.log[1].id).toBeLessThan(hook.log[0].id);
 	});
 
@@ -302,8 +302,8 @@ describe('useNetworkSync', () => {
 		expect(hook.log[0].id).toBe(startedId);
 		expect(hook.log[0].status).toBe('complete');
 
-		// `complete` é terminal: o próximo `started` do mesmo peer/kind não pode reaproveitar
-		// a linha já resolvida, tem que abrir uma linha nova.
+		// `complete` is terminal: the next `started` for the same peer/kind must not reuse the
+		// already resolved line, it has to open a new one.
 		callbacks.get(NETWORK_EVENTS.historyStarted)?.({ payload: 'peer-1' });
 		expect(hook.log).toHaveLength(2);
 		expect(hook.log[0].id).not.toBe(startedId);
@@ -327,8 +327,8 @@ describe('useNetworkSync', () => {
 		expect(hook.log[0].id).toBe(startedId);
 		expect(hook.log[0].status).toBe('error');
 
-		// `error` fecha a sessão (igual `complete`) — o próximo `started` não pode
-		// reaproveitar a linha já resolvida com erro.
+		// `error` closes the session (like `complete`) — the next `started` must not reuse
+		// the line already resolved with an error.
 		callbacks.get(NETWORK_EVENTS.historyStarted)?.({ payload: 'peer-16' });
 		expect(hook.log).toHaveLength(2);
 		expect(hook.log[0].id).not.toBe(startedId);
@@ -342,10 +342,10 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// `historyComplete` chega sem nenhum `historyStarted` antes — cria linha nova, mas
-		// como `complete` não é um status "aberto", essa linha NÃO pode ficar correlacionável
-		// (senão o próximo `started` do mesmo peer/kind atualiza a linha já resolvida em vez
-		// de abrir uma nova).
+		// `historyComplete` arrives without any prior `historyStarted` — creates a new line, but
+		// since `complete` is not an "open" status, that line must NOT stay correlatable
+		// (otherwise the next `started` for the same peer/kind updates the already resolved
+		// line instead of opening a new one).
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-17' });
 		expect(hook.log).toHaveLength(1);
 		const completeId = hook.log[0].id;
@@ -373,8 +373,8 @@ describe('useNetworkSync', () => {
 		const peerBId = hook.log[0].id;
 		expect(hook.log).toHaveLength(2);
 
-		// peer-A não está mais no topo do log (peer-B foi prepended por cima) — só a
-		// entrada com o `id` certo pode ser atualizada, não a mais recente do array.
+		// peer-A is no longer at the top of the log (peer-B was prepended on top) — only the
+		// entry with the right `id` may be updated, not the array's most recent one.
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-A' });
 
 		expect(hook.log).toHaveLength(2);
@@ -413,25 +413,25 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// Cada sessão termina (started -> complete) antes da próxima começar, então nenhuma
-		// fica "pendente" — o corte deve valer normalmente pra elas, igual antes.
+		// Each session ends (started -> complete) before the next starts, so none stays
+		// "pending" — the cap must apply to them normally, as before.
 		for (let i = 0; i < 201; i++) {
 			callbacks.get(NETWORK_EVENTS.comicStarted)?.({ payload: `peer-${i}` });
 			callbacks.get(NETWORK_EVENTS.comicComplete)?.({ payload: `peer-${i}` });
 		}
 
 		expect(hook.log).toHaveLength(200);
-		// A mais recente (peer-200) fica, a mais antiga (peer-0) foi descartada.
+		// The most recent (peer-200) stays, the oldest (peer-0) was dropped.
 		expect(hook.log[0]).toMatchObject({ peerId: 'peer-200' });
 		expect(hook.log.some((entry) => entry.peerId === 'peer-0')).toBe(false);
 	});
 
-	/// Reproduz o bug real: uma sincronização grande gera muitos eventos `sync:comic:progress`
-	/// (sem peer id — ver comentário de `appendNewEntry`), cada um virando uma linha nova no
-	/// log. Antes do fix, isso enchia o corte de `MAX_LOG_ENTRIES` e empurrava a linha "started"
-	/// (a única rastreada por peer, em `inFlightEntryId`) pra fora do array antes do evento
-	/// `complete` chegar — a linha ficava presa girando "sincronizando..." pra sempre na tela de
-	/// Rede, mesmo com a sessão já concluída no backend.
+	/// Reproduces the real bug: a large sync produces many `sync:comic:progress` events
+	/// (no peer id — see the `appendNewEntry` comment), each becoming a new log line. Before
+	/// the fix, this filled the `MAX_LOG_ENTRIES` cap and pushed the "started" line (the only
+	/// one tracked per peer, in `inFlightEntryId`) out of the array before the `complete` event
+	/// arrived — the line got stuck spinning "syncing..." forever on the Network screen, even
+	/// with the session already finished in the backend.
 	it('keeps an in-flight entry past MAX_LOG_ENTRIES until it resolves, instead of losing it silently', async () => {
 		const { callbacks } = setupListeners();
 		invokeMock.mockResolvedValue([]);
@@ -488,8 +488,8 @@ describe('useNetworkSync', () => {
 		]);
 		await startPromise;
 
-		// `disposed` já era true quando a promise resolveu — o resultado tem que ser
-		// descartado, não gravado em `log`.
+		// `disposed` was already true when the promise resolved — the result must be
+		// discarded, not written to `log`.
 		expect(hook.log).toEqual([]);
 	});
 
@@ -512,7 +512,7 @@ describe('useNetworkSync', () => {
 		rejectLoad(new Error('db locked'));
 		await startPromise;
 
-		// `disposed` já era true quando a promise rejeitou — não deve logar o erro.
+		// `disposed` was already true when the promise rejected — must not log the error.
 		expect(errorMock).not.toHaveBeenCalled();
 	});
 
@@ -548,8 +548,8 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// `message` presente mas não-string (número): `typeof parsed.message === 'string'`
-		// tem que ser falso de verdade, não só "existe uma chave message".
+		// `message` present but non-string (number): `typeof parsed.message === 'string'`
+		// must really be false, not just "a message key exists".
 		const payload = JSON.stringify({ peerId: 'peer-1', message: 123 });
 		callbacks.get(NETWORK_EVENTS.filesError)?.({ payload });
 
@@ -564,9 +564,9 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// `JSON.parse('42')` é um valor truthy (número), mas não é um objeto — a condição
-		// tem que checar `typeof parsed === 'object'` de verdade, não só a truthiness de
-		// `parsed`, senão isso vaza um `{ peerId: undefined, message: undefined }`.
+		// `JSON.parse('42')` is a truthy value (number), but not an object — the condition
+		// must really check `typeof parsed === 'object'`, not just `parsed`'s truthiness,
+		// otherwise this leaks a `{ peerId: undefined, message: undefined }`.
 		callbacks.get(NETWORK_EVENTS.historyError)?.({ payload: '42' });
 
 		expect(hook.log[0]).toMatchObject({
@@ -618,9 +618,9 @@ describe('useNetworkSync', () => {
 					resolveSync = () => resolve(undefined);
 				})
 		);
-		// peerId vazio: `syncKey('', 'history')` é uma chave distinta de qualquer peer real,
-		// mas serve pra provar que o `if (peerId)` — não um `if (true)` — é o que decide se
-		// `clearSyncing` roda.
+		// Empty peerId: `syncKey('', 'history')` is a key distinct from any real peer, but it
+		// proves that the `if (peerId)` — not an `if (true)` — is what decides whether
+		// `clearSyncing` runs.
 		const pending = hook.syncHistory('', []);
 		expect(hook.isSyncing('', 'history')).toBe(true);
 
@@ -769,8 +769,8 @@ describe('useNetworkSync', () => {
 			message: '75%'
 		});
 
-		// peer diferente de peer-c1 de propósito, pra não correlacionar com a entrada
-		// "started" acima e continuar entrando como uma linha nova no topo (índice 0).
+		// A peer other than peer-c1 on purpose, so it doesn't correlate with the "started"
+		// entry above and keeps coming in as a new line at the top (index 0).
 		callbacks.get(NETWORK_EVENTS.comicComplete)?.({ payload: 'peer-c2' });
 		expect(hook.log[0]).toMatchObject({ kind: 'comic', status: 'complete', peerId: 'peer-c2' });
 	});
@@ -797,10 +797,10 @@ describe('useNetworkSync', () => {
 		clearTimeoutSpy.mockClear();
 		deleteSpy.mockClear();
 
-		// Nenhum `historyStarted` foi disparado pra peer-15, então `inFlightEntryId` não tem
-		// entrada pra essa chave. As duas chamadas de `.delete('peer-15:history')` esperadas
-		// aqui vêm de `syncingKeys.delete(key)` (SvelteSet, que delega pro seu Map interno de
-		// sources) e de `inFlightTimeouts.delete(key)`, ambas dentro de `clearSyncing`.
+		// No `historyStarted` was fired for peer-15, so `inFlightEntryId` has no entry for
+		// this key. The two `.delete('peer-15:history')` calls expected here come from
+		// `syncingKeys.delete(key)` (SvelteSet, which delegates to its internal sources Map)
+		// and `inFlightTimeouts.delete(key)`, both inside `clearSyncing`.
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-15' });
 
 		expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
@@ -855,7 +855,7 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 
 		const pending = hook.syncFiles('peer-2', []);
-		// Marca a chave 'files' — não 'history'/'comic', que syncFiles nem toca.
+		// Marks the 'files' key — not 'history'/'comic', which syncFiles doesn't touch.
 		expect(hook.isSyncing('peer-2', 'files')).toBe(true);
 		expect(hook.isSyncing('peer-2', 'history')).toBe(false);
 		expect(hook.isSyncing('peer-2', 'comic')).toBe(false);
@@ -884,9 +884,9 @@ describe('useNetworkSync', () => {
 		expect(hook.isSyncing('peer-13', 'history')).toBe(true);
 		expect(hook.isSyncing('peer-13', 'files')).toBe(false);
 
-		// 'history' já está sincronizando — syncAll(['history','files']) tem que abortar
-		// por completo (nem marcar 'files', nem chamar o backend de novo), não só quando
-		// TODOS os kinds pedidos já estiverem sincronizando.
+		// 'history' is already syncing — syncAll(['history','files']) must abort entirely
+		// (neither mark 'files' nor call the backend again), not only when ALL requested
+		// kinds are already syncing.
 		await hook.syncAll('peer-13', []);
 
 		expect(hook.isSyncing('peer-13', 'files')).toBe(false);
@@ -933,16 +933,16 @@ describe('useNetworkSync', () => {
 
 		const pending = hook.syncComic('peer-4', [9], 'One Piece', 'push');
 
-		// Guarda especificamente o kind 'comic' — não 'history'/'files', que syncComic nem
-		// toca.
+		// Guards the 'comic' kind specifically — not 'history'/'files', which syncComic doesn't
+		// touch.
 		expect(hook.isSyncing('peer-4', 'comic')).toBe(true);
 		expect(hook.isSyncing('peer-4', 'history')).toBe(false);
 		expect(hook.isSyncing('peer-4', 'files')).toBe(false);
 
 		resolveSync();
-		// O `invoke` resolver só enfileira a conexão — sem a sessão P2P ter "terminado" de
-		// verdade (evento abaixo), a promise de `syncComic` não resolve, então nada além do
-		// invoke pode ser checado até ali.
+		// Resolving the `invoke` only queues the connection — until the P2P session has
+		// really "finished" (event below), the `syncComic` promise doesn't resolve, so nothing
+		// beyond the invoke can be checked up to there.
 		await Promise.resolve();
 
 		expect(invokeMock).toHaveBeenCalledWith(NETWORK_COMMANDS.syncComic, {
@@ -1066,16 +1066,16 @@ describe('useNetworkSync', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// peer-6 sincronizou com sucesso.
+		// peer-6 synced successfully.
 		callbacks.get(NETWORK_EVENTS.historyStarted)?.({ payload: 'peer-6' });
 		callbacks.get(NETWORK_EVENTS.historyComplete)?.({ payload: 'peer-6' });
 
-		// peer-7 tem uma sessão em aberto (não completa) e nada de "complete".
+		// peer-7 has an open session (not complete) and no "complete" at all.
 		callbacks.get(NETWORK_EVENTS.filesStarted)?.({ payload: 'peer-7' });
 
 		expect(hook.lastSyncedAt('peer-6')).toBeDefined();
-		// Só tem entrada "started" pra peer-7 — não pode "vazar" o timestamp de outro peer
-		// nem contar um status não-complete como sync concluído.
+		// peer-7 only has a "started" entry — must not "leak" another peer's timestamp nor
+		// count a non-complete status as a finished sync.
 		expect(hook.lastSyncedAt('peer-7')).toBeUndefined();
 	});
 
@@ -1132,21 +1132,21 @@ describe('useNetworkSync', () => {
 		hook.stopListening();
 		vi.advanceTimersByTime(60_000);
 
-		// Se o timeout de 60s não tivesse sido cancelado no stopListening, ele dispararia
-		// `clearSyncing` aqui e apagaria a flag mesmo sem nenhum evento de conclusão/erro.
+		// If the 60s timeout had not been cancelled in stopListening, it would fire
+		// `clearSyncing` here and wipe the flag even without any completion/error event.
 		expect(hook.isSyncing('peer-14', 'history')).toBe(true);
 
 		resolveSync();
 		await pending;
 	});
 
-	/// Regressão (05/09/2026): antes desta correção, `filesError`/`comicError` correlacionavam
-	/// QUALQUER erro (inclusive os 5 pontos de falha por ITEM em `receive_files`/`receive_extras`
-	/// — blob ausente, fetch falhou, checksum não bate, pasta indisponível, persistência falhou)
-	/// com a mesma linha em andamento (`started`/`progress`) daquele peer/kind e marcava como
-	/// terminal — uma sincronização de 20 capítulos com 1 checksum mismatch no meio mostrava
-	/// "erro" na tela mesmo continuando (e completando) normalmente depois. `itemLevel: true` no
-	/// payload (ver `item_error_payload` no backend) é o sinal explícito pra nunca fazer isso.
+	/// Regression (05/09/2026): before this fix, `filesError`/`comicError` correlated ANY error
+	/// (including the 5 PER-ITEM failure points in `receive_files`/`receive_extras` — missing
+	/// blob, fetch failed, checksum mismatch, folder unavailable, persistence failed) with that
+	/// peer/kind's running line (`started`/`progress`) and marked it terminal — a 20-chapter
+	/// sync with 1 checksum mismatch midway showed "error" on screen even though it kept going
+	/// (and completed) normally afterwards. `itemLevel: true` in the payload (see
+	/// `item_error_payload` in the backend) is the explicit signal to never do that.
 	it('an itemLevel filesError never touches the in-flight session row — it becomes its own permanent entry', async () => {
 		const { callbacks } = setupListeners();
 		invokeMock.mockResolvedValue([]);
@@ -1169,12 +1169,12 @@ describe('useNetworkSync', () => {
 			})
 		});
 
-		// A linha "started" continua exatamente como estava — o erro de item não a tocou.
+		// The "started" line stays exactly as it was — the item error did not touch it.
 		const startedEntry = hook.log.find((entry) => entry.id === startedId);
 		expect(startedEntry).toMatchObject({ status: 'started', peerId: 'peer-item' });
 
-		// O erro de item virou sua PRÓPRIA linha, sem peerId (nunca correlacionável) mas com o
-		// comicName/mensagem formatada pro usuário identificar qual capítulo falhou.
+		// The item error became its OWN line, without a peerId (never correlatable) but with the
+		// comicName/formatted message so the user can tell which chapter failed.
 		const itemEntry = hook.log.find((entry) => entry.id !== startedId);
 		expect(itemEntry).toMatchObject({
 			kind: 'files',
@@ -1216,8 +1216,8 @@ describe('useNetworkSync', () => {
 			})
 		});
 
-		// Diferente de um erro de SESSÃO (ver teste `filesError clears the syncing flag...`
-		// acima), um erro de item não pode desbloquear o botão de sync — a sessão continua.
+		// Unlike a SESSION error (see the `filesError clears the syncing flag...` test above),
+		// an item error must not unlock the sync button — the session goes on.
 		expect(hook.isSyncing('peer-item-2', 'files')).toBe(true);
 
 		resolveSync();
@@ -1244,7 +1244,7 @@ describe('useNetworkSync', () => {
 			})
 		});
 
-		// A sessão continua rodando — o erro de item não resolveu a promise nem liberou o botão.
+		// The session keeps running — the item error neither resolved the promise nor freed the button.
 		expect(hook.isSyncing('peer-item-3', 'comic')).toBe(true);
 
 		callbacks.get(NETWORK_EVENTS.comicError)?.({
@@ -1323,21 +1323,21 @@ describe('useNetworkSync', () => {
 
 		expect(hook.isSyncing('peer-long', 'comic')).toBe(true);
 
-		// Avança 80s (passou dos 60s antigos, mas dentro dos 120s novos)
+		// Advance 80s (past the old 60s, but within the new 120s)
 		vi.advanceTimersByTime(80_000);
 		expect(hook.isSyncing('peer-long', 'comic')).toBe(true);
 		expect(promiseRejected).toBe(false);
 
-		// Evento de progresso chega e reseta o timer de inatividade
+		// A progress event arrives and resets the inactivity timer
 		callbacks.get(NETWORK_EVENTS.comicProgress)?.({ payload: 'Big Manga - Ch. 1' });
 		await tick();
 
-		// Avança mais 80s (160s total, mas apenas 80s desde o último progresso)
+		// Advance another 80s (160s total, but only 80s since the last progress)
 		vi.advanceTimersByTime(80_000);
 		expect(hook.isSyncing('peer-long', 'comic')).toBe(true);
 		expect(promiseRejected).toBe(false);
 
-		// Evento de conclusão chega com sucesso
+		// A successful completion event arrives
 		callbacks.get(NETWORK_EVENTS.comicComplete)?.({
 			payload: JSON.stringify({ peerId: 'peer-long', comicName: 'Big Manga' })
 		});
@@ -1442,7 +1442,7 @@ describe('useNetworkSync', () => {
 		hook.stopListening();
 
 		// `inFlightTimeouts.clear()` + `inFlightEntryId.clear()` + `pendingSettlement.clear()`
-		// — exatamente três chamadas de `Map.prototype.clear` nesta janela síncrona.
+		// — exactly three `Map.prototype.clear` calls in this synchronous window.
 		expect(clearSpy).toHaveBeenCalledTimes(3);
 
 		clearSpy.mockRestore();

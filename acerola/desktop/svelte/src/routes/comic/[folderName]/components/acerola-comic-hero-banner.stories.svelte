@@ -3,13 +3,13 @@
 	import AcerolaComicHeroBanner from './acerola-comic-hero-banner.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicHeroBanner',
+		title: 'Pages/Comic/AcerolaComicHeroBanner',
 		component: AcerolaComicHeroBanner,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Banner do topo da página do comic com estatísticas flutuantes.'
+					component: 'Comic page top banner with floating stats.'
 				}
 			}
 		}

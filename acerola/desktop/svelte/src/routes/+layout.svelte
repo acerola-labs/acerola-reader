@@ -82,13 +82,14 @@
 	const summary = useComicSummary();
 	const bookmarkStore = useBookmarks();
 	const onboarding = useOnboarding();
-	// Única instância de `useNetworkSync()` do app inteiro — precisa estar viva independente de
-	// qual rota está montada (pro indicador global do header abaixo, que lê `activeSession()`)
-	// e compartilhada via contexto com `routes/network/+page.svelte` (ver `CONTEXT_KEYS.networkSync`).
-	// Antes, a página de Rede criava sua PRÓPRIA instância e a desmontava (`stopListening()`) ao
-	// sair da tela — `syncComic()` só resolve via um listener daquela instância, então navegar
-	// pra outra tela com um sync ainda em andamento rejeitava a promise com "sync cancelled:
-	// listener stopped" mesmo o sync de verdade continuando (e terminando bem) no backend.
+	// The single `useNetworkSync()` instance of the whole app — it must stay alive regardless of
+	// which route is mounted (for the global header indicator below, which reads `activeSession()`)
+	// and is shared via context with `routes/network/+page.svelte` (see `CONTEXT_KEYS.networkSync`).
+	// Before, the Network page created its OWN instance and unmounted it (`stopListening()`) when
+	// leaving the screen — `syncComic()` only resolves via a listener of that instance, so
+	// navigating to another screen with a sync still running rejected the promise with "sync
+	// cancelled: listener stopped" even though the real sync kept going (and finished fine) in
+	// the backend.
 	const headerSync = useNetworkSync();
 	const headerPeers = usePeerConnection();
 	setContext(CONTEXT_KEYS.networkSync, headerSync);
@@ -99,7 +100,7 @@
 	);
 
 	onMount(async () => {
-		// INFO: Importação dinâmica para evitar que quebre durante o SSR (Server-Side Rendering)
+		// INFO: Dynamic import to avoid breaking during SSR (Server-Side Rendering)
 		const { getCurrentWindow } = await import('@tauri-apps/api/window');
 		const { invoke } = await import('@tauri-apps/api/core');
 		const { error: logError } = await import('@tauri-apps/plugin-log');
@@ -215,7 +216,7 @@
 		</div>
 	</div>
 
-	<!-- Conteúdo Principal da Aplicação -->
+	<!-- Main Application Content -->
 	<div class="relative flex flex-1 overflow-hidden">
 		<AcerolaSonner />
 

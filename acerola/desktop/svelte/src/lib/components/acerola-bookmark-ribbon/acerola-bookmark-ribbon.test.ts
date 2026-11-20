@@ -8,8 +8,8 @@ describe('AcerolaBookmarkRibbon', () => {
 
 		const div = container.querySelector('div');
 		expect(div).not.toBeNull();
-		// O componente converte 0xFFF44336 para #f44336 e o aplica como background-color
-		expect(div?.style.backgroundColor).toBe('rgb(244, 67, 54)'); // O navegador converte HEX para RGB na style property
+		// The component converts 0xFFF44336 to #f44336 and applies it as background-color
+		expect(div?.style.backgroundColor).toBe('rgb(244, 67, 54)'); // The browser converts HEX to RGB in the style property
 	});
 
 	it('should parse colors safely even with full alpha', () => {

@@ -50,19 +50,19 @@
 	const metadataLanguageStore = useMetadataLanguage();
 
 	let metadataLanguagePopoverOpen = $state(false);
-	// `metadata:sync_all:complete`/`:error` não dizem qual fonte terminou (ver
-	// sync_all_metadata_mangadex/anilist no backend, que emitem o mesmo evento pras duas) —
-	// por isso só uma sincronização "all" roda por vez, nunca mangadex e anilist juntas.
+	// `metadata:sync_all:complete`/`:error` don't say which source finished (see
+	// sync_all_metadata_mangadex/anilist in the backend, which emit the same event for both) —
+	// that's why only one "all" sync runs at a time, never mangadex and anilist together.
 	let syncingSource = $state<'mangadex' | 'anilist' | null>(null);
-	// Espelha `syncingSource` num estado global — permite que a tela do quadrinho
-	// (`useMetadataSync()`) desabilite o sync individual enquanto o lote roda, sem precisar de
-	// nenhum outro ponto de sincronização entre as duas telas.
+	// Mirrors `syncingSource` into a global state — lets the comic screen
+	// (`useMetadataSync()`) disable the individual sync while the batch runs, without needing
+	// any other sync point between the two screens.
 	$effect(() => {
 		setSyncingAll(syncingSource !== null);
 	});
-	// Toast espelhando a mesma sincronização — atualizado in-place (mesmo `id`) em vez de
-	// empilhar um toast por evento de progresso. Sem isso, sincronizar metadados da biblioteca
-	// inteira só aparecia no sininho de notificações, não num toast.
+	// Toast mirroring the same sync — updated in place (same `id`) instead of stacking one
+	// toast per progress event. Without it, syncing the whole library's metadata only showed
+	// up in the notification bell, not in a toast.
 	let syncToastId: string | number | undefined;
 
 	const selectedMetadataLanguageLabel = $derived(
@@ -137,10 +137,9 @@
 
 			unlistenComplete = await listen('metadata:sync_all:complete', () => {
 				syncingSource = null;
-				// Sync em lote baixa capa nova pra cada quadrinho sincronizado, mas o path no
-				// disco não muda — sem isso a Home (e qualquer outra tela com a lista de
-				// quadrinhos já montada) continuava mostrando a capa antiga em cache até um
-				// reload manual.
+				// A batch sync downloads a new cover for each synced comic, but the path on disk
+				// doesn't change — without this the Home (and any other screen with the comic
+				// list already mounted) kept showing the old cached cover until a manual reload.
 				bumpArtworkVersion();
 				notify.success(m['pages.config.toast.sync.complete'](), { duration: 0 });
 				toast.success(m['pages.config.toast.sync.complete'](), { id: syncToastId });
@@ -171,8 +170,8 @@
 		metadataLanguageStore.loadSavedMetadataLanguage();
 	});
 
-	// Categorias colapsam/expandem inline na própria lista — nenhuma navega pra outra tela.
-	// Mais de uma pode ficar aberta ao mesmo tempo (SvelteSet em vez de string única).
+	// Categories collapse/expand inline in the list itself — none navigates to another screen.
+	// More than one can be open at the same time (SvelteSet instead of a single string).
 	const expandedCategories = new SvelteSet<string>();
 
 	function toggleCategory(id: string) {
@@ -216,7 +215,7 @@
 	</div>
 
 	<div class="grid gap-5">
-		<!-- Arquivos -->
+		<!-- Files -->
 		<AcerolaAccordionCard
 			data={{
 				title: m['pages.config.fileSystem.title'](),
@@ -283,7 +282,7 @@
 			{/snippet}
 		</AcerolaAccordionCard>
 
-		<!-- Biblioteca -->
+		<!-- Library -->
 		<AcerolaAccordionCard
 			data={{
 				title: m['pages.config.library.title'](),
@@ -361,7 +360,7 @@
 			{/snippet}
 		</AcerolaAccordionCard>
 
-		<!-- Metadados -->
+		<!-- Metadata -->
 		<AcerolaAccordionCard
 			data={{
 				title: m['pages.config.metadata.title'](),
@@ -509,9 +508,9 @@
 			{/snippet}
 		</AcerolaAccordionCard>
 
-		<!-- Marcadores — fica sempre aberta (flat): é a tela de gerenciamento mais usada aqui, e
-		     o formulário de criar marcador já colapsa por conta própria lá dentro (ver
-		     acerola-bookmark-manager.svelte), então abrir de cara não sobrecarrega a tela. -->
+		<!-- Bookmarks — always open (flat): it is the most used management screen here, and the
+		     create-bookmark form already collapses on its own inside (see
+		     acerola-bookmark-manager.svelte), so opening it right away doesn't overload the screen. -->
 		<AcerolaAccordionCard
 			data={{
 				title: m['pages.config.bookmarks.title'](),

@@ -75,9 +75,9 @@ test.describe('reader', () => {
 		await page.getByRole('button', { name: 'Aplicar zoom' }).click();
 		await expect(page.getByText(/Zoom 165%/)).toBeVisible();
 
-		// Navegação por teclado fica desabilitada de propósito enquanto a página está com
-		// zoom aplicado no modo paginado (`pageControlsDisabled` em reader/+page.svelte) —
-		// resetar o zoom antes de testar a troca de página, como um usuário real faria.
+		// Keyboard navigation is disabled on purpose while the page has zoom applied in
+		// paged mode (`pageControlsDisabled` in reader/+page.svelte) — reset the zoom
+		// before testing the page change, as a real user would.
 		await page.keyboard.press('Control+0');
 		await expect(page.getByRole('button', { name: 'Aplicar zoom' })).toBeVisible();
 

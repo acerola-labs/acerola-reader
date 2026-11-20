@@ -61,8 +61,8 @@ describe('useReaderZoom', () => {
 
 		expect(zoom.zoomLevel).toBe(1.65);
 		expect(zoom.isZoomed).toBe(true);
-		// Origem sempre no centro do viewport (scrollLeft/Top + metade do retângulo), nunca no
-		// ponto do clique — evita crescimento assimétrico que prendia o pan fora da imagem.
+		// Origin always at the viewport center (scrollLeft/Top + half the rectangle), never at
+		// the click point — avoids asymmetric growth that trapped the pan outside the image.
 		expect(zoom.zoomLayerStyle).toContain('transform-origin: 210px 170px');
 	});
 

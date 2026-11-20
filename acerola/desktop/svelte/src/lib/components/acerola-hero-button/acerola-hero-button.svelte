@@ -11,9 +11,9 @@
 		};
 		ui?: {
 			class?: string;
-			/** Sobrescreve o fundo/cor padrão (`bg-muted text-foreground`) do círculo do ícone —
-			 *  pra casos como um status (sucesso/erro) onde o fundo tintado é o próprio contorno
-			 *  colorido do ícone, não um `bg-muted` genérico. */
+			/** Overrides the icon circle's default background/color (`bg-muted text-foreground`) —
+			 *  for cases like a status (success/error) where the tinted background is the icon's
+			 *  own colored outline, not a generic `bg-muted`. */
 			iconClass?: string;
 		};
 	};

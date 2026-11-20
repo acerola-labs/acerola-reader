@@ -4,12 +4,12 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaStepWelcome,
-		title: 'Páginas/Onboarding/AcerolaStepWelcome',
+		title: 'Pages/Onboarding/AcerolaStepWelcome',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Primeiro passo do onboarding: boas-vindas ao Acerola.'
+					component: 'First onboarding step: welcome to Acerola.'
 				}
 			}
 		}

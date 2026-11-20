@@ -7,16 +7,16 @@
 			subtitle?: string;
 		};
 		state: {
-			/** Controla a borda/fundo destacados e o selo de check — "esta fonte/opção está
-			 *  ligada agora". Pode ficar sempre `false` num consumidor que só usa o card como uma
-			 *  simples "gaveta" (disclosure), sem noção de ligado/desligado (ver uso em
+			/** Controls the highlighted border/background and the check badge — "this source/option
+			 *  is on now". May stay always `false` in a consumer that only uses the card as a
+			 *  simple "drawer" (disclosure), without an on/off notion (see usage in
 			 *  `acerola-bookmark-manager.svelte`). */
 			active: boolean;
-			/** Mostra/esconde `children` com uma transição de slide. Independente de `active` —
-			 *  um consumidor pode ligar os dois juntos (o conteúdo aparece quando a fonte liga,
-			 *  ver o toggle de sync externo em `acerola-comic-preferences.svelte`) ou mantê-los
-			 *  separados (expandir só mostra/gerencia algo que já está ativo por outro motivo,
-			 *  ver o card de relays próprios). */
+			/** Shows/hides `children` with a slide transition. Independent of `active` — a
+			 *  consumer can tie both together (the content shows when the source turns on, see
+			 *  the external sync toggle in `acerola-comic-preferences.svelte`) or keep them apart
+			 *  (expanding only shows/manages something already active for another reason, see
+			 *  the custom relays card). */
 			expanded?: boolean;
 		};
 		events: {
@@ -25,8 +25,8 @@
 		ui?: {
 			disabled?: boolean;
 			class?: string;
-			/** Sobrescreve o fundo/cor padrão (`bg-muted text-foreground`) do círculo do ícone —
-			 *  mesmo padrão do `ui.iconClass` do AcerolaHeroButton/AcerolaAccordionCard. */
+			/** Overrides the icon circle's default background/color (`bg-muted text-foreground`) —
+			 *  same pattern as AcerolaHeroButton/AcerolaAccordionCard's `ui.iconClass`. */
 			iconClass?: string;
 		};
 	};

@@ -55,9 +55,9 @@
 	const activeComic = useComicContext();
 	const chapterStore = useComicChapters();
 
-	// INFO: Tamanho do bloco só pra virtualização de renderização — não tem
-	// mais relação com quantos capítulos são buscados do backend (isso agora
-	// vem tudo de uma vez, ver use-comic-chapters.svelte.ts).
+	// INFO: Chunk size only for render virtualization — it no longer relates to how
+	// many chapters are fetched from the backend (that now comes all at once, see
+	// use-comic-chapters.svelte.ts).
 	const RENDER_CHUNK_SIZE = 25;
 
 	const volumeViewPreference = useVolumeViewMode();
@@ -66,11 +66,11 @@
 	const chapterSelection = useChapterSelection();
 	const historyActions = useHistory();
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. Ver `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` pro porquê: uma
-	// instância só-desta-página, desmontada ao navegar pra outra tela, rejeitava promises de
-	// sync em andamento (`p2pSync.syncComic`) com "sync cancelled: listener stopped" mesmo o
-	// sync de verdade continuando no backend.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. See `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` for why: a
+	// page-only instance, unmounted when navigating to another screen, rejected in-flight sync
+	// promises (`p2pSync.syncComic`) with "sync cancelled: listener stopped" even though the
+	// real sync kept going in the backend.
 	const p2pSync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 
 	let expandedVolumeId = $state<string | null>(null);
@@ -84,13 +84,13 @@
 	let showSortMenu = $state(false);
 	let sendToPeerPickerOpen = $state(false);
 
-	// Bumped pelo efeito de sync P2P abaixo — lido (não escrito) pelo efeito de busca de
-	// capítulos, só pra forçar um re-fetch quando um sync relevante a este quadrinho termina.
+	// Bumped by the P2P sync effect below — read (not written) by the chapter fetch effect,
+	// only to force a re-fetch when a sync relevant to this comic finishes.
 	let syncRefreshTrigger = $state(0);
 
-	// Loading de cada ação de arquivo/capa — sem isso o ícone de refresh não tinha NENHUM
-	// feedback visual de que a ação (que pode demorar, ex. reescanear um quadrinho grande)
-	// estava rodando.
+	// Loading state of each file/cover action — without it the refresh icon had NO visual
+	// feedback that the action (which may take a while, e.g. rescanning a large comic) was
+	// running.
 	let rescanning = $state(false);
 	let regeneratingCover = $state(false);
 	let regeneratingVolumeCovers = $state(false);
@@ -204,13 +204,13 @@
 		chapterSelection.exitSelectionMode();
 	}
 
-	/// Envia o(s) ARQUIVO(S) do(s) capítulo(s) atualmente selecionado(s) pra um peer escolhido
-	/// no `AcerolaPeerPicker` — mesma seleção usada por `handleBatchMarkRead`/
-	/// `handleBatchMarkUnread`, então funciona tanto pra um capítulo só (seleção de 1) quanto
-	/// pra vários de uma vez. Usa `syncComic` (não `syncHistoryEntry`) escopado a esses
-	/// capítulos: diferente do push de histórico (só progresso/"lido"), isso manda o `.cbz`/
-	/// `.cbr` de verdade e cria o quadrinho no destino se ele ainda não existir lá. Direção
-	/// sempre `push`: quem clica "Enviar" está mandando pro peer, nunca puxando dele.
+	/// Sends the FILE(S) of the currently selected chapter(s) to a peer picked in
+	/// `AcerolaPeerPicker` — same selection used by `handleBatchMarkRead`/
+	/// `handleBatchMarkUnread`, so it works both for a single chapter (selection of 1) and for
+	/// several at once. Uses `syncComic` (not `syncHistoryEntry`) scoped to those chapters:
+	/// unlike the history push (progress/"read" only), this sends the actual `.cbz`/`.cbr` and
+	/// creates the comic on the target if it doesn't exist there yet. Direction is always
+	/// `push`: whoever clicks "Send" is sending to the peer, never pulling from it.
 	async function handleSendChaptersToPeer(peer: PairedPeerPayload) {
 		sendToPeerPickerOpen = false;
 		if (!manga?.title) return;
@@ -229,7 +229,7 @@
 				}
 			);
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -245,7 +245,7 @@
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -261,7 +261,7 @@
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -276,7 +276,7 @@
 			});
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -291,16 +291,16 @@
 				success: m['pages.comic.toast.sync.rescanSuccess'](),
 				error: (err) => m['pages.comic.toast.rescanError']({ msg: extractErrorMessage(err) })
 			});
-			// `invalidateAll()` só recarrega o `load()` do SvelteKit — a lista de capítulos vive
-			// no `chapterStore` (estado Svelte à parte, com seu próprio cache LRU), que
-			// `invalidateAll()` não sabe que existe. Sem isso, a lista ficava com os capítulos
-			// antigos até o usuário sair e voltar pro quadrinho.
+			// `invalidateAll()` only reloads SvelteKit's `load()` — the chapter list lives in
+			// `chapterStore` (separate Svelte state, with its own LRU cache), which
+			// `invalidateAll()` doesn't know exists. Without this, the list kept the old
+			// chapters until the user left and came back to the comic.
 			chapterStore.invalidate();
 			syncRefreshTrigger++;
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			rescanning = false;
 		}
@@ -319,7 +319,7 @@
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -337,7 +337,7 @@
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			regeneratingCover = false;
 		}
@@ -357,7 +357,7 @@
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			regeneratingVolumeCovers = false;
 		}
@@ -383,7 +383,7 @@
 			}
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -408,7 +408,7 @@
 			error: (err) =>
 				m['pages.comic.preferences.p2pSync.toast.error']({ msg: extractErrorMessage(err) })
 		}).catch(() => {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		});
 	}
 
@@ -513,27 +513,27 @@
 		});
 	});
 
-	// Nem `sync:files:complete` (sync em massa, sem escopo de quadrinho) nem
-	// `sync:comic:complete` (escopado, `comicName` no payload — ver
-	// `comic_handler.rs::COMPLETE_EVENT`) atualizavam esta página antes: capítulos recém-
-	// chegados, capa/banner e metadata (ex.: `ComicInfo.xml` reprocessado) ficavam
-	// desatualizados até o usuário navegar pra fora e voltar. `sync:files:complete` não carrega
-	// quais quadrinhos foram tocados, então trata qualquer sync em massa como potencialmente
-	// relevante; `sync:comic:complete` só dispara o refresh se for sobre o quadrinho aberto.
+	// Neither `sync:files:complete` (bulk sync, no comic scope) nor `sync:comic:complete`
+	// (scoped, `comicName` in the payload — see `comic_handler.rs::COMPLETE_EVENT`) used to
+	// refresh this page: newly arrived chapters, cover/banner and metadata (e.g. a reprocessed
+	// `ComicInfo.xml`) stayed stale until the user navigated away and back.
+	// `sync:files:complete` doesn't carry which comics were touched, so any bulk sync is
+	// treated as potentially relevant; `sync:comic:complete` only fires the refresh if it is
+	// about the open comic.
 	//
-	// A checagem do nome do quadrinho atual (e o disparo em si) precisam ficar dentro do
-	// `untrack` — este efeito só pode depender de `p2pSync.log`. Se lesse `activeComic.item`/
-	// `manga` fora do untrack, o próprio `invalidateAll()`/re-fetch de capítulos disparado aqui
-	// mudaria esses valores e re-executaria o efeito de novo, entrando em loop.
+	// The current comic name check (and the firing itself) must stay inside `untrack` — this
+	// effect may only depend on `p2pSync.log`. If it read `activeComic.item`/`manga` outside
+	// untrack, the very `invalidateAll()`/chapter re-fetch fired here would change those
+	// values and re-run the effect again, looping.
 	let lastHandledSyncLogId: number | undefined;
 
 	$effect(() => {
 		const entry = p2pSync.log[0];
-		// `id < 0` marca uma linha carregada do histórico persistido (ver `fromPersisted` em
-		// `use-network-sync.svelte.ts`), não um evento ao vivo desta sessão — sem esse guard, a
-		// linha "complete" mais recente do histórico disparava este refresh assim que a
-		// página montava, mesmo sem nenhum sync ter de fato acontecido agora.
-		// `lastHandledSyncLogId` previne disparos repetidos ou loops em re-render da página.
+		// `id < 0` marks a line loaded from the persisted history (see `fromPersisted` in
+		// `use-network-sync.svelte.ts`), not a live event from this session — without this
+		// guard, the most recent "complete" history line fired this refresh as soon as the
+		// page mounted, even with no sync actually happening now.
+		// `lastHandledSyncLogId` prevents repeated firings or loops on page re-render.
 		if (
 			!entry ||
 			entry.id < 0 ||
@@ -546,9 +546,9 @@
 		lastHandledSyncLogId = entry.id;
 
 		untrack(() => {
-			// `manga.title` é o mesmo valor que `handleSyncToDevice` manda como `comicName` pro
-			// backend (`p2pSync.syncComic(peerId, addrs, manga.title)`) — comparação simétrica
-			// com o que `comic_handler.rs` ecoa de volta no payload de conclusão.
+			// `manga.title` is the same value `handleSyncToDevice` sends as `comicName` to the
+			// backend (`p2pSync.syncComic(peerId, addrs, manga.title)`) — a symmetric comparison
+			// with what `comic_handler.rs` echoes back in the completion payload.
 			if (entry.kind === 'comic' && entry.comicName && entry.comicName !== manga?.title) return;
 
 			syncRefreshTrigger++;
@@ -580,10 +580,10 @@
 			}))
 			.filter((comic) => !expandedVolumeId || comic.volumeId === expandedVolumeId);
 
-		// Corta a lista plana em blocos fixos só pra virtualização de renderização
-		// (ComicChapterList/ComicVolumeList montam um AcerolaHeroButton por item
-		// só quando o bloco está perto do scroll) — não tem relação com a busca,
-		// que já veio inteira do backend.
+		// Slices the flat list into fixed chunks only for render virtualization
+		// (ComicChapterList/ComicVolumeList mount one AcerolaHeroButton per item
+		// only when the chunk is near the scroll) — unrelated to the fetch, which
+		// already came whole from the backend.
 		const pagesData = Array.from(
 			{ length: Math.ceil(allItems.length / RENDER_CHUNK_SIZE) || 0 },
 			(_, page) => ({
@@ -613,8 +613,8 @@
 		return {
 			id: item.relations.directoryId.toString(),
 			title: item.metadata.title || item.filesystem.folderName,
-			// Total real de capítulos do quadrinho (soma volumes) — não usar `totalItems`
-			// aqui, pois esse valor reflete a paginação/filtro de volume atualmente aberto.
+			// The comic's real chapter total (sums volumes) — don't use `totalItems` here,
+			// since that value reflects the currently open volume's pagination/filter.
 			chaptersCount: item.metadata.chapterCount,
 			rating: item.metadata.rating ?? null,
 			cover: resolveCover(item.artwork),
@@ -649,7 +649,7 @@
 				class="h-full w-full scale-150 object-cover opacity-20 blur-[120px]"
 			/>
 
-			<!-- NOTE: Aqui é onde os dados são injetados no banner -->
+			<!-- NOTE: This is where the data is injected into the banner -->
 			<div class="absolute inset-0 bg-base/40"></div>
 		</div>
 

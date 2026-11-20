@@ -99,8 +99,8 @@ function defaultInvokeImpl(overrides: Record<string, unknown> = {}) {
 describe('usePeerConnection', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		// `loadLocalInfo` agora também lê `peer_nicknames` do store — cada teste que precisa
-		// de asserts sobre o store chama `mockStore()` de novo, sobrescrevendo este default.
+		// `loadLocalInfo` now also reads `peer_nicknames` from the store — each test that needs
+		// store asserts calls `mockStore()` again, overriding this default.
 		mockStore();
 	});
 
@@ -132,9 +132,9 @@ describe('usePeerConnection', () => {
 		const hook = await renderHook();
 
 		const pending = hook.startListening();
-		// `startListening` passa por 3 `await listen(...)` sequenciais antes de chegar no
-		// `invoke(getPairedPeers)` — espera com um macrotask (não só microtasks) pra garantir
-		// que o `invoke` real já rodou e capturou `resolveGetPairedPeers` antes de desmontar.
+		// `startListening` goes through 3 sequential `await listen(...)` before reaching
+		// `invoke(getPairedPeers)` — wait with a macrotask (not just microtasks) to ensure the
+		// real `invoke` already ran and captured `resolveGetPairedPeers` before unmounting.
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		hook.stopListening();
@@ -233,7 +233,7 @@ describe('usePeerConnection', () => {
 		});
 		expect(hook.getKnownAddr('remote-1')).toEqual([4, 5]);
 		expect(hook.connecting).toBe(false);
-		// O handshake refresca status + peers pareados de fato, não só marca connecting.
+		// The handshake really refreshes status + paired peers, not just marks connecting.
 		expect(invokeMock).toHaveBeenCalledWith(NETWORK_COMMANDS.getNetworkStatus);
 		expect(invokeMock).toHaveBeenCalledWith(NETWORK_COMMANDS.getPairedPeers);
 	});

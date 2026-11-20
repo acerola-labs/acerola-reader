@@ -28,10 +28,10 @@
 
 	let { data, events }: NetworkMyDeviceCardProps = $props();
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `data` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba
-	// a suíte mesmo com todos os asserts passando.
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `data` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings
+	// down the suite even with every assert passing.
 	let safeData = $derived(
 		data ?? {
 			deviceName: undefined,
@@ -40,8 +40,8 @@
 		}
 	);
 
-	// Feedback visual do botão de copiar — além do toast, o próprio ícone vira um check
-	// por um instante, pra quem não pegar o toast a tempo perceber que a cópia aconteceu.
+	// Copy button visual feedback — besides the toast, the icon itself turns into a check
+	// for a moment, so anyone who misses the toast still notices the copy happened.
 	let idJustCopied = $state(false);
 
 	async function copyLocalId() {
@@ -52,8 +52,8 @@
 		setTimeout(() => (idJustCopied = false), 2000);
 	}
 
-	// Apelido custom estilo LocalSend — edição inline em vez de um dialog separado, já que é
-	// um campo único e a tela de Rede já é o lugar natural pra mexer nisso.
+	// LocalSend-style custom nickname — inline editing instead of a separate dialog, since it
+	// is a single field and the Network screen is already the natural place to change it.
 	let editingName = $state(false);
 	let nameDraft = $state('');
 	let savingName = $state(false);

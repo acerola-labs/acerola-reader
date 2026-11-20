@@ -58,17 +58,17 @@
 	let openingChapterId = $state<string | null>(null);
 
 	/**
-	 * ITEM_HEIGHT (112px): Altura total do slot (item + gap).
-	 * BUTTON_HEIGHT (100px): Altura real do botão para caber Title + Description + Padding.
+	 * ITEM_HEIGHT (112px): Total slot height (item + gap).
+	 * BUTTON_HEIGHT (100px): Real button height to fit Title + Description + Padding.
 	 */
 	const ITEM_HEIGHT = 112;
 	const BUTTON_HEIGHT = 100;
 
 	const totalPages = $derived(Math.ceil(data.totalChapters / data.pageSize));
 
-	// Mesma cor de destaque que o círculo/badge do ícone usa pra cada estado — conflito
-	// tem prioridade sobre lido (precisa de resolução do usuário, é mais urgente que um
-	// capítulo já lido).
+	// Same highlight color the icon circle/badge uses for each state — conflict takes
+	// priority over read (it needs the user to resolve it, more urgent than an already read
+	// chapter).
 	function rowClass(chapter: Chapter, isSelected: boolean, isOpening: boolean): string {
 		const base = 'h-full flex-nowrap overflow-hidden';
 		const selectedRing = isSelected
@@ -84,20 +84,19 @@
 		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
 	}
 
-	// INFO: Reativo de propósito — decide o que fica montado no DOM. Dado de
-	// capítulo fica em cache pra sempre (não evictamos mais), mas manter todo
-	// AcerolaHeroButton já carregado montado pra sempre gera dezenas de
-	// milhares de nós de DOM numa série grande — cada AcerolaHeroButton monta
-	// perto de 40 nós. Renderizar só o que está perto da viewport atual
-	// resolve isso sem causar flicker: como o dado já está em cache, sair e
-	// voltar da janela é instantâneo, sem refetch.
+	// INFO: Reactive on purpose — decides what stays mounted in the DOM. Chapter data
+	// stays cached forever (we no longer evict), but keeping every loaded
+	// AcerolaHeroButton mounted forever produces tens of thousands of DOM nodes in a
+	// large series — each AcerolaHeroButton mounts about 40 nodes. Rendering only
+	// what is near the current viewport solves this without flicker: since the data
+	// is already cached, leaving and re-entering the window is instant, no refetch.
 	let visiblePages = new SvelteSet<number>();
 
 	/**
-	 * Criado de forma eager (não em onMount): as actions `use:trackPage` dos
-	 * blocos do {#each} rodam durante a montagem inicial, antes do onMount do
-	 * componente disparar — se o observer fosse criado em onMount, as páginas
-	 * já montadas nunca seriam observadas.
+	 * Created eagerly (not in onMount): the `use:trackPage` actions of the
+	 * {#each} blocks run during the initial mount, before the component's
+	 * onMount fires — if the observer were created in onMount, the pages
+	 * already mounted would never be observed.
 	 */
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -132,12 +131,12 @@
 	}
 
 	/**
-	 * Reciclagem de nós de DOM, igual RecyclerView/LazyColumn: um pool FIXO de
-	 * "cadeiras" reaproveitadas em vez de montar/desmontar um AcerolaHeroButton
-	 * por página toda vez que ela entra/sai da janela de renderização. Cada
-	 * cadeira é keyed pela própria posição no pool (não pelo id do capítulo),
-	 * então trocar qual página ela representa só rebind os props — o nó de
-	 * DOM nunca é destruído, o que elimina o pop-in/fade toda vez que se rola.
+	 * DOM node recycling, like RecyclerView/LazyColumn: a FIXED pool of reused
+	 * "seats" instead of mounting/unmounting an AcerolaHeroButton per page every
+	 * time it enters/leaves the render window. Each seat is keyed by its own
+	 * position in the pool (not by chapter id), so changing which page it
+	 * represents only rebinds the props — the DOM node is never destroyed, which
+	 * removes the pop-in/fade on every scroll.
 	 */
 	const POOL_SIZE = 6;
 
@@ -177,8 +176,8 @@
 			<!-- prettier-ignore -->
 			{@const itemsInThisPage = pageIndex === totalPages - 1 ? data.totalChapters % data.pageSize || data.pageSize : data.pageSize}
 
-			<!-- Espaçador: só reserva a altura no fluxo do documento e dispara o
-			     IntersectionObserver — o conteúdo real vem do pool reciclado abaixo. -->
+			<!-- Spacer: only reserves the height in the document flow and triggers the
+			     IntersectionObserver — the real content comes from the recycled pool below. -->
 			<div use:trackPage={pageIndex} style:height="{itemsInThisPage * ITEM_HEIGHT}px"></div>
 		{/each}
 
@@ -239,13 +238,13 @@
 										</div>
 									{/if}
 								{:else if chapter.hasConflict}
-									<!-- Mesma ideia do círculo de "lido" (ícone principal + cor diferente), mas
-									     com bg-destructive/15 (tintado) em vez de sólido: não existe
-									     --destructive-foreground no tema (nenhum lugar do app usa `destructive`
-									     como fundo sólido com texto/ícone em cima), então não há garantia de
-									     contraste pra essa combinação — tintado, o ícone fica só na cor
-									     `text-destructive` sobre o fundo por trás, que já é usada em outros
-									     lugares do app. -->
+									<!-- Same idea as the "read" circle (main icon + different color), but
+									     with bg-destructive/15 (tinted) instead of solid: there is no
+									     --destructive-foreground in the theme (nowhere in the app uses
+									     `destructive` as a solid background with text/icon on top), so contrast
+									     isn't guaranteed for that combination — tinted, the icon only uses the
+									     `text-destructive` color over the background behind, which is already
+									     used elsewhere in the app. -->
 									<div
 										class="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/15 text-destructive"
 									>

@@ -15,10 +15,10 @@ export function useLibraryScanner(
 	getPath: () => string | undefined
 ) {
 	let progressId: number | undefined;
-	// Toast espelhando o mesmo progresso — atualizado in-place (mesmo `id`, estilo
-	// `toastAsync`) em vez de empilhar um toast por evento. Sem isso, um scan que roda em
-	// background só aparecia no sininho de notificações: quem não estivesse de olho nele
-	// não tinha como saber que o scan tinha começado/terminado/falhado.
+	// Toast mirroring the same progress — updated in place (same `id`, `toastAsync` style)
+	// instead of stacking one toast per event. Without it, a scan running in the background
+	// only showed up in the notification bell: anyone not watching it had no way to know the
+	// scan had started/finished/failed.
 	let toastId: string | number | undefined;
 	let scanning = $state(false);
 
@@ -32,10 +32,10 @@ export function useLibraryScanner(
 
 		scanning = true;
 
-		// Mostra a notificação/toast IMEDIATAMENTE ao clicar, não só quando o primeiro
-		// `scan:progress` chegar do backend — dependendo de quanto o scan demora pra emitir
-		// esse primeiro evento, o toast podia aparecer bem depois do clique (às vezes quase
-		// junto com o de conclusão), num momento sem sentido pra quem clicou o botão.
+		// Show the notification/toast IMMEDIATELY on click, not only when the first
+		// `scan:progress` arrives from the backend — depending on how long the scan takes to
+		// emit that first event, the toast could show up well after the click (sometimes
+		// almost together with the completion one), at a moment that made no sense to the user.
 		progressId = notify.info(m['hooks.comicScanner.inProgress'](), { duration: 0 });
 		toastId = toast.loading(m['hooks.comicScanner.inProgress']());
 

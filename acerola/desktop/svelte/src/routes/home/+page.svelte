@@ -55,11 +55,11 @@
 	const selection = useComicSelection();
 	const folderStore = useSelectFolder();
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. Ver `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` pro porquê: uma
-	// instância só-desta-página, desmontada ao navegar pra outra tela, rejeitava promises de
-	// sync em andamento com "sync cancelled: listener stopped" mesmo o sync de verdade
-	// continuando no backend.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. See `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` for why: a
+	// page-only instance, unmounted when navigating to another screen, rejected in-flight sync
+	// promises with "sync cancelled: listener stopped" even though the real sync kept going in
+	// the backend.
 	const sync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 	const remoteLibrary = useRemoteLibrary();
 
@@ -74,10 +74,10 @@
 	let bookmarkFilter = $state<BookmarkFilter>('all');
 	let showPeerPicker = $state(false);
 	let browsingPeerId = $state<string | null>(null);
-	// Evita re-disparar `summary.fetch()`/toast pro mesmo evento — tanto em re-render
-	// quanto ao navegar pra fora e voltar pra Home enquanto uma sessão terminada ainda é a
-	// primeira linha do log (`sync.log[0]`). Sessões já terminadas antes da montagem são
-	// ignoradas de imediato para não exibir toast fantasma na inicialização da página.
+	// Avoids re-firing `summary.fetch()`/toast for the same event — both on re-render and
+	// when navigating away and back to Home while a finished session is still the first log
+	// line (`sync.log[0]`). Sessions already finished before mount are ignored right away so
+	// no ghost toast shows on page startup.
 	let lastHandledSyncKey: string | undefined =
 		sync.log[0] && sync.log[0].status !== 'started'
 			? `${sync.log[0].id}:${sync.log[0].status}`
@@ -102,19 +102,18 @@
 		remoteLibrary.stopListening();
 	});
 
-	// `sync.syncComic`/`sync.syncFiles` só resolvem quando a conexão é aberta, não quando a
-	// sessão termina de fato — o resultado real (e portanto o momento de recarregar a
-	// biblioteca local) chega aqui via `sync.log`, alimentado pelos mesmos eventos
-	// `sync:comic:*`/`sync:files:*` que a tela de Rede escuta. `sync:files:*` (sync em massa —
-	// pode trazer quadrinhos inteiros novos) também precisa recarregar a Home; antes só
-	// `'comic'` disparava esse refresh, deixando a biblioteca desatualizada até o usuário
-	// navegar manualmente pra fora e voltar.
+	// `sync.syncComic`/`sync.syncFiles` only resolve when the connection opens, not when the
+	// session actually ends — the real outcome (and so the moment to reload the local library)
+	// arrives here via `sync.log`, fed by the same `sync:comic:*`/`sync:files:*` events the
+	// Network screen listens to. `sync:files:*` (bulk sync — may bring whole new comics) must
+	// also reload the Home; before, only `'comic'` fired this refresh, leaving the library
+	// stale until the user manually navigated away and back.
 	$effect(() => {
 		const entry = sync.log[0];
-		// `id < 0` marca uma linha carregada do histórico persistido (ver `fromPersisted` em
-		// `use-network-sync.svelte.ts`), não um evento ao vivo desta sessão — sem esse guard, a
-		// linha "complete" mais recente do histórico disparava este toast/refresh assim que a
-		// Home montava, mesmo sem nenhum sync ter de fato acontecido agora.
+		// `id < 0` marks a line loaded from the persisted history (see `fromPersisted` in
+		// `use-network-sync.svelte.ts`), not a live event from this session — without this
+		// guard, the most recent "complete" history line fired this toast/refresh as soon as
+		// the Home mounted, even with no sync actually happening now.
 		if (!entry || entry.id < 0 || (entry.kind !== 'comic' && entry.kind !== 'files')) return;
 
 		const currentKey = `${entry.id}:${entry.status}`;
@@ -122,9 +121,9 @@
 			return;
 		}
 
-		// Um único toast por sessão (kind+peer), criado em 'started' e reaproveitado (mesmo
-		// `id`) em 'complete'/'error' — o svelte-sonner substitui o conteúdo do toast existente
-		// em vez de empilhar um novo, mesmo padrão do `toastAsync` já usado na tela do quadrinho.
+		// A single toast per session (kind+peer), created on 'started' and reused (same `id`)
+		// on 'complete'/'error' — svelte-sonner replaces the existing toast's content instead of
+		// stacking a new one, same pattern as the `toastAsync` already used on the comic screen.
 		const toastId = `sync-${entry.kind}-${entry.peerId}`;
 
 		if (entry.status === 'started') {
@@ -162,13 +161,13 @@
 			} else {
 				toast.error(m['pages.network.transfers.filesError']({ msg }), opts);
 			}
-			// `sync:files:error`/`sync:comic:error` também cobre sessão que terminou com
-			// capítulos faltando (`Ok(skipped) => ... Err(...)` em file_handler.rs/
-			// comic_handler.rs) — os capítulos/quadrinhos que JÁ foram recebidos com sucesso
-			// antes do abort já estão persistidos no banco quando esse evento chega, então sem
-			// este fetch a Home continuava mostrando a biblioteca antiga até o usuário navegar
-			// pra fora e voltar (era exatamente o "sincroniza mas não aparece o quadrinho" numa
-			// sessão grande, onde a chance de pelo menos 1 item bater numa corrida é maior).
+			// `sync:files:error`/`sync:comic:error` also covers a session that ended with
+			// missing chapters (`Ok(skipped) => ... Err(...)` in file_handler.rs/
+			// comic_handler.rs) — the chapters/comics ALREADY received successfully before the
+			// abort are persisted in the database by the time this event arrives, so without
+			// this fetch the Home kept showing the old library until the user navigated away
+			// and back (that was exactly the "syncs but the comic doesn't show up" in a large
+			// session, where the chance of at least 1 item hitting a race is higher).
 			summary.fetch();
 			return;
 		}
@@ -184,8 +183,8 @@
 		if (!browsingPeerId) return;
 		const addrs = peers.getKnownAddr(browsingPeerId);
 		if (!addrs) return;
-		// Vem da navegação da biblioteca remota (`RemoteLibrarySheet`-like flow) — o usuário só
-		// pode escolher um quadrinho que ainda não tem, então é sempre pull.
+		// Comes from remote library browsing (`RemoteLibrarySheet`-like flow) — the user can
+		// only pick a comic they don't have yet, so it is always a pull.
 		sync
 			.syncComic(browsingPeerId, addrs, comicName, 'pull')
 			.catch((err) => toast.error(String(err)));
@@ -376,7 +375,7 @@
 						{/if}
 					</AcerolaButton>
 
-					<!-- Buscar/sincronizar quadrinhos de outro dispositivo pareado -->
+					<!-- Fetch/sync comics from another paired device -->
 					<AcerolaButton
 						ui={{ variant: 'ghost', class: 'rounded-inner gap-2' }}
 						events={{ onClick: () => (showPeerPicker = true) }}
@@ -560,7 +559,7 @@
 	}}
 />
 
-<!-- Escolher dispositivo pareado pra buscar quadrinhos -->
+<!-- Pick a paired device to fetch comics from -->
 <AcerolaPeerPicker
 	state={{ open: showPeerPicker }}
 	data={{ peers: peers.pairedPeers, nicknameFor: (peerId) => peers.peerNicknames[peerId] }}
@@ -570,7 +569,7 @@
 	}}
 />
 
-<!-- Biblioteca remota do dispositivo escolhido -->
+<!-- Remote library of the chosen device -->
 <AcerolaRemoteLibraryDialog
 	state={{ open: browsingPeerId !== null }}
 	data={{

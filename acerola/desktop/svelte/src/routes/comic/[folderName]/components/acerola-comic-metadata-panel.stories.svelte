@@ -3,14 +3,14 @@
 	import AcerolaComicMetadataPanel from './acerola-comic-metadata-panel.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicMetadataPanel',
+		title: 'Pages/Comic/AcerolaComicMetadataPanel',
 		component: AcerolaComicMetadataPanel,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Painel lateral de metadados do comic, exibindo capa, título, autor, sinopse e ações.'
+						'Comic metadata side panel, showing cover, title, author, synopsis and actions.'
 				}
 			}
 		}

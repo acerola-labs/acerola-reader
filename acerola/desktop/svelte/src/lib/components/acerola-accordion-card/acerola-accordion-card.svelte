@@ -14,14 +14,14 @@
 		};
 		ui?: {
 			class?: string;
-			/** `false` renderiza a seção sempre aberta, sem botão/chevron/clique — pra misturar,
-			 *  numa mesma tela, seções que valem a pena ver de cara com outras densas o bastante
-			 *  pra ficarem escondidas por padrão (mesmo espírito da tela de Rede, onde só o card
-			 *  de relay colapsa e o resto fica direto na tela). Default `true` (comportamento
-			 *  de sempre, sem quebrar nenhum uso existente). */
+			/** `false` renders the section always open, with no button/chevron/click — to mix, on
+			 *  the same screen, sections worth seeing right away with others dense enough to stay
+			 *  hidden by default (same spirit as the Network screen, where only the relay card
+			 *  collapses and the rest sits directly on screen). Default `true` (the usual
+			 *  behavior, without breaking any existing usage). */
 			collapsible?: boolean;
-			/** Sobrescreve o fundo/cor padrão (`bg-muted text-foreground`) do círculo do ícone —
-			 *  mesmo padrão do `ui.iconClass` do AcerolaHeroButton. */
+			/** Overrides the icon circle's default background/color (`bg-muted text-foreground`) —
+			 *  same pattern as AcerolaHeroButton's `ui.iconClass`. */
 			iconClass?: string;
 		};
 	};

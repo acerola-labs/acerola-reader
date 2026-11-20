@@ -31,21 +31,21 @@
 	import NetworkIcon from '@lucide/svelte/icons/network';
 
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. `syncComic()` só resolve via um listener da instância que o chamou; uma instância
-	// só-desta-página (desmontada ao navegar pra outra tela) rejeitava essa promise à força com
-	// "sync cancelled: listener stopped" mesmo o sync de verdade continuando no backend. Ver
-	// `CONTEXT_KEYS.networkSync`.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. `syncComic()` only resolves via a listener of the instance that called it; a
+	// page-only instance (unmounted when navigating to another screen) forcibly rejected that
+	// promise with "sync cancelled: listener stopped" even though the real sync kept going in
+	// the backend. See `CONTEXT_KEYS.networkSync`.
 	const sync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 	const relay = useRelaySettings();
 	const remoteLibrary = useRemoteLibrary();
 
 	let browsingPeerId = $state<string | null>(null);
 	let peerPendingRemoval = $state<DisplayPeer | null>(null);
-	// Não é um toast: enquanto verdadeiro, a chave mestra que protege identidade/peers/confiança
-	// está sem a proteção do keyring do SO (ver `security:keyring_unavailable` no backend,
-	// `infra::security::MasterKeySource::FallbackFile`) — precisa ficar visível até o usuário
-	// dispensar, não sumir sozinho como um toast.
+	// Not a toast: while true, the master key protecting identity/peers/trust lacks the OS
+	// keyring's protection (see `security:keyring_unavailable` in the backend,
+	// `infra::security::MasterKeySource::FallbackFile`) — it must stay visible until the user
+	// dismisses it, not vanish on its own like a toast.
 	let keyringUnavailable = $state(false);
 	let keyringWarningDismissed = $state(false);
 
@@ -53,9 +53,9 @@
 		let unlistenKeyringWarning: UnlistenFn | undefined;
 
 		(async () => {
-			// `setup_network` (backend) roda numa task assíncrona à parte e pode terminar antes
-			// desta tela montar — um listener sozinho perderia o evento. Consulta o estado atual
-			// sob demanda; o listener abaixo cobre o caso do backend ainda não ter terminado.
+			// `setup_network` (backend) runs in a separate async task and may finish before this
+			// screen mounts — a listener alone would miss the event. Query the current state on
+			// demand; the listener below covers the case where the backend hasn't finished yet.
 			try {
 				keyringUnavailable = await invoke<boolean>(NETWORK_COMMANDS.getSecurityStatus);
 			} catch (err) {
@@ -81,14 +81,14 @@
 		};
 	});
 
-	// Une os pareados persistidos (sobrevivem a restart, `deviceName` vem de `known_peers()`
-	// no backend — ver `NetworkServiceApi::paired_peers`) com os conectados agora
-	// (`network:status`, mais fresco mas só existe nos poucos segundos em que a conexão de
-	// handshake está de fato aberta). Sem os pareados, o botão de sync só existiria no
-	// instante exato em que o peer está conectado — quase nunca. `connected` é derivado da
-	// presença em `status.peers`; ao sobrescrever com a entrada "ao vivo", mantém o
-	// `deviceName` já persistido como fallback pro caso raro do `device` ainda não ter
-	// chegado nesse instante exato (handshake acabou de abrir).
+	// Merges the persisted paired peers (survive restarts, `deviceName` comes from
+	// `known_peers()` in the backend — see `NetworkServiceApi::paired_peers`) with the ones
+	// connected now (`network:status`, fresher but only exists for the few seconds the
+	// handshake connection is actually open). Without the paired ones, the sync button would
+	// only exist at the exact moment the peer is connected — almost never. `connected` is
+	// derived from presence in `status.peers`; when overwriting with the "live" entry, it keeps
+	// the already persisted `deviceName` as a fallback for the rare case where `device` hasn't
+	// arrived at that exact moment (handshake just opened).
 	const uniquePeers = $derived.by(() => {
 		const byId = new Map<string, DisplayPeer>();
 		for (const peer of peers.pairedPeers) {
@@ -138,8 +138,8 @@
 	}
 
 	async function handleSyncRemoteComic(peerId: string, comicName: string) {
-		// Vem da navegação da biblioteca remota — o usuário só pode escolher um quadrinho que
-		// ainda não tem, então é sempre pull.
+		// Comes from remote library browsing — the user can only pick a comic they don't have
+		// yet, so it is always a pull.
 		await withSync((id, addrs) => sync.syncComic(id, addrs, comicName, 'pull'), peerId);
 	}
 </script>
@@ -184,9 +184,9 @@
 		</div>
 	{/if}
 
-	<!-- 2 Colunas: Itens à esquerda, QR Code fixado à direita ignorando o scroll -->
+	<!-- 2 Columns: items on the left, QR Code pinned on the right ignoring the scroll -->
 	<div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-		<!-- Coluna da esquerda: Itens interativos e lista de dispositivos -->
+		<!-- Left column: interactive items and device list -->
 		<div class="flex flex-col gap-8 lg:col-span-7">
 			<AcerolaNetworkMyDeviceCard
 				data={{
@@ -202,7 +202,7 @@
 				events={{ onConnect: (code) => peers.connectWithCode(code) }}
 			/>
 
-			<!-- Dispositivos Conectados (em seção própria com esqueleto quando vazio) -->
+			<!-- Connected Devices (in its own section with a skeleton when empty) -->
 			<AcerolaNetworkPeerList
 				data={{
 					peers: uniquePeers,
@@ -220,7 +220,7 @@
 				}}
 			/>
 
-			<!-- Configurações de Relay e Histórico -->
+			<!-- Relay Settings and History -->
 			<div class="space-y-6">
 				<AcerolaNetworkRelaySettingsCard
 					data={relay.relayInfo}
@@ -238,7 +238,7 @@
 					}}
 				/>
 
-				<!-- Transferências -->
+				<!-- Transfers -->
 				<AcerolaNetworkTransfersLog
 					data={{ entries: sync.log, peerLabel: peers.peerLabel }}
 					events={{
@@ -261,14 +261,14 @@
 			</div>
 		</div>
 
-		<!-- Coluna da direita: Pairing QR Card fixado ignorando o scroll -->
+		<!-- Right column: Pairing QR Card pinned, ignoring the scroll -->
 		<div class="lg:sticky lg:top-20 lg:col-span-5">
 			<AcerolaNetworkPairingCard data={{ code: peers.connectionCode() }} />
 		</div>
 	</div>
 </div>
 
-<!-- Buscar biblioteca remota -->
+<!-- Browse remote library -->
 <AcerolaRemoteLibraryDialog
 	state={{ open: browsingPeerId !== null }}
 	data={{
@@ -290,7 +290,7 @@
 	}}
 />
 
-<!-- Confirmar remoção de dispositivo pareado -->
+<!-- Confirm removal of a paired device -->
 <AcerolaAlertDialog
 	state={{ open: peerPendingRemoval !== null }}
 	data={{

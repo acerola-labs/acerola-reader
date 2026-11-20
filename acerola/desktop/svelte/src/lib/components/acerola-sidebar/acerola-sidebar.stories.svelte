@@ -22,7 +22,7 @@
 			docs: {
 				description: {
 					component:
-						'Barra lateral de navegação do app, com itens de menu e slot opcional para a marca.'
+						'App navigation sidebar, with menu items and an optional slot for the brand.'
 				}
 			}
 		}

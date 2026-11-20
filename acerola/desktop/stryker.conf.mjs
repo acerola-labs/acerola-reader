@@ -35,37 +35,34 @@ export default {
 		fileName: 'mutants.out/mutation-report.html'
 	},
 	thresholds: {
-		// Trocado de placeholder pro baseline real medido (49.03% na primeira rodada
-		// completa) — high/low ajustados pra refletir a distribuição real por arquivo em
-		// vez de metas arbitrárias. Atualização: depois de matar os 168 survivors reais
-		// mapeados numa rodada de trabalho dedicada, o score subiu pra 71.06%, com 0
-		// survivors nos arquivos medidos (hooks/state/services/utils com cobertura) — os
-		// poucos mutantes que sobraram são equivalentes de verdade, documentados com
-		// `// Stryker disable next-line <Mutator>: <razão>` direto no source de cada
-		// arquivo (não threshold nem supressão cega). O que resta pra chegar perto do rigor
-		// do lado Rust é só o bug de medição "no coverage" documentado abaixo.
+		// Changed from a placeholder to the real measured baseline (49.03% on the first full
+		// run) — high/low tuned to reflect the real per-file distribution instead of
+		// arbitrary goals. Update: after killing the 168 real survivors mapped in a
+		// dedicated work round, the score rose to 71.06%, with 0 survivors in the measured
+		// files (hooks/state/services/utils with coverage) — the few remaining mutants are
+		// truly equivalent, documented with `// Stryker disable next-line <Mutator>: <reason>`
+		// right in each file's source (no threshold or blind suppression). All that is left
+		// to get close to the Rust side's rigor is the "no coverage" measurement bug below.
 		//
-		// TODO (não corrigido, só documentado): os arquivos abaixo apareceram majoritariamente
-		// como "no coverage" no relatório (mutants.out/mutation-report.html) MESMO TENDO
-		// teste escrito — ou seja, o `coverageAnalysis: perTest` do Stryker não está
-		// conseguindo linkar nenhum teste aos mutantes desses arquivos, então o mutation
-		// score real deles é desconhecido, não necessariamente zero. Suspeita: hooks com
-		// estado em nível de módulo (`$state` fora de função) ou chamados fora de um
-		// componente montado confundem o rastreio per-test. Precisa de investigação
-		// dedicada, não é um problema de configuração do Stryker em si:
-		// - use-comic-summary.svelte.ts (100 mutantes, 0 cobertura)
-		// - use-comic-scanner.svelte.ts (56 mutantes, 0 cobertura)
-		// - use-comic-chapters.svelte.ts (76 mutantes, 0 cobertura)
-		// - use-select-folder.svelte.ts (33 mutantes, 0 cobertura)
-		// - use-history.svelte.ts (57 mutantes, 0 cobertura)
-		// - use-theme.svelte.ts (parcial: 8 de 43 mutantes sem cobertura)
+		// TODO (not fixed, only documented): the files below showed up mostly as
+		// "no coverage" in the report (mutants.out/mutation-report.html) EVEN THOUGH they
+		// have tests — i.e. Stryker's `coverageAnalysis: perTest` cannot link any test to
+		// the mutants of these files, so their real mutation score is unknown, not
+		// necessarily zero. Suspicion: hooks with module-level state (`$state` outside a
+		// function) or called outside a mounted component confuse per-test tracking. Needs
+		// dedicated investigation; it is not a Stryker configuration problem per se:
+		// - use-comic-summary.svelte.ts (100 mutants, 0 coverage)
+		// - use-comic-scanner.svelte.ts (56 mutants, 0 coverage)
+		// - use-comic-chapters.svelte.ts (76 mutants, 0 coverage)
+		// - use-select-folder.svelte.ts (33 mutants, 0 coverage)
+		// - use-history.svelte.ts (57 mutants, 0 coverage)
+		// - use-theme.svelte.ts (partial: 8 of 43 mutants without coverage)
 		//
-		// Resolvido: use-metadata-language.svelte.ts, use-reader-mode.svelte.ts e
-		// use-relay-settings.svelte.ts chegaram a 100% de mutation score real (43/43
-		// mortos, 0 no-coverage) depois de ganharem teste — reforça a suspeita acima: os
-		// três têm `$state` só dentro da função exportada (instância nova por chamada,
-		// sem singleton em nível de módulo), diferente dos arquivos que ainda aparecem
-		// como "no coverage" nesta lista.
+		// Solved: use-metadata-language.svelte.ts, use-reader-mode.svelte.ts and
+		// use-relay-settings.svelte.ts reached a real 100% mutation score (43/43 killed,
+		// 0 no-coverage) after getting tests — this backs the suspicion above: all three
+		// keep `$state` only inside the exported function (new instance per call, no
+		// module-level singleton), unlike the files still listed as "no coverage" here.
 		high: 70,
 		low: 50,
 		break: 45

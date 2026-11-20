@@ -8,7 +8,7 @@ import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 
-// Mock das APIs do Tauri funcionalmente
+// Functional mock of the Tauri APIs
 vi.mock('@tauri-apps/api/core', () => ({
 	invoke: vi.fn(),
 	convertFileSrc: vi.fn((path) => `asset://${path}`)
@@ -145,10 +145,10 @@ describe('ComicPage Scroll Integration', () => {
 			}
 		);
 
-		// `+page.svelte` dispara `usePeerConnection()`/`useNetworkSync()` no onMount (fora do
-		// escopo deste describe, mas ainda assim rodam) — get_paired_peers/get_sync_history_log
-		// tem contrato de array, então precisam de um default diferente do `{}` genérico, senão
-		// os `for...of`/`.map` desses hooks quebram tentando iterar um objeto vazio.
+		// `+page.svelte` fires `usePeerConnection()`/`useNetworkSync()` on mount (outside this
+		// describe's scope, but they still run) — get_paired_peers/get_sync_history_log have an
+		// array contract, so they need a default other than the generic `{}`, otherwise those
+		// hooks' `for...of`/`.map` break trying to iterate an empty object.
 		(invoke as any).mockImplementation(async (command: string) => {
 			if (
 				command === NETWORK_COMMANDS.getPairedPeers ||
@@ -164,8 +164,8 @@ describe('ComicPage Scroll Integration', () => {
 		vi.unstubAllGlobals();
 	});
 
-	// INFO: A busca não é mais paginada — o backend responde com todos os
-	// TOTAL_CHAPTERS capítulos numa única resposta (ver FETCH_ALL_PAGE_SIZE em
+	// INFO: The fetch is no longer paginated — the backend answers with all
+	// TOTAL_CHAPTERS chapters in a single response (see FETCH_ALL_PAGE_SIZE in
 	// use-comic-chapters.svelte.ts).
 	const generateChaptersPayload = () => ({
 		archive: {
@@ -251,12 +251,12 @@ describe('ComicPage Scroll Integration', () => {
 		});
 	}
 
-	// `p2pSync` agora vem do contexto compartilhado com `+layout.svelte` (ver
-	// `CONTEXT_KEYS.networkSync`), não de uma instância própria da página — sem prover esse
-	// contexto aqui, `getContext(...)` devolve `undefined` e o primeiro acesso a `p2pSync.log`
-	// (dentro do `$effect` da página) explode. Precisa ir sob `props` (não solto no nível
-	// raiz) porque, assim que `context` aparece no objeto de opções, `vitest-browser-svelte`
-	// para de tratar o objeto inteiro como props e passa a exigir esse formato.
+	// `p2pSync` now comes from the context shared with `+layout.svelte` (see
+	// `CONTEXT_KEYS.networkSync`), not from a page-owned instance — without providing that
+	// context here, `getContext(...)` returns `undefined` and the first access to `p2pSync.log`
+	// (inside the page's `$effect`) blows up. It must go under `props` (not loose at the root
+	// level) because, as soon as `context` shows up in the options object,
+	// `vitest-browser-svelte` stops treating the whole object as props and requires this shape.
 	async function renderLoadedComicPage() {
 		const view = await render(ComicPage, {
 			props: { data: loaderDataMock },
@@ -301,7 +301,7 @@ describe('ComicPage Scroll Integration', () => {
 			await waitForChapterTitle(container, `Chapter ${pageIndex * RENDER_CHUNK_SIZE + 1}`);
 		}
 
-		// Nenhuma chamada extra de fetch — tudo já tinha chegado na primeira resposta.
+		// No extra fetch call — everything had already arrived in the first response.
 		expect(getChapterFetchCallCount()).toBe(1);
 	});
 
@@ -312,7 +312,7 @@ describe('ComicPage Scroll Integration', () => {
 		getLatestObserver().emitVisiblePages([1]);
 		await waitForChapterTitle(container, `Chapter ${RENDER_CHUNK_SIZE + 1}`);
 
-		// Página 0 saiu da janela de renderização (só a 1 está visível agora).
+		// Page 0 left the render window (only page 1 is visible now).
 		await waitForChapterTitleGone(container, 'Chapter 1');
 
 		const firstPageBlock = container.querySelector('[data-page="0"]') as HTMLElement | null;
@@ -320,7 +320,7 @@ describe('ComicPage Scroll Integration', () => {
 		expect(firstPageBlock?.style.height).toBe(`${RENDER_CHUNK_SIZE * ITEM_HEIGHT}px`);
 		expect(firstPageBlock?.querySelector('[data-slot="item-title"]')).toBeNull();
 
-		// Volta pra página 0 — o dado já está em cache, então reaparece sem novo fetch.
+		// Back to page 0 — the data is already cached, so it reappears without a new fetch.
 		getLatestObserver().emitVisiblePages([0]);
 		await waitForChapterTitle(container, 'Chapter 1');
 

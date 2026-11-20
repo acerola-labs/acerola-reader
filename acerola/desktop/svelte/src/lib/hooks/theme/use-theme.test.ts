@@ -9,9 +9,9 @@ import { useTheme } from './use-theme.svelte';
 const getCurrentWindowMock = vi.mocked(getCurrentWindow);
 
 /**
- * Registra um mock de `$app/environment` para a próxima importação dinâmica
- * do módulo (usado com `vi.resetModules()` + `import()`), já que o módulo
- * roda sua IIFE de carregamento de tema no top-level, no momento do import.
+ * Registers a `$app/environment` mock for the module's next dynamic import
+ * (used with `vi.resetModules()` + `import()`), since the module runs its
+ * theme-loading IIFE at the top level, at import time.
  */
 function mockBrowserEnvironment(browserValue: boolean) {
 	vi.doMock('$app/environment', () => ({
@@ -23,10 +23,10 @@ function mockBrowserEnvironment(browserValue: boolean) {
 }
 
 /**
- * Registra um mock de `@tauri-apps/plugin-store` cujo `LazyStore` sempre
- * devolve a MESMA instância (ao invés de uma nova a cada `new LazyStore()`),
- * pra podermos guardar uma referência direta aos spies de `get`/`set` antes
- * mesmo de importar o módulo fresco.
+ * Registers a `@tauri-apps/plugin-store` mock whose `LazyStore` always
+ * returns the SAME instance (instead of a new one on each `new LazyStore()`),
+ * so we can hold a direct reference to the `get`/`set` spies even before
+ * importing the fresh module.
  */
 function mockPersistedStore(values: Record<string, unknown> = {}) {
 	const store = {
@@ -43,7 +43,7 @@ function mockPersistedStore(values: Record<string, unknown> = {}) {
 	return store;
 }
 
-/** Aguarda alguns microtasks — suficiente pra IIFE de init do módulo resolver. */
+/** Waits a few microtasks — enough for the module's init IIFE to resolve. */
 async function flushMicrotasks() {
 	for (let i = 0; i < 4; i++) {
 		await Promise.resolve();
@@ -102,8 +102,8 @@ describe('useTheme', () => {
 		expect(hook.mode).toBe('system');
 		expect(hook.resolved).toBe('light');
 		expect(document.documentElement.classList.contains('dark')).toBe(false);
-		// applyTheme() precisa ter rodado de fato pra fixar o data-theme, não só o mode
-		// interno — sem isso um mutante que remove a chamada de applyTheme passa despercebido.
+		// applyTheme() must really have run to set data-theme, not just the internal mode —
+		// without this a mutant that removes the applyTheme call goes unnoticed.
 		expect(document.documentElement.getAttribute('data-theme')).toBe('light');
 	});
 
@@ -127,8 +127,8 @@ describe('useTheme', () => {
 		} as unknown as ReturnType<typeof getCurrentWindow>);
 
 		const hook = await renderHook();
-		// Fixa data-theme em dark ANTES do setMode isolado abaixo — se o setMode não
-		// reaplicar o tema de fato, o data-theme fica preso nesse valor antigo.
+		// Pin data-theme to dark BEFORE the isolated setMode below — if setMode doesn't
+		// really reapply the theme, data-theme stays stuck on this old value.
 		await hook.setMode('dark');
 		await flushTheme();
 		expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
@@ -151,17 +151,17 @@ describe('useTheme', () => {
 		await hook.setMode('system');
 		await flushTheme();
 
-		// window.theme() resolveu 'dark' — precisa refletir exatamente isso, não um
-		// fallback fixo pra 'light' só porque o valor era truthy.
+		// window.theme() resolved 'dark' — it must reflect exactly that, not a fixed
+		// 'light' fallback just because the value was truthy.
 		expect(hook.resolved).toBe('dark');
 	});
 
 	describe('module init (fresh module instance per test)', () => {
-		// `mode`/`resolved` e a IIFE de carregamento do tema salvo rodam no
-		// top-level do módulo, no momento do import — por isso os testes abaixo usam
-		// `vi.resetModules()` + `import()` dinâmico pra obter uma instância nova do
-		// módulo (com sua própria IIFE, seu próprio `store` e seu `browser` mockado),
-		// ao invés de reusar o singleton já carregado estaticamente no topo do arquivo.
+		// `mode`/`resolved` and the saved-theme loading IIFE run at the module's top
+		// level, at import time — that's why the tests below use `vi.resetModules()` +
+		// dynamic `import()` to get a fresh module instance (with its own IIFE, its own
+		// `store` and its mocked `browser`), instead of reusing the singleton already
+		// loaded statically at the top of the file.
 
 		it('initializes mode and resolved to dark synchronously, and keeps the defaults when nothing was persisted', async () => {
 			mockBrowserEnvironment(true);
@@ -171,24 +171,24 @@ describe('useTheme', () => {
 			const { useTheme: freshUseTheme } = await import('./use-theme.svelte');
 			const hook = freshUseTheme();
 
-			// Valores síncronos do `$state` logo após o import, antes de qualquer
-			// microtask da IIFE de init rodar — prova que o valor inicial declarado
-			// é 'dark', não apenas que ele converge pra 'dark' eventualmente.
+			// Synchronous `$state` values right after the import, before any init IIFE
+			// microtask runs — proves the declared initial value is 'dark', not just that
+			// it eventually converges to 'dark'.
 			expect(hook.mode).toBe('dark');
 			expect(hook.resolved).toBe('dark');
 
 			await flushMicrotasks();
 
-			// Prova que a IIFE realmente chamou `store.get` com as chaves certas
-			// (mata o mutante que troca `Promise.all([...])` por `Promise.all([])`).
+			// Proves the IIFE really called `store.get` with the right keys
+			// (kills the mutant that swaps `Promise.all([...])` for `Promise.all([])`).
 			expect(store.get).toHaveBeenCalledWith(STORE_KEYS.mode);
 
-			// `savedMode` resolveu `null` (nada persistido) — não pode sobrescrever o
-			// default com `null`.
+			// `savedMode` resolved `null` (nothing persisted) — must not overwrite the
+			// default with `null`.
 			expect(hook.mode).toBe('dark');
 			expect(hook.resolved).toBe('dark');
 
-			// `applyTheme(mode)` precisa ter rodado de fato ao final da IIFE.
+			// `applyTheme(mode)` must really have run at the end of the IIFE.
 			expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
 			expect(document.documentElement.classList.contains('dark')).toBe(true);
 		});
@@ -207,9 +207,9 @@ describe('useTheme', () => {
 
 			expect(store.get).toHaveBeenCalledWith(STORE_KEYS.mode);
 
-			// savedMode truthy → sobrescreve o default 'dark'.
+			// truthy savedMode → overrides the 'dark' default.
 			expect(hook.mode).toBe('light');
-			// `applyTheme` rodou com os valores carregados, não com os defaults.
+			// `applyTheme` ran with the loaded values, not the defaults.
 			expect(hook.resolved).toBe('light');
 			expect(document.documentElement.getAttribute('data-theme')).toBe('light');
 			expect(document.documentElement.classList.contains('dark')).toBe(false);
@@ -227,15 +227,15 @@ describe('useTheme', () => {
 
 			await flushMicrotasks();
 
-			// `browser && (...)()` nunca deve rodar fora de um browser — nada é lido
-			// do store, mesmo com valores salvos disponíveis.
+			// `browser && (...)()` must never run outside a browser — nothing is read
+			// from the store, even with saved values available.
 			expect(store.get).not.toHaveBeenCalled();
 			expect(hook.mode).toBe('dark');
 			expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
 
-			// `applyTheme` também guarda em `browser` internamente — chamá-la
-			// (indiretamente, via setMode) fora de um browser precisa ser
-			// um no-op: nem `getCurrentWindow()` nem o DOM devem ser tocados.
+			// `applyTheme` also guards on `browser` internally — calling it
+			// (indirectly, via setMode) outside a browser must be a no-op:
+			// neither `getCurrentWindow()` nor the DOM may be touched.
 			await hook.setMode('light');
 			await flushMicrotasks();
 

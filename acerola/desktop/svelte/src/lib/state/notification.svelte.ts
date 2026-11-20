@@ -25,14 +25,14 @@ export function createNotifications<V extends string>(variants: readonly V[]) {
 			id,
 			message,
 			duration: 5000,
-			// Stryker disable next-line OptionalChaining,LogicalOperator: fallback comprovadamente
-			// morto — add() é privada, só é chamada por notify.<variant>(...) (ver linha ~51), que
-			// SEMPRE injeta `variant` explícito no options antes de chamar add(). Logo `options`
-			// nunca chega undefined aqui, e o `...options` alguns campos abaixo sobrescreve
-			// incondicionalmente este valor de qualquer forma. Verificado empiricamente aplicando
-			// os dois mutantes manualmente: os testes públicos (incluindo chamada sem options
-			// nenhum) passam do mesmo jeito, pois é impossível observar a diferença via a API
-			// exportada. Ver notification.test.ts.
+			// Stryker disable next-line OptionalChaining,LogicalOperator: provably dead fallback —
+			// add() is private, only called by notify.<variant>(...) (see line ~51), which ALWAYS
+			// injects an explicit `variant` into options before calling add(). So `options` never
+			// arrives undefined here, and the `...options` a few fields below unconditionally
+			// overwrites this value anyway. Verified empirically by applying both mutants by
+			// hand: the public tests (including a call with no options at all) pass the same way,
+			// since the difference cannot be observed through the exported API. See
+			// notification.test.ts.
 			variant: options?.variant ?? variants[0],
 			...options
 		};
@@ -52,7 +52,7 @@ export function createNotifications<V extends string>(variants: readonly V[]) {
 		notifications.splice(0, notifications.length);
 	}
 
-	// deriva notify.* das chaves passadas no bootstrap
+	// derives notify.* from the keys passed at bootstrap
 	const notify = Object.fromEntries(
 		variants.map((variant) => [
 			variant,

@@ -11,8 +11,8 @@ const BURST_COLOR: Partial<Record<ToastIconVariant, string>> = {
 	info: 'bg-primary/30 ring-4 ring-primary/20'
 };
 
-// Cria e anima um anel que expande e desaparece atrás do ícone — dá peso ao resultado
-// (sucesso/erro) sem depender só da troca de glifo. Remove o próprio elemento ao terminar.
+// Creates and animates a ring that expands and fades behind the icon — gives weight to the
+// result (success/error) without relying only on the glyph swap. Removes itself when done.
 function spawnBurst(node: HTMLElement, colorClass: string) {
 	const ring = document.createElement('span');
 	ring.className = cn('pointer-events-none absolute inset-0 rounded-full', colorClass);
@@ -30,10 +30,10 @@ function spawnBurst(node: HTMLElement, colorClass: string) {
 	);
 }
 
-/// Anima a entrada do ícone de um toast (`svelte-sonner`) sempre que o `type` muda —
-/// `loading` -> `success`/`error`/etc monta um elemento novo no DOM (ver `Toast.svelte` da
-/// lib), então este `use:` action roda uma vez por troca de estado, dando a sensação de
-/// "morph" mesmo sendo ícones diferentes ocupando o mesmo slot.
+/// Animates a toast (`svelte-sonner`) icon's entrance whenever its `type` changes —
+/// `loading` -> `success`/`error`/etc mounts a new element in the DOM (see the lib's
+/// `Toast.svelte`), so this `use:` action runs once per state change, giving a "morph"
+/// feel even though different icons occupy the same slot.
 export const toastIconEnter: Action<HTMLElement, ToastIconVariant> = (node, variant) => {
 	node.classList.add('relative', 'inline-flex', 'items-center', 'justify-center');
 

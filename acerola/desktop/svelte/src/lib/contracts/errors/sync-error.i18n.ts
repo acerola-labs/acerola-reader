@@ -1,15 +1,15 @@
 import { m } from '#lib/paraglide/messages.js';
 
-// Contrato com o `code` opcional que os protocolos de sync P2P (sync-files, sync-comic,
-// sync-history, browse-library, browse-cover) anexam ao payload de `*:error` quando a causa
-// tem uma tradução estável (ver `classify_sync_error`/`SyncErrorCode` em `transfer.rs`) — o
-// `message` cru continua em inglês/técnico (log/wire, às vezes texto de baixo nível do QUIC
-// tipo "stream reset by peer"), então sem isso esses erros apareceriam sem tradução na UI
-// mesmo com o app todo em pt-BR. Código não reconhecido (`classify_sync_error` retornou
-// `None`) cai no fallback natural de `translateSyncMessage` — mostra o `message` cru, mesmo
-// padrão de `errors.i18n.ts` pros erros de `ComicError`. Compartilhado por todos os hooks que
-// escutam eventos `*:error` desses protocolos (`use-network-sync.svelte.ts`,
-// `use-remote-library.svelte.ts`) — mesmo `code` em todos, um lugar só pra traduzir.
+// Contract for the optional `code` that the P2P sync protocols (sync-files, sync-comic,
+// sync-history, browse-library, browse-cover) attach to the `*:error` payload when the cause
+// has a stable translation (see `classify_sync_error`/`SyncErrorCode` in `transfer.rs`) — the
+// raw `message` stays English/technical (log/wire, sometimes low-level QUIC text like
+// "stream reset by peer"), so without this these errors would show untranslated in the UI
+// even with the whole app in pt-BR. An unrecognized code (`classify_sync_error` returned
+// `None`) falls into `translateSyncMessage`'s natural fallback — shows the raw `message`, same
+// pattern as `errors.i18n.ts` for `ComicError` errors. Shared by every hook that listens to
+// these protocols' `*:error` events (`use-network-sync.svelte.ts`,
+// `use-remote-library.svelte.ts`) — same `code` everywhere, a single place to translate.
 const SYNC_ERROR_MESSAGES: Record<string, () => string> = {
 	busy: m['tauriErrors.sync.sessionBusy.label'],
 	timeout: m['tauriErrors.sync.timedOut.label'],

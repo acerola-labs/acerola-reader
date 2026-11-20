@@ -18,9 +18,8 @@ describe('encodeConnectionCode / decodeConnectionCode', () => {
 		const decoded = decodeConnectionCode(code);
 
 		expect(decoded).toEqual(addr);
-		// Checagem precisa e independente do toEqual sobre o array de bytes decodificado:
-		// tamanho exato e conteúdo exato por índice pra uma entrada conhecida, incluindo
-		// valores de fronteira 0 e 255.
+		// Precise check, independent of toEqual, on the decoded byte array: exact length and
+		// exact per-index content for a known input, including the 0 and 255 boundary values.
 		expect(decoded.addrs).toHaveLength(5);
 		expect(decoded.addrs).toEqual([1, 2, 3, 255, 0]);
 		expect(Array.isArray(decoded.addrs)).toBe(true);
@@ -58,14 +57,14 @@ describe('encodeConnectionCode / decodeConnectionCode', () => {
 	});
 
 	it('rejects a wrong prefix even when the remaining payload would otherwise decode fine', () => {
-		// Um payload base64/JSON malformado acaba normalizado em InvalidConnectionCodeError
-		// pelo catch-all mais abaixo independente do check de prefixo, então um teste como o
-		// de cima (prefixo errado + payload lixo) não distingue "o guard do prefixo lançou" de
-		// "o guard foi pulado e o JSON.parse/atob que explodiu". Pra provar de verdade que é o
-		// guard do prefixo que rejeita o código, o payload depois do prefixo falso (do mesmo
-		// tamanho) precisa ser um envelope *válido* — um que decodificaria com sucesso se o
-		// guard fosse pulado. Se o guard for removido/curto-circuitado, isso retorna um
-		// LocalPeerAddr válido em vez de lançar.
+		// A malformed base64/JSON payload ends up normalized into InvalidConnectionCodeError
+		// by the catch-all further down regardless of the prefix check, so a test like the one
+		// above (wrong prefix + garbage payload) can't tell "the prefix guard threw" from
+		// "the guard was skipped and JSON.parse/atob blew up". To truly prove it is the prefix
+		// guard rejecting the code, the payload after the fake prefix (same length) must be a
+		// *valid* envelope — one that would decode successfully if the guard were skipped. If
+		// the guard is removed/short-circuited, this returns a valid LocalPeerAddr instead of
+		// throwing.
 		const addr: LocalPeerAddr = { id: { id: 'peer-x', device_id: null }, addrs: [1, 2, 3] };
 		const validCode = encodeConnectionCode(addr);
 		const realPrefixLength = 'acerola1:'.length;

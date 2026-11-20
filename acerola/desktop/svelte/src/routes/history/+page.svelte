@@ -32,17 +32,17 @@
 	const history = useHistory();
 	const bookmarkStore = useBookmarks();
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. Ver `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` pro porquê: uma
-	// instância só-desta-página, desmontada ao navegar pra outra tela, rejeitava promises de
-	// sync em andamento (`sync.syncHistory`) com "sync cancelled: listener stopped" mesmo o
-	// sync de verdade continuando no backend.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. See `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` for why: a
+	// page-only instance, unmounted when navigating to another screen, rejected in-flight sync
+	// promises (`sync.syncHistory`) with "sync cancelled: listener stopped" even though the
+	// real sync kept going in the backend.
 	const sync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 
 	let syncMenuOpen = $state(false);
-	// Evita re-disparar `history.fetch()`/toast pro mesmo evento — tanto em re-render
-	// quanto ao navegar pra fora e voltar pra tela de Histórico. Sessões já terminadas
-	// antes da montagem são ignoradas para não exibir toast fantasma na inicialização.
+	// Avoids re-firing `history.fetch()`/toast for the same event — both on re-render and
+	// when navigating away and back to the History screen. Sessions already finished before
+	// mount are ignored so no ghost toast shows on startup.
 	let lastHandledSyncKey: string | undefined =
 		sync.log[0] && sync.log[0].status !== 'started'
 			? `${sync.log[0].id}:${sync.log[0].status}`
@@ -55,8 +55,8 @@
 		connected: boolean;
 	};
 
-	// Mesmo merge de pareados persistidos + conectados ao vivo usado em `/network` — ver o
-	// comentário lá para o motivo de precisar dos dois.
+	// Same merge of persisted paired + live connected peers used in `/network` — see the
+	// comment there for why both are needed.
 	const uniquePeers = $derived.by(() => {
 		const byId = new Map<string, DisplayPeer>();
 		for (const peer of peers.pairedPeers) {
@@ -101,15 +101,15 @@
 		}
 	}
 
-	// `sync.syncHistory` só resolve quando a conexão é aberta, não quando a sessão termina de
-	// fato (ver `sync:history:*` no backend) — o resultado real chega aqui via `sync.log`,
-	// alimentado pelos mesmos eventos que a tela de Rede escuta.
+	// `sync.syncHistory` only resolves when the connection opens, not when the session actually
+	// ends (see `sync:history:*` in the backend) — the real outcome arrives here via
+	// `sync.log`, fed by the same events the Network screen listens to.
 	$effect(() => {
 		const entry = sync.log[0];
-		// `id < 0` marca uma linha carregada do histórico persistido (ver `fromPersisted` em
-		// `use-network-sync.svelte.ts`), não um evento ao vivo desta sessão — sem esse guard, a
-		// linha "complete" mais recente do histórico disparava este toast assim que a tela de
-		// Histórico montava, mesmo sem nenhum sync ter de fato acontecido agora.
+		// `id < 0` marks a line loaded from the persisted history (see `fromPersisted` in
+		// `use-network-sync.svelte.ts`), not a live event from this session — without this
+		// guard, the most recent "complete" history line fired this toast as soon as the
+		// History screen mounted, even with no sync actually happening now.
 		if (!entry || entry.id < 0 || entry.kind !== 'history') return;
 
 		const currentKey = `${entry.id}:${entry.status}`;
@@ -117,8 +117,8 @@
 			return;
 		}
 
-		// Mesmo padrão da Home: um toast por sessão, criado em 'started' e substituído (mesmo
-		// `id`) em 'complete'/'error' em vez de empilhar um novo.
+		// Same pattern as the Home: one toast per session, created on 'started' and replaced
+		// (same `id`) on 'complete'/'error' instead of stacking a new one.
 		const toastId = `sync-history-${entry.peerId}`;
 
 		if (entry.status === 'started') {

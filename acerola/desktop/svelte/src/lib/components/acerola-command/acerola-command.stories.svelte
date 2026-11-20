@@ -4,14 +4,14 @@
 	import AcerolaCommand from './acerola-command.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaCommand',
+		title: 'Primitives/AcerolaCommand',
 		component: AcerolaCommand,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Container para interfaces no estilo command palette. O wrapper recebe `children` como snippet e organiza estado/eventos em `state` e `events`, sendo adequado para busca local, navegacao rapida, menus acionaveis por teclado e selecao assistida por filtro.'
+						'Container for command-palette style interfaces. The wrapper takes `children` as a snippet and organizes state/events in `state` and `events`, suited for local search, quick navigation, keyboard-driven menus and filter-assisted selection.'
 				}
 			},
 			controls: {
@@ -20,15 +20,15 @@
 		},
 		argTypes: {
 			state: {
-				description: 'Texto atual usado pelo input de busca do command.',
+				description: 'Current text used by the command search input.',
 				control: 'object'
 			},
 			events: {
-				description: 'Callback disparado quando o texto de busca e alterado.',
+				description: 'Callback fired when the search text changes.',
 				control: 'object'
 			},
 			children: {
-				description: 'Snippet com a composicao interna do command, como input, lista e itens.',
+				description: 'Snippet with the command internal composition, such as input, list and items.',
 				control: false
 			}
 		}
@@ -57,7 +57,7 @@
 		docs: {
 			description: {
 				story:
-					'Exemplo base de uma command palette com campo de busca vazio e uma lista curta de itens. Serve como ponto de partida para cenarios de busca local e navegacao interna.'
+					'Base example of a command palette with an empty search field and a short item list. A starting point for local search and internal navigation scenarios.'
 			}
 		}
 	}}
@@ -71,7 +71,7 @@
 		docs: {
 			description: {
 				story:
-					'Exemplo com valor inicial preenchido. E util para demonstrar estado controlado, restauracao de filtro e telas em que a busca ja chega preconfigurada a partir de contexto anterior.'
+					'Example with a prefilled initial value. Useful to demonstrate controlled state, filter restoration and screens where the search arrives preconfigured from a previous context.'
 			}
 		}
 	}}

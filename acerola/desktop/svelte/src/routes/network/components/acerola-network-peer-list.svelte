@@ -49,8 +49,8 @@
 	let { data, events }: NetworkPeerListProps = $props();
 
 	let openPeerMenuId = $state<string | null>(null);
-	// Apelido local por peer — edição inline substitui o card do peer, mesmo padrão de
-	// `acerola-network-my-device-card.svelte` pro nome do próprio dispositivo.
+	// Local nickname per peer — inline editing replaces the peer card, same pattern as
+	// `acerola-network-my-device-card.svelte` for the device's own name.
 	let editingPeerId = $state<string | null>(null);
 	let nicknameDraft = $state('');
 
@@ -69,10 +69,10 @@
 		editingPeerId = null;
 	}
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `data` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba
-	// a suíte mesmo com todos os asserts passando.
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `data` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings
+	// down the suite even with every assert passing.
 	let peers = $derived(data?.peers ?? []);
 </script>
 

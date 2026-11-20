@@ -24,9 +24,9 @@ vi.mock('@tauri-apps/api/event', () => ({
 
 const { mockStoreLoad } = vi.hoisted(() => ({ mockStoreLoad: vi.fn() }));
 
-// use-theme.svelte.ts instancia LazyStore no top-level do módulo (fora de qualquer hook) —
-// precisa continuar mockado aqui como no setup.ts global, já que o vi.mock deste arquivo
-// substitui o módulo inteiro em vez de estender o mock global.
+// use-theme.svelte.ts instantiates LazyStore at the module top level (outside any hook) —
+// it must stay mocked here like in the global setup.ts, since this file's vi.mock replaces
+// the whole module instead of extending the global mock.
 vi.mock('@tauri-apps/plugin-store', () => ({
 	load: mockStoreLoad,
 	LazyStore: class {
@@ -43,9 +43,9 @@ describe('config +page (accordion)', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		_resetBookmarksState();
-		// Marcadores agora fica sempre aberta (flat) — `AcerolaBookmarkManager` monta de cara
-		// (não só depois de expandir uma categoria) e chama `loadBookmarks()` no `onMount`, então
-		// precisa de uma resposta em formato de lista aqui, senão `bookmarks` vira `undefined`.
+		// Bookmarks is now always open (flat) — `AcerolaBookmarkManager` mounts right away (not
+		// only after expanding a category) and calls `loadBookmarks()` in `onMount`, so it needs
+		// a list-shaped response here, otherwise `bookmarks` becomes `undefined`.
 		mockInvoke.mockImplementation((cmd: string) => {
 			if (
 				cmd === BOOKMARKS_COMMANDS.getCategories ||
@@ -63,9 +63,9 @@ describe('config +page (accordion)', () => {
 		});
 	});
 
-	// Marcadores fica sempre aberta (flat, sem clique) — só Arquivos/Biblioteca/Metadados
-	// colapsam por padrão. Mesmo mix de UI/UX da tela de Rede (nem toda seção precisa de um
-	// clique pra ver o conteúdo).
+	// Bookmarks is always open (flat, no click) — only Files/Library/Metadata collapse by
+	// default. Same UI/UX mix as the Network screen (not every section needs a click to show
+	// its content).
 	it('renders the flat categories already open and the collapsible ones collapsed by default', () => {
 		render(ConfigPage);
 
@@ -74,9 +74,9 @@ describe('config +page (accordion)', () => {
 		expect(screen.getByText(/^configuração de metadados$/i)).toBeInTheDocument();
 		expect(screen.getByText(/^marcadores$/i)).toBeInTheDocument();
 
-		// Não existe mais seção de troca de tema — só o modo claro/escuro no header.
+		// There is no theme switching section anymore — only the light/dark mode in the header.
 		expect(screen.queryByText(/^aparência$/i)).not.toBeInTheDocument();
-		// Biblioteca continua colapsável — conteúdo escondido até clicar.
+		// Library is still collapsible — content hidden until clicked.
 		expect(screen.queryByText(/^templates de nomenclatura$/i)).not.toBeInTheDocument();
 	});
 
@@ -89,9 +89,9 @@ describe('config +page (accordion)', () => {
 		expect(await screen.findByText(/sincronização com mangadex/i)).toBeInTheDocument();
 		expect(mockGoto).not.toHaveBeenCalled();
 
-		// aria-expanded no cabeçalho muda de forma síncrona — a remoção do conteúdo em si passa
-		// por transition:slide, cujo outro pode não completar em jsdom (sem layout real), então
-		// o sinal confiável aqui é o atributo, não o conteúdo.
+		// aria-expanded on the header changes synchronously — removing the content itself goes
+		// through transition:slide, whose outro may not complete in jsdom (no real layout), so
+		// the reliable signal here is the attribute, not the content.
 		await user.click(screen.getByText(/^configuração de metadados$/i));
 
 		expect(screen.getByText(/^configuração de metadados$/i).closest('button')).toHaveAttribute(
@@ -106,7 +106,7 @@ describe('config +page (accordion)', () => {
 
 		await user.click(screen.getByText(/^biblioteca$/i));
 
-		// Marcadores (flat) nunca deixou de estar visível; Biblioteca (colapsável) agora também está.
+		// Bookmarks (flat) never stopped being visible; Library (collapsible) now is too.
 		expect(screen.getByText(/^marcadores$/i)).toBeInTheDocument();
 		expect(await screen.findByText(/^templates de nomenclatura$/i)).toBeInTheDocument();
 	});

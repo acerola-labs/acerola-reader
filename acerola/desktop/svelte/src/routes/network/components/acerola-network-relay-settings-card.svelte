@@ -46,31 +46,31 @@
 
 	let { data, events }: NetworkRelaySettingsCardProps = $props();
 
-	// Fecha por padrão — a maioria dos usuários nunca precisa mexer aqui (relay do Acerola
-	// já vem ligado por padrão), então não vale ocupar espaço da tela de Rede aberto.
+	// Closed by default — most users never need to touch this (the Acerola relay comes on by
+	// default), so it isn't worth taking up open space on the Network screen.
 	let expanded = $state(false);
 	let customUrlDraft = $state('');
 	let customUrlError = $state(false);
 	let ticketDraft = $state('');
 	let ticketError = $state(false);
 	let ticketSaving = $state(false);
-	// Cards de "relays próprios" e "ticket Iroh" escondem sua configuração por padrão (reduz
-	// texto sempre-visível) — expandem sob demanda ao clicar, num toggle independente de
-	// ativar/desativar a fonte em si (ver os 3 cards no template abaixo).
+	// The "custom relays" and "Iroh ticket" cards hide their configuration by default (less
+	// always-visible text) — they expand on demand when clicked, in a toggle independent of
+	// enabling/disabling the source itself (see the 3 cards in the template below).
 	let customExpanded = $state(false);
-	// Pré-expandido quando ainda não há ticket salvo — sem isso, o usuário configurando pela
-	// primeira vez precisaria adivinhar que precisa clicar em algo pra ver o campo de colar o
-	// ticket (só é lido na primeira renderização, igual `expanded` acima).
+	// Pre-expanded while no ticket is saved yet — without it, a first-time user would have to
+	// guess they need to click something to see the ticket paste field (only read on the
+	// first render, like `expanded` above).
 	let ticketExpanded = $state(untrack(() => !data?.hasIrohServicesTicket));
 
-	// Compartilhado por TODA ação que reinicia o node P2P por baixo (toggle de relay,
-	// add/remove de URL própria, botão manual) — as duas coisas que faltavam antes: (1)
-	// feedback visual de que uma restart está em andamento (os toggles não tinham NENHUM,
-	// diferente do botão manual, que já tinha `restarting`) e (2) trava contra reentrância —
-	// clique duplo no mesmo controle, ou mexer em outro enquanto uma restart anterior ainda
-	// não terminou, agora é ignorado em vez de disparar uma segunda reconstrução do node em
-	// paralelo (a causa raiz real: duas reconstruções concorrentes registravam a MESMA
-	// identidade no relay ao mesmo tempo, e o relay derrubava uma delas em silêncio).
+	// Shared by EVERY action that restarts the P2P node underneath (relay toggle, custom URL
+	// add/remove, manual button) — the two things missing before: (1) visual feedback that a
+	// restart is in progress (the toggles had NONE, unlike the manual button, which already
+	// had `restarting`) and (2) a reentrancy lock — a double click on the same control, or
+	// touching another one while a previous restart hasn't finished, is now ignored instead
+	// of firing a second node rebuild in parallel (the real root cause: two concurrent
+	// rebuilds registered the SAME identity on the relay at once, and the relay silently
+	// dropped one of them).
 	let restarting = $state(false);
 	let restartError = $state(false);
 
@@ -87,10 +87,10 @@
 		}
 	}
 
-	// Trocar a fonte de relay ativa (Acerola próprio / rede pública Iroh) reconstrói o node
-	// P2P com um `RelayMap` diferente — peers pareados que não convergirem pro mesmo relay
-	// ficam inalcançáveis até isso acontecer. Sem aviso, o usuário não tem como saber disso
-	// antes de clicar.
+	// Switching the active relay source (Acerola's own / Iroh public network) rebuilds the P2P
+	// node with a different `RelayMap` — paired peers that don't converge on the same relay
+	// stay unreachable until they do. Without a warning, the user has no way to know this
+	// before clicking.
 	let pendingSwitch = $state<(() => Promise<void>) | null>(null);
 
 	function confirmSwitch(action: () => Promise<void>) {
@@ -111,8 +111,8 @@
 		(safeData.useAcerolaRelay ? 1 : 0) + safeData.customRelayUrls.length
 	);
 
-	// Espelha `RelaySettings::resolve` no backend: rede pública Iroh é exclusiva com as
-	// demais fontes, e nenhuma fonte ativa cai em mDNS-only — não são combináveis entre si.
+	// Mirrors `RelaySettings::resolve` in the backend: the Iroh public network is exclusive
+	// with the other sources, and no active source falls back to mDNS-only — they don't combine.
 	const summary = $derived.by(() => {
 		if (safeData.useIrohPublicNetwork) {
 			return m['pages.network.relaySettings.summaryIrohPublic']();
@@ -123,8 +123,8 @@
 		return m['pages.network.relaySettings.summaryActive']({ count: activeSourceCount });
 	});
 
-	// Subtítulo do card de relays próprios — dobra o texto de contagem no lugar de um parágrafo
-	// à parte, junto da lista em si (que só aparece expandida).
+	// Subtitle of the custom relays card — folds the count text in instead of a separate
+	// paragraph next to the list itself (which only shows when expanded).
 	const customRelaysSubtitle = $derived(
 		safeData.customRelayUrls.length === 0
 			? m['pages.network.relaySettings.customRelays.empty']()
@@ -133,9 +133,9 @@
 				})
 	);
 
-	// Subtítulo do card de rede pública Iroh — dobra o antigo parágrafo de "desabilitado até
-	// configurar um ticket" (`use_iroh_public_network_disabled_hint`) no lugar de um aviso à
-	// parte, já que ele só faz sentido exatamente quando não há ticket.
+	// Subtitle of the Iroh public network card — folds in the old "disabled until a ticket is
+	// configured" paragraph (`use_iroh_public_network_disabled_hint`) instead of a separate
+	// warning, since it only makes sense exactly when there is no ticket.
 	const irohSubtitle = $derived(
 		safeData.hasIrohServicesTicket
 			? m['pages.network.relaySettings.useIrohPublicNetworkDesc']()
@@ -217,7 +217,7 @@
 	{/snippet}
 
 	<div class="space-y-3">
-		<!-- Card 1: relay do Acerola — toggle puro, clicar na linha inteira liga/desliga. -->
+		<!-- Card 1: Acerola relay — a pure toggle, clicking the whole row turns it on/off. -->
 		<AcerolaToggleCard
 			data={{
 				title: m['pages.network.relaySettings.useAcerolaRelay'](),
@@ -237,10 +237,10 @@
 			{/snippet}
 		</AcerolaToggleCard>
 
-		<!-- Card 2: relays próprios — a linha só expande/recolhe a lista, não é o que ativa a
-		     fonte (ativa sozinha ao ter pelo menos 1 URL, ver `activeSourceCount`). Continua
-		     clicável mesmo com a rede pública Iroh ativa (só as ações de dentro é que travam),
-		     pra sempre dar pra conferir o que já está configurado. -->
+		<!-- Card 2: custom relays — the row only expands/collapses the list, it isn't what
+		     enables the source (it turns on by itself once it has at least 1 URL, see
+		     `activeSourceCount`). Stays clickable even with the Iroh public network on (only the
+		     actions inside lock), so what is already configured can always be checked. -->
 		<AcerolaToggleCard
 			data={{
 				title: m['pages.network.relaySettings.customRelays.title'](),
@@ -315,9 +315,9 @@
 			{/snippet}
 		</AcerolaToggleCard>
 
-		<!-- Card 3: rede pública Iroh — a linha inteira liga/desliga (exclusivo com os outros
-		     dois, trava sem ticket configurado); gerenciar o ticket é uma ação à parte, dentro
-		     do card, pra não confundir "ativar a fonte" com "trocar a credencial". -->
+		<!-- Card 3: Iroh public network — the whole row turns it on/off (exclusive with the other
+		     two, locked without a configured ticket); managing the ticket is a separate action
+		     inside the card, so "enable the source" isn't confused with "change the credential". -->
 		<div
 			class={cn(
 				'overflow-hidden rounded-inner border-2 transition-all duration-200',
@@ -367,9 +367,9 @@
 
 				{#if ticketExpanded}
 					<div transition:slide={{ duration: 200 }} class="mt-3 space-y-2">
-						<!-- Campo em linha própria, largura cheia — dividir a linha com o botão
-						     espremia o campo a ponto do placeholder (bem mais longo que qualquer
-						     URL de relay) quebrar em várias linhas. -->
+						<!-- Field on its own full-width row — sharing the row with the button
+						     squeezed the field so much that the placeholder (much longer than any
+						     relay URL) wrapped onto several lines. -->
 						<AcerolaInput
 							state={{ value: ticketDraft }}
 							events={{

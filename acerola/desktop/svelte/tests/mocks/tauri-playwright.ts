@@ -41,18 +41,18 @@ export function mockedTauriResponse(
 }
 
 export type InstallTauriMocksOptions = {
-	/** Pré-popula o `@tauri-apps/plugin-store` mockado antes do app iniciar — chave é o
-	 *  nome do arquivo de store (ex. `settings.json`, ver `STORE_FILE`), valor é o mapa
-	 *  chave/valor já persistido (ex. `{ onboarding_completed: true }`, ver `STORE_KEYS`).
-	 *  Sem isso o store some vazio e o app sempre mostra o onboarding, já que
-	 *  `useOnboarding().isCompleted` lê `onboarding_completed` do store. */
+	/** Pre-populates the mocked `@tauri-apps/plugin-store` before the app starts — the key is
+	 *  the store file name (e.g. `settings.json`, see `STORE_FILE`), the value is the already
+	 *  persisted key/value map (e.g. `{ onboarding_completed: true }`, see `STORE_KEYS`).
+	 *  Without it the store starts empty and the app always shows onboarding, since
+	 *  `useOnboarding().isCompleted` reads `onboarding_completed` from the store. */
 	storeSeed?: Record<string, Record<string, unknown>>;
 };
 
-// Chamadas de IPC feitas incondicionalmente pelo `+layout.svelte` (bookmarks + identidade
-// do pacote em DEV) e pela home (`peers.startListening()`/`sync.startListening()`) em toda
-// navegação — sem isso toda spec precisaria mockar esse boilerplate só pra não poluir
-// `collectConsoleErrors` com "unmocked: ...".
+// IPC calls made unconditionally by `+layout.svelte` (bookmarks + package identity in DEV)
+// and by the home (`peers.startListening()`/`sync.startListening()`) on every navigation —
+// without this every spec would need to mock this boilerplate just to keep
+// `collectConsoleErrors` free of "unmocked: ...".
 const LAYOUT_BOILERPLATE_HANDLERS: Record<string, MockedTauriHandler> = {
 	[BOOKMARKS_COMMANDS.getCategories]: [],
 	[BOOKMARKS_COMMANDS.getAllComicCategories]: [],
@@ -69,9 +69,9 @@ export async function installTauriMocks(
 ) {
 	const mergedHandlers = { ...LAYOUT_BOILERPLATE_HANDLERS, ...handlers };
 
-	// Por padrão toda spec pula o onboarding (o gate em `+layout.svelte` mostra o wizard
-	// pra qualquer rota enquanto `onboarding_completed` não estiver setado) — uma spec que
-	// realmente quer testar o onboarding sobrescreve isso explicitamente via `storeSeed`.
+	// By default every spec skips onboarding (the gate in `+layout.svelte` shows the wizard
+	// on any route while `onboarding_completed` is not set) — a spec that really wants to
+	// test onboarding overrides this explicitly via `storeSeed`.
 	const storeSeed = {
 		...options.storeSeed,
 		[STORE_FILE]: {

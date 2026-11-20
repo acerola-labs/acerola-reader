@@ -14,13 +14,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaNetworkPeerList,
-		title: 'Páginas/Network/AcerolaNetworkPeerList',
+		title: 'Pages/Network/AcerolaNetworkPeerList',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Lista de peers pareados com status de conexão e ações de sincronização (histórico, arquivos, tudo) por peer.'
+						'List of paired peers with connection status and per-peer sync actions (history, files, all).'
 				}
 			}
 		}

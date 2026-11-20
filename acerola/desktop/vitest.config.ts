@@ -50,7 +50,7 @@ export default defineConfig({
 		// Crucial for Svelte 5 Browser Mode
 		conditions: ['browser', 'svelte', 'development']
 	},
-	// INFO: Não usar paraglide nos testes.
+	// INFO: Do not use paraglide in tests.
 	test: {
 		coverage: {
 			provider: 'v8',
@@ -67,9 +67,9 @@ export default defineConfig({
 				'svelte/tests/**'
 			],
 			thresholds: {
-				// Trocado de placeholder pro baseline real medido após preencher as lacunas
-				// de teste (Fases 2-4 do plano de cobertura), com alguns pontos de folga por
-				// métrica pra não flakar com pequenas oscilações incidentais.
+				// Changed from a placeholder to the real measured baseline after filling the
+				// test gaps (Phases 2-4 of the coverage plan), with a few points of slack per
+				// metric so small incidental fluctuations don't make it flaky.
 				lines: 55,
 				statements: 55,
 				functions: 52,

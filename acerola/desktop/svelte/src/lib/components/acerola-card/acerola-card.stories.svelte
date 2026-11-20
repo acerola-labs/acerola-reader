@@ -3,19 +3,19 @@
 	import AcerolaCard from './acerola-card.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaCard',
+		title: 'Primitives/AcerolaCard',
 		component: AcerolaCard,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Wrapper do Card do shadcn/ui com interface simplificada via snippets.'
+					component: 'Wrapper of the shadcn/ui Card with a simplified interface via snippets.'
 				}
 			}
 		},
 		argTypes: {
-			data: { description: 'Conteúdo do card', control: 'object' },
-			ui: { description: 'Configuração visual do card', control: 'object' }
+			data: { description: 'Card content', control: 'object' },
+			ui: { description: 'Card visual configuration', control: 'object' }
 		}
 	});
 </script>
@@ -27,14 +27,14 @@
 
 <Story name="Default" args={{ data: { title: 'Berserk' } }} />
 
-<Story name="Com descrição" args={{ data: { title: 'Berserk', description: 'Kentaro Miura' } }} />
+<Story name="With description" args={{ data: { title: 'Berserk', description: 'Kentaro Miura' } }} />
 
 <Story
-	name="Tamanho sm"
+	name="Size sm"
 	args={{ data: { title: 'Vagabond', description: 'Takehiko Inoue' }, ui: { size: 'sm' } }}
 />
 
-<Story name="Com conteúdo e footer" asChild>
+<Story name="With content and footer" asChild>
 	<div class="w-sm">
 		<AcerolaCard
 			data={{

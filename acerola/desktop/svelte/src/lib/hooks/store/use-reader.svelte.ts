@@ -9,10 +9,10 @@ import type {
 } from '#lib/contracts/reader/reader.payloads.ts';
 import { LRUService } from '#lib/services/lru.service.ts';
 
-// INFO: Espelha DEFAULT_CACHE_CAPACITY do backend (core/services/reader/mod.rs) —
-// janela deslizante, não o capítulo inteiro. É só o valor usado antes do
-// session.cacheCapacity chegar do backend; resetCache(session.cacheCapacity)
-// sobrescreve isso assim que a sessão abre.
+// INFO: Mirrors the backend's DEFAULT_CACHE_CAPACITY (core/services/reader/mod.rs) —
+// a sliding window, not the whole chapter. It is only the value used before
+// session.cacheCapacity arrives from the backend; resetCache(session.cacheCapacity)
+// overrides it as soon as the session opens.
 const DEFAULT_READER_CACHE_SIZE = 20;
 export const PREFETCH_RADIUS = 2;
 
@@ -40,24 +40,23 @@ export function useReader() {
 	}
 
 	function resetCache(max = DEFAULT_READER_CACHE_SIZE) {
-		// Stryker disable next-line UpdateOperator: requestVersion só é comparado por
-		// (des)igualdade contra um valor capturado antes (`version !== requestVersion` /
-		// `version === requestVersion`), nunca ordenado ou exibido. Este é o único ponto
-		// de incremento, então a sequência de valores que produz é estritamente monotônica
-		// de qualquer jeito (0,1,2,... ou 0,-1,-2,...) — sempre injetiva, nunca colide com
-		// um valor anterior. Trocar ++ por -- rotula cada resultado "mudou" vs "não mudou"
-		// de forma idêntica; nenhuma checagem de igualdade neste arquivo distingue os dois.
-		// Verificado empiricamente.
+		// Stryker disable next-line UpdateOperator: requestVersion is only compared for
+		// (in)equality against a previously captured value (`version !== requestVersion` /
+		// `version === requestVersion`), never ordered or displayed. This is the only
+		// increment point, so the value sequence it produces is strictly monotonic either
+		// way (0,1,2,... or 0,-1,-2,...) — always injective, never colliding with a previous
+		// value. Swapping ++ for -- labels each "changed" vs "unchanged" result identically;
+		// no equality check in this file tells the two apart. Verified empirically.
 		requestVersion++;
 		pageCache.clear();
 		pageCache = createPageCache(max);
 		pendingPages.clear();
-		// Stryker disable next-line UpdateOperator: cacheVersion só é lido puro
-		// (`cacheVersion;`) dentro de blocks $derived.by pra forçar o Svelte a tratá-los
-		// como dependentes dele — seu valor numérico nunca é comparado nem exibido.
-		// ++ e -- mudam o valor em exatamente 1 a partir do que era, então os dois sempre
-		// disparam o dirty-check do Svelte e recomputam do mesmo jeito; a direção da
-		// mudança é inobservável. Verificado empiricamente.
+		// Stryker disable next-line UpdateOperator: cacheVersion is only read bare
+		// (`cacheVersion;`) inside $derived.by blocks to force Svelte to treat them as
+		// dependent on it — its numeric value is never compared or displayed. ++ and --
+		// change the value by exactly 1 from what it was, so both always trigger Svelte's
+		// dirty-check and recompute the same way; the direction of the change is
+		// unobservable. Verified empirically.
 		cacheVersion++;
 	}
 
@@ -88,22 +87,21 @@ export function useReader() {
 	}
 
 	function windowIndices(center: number) {
-		// Stryker disable next-line ConditionalExpression: prefetchWindow() (única
-		// chamadora desta função) já retorna cedo pelo seu próprio guard `if (!session)`,
-		// e faz isso de forma síncrona sem nenhum `await` antes de chamar windowIndices()
-		// — então `session` nunca pode mudar entre as duas checagens. Esse guard é
-		// inalcançavelmente falso dado o único call site atual. Verificado empiricamente.
+		// Stryker disable next-line ConditionalExpression: prefetchWindow() (the only caller
+		// of this function) already returns early through its own `if (!session)` guard,
+		// and does so synchronously without any `await` before calling windowIndices()
+		// — so `session` can never change between the two checks. This guard is
+		// unreachably false given the single current call site. Verified empirically.
 		if (!session) return [];
 
 		const start = Math.max(0, center - PREFETCH_RADIUS);
-		// Stryker disable next-line ArithmeticOperator: o único papel desse clamp é
-		// impedir a janela de passar da última página válida. Sempre que ele é a
-		// restrição ativa (ou seja, quando essa mutação mudaria o valor de `end`), todo
-		// índice que ela admitiria é >= pageCount e portanto inválido; o próprio guard
-		// isValidPage() do loadPage descarta esses silenciosamente antes de qualquer
-		// efeito colateral observável (sem chamada ao backend, sem escrita no cache).
-		// Verificado empiricamente: aplicar essa mutação e rodar a suíte inteira deixa
-		// todo teste verde.
+		// Stryker disable next-line ArithmeticOperator: this clamp's only role is to keep
+		// the window from going past the last valid page. Whenever it is the active
+		// constraint (i.e. when this mutation would change `end`'s value), every index it
+		// would admit is >= pageCount and therefore invalid; loadPage's own isValidPage()
+		// guard silently drops those before any observable side effect (no backend call,
+		// no cache write). Verified empirically: applying this mutation and running the
+		// whole suite leaves every test green.
 		const end = Math.min(session.pageCount - 1, center + PREFETCH_RADIUS);
 
 		return Array.from({ length: end - start + 1 }, (_, index) => start + index);
@@ -139,12 +137,12 @@ export function useReader() {
 				await syncCurrentPage(index);
 			}
 
-			// Stryker disable next-line UpdateOperator: cacheVersion só é lido puro
-			// (`cacheVersion;`) dentro de blocks $derived.by pra forçar o Svelte a tratá-los
-			// como dependentes dele — seu valor numérico nunca é comparado nem exibido.
-			// ++ e -- mudam o valor em exatamente 1 a partir do que era, então os dois
-			// sempre disparam o dirty-check do Svelte e recomputam do mesmo jeito; a
-			// direção da mudança é inobservável. Verificado empiricamente.
+			// Stryker disable next-line UpdateOperator: cacheVersion is only read bare
+			// (`cacheVersion;`) inside $derived.by blocks to force Svelte to treat them as
+			// dependent on it — its numeric value is never compared or displayed. ++ and --
+			// change the value by exactly 1 from what it was, so both always trigger
+			// Svelte's dirty-check and recompute the same way; the direction of the change
+			// is unobservable. Verified empirically.
 			cacheVersion++;
 			return cached;
 		}
@@ -153,10 +151,10 @@ export function useReader() {
 		if (pending) return pending;
 
 		const version = requestVersion;
-		// Stryker disable next-line OptionalChaining: isValidPage(index) no topo desta
-		// função já exigiu que `session` fosse truthy (ela curto-circuita `session && ...`
-		// pra false caso contrário), e nada entre essa checagem e esta linha usa await —
-		// então `session` ainda não pode ter virado undefined. Verificado empiricamente.
+		// Stryker disable next-line OptionalChaining: isValidPage(index) at the top of this
+		// function already required `session` to be truthy (it short-circuits `session && ...`
+		// to false otherwise), and nothing between that check and this line awaits — so
+		// `session` cannot have become undefined yet. Verified empirically.
 		const chapterId = session?.chapter.id;
 
 		const request = (async () => {
@@ -168,17 +166,17 @@ export function useReader() {
 					setCurrent
 				});
 
-				// Os dois disjuntos abaixo (`payload.chapterId !== chapterId` e `payload.chapterId
-				// !== session?.chapter.id`) só importam pro resultado quando `version ===
-				// requestVersion` (senão o primeiro disjunto acima já descarta). E `session` só
-				// muda via `open()` ou `close()`, e as duas sempre incrementam `requestVersion` de
-				// forma síncrona no mesmo tick da troca de sessão, sem nenhum `await` entre elas —
-				// então sempre que `version === requestVersion`, `session` não mudou desde a
-				// captura de `chapterId`, o que garante `chapterId === session?.chapter.id`. Ou
-				// seja, os dois disjuntos abaixo sempre avaliam pro MESMO booleano um do outro no
-				// único regime em que fazem diferença — mutar um sozinho nunca muda o resultado
-				// final, porque o outro (intacto) sempre "cobre" a mesma checagem. Verificado
-				// empiricamente.
+				// The two disjuncts below (`payload.chapterId !== chapterId` and `payload.chapterId
+				// !== session?.chapter.id`) only matter for the result when `version ===
+				// requestVersion` (otherwise the first disjunct above already discards). And
+				// `session` only changes via `open()` or `close()`, both of which always increment
+				// `requestVersion` synchronously in the same tick as the session swap, with no
+				// `await` in between — so whenever `version === requestVersion`, `session` hasn't
+				// changed since `chapterId` was captured, which guarantees
+				// `chapterId === session?.chapter.id`. That is, the two disjuncts below always
+				// evaluate to the SAME boolean in the only regime where they make a difference —
+				// mutating one alone never changes the final result, because the other (intact)
+				// one always "covers" the same check. Verified empirically.
 				if (
 					version !== requestVersion ||
 					// Stryker disable next-line ConditionalExpression
@@ -198,10 +196,9 @@ export function useReader() {
 				}
 
 				error = null;
-				// Stryker disable next-line UpdateOperator: mesmo raciocínio dos outros
-				// pontos de cacheVersion++ — só é lido puro como gatilho de dependência
-				// do Svelte, nunca comparado, então ++ vs -- é inobservável. Verificado
-				// empiricamente.
+				// Stryker disable next-line UpdateOperator: same reasoning as the other
+				// cacheVersion++ points — only read bare as a Svelte dependency trigger,
+				// never compared, so ++ vs -- is unobservable. Verified empirically.
 				cacheVersion++;
 
 				return page;
@@ -224,25 +221,24 @@ export function useReader() {
 	}
 
 	async function syncCurrentPage(index: number) {
-		// Stryker disable next-line ConditionalExpression: a única chamadora desta
-		// função (o branch de cache do loadPage) obtém `cached` via `pageCache.get(index)`
-		// imediatamente antes de chamar syncCurrentPage(index) com esse MESMO índice, e
-		// isValidPage(index) fica implícito verdadeiro pra qualquer índice que tenha sido
-		// realmente cacheado — nada usa await no meio, então esse guard nunca observa um
-		// índice inválido. Verificado empiricamente.
+		// Stryker disable next-line ConditionalExpression: this function's only caller
+		// (loadPage's cache branch) gets `cached` via `pageCache.get(index)` right before
+		// calling syncCurrentPage(index) with that SAME index, and isValidPage(index) is
+		// implicitly true for any index that was actually cached — nothing awaits in
+		// between, so this guard never sees an invalid index. Verified empirically.
 		if (!isValidPage(index)) return;
 
 		currentPage = index;
-		// Stryker disable next-line CallExpression: a chamadora acima já chamou
-		// `pageCache.get(index)` (não `.peek()`) pra esse índice exato logo antes de
-		// invocar syncCurrentPage, o que já promoveu a entrada a mais-recentemente-usada
-		// no cache LRU. Essa segunda chamada de `.get()` retoca a mesma entrada já-MRU —
-		// um no-op pra fins de ordenação, já que nada mais lê ou escreve no cache nesse
-		// meio tempo. Verificado empiricamente.
+		// Stryker disable next-line CallExpression: the caller above already called
+		// `pageCache.get(index)` (not `.peek()`) for this exact index right before invoking
+		// syncCurrentPage, which already promoted the entry to most-recently-used in the
+		// LRU cache. This second `.get()` call touches the same already-MRU entry again — a
+		// no-op for ordering purposes, since nothing else reads or writes the cache in the
+		// meantime. Verified empirically.
 		pageCache.get(index);
-		// Stryker disable next-line UpdateOperator: mesmo raciocínio dos outros pontos
-		// de cacheVersion++ — só é lido puro como gatilho de dependência do Svelte,
-		// nunca comparado, então ++ vs -- é inobservável. Verificado empiricamente.
+		// Stryker disable next-line UpdateOperator: same reasoning as the other
+		// cacheVersion++ points — only read bare as a Svelte dependency trigger, never
+		// compared, so ++ vs -- is unobservable. Verified empirically.
 		cacheVersion++;
 
 		try {

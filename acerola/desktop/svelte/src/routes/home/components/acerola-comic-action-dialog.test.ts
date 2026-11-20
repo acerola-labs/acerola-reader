@@ -16,7 +16,7 @@ vi.mock('@tauri-apps/plugin-log', () => ({
 	error: vi.fn()
 }));
 
-// Mock do element.animate para jsdom
+// Mock of element.animate for jsdom
 if (!window.HTMLElement.prototype.animate) {
 	window.HTMLElement.prototype.animate = function () {
 		const self = {} as Animation;

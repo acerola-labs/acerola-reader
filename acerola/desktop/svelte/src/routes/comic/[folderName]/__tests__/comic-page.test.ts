@@ -33,10 +33,10 @@ vi.mock('@tauri-apps/api/core', () => ({
 	convertFileSrc: (path: string) => `asset://${path}`
 }));
 
-// A tela dispara listen() pra 4 fontes ao montar (comic:chapters, comic:chapters:error via
-// useComicChapters, e mais uma dezena via peers.startListening()/p2pSync.startListening()) —
-// capturamos os callbacks por nome de evento pra poder simular o evento de dados chegando
-// depois do invoke() (o back-end responde via evento, o retorno do invoke em si é descartado).
+// The screen fires listen() for 4 sources on mount (comic:chapters, comic:chapters:error via
+// useComicChapters, plus a dozen more via peers.startListening()/p2pSync.startListening()) —
+// we capture the callbacks by event name to simulate the data event arriving after invoke()
+// (the backend answers via an event, the invoke return itself is discarded).
 const listenCallbacks = new Map<string, (event: { payload: unknown }) => void>();
 let intersectionCallback: IntersectionObserverCallback | undefined;
 
@@ -137,12 +137,12 @@ function renderComicPage(
 ) {
 	const activeComic = new ActiveComicState();
 
-	// `p2pSync` agora vem do contexto compartilhado com `+layout.svelte` (ver
-	// `CONTEXT_KEYS.networkSync`), não de uma instância própria da página — sem prover esse
-	// contexto aqui, `getContext(...)` devolve `undefined` e o primeiro acesso a
-	// `p2pSync.log` (dentro do `$effect` da página) explode. `Map<symbol, unknown>` explícito:
-	// sem isso, TS infere o tipo a partir da PRIMEIRA tupla (`ActiveComicState`) e rejeita a
-	// segunda entrada — os dois lados de `getContext<T>(...)` já fazem o cast na leitura.
+	// `p2pSync` now comes from the context shared with `+layout.svelte` (see
+	// `CONTEXT_KEYS.networkSync`), not from a page-owned instance — without providing that
+	// context here, `getContext(...)` returns `undefined` and the first access to `p2pSync.log`
+	// (inside the page's `$effect`) blows up. Explicit `Map<symbol, unknown>`: without it, TS
+	// infers the type from the FIRST tuple (`ActiveComicState`) and rejects the second entry —
+	// both sides of `getContext<T>(...)` already cast on read.
 	return render(ComicPage, {
 		props: { data: { ...data, initialVolumeViewMode: undefined } },
 		context: new Map<symbol, unknown>([
@@ -168,14 +168,14 @@ function renderComicPage(
 	});
 }
 
-// O título aparece duas vezes (header mobile sticky + ComicMetadataPanel), então
-// findByText falha por ambiguidade — findAllByText espera o render terminar igual.
+// The title shows up twice (sticky mobile header + ComicMetadataPanel), so findByText fails
+// on ambiguity — findAllByText waits for the render to finish just the same.
 async function waitForTitle(title: string) {
 	await waitFor(() => expect(screen.getAllByText(title).length).toBeGreaterThan(0));
 }
 
-// O título do capítulo é reaproveitado como description no card (comic.name vira title E
-// fileName na página) — getAllByText em vez de getByText evita a ambiguidade.
+// The chapter title is reused as the card description (comic.name becomes both title AND
+// fileName on the page) — getAllByText instead of getByText avoids the ambiguity.
 async function findChapterCard(text: string) {
 	return (await screen.findAllByText(text))[0];
 }
@@ -210,9 +210,9 @@ describe('comic/[folderName] +page', () => {
 			save: vi.fn().mockResolvedValue(undefined)
 		});
 
-		// acerola-comic-chapter-list.svelte só monta o conteúdo real (AcerolaHeroButton) quando o
-		// IntersectionObserver reporta a página como visível — capturamos o callback pra
-		// simular isso manualmente (ver revealFirstPage), igual acerola-comic-chapter-list.test.ts.
+		// acerola-comic-chapter-list.svelte only mounts the real content (AcerolaHeroButton) when
+		// the IntersectionObserver reports the page as visible — we capture the callback to
+		// simulate that by hand (see revealFirstPage), like acerola-comic-chapter-list.test.ts.
 		intersectionCallback = undefined;
 		globalThis.IntersectionObserver = class {
 			constructor(callback: IntersectionObserverCallback) {
@@ -223,9 +223,9 @@ describe('comic/[folderName] +page', () => {
 			disconnect = vi.fn();
 		} as unknown as typeof IntersectionObserver;
 
-		// jsdom nesta versão expõe Element.prototype.animate mas devolve undefined em vez de
-		// um Animation — o guard `if (!Element.prototype.animate)` do setup.ts global não pega
-		// esse caso, e o bits-ui ToggleGroupItem quebra tentando setar `.onfinish` no retorno.
+		// jsdom in this version exposes Element.prototype.animate but returns undefined instead
+		// of an Animation — the global setup.ts `if (!Element.prototype.animate)` guard doesn't
+		// catch that case, and bits-ui's ToggleGroupItem breaks trying to set `.onfinish` on it.
 		Element.prototype.animate = vi.fn().mockImplementation(() => ({
 			finished: Promise.resolve(),
 			cancel: vi.fn(),
@@ -290,8 +290,8 @@ describe('comic/[folderName] +page', () => {
 
 		await user.click(screen.getByRole('radio', { name: /preferences|preferências/i }));
 
-		// ComicPreferences abre na lista de categorias (Leitura/Sincronização/Avançado) por
-		// padrão — checa que o painel de preferências realmente montou.
+		// ComicPreferences opens on the category list (Reading/Sync/Advanced) by default —
+		// checks that the preferences panel really mounted.
 		expect(await screen.findByText(/^leitura$/i)).toBeInTheDocument();
 	});
 
@@ -307,8 +307,8 @@ describe('comic/[folderName] +page', () => {
 
 		await user.click(screen.getByRole('radio', { name: /preferences|preferências/i }));
 		await user.click(await screen.findByText(/^sincronização$/i));
-		// título do card ("MangaDex Sync" / "Sincronização com MangaDex") — a description do
-		// card também contém "mangadex", então precisa da frase completa pra não ambiguar.
+		// card title ("MangaDex Sync" / "Sincronização com MangaDex") — the card description
+		// also contains "mangadex", so the full phrase is needed to avoid ambiguity.
 		await user.click(await screen.findByText(/mangadex sync|sincronização com mangadex/i));
 
 		await waitFor(() => expect(toast.error).toHaveBeenCalled());

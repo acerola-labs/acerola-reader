@@ -79,8 +79,8 @@ describe('useMetadataSync', () => {
 		const hook = await renderMetadataSyncHook();
 
 		const pending = hook.syncMangadex('Naruto', '123');
-		// `syncMangadex`/`syncAnilist` esperam `load()` + 2x `store.get()` antes de chegar
-		// no `invoke` — um macrotask garante que o mock já capturou `resolveSync` de verdade.
+		// `syncMangadex`/`syncAnilist` await `load()` + 2x `store.get()` before reaching the
+		// `invoke` — a macrotask ensures the mock has really captured `resolveSync`.
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(hook.isSyncing).toBe(true);
@@ -152,8 +152,8 @@ describe('useMetadataSync', () => {
 		const hook = await renderMetadataSyncHook();
 
 		const pending = hook.syncAnilist('Bleach', '456');
-		// `syncMangadex`/`syncAnilist` esperam `load()` + 2x `store.get()` antes de chegar
-		// no `invoke` — um macrotask garante que o mock já capturou `resolveSync` de verdade.
+		// `syncMangadex`/`syncAnilist` await `load()` + 2x `store.get()` before reaching the
+		// `invoke` — a macrotask ensures the mock has really captured `resolveSync`.
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		expect(hook.isSyncing).toBe(true);

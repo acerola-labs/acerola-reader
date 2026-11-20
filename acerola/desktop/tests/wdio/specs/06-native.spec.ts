@@ -12,11 +12,11 @@ describe('native acerola via WebDriverIO', () => {
 		await waitForAppReady();
 
 		const title = await getTitle();
-		// título pode ser vazio se o app não setar document.title — valida só a URL
+		// title may be empty if the app does not set document.title — only check the URL
 		const url = await browser.getUrl();
 		expect(url).toMatch(/tauri:\/\/localhost|localhost/i);
 
-		// se tiver título, não pode ser vazio
+		// if there is a title, it must not be empty
 		if (title !== '') {
 			expect(typeof title).toBe('string');
 		}
@@ -29,14 +29,14 @@ describe('native acerola via WebDriverIO', () => {
 		const selectFolderButton = await browser.$('//*[normalize-space()="Pasta dos quadrinhos"]');
 		await selectFolderButton.waitForDisplayed({ timeout: 5_000 });
 
-		// WebDriver não controla o dialog nativo — valida apenas que o IPC
-		// foi disparado sem travar o app
+		// WebDriver does not control the native dialog — only check that the IPC
+		// was triggered without freezing the app
 		await selectFolderButton.click();
 		await browser.pause(300);
 		await browser.keys(['Escape']).catch(() => undefined);
 		await browser.pause(300);
 
-		// app ainda responde
+		// app still responds
 		const url = await browser.getUrl();
 		expect(url).toMatch(/tauri:\/\/localhost|localhost/i);
 	});
@@ -72,7 +72,7 @@ describe('native acerola via WebDriverIO', () => {
 			const afterRect = await browser.getWindowRect();
 			const visibilityState = await browser.execute(() => document.visibilityState);
 
-			// Windows/WebView2 mantém o tamanho, mas move a janela minimizada para fora da tela.
+			// Windows/WebView2 keeps the size, but moves the minimized window off screen.
 			const movedOffscreen = afterRect.x < -10_000 || afterRect.y < -10_000;
 			const wasMinimized =
 				visibilityState !== 'visible' || afterRect.height < beforeRect.height || movedOffscreen;

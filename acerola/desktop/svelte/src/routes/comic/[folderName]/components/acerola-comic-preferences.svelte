@@ -5,24 +5,24 @@
 		data?: {
 			hasVolumeStructure?: boolean;
 			bookmarks?: { id: number; name: string; color: number }[];
-			/** Dispositivos já pareados (ver `usePeerConnection().pairedPeers`), resolvidos pelo
-			 *  chamador com rótulo pronto pra exibir e o `addrs` já disponível pra disparar
-			 *  `syncComic` sem essa tela precisar conhecer o hook de rede. */
+			/** Already paired devices (see `usePeerConnection().pairedPeers`), resolved by the
+			 *  caller with a display-ready label and the `addrs` already available to fire
+			 *  `syncComic` without this screen needing to know the network hook. */
 			pairedPeers?: { peerId: string; label: string; addrs: number[] }[];
 		};
 		state: {
 			volumeViewMode: 'cover' | 'banner';
 			bookmarkId: number | null;
 			externalSyncEnabled: boolean;
-			/** `peerId`s com um sync individual em andamento agora (pode ser mais de um em
-			 *  paralelo, um por dispositivo) — só pra desabilitar o item da lista certo e
-			 *  mostrar o spinner. */
+			/** `peerId`s with an individual sync running right now (may be more than one in
+			 *  parallel, one per device) — only to disable the right list item and show the
+			 *  spinner. */
 			syncingPeerIds?: string[];
-			/** `useMetadataSync().isSyncing` do chamador — true durante mangadex/anilist/comicInfo,
-			 *  desabilita os três botões pra evitar disparo duplo enquanto um já roda. */
+			/** The caller's `useMetadataSync().isSyncing` — true during mangadex/anilist/comicInfo,
+			 *  disables the three buttons to avoid a double fire while one is already running. */
 			metadataSyncing?: boolean;
-			/** Cada uma reflete o loading do respectivo `on*` abaixo — sem isso o ícone de
-			 *  refresh fica parado o tempo todo, sem nenhum feedback de que a ação está rodando. */
+			/** Each reflects the loading state of the matching `on*` below — without it the
+			 *  refresh icon stays still the whole time, with no feedback that the action is running. */
 			rescanning?: boolean;
 			regeneratingCover?: boolean;
 			regeneratingVolumeCovers?: boolean;
@@ -38,7 +38,7 @@
 			onRegenerateCover?: () => void;
 			onRegenerateVolumeCovers?: () => void;
 			onClearMetadata?: () => Promise<void> | void;
-			/** Dispara `syncComic` pro `peerId` escolhido, na direção explícita clicada — ver
+			/** Fires `syncComic` for the chosen `peerId`, in the explicitly clicked direction — see
 			 *  `use-network-sync.svelte.ts`. */
 			onSyncToDevice?: (
 				peerId: string,
@@ -87,12 +87,12 @@
 	let showClearMetadataDialog = $state(false);
 	let showPeerMenu = $state(false);
 
-	// 3 categorias (Leitura / Sincronização / Avançado) em vez das 6 abas de antes, expandindo
-	// inline na própria lista — sem navegar pra outra tela. Mais de uma pode ficar aberta ao
-	// mesmo tempo. Sincronização fica sempre aberta (flat, `ui.collapsible: false` abaixo) — é a
-	// categoria mais usada (metadados, arquivos e dispositivos pareados), então não vale esconder
-	// atrás de um clique; Leitura e Avançado continuam colapsadas por padrão. Mesmo mix de
-	// UI/UX já usado no root de config/ (Aparência/Marcadores flat, o resto colapsado).
+	// 3 categories (Reading / Sync / Advanced) instead of the previous 6 tabs, expanding inline
+	// in the list itself — without navigating to another screen. More than one can be open at
+	// the same time. Sync is always open (flat, `ui.collapsible: false` below) — it is the most
+	// used category (metadata, files and paired devices), so it isn't worth hiding behind a
+	// click; Reading and Advanced stay collapsed by default. Same UI/UX mix already used in
+	// the config/ root (Appearance/Bookmarks flat, the rest collapsed).
 	const expandedCategories = new SvelteSet<string>();
 
 	function toggleCategory(id: string) {
@@ -103,9 +103,9 @@
 		}
 	}
 
-	// Cor de borda no hover de cada categoria colapsável — combina com a cor do ícone (mesma
-	// paleta chart-N), reforçando a identidade visual de cada card no hover. Sincronização não
-	// entra aqui: fica sempre aberta, sem clique nenhum pra destacar no hover.
+	// Hover border color of each collapsible category — matches the icon color (same chart-N
+	// palette), reinforcing each card's visual identity on hover. Sync isn't included: it is
+	// always open, with no click to highlight on hover.
 	const CATEGORY_HOVER_BORDER: Record<string, string> = {
 		reading: '',
 		advanced: ''
@@ -113,7 +113,7 @@
 </script>
 
 <div class="grid gap-4">
-	<!-- Leitura -->
+	<!-- Reading -->
 	<AcerolaAccordionCard
 		data={{
 			title: m['pages.comic.preferences.reading'](),
@@ -204,8 +204,8 @@
 		{/snippet}
 	</AcerolaAccordionCard>
 
-	<!-- Sincronização — fica sempre aberta (flat): metadados, arquivos e dispositivos pareados
-	     são a parte mais usada dessa tela, não vale esconder atrás de um clique. -->
+	<!-- Sync — always open (flat): metadata, files and paired devices are the most used part
+	     of this screen, not worth hiding behind a click. -->
 	<AcerolaAccordionCard
 		data={{
 			title: m['pages.comic.preferences.categories.sync.title'](),
@@ -229,8 +229,8 @@
 				</div>
 
 				<div class="grid gap-4">
-					<!-- Toggle + revela os botões de sync junto, num card só — mesmo formato do card
-					     "Rede pública Iroh" da tela de Rede. -->
+					<!-- Toggle + reveals the sync buttons together, in a single card — same shape as
+					     the Network screen's "Iroh public network" card. -->
 					<AcerolaToggleCard
 						data={{
 							title: m['pages.comic.preferences.externalSync.title'](),
@@ -486,7 +486,7 @@
 		{/snippet}
 	</AcerolaAccordionCard>
 
-	<!-- Avançado -->
+	<!-- Advanced -->
 	<AcerolaAccordionCard
 		data={{
 			title: m['pages.comic.preferences.categories.advanced.title'](),
