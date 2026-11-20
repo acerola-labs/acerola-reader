@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +52,7 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
+import br.acerola.comic.common.ux.component.EmptyState
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
@@ -203,10 +205,9 @@ private fun TransferLogList(
 ) {
     if (entries.isEmpty()) {
         Box(modifier = modifier, contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(id = R.string.label_sync_activity_log_empty),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            Acerola.Component.EmptyState(
+                title = stringResource(id = R.string.label_sync_activity_log_empty),
+                icon = Icons.Rounded.SwapVert,
             )
         }
     } else {
