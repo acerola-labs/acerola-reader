@@ -127,7 +127,9 @@ describe('AcerolaNetworkPeerList', () => {
 			}
 		});
 
-		expect(screen.getByText(/Offline|desconectado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/isn't reachable right now|não está acessível agora/i)
+		).toBeInTheDocument();
 	});
 
 	it('disables the sync-all button when the peer has no known address', () => {

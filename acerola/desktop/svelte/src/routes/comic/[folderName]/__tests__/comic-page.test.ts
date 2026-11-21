@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/svelte';
+import { render, screen, waitFor, within } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -308,10 +308,11 @@ describe('comic/[folderName] +page', () => {
 		await emitChapters(chapterPayload());
 
 		await user.click(screen.getByRole('radio', { name: /preferences|preferências/i }));
-		await user.click(await screen.findByText(/^sincronização$/i));
-		// card title ("MangaDex Sync" / "Sincronização com MangaDex") — the card description
-		// also contains "mangadex", so the full phrase is needed to avoid ambiguity.
-		await user.click(await screen.findByText(/mangadex sync|sincronização com mangadex/i));
+		// The MangaDex row (title "MangaDex Sync" / "Sincronização com MangaDex") carries its own
+		// "Sincronizar" pill — scoped to the row, since other rows have the same label.
+		const title = await screen.findByText(/mangadex sync|sincronização com mangadex/i);
+		const row = title.closest('[data-surface="surface"]') as HTMLElement;
+		await user.click(within(row).getByRole('button', { name: /^(sync|sincronizar)$/i }));
 
 		await waitFor(() => expect(toast.error).toHaveBeenCalled());
 	});

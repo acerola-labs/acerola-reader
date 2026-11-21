@@ -84,7 +84,8 @@ describe('AcerolaReaderPages', () => {
 			})
 		});
 
-		expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+		// Loading is a skeleton in the shape of a page, never a loose spinner.
+		expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
 		expect(container.querySelector('section')).not.toBeInTheDocument();
 	});
 
@@ -110,7 +111,7 @@ describe('AcerolaReaderPages', () => {
 		expect(sections).toHaveLength(3);
 		expect(tracker).toHaveBeenCalledTimes(3);
 		expect(screen.getByRole('img', { name: 'Página 2' })).toHaveAttribute('src', 'blob:page-2');
-		expect(container.querySelectorAll('.animate-spin')).toHaveLength(2);
+		expect(container.querySelectorAll('.animate-pulse')).toHaveLength(2);
 	});
 
 	it('applies correct classes for each reading mode', () => {

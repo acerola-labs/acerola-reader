@@ -138,7 +138,7 @@ describe('HistoryPage', () => {
 			expect(mockInvoke).toHaveBeenCalledWith('history_get_all', undefined);
 		});
 
-		expect(screen.getByText(/Nenhum histórico encontrado/i)).toBeInTheDocument();
+		expect(screen.getByText(/Nenhum histórico ainda/i)).toBeInTheDocument();
 	});
 
 	it('renders history items successfully', async () => {

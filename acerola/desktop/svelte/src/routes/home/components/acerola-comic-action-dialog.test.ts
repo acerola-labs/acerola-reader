@@ -95,9 +95,7 @@ describe('AcerolaComicActionDialog', () => {
 		).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Hide|Ocultar/i })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Delete|Deletar/i })).toBeInTheDocument();
-		expect(
-			screen.getByRole('button', { name: /Adicionar marcador/i })
-		).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Adicionar marcador/i })).toBeInTheDocument();
 		expect(
 			screen.getByRole('button', { name: /Select all|Selecionar todos/i })
 		).toBeInTheDocument();

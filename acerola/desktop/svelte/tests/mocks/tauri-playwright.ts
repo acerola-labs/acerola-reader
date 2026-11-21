@@ -47,6 +47,9 @@ export type InstallTauriMocksOptions = {
 	 *  Without it the store starts empty and the app always shows onboarding, since
 	 *  `useOnboarding().isCompleted` reads `onboarding_completed` from the store. */
 	storeSeed?: Record<string, Record<string, unknown>>;
+	/** Answer for any command without a handler. Specs leave it out so an unmocked call fails
+	 *  loudly; the visual audit sets it to walk every screen without mocking each command. */
+	fallback?: (command: string, args: unknown) => unknown;
 };
 
 // IPC calls made unconditionally by `+layout.svelte` (bookmarks + package identity in DEV)
@@ -92,6 +95,7 @@ export async function installTauriMocks(
 		'__acerolaTauriHandleCommand',
 		async (command: string, args?: unknown) => {
 			if (!(command in mergedHandlers)) {
+				if (options.fallback) return options.fallback(command, args);
 				throw new Error(`unmocked: ${command}`);
 			}
 

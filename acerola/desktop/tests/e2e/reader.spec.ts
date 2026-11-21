@@ -80,6 +80,9 @@ test.describe('reader', () => {
 		// before testing the page change, as a real user would.
 		await page.keyboard.press('Control+0');
 		await expect(page.getByRole('button', { name: 'Aplicar zoom' })).toBeVisible();
+		// The footer only leaves 165% once the reset has landed, which is also when the page
+		// controls unlock — without this wait ArrowLeft can race the reset.
+		await expect(page.getByText(/Zoom 100%/)).toBeVisible();
 
 		await page.keyboard.press('ArrowLeft');
 		await expect(page.getByText(/1 \/ 3 páginas/)).toBeVisible();
