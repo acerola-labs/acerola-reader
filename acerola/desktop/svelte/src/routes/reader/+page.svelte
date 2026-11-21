@@ -419,7 +419,7 @@
 
 {#if nav.initializing}
 	<div
-		class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-base/95 backdrop-blur-xl transition-opacity duration-300"
+		class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-background transition-opacity duration-300"
 	>
 		<div class="flex flex-col items-center gap-4">
 			<!-- Loading skeleton in the shape of a page, never a loose spinner (Acerola standard). -->

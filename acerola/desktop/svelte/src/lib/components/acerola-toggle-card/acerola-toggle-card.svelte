@@ -7,7 +7,7 @@
 			subtitle?: string;
 		};
 		state: {
-			/** Controls the highlighted border/background and the check badge — "this source/option
+			/** Controls the highlighted background and the check badge — "this source/option
 			 *  is on now". May stay always `false` in a consumer that only uses the card as a
 			 *  simple "drawer" (disclosure), without an on/off notion (see usage in
 			 *  `acerola-bookmark-manager.svelte`). */
@@ -55,8 +55,8 @@
 
 <div
 	class={cn(
-		'overflow-hidden rounded-inner border-2 transition-all duration-200',
-		state.active ? ' bg-primary/5' : 'border-border/60 bg-card',
+		'overflow-hidden rounded-tile transition-colors duration-200 ease-brand',
+		state.active ? 'bg-primary-soft' : 'bg-surface',
 		ui?.class
 	)}
 >
@@ -64,12 +64,12 @@
 		type="button"
 		onclick={events.onClick}
 		disabled={ui?.disabled}
-		class="group flex w-full items-center gap-3 p-4 text-left enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+		class="group flex w-full items-center gap-3 p-4 text-left enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
 	>
 		{#if icon}
 			<div
 				class={cn(
-					'flex size-10 shrink-0 items-center justify-center rounded-inner bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+					'flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-foreground transition-[filter] group-hover:brightness-110',
 					ui?.iconClass
 				)}
 			>
@@ -77,7 +77,7 @@
 			</div>
 		{/if}
 		<div class="min-w-0 flex-1">
-			<p class="text-sm font-semibold text-foreground">{data.title}</p>
+			<p class="text-sm font-black tracking-tight text-foreground">{data.title}</p>
 			{#if data.subtitle}
 				<p class="truncate text-xs text-muted-foreground">{data.subtitle}</p>
 			{/if}
@@ -93,7 +93,7 @@
 	</button>
 
 	{#if state.expanded && children}
-		<div transition:slide={{ duration: 200 }} class="space-y-2 border-t border-border/60 p-3">
+		<div transition:slide={{ duration: 200 }} class="space-y-2 px-4 pb-4">
 			{@render children()}
 		</div>
 	{/if}

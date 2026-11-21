@@ -43,7 +43,7 @@
 </script>
 
 <header
-	class="relative z-20 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-surface/40 bg-base/95 px-4 py-2 backdrop-blur-md"
+	class="relative z-20 flex min-h-16 shrink-0 items-center justify-between gap-3 bg-mantle px-4 py-2"
 >
 	<div class="flex min-w-0 flex-1 items-center gap-3">
 		<AcerolaButtonIcon
@@ -58,9 +58,9 @@
 		</AcerolaButtonIcon>
 
 		<div class="min-w-0">
-			<p class="truncate text-sm font-black">{data.title}</p>
+			<p class="truncate text-sm font-black tracking-tight">{data.title}</p>
 			{#if data.subtitle}
-				<p class="text-overlay truncate text-xs">{data.subtitle}</p>
+				<p class="truncate text-xs text-muted-foreground">{data.subtitle}</p>
 			{/if}
 		</div>
 	</div>

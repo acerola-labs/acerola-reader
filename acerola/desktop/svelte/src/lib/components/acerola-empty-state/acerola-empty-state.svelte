@@ -34,7 +34,7 @@
 	{:else}
 		<img src="/brand/acerola-mascot.svg" alt="" class="mb-1 size-24" />
 	{/if}
-	<p class="font-black tracking-tight text-base">{data.title}</p>
+	<p class="text-base font-black tracking-tight">{data.title}</p>
 	{#if data.hint}
 		<p class="max-w-72 text-sm text-muted-foreground">{data.hint}</p>
 	{/if}

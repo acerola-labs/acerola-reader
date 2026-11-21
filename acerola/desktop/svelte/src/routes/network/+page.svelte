@@ -29,7 +29,6 @@
 
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
 	import XIcon from '@lucide/svelte/icons/x';
-	import NetworkIcon from '@lucide/svelte/icons/network';
 
 	const peers = usePeerConnection();
 	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
@@ -145,46 +144,38 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-6xl space-y-8 p-6 sm:p-8">
-	<!-- Header -->
-	<div class="space-y-2">
-		<div
-			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-subtext backdrop-blur-xs"
-		>
-			<NetworkIcon size={13} class="text-primary" />
-			<span>{m['pages.network.title']()}</span>
-		</div>
-		<h1 class="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+<div class="mx-auto grid w-full max-w-6xl gap-6 px-8 pt-8 pb-14">
+	<header class="grid gap-2">
+		<p class="text-xs font-semibold text-muted-foreground">{m['pages.network.eyebrow']()}</p>
+		<h1 class="text-[44px] leading-none font-black tracking-tighter text-foreground">
 			{m['pages.network.title']()}
 		</h1>
-		<p class="text-sm leading-relaxed font-normal text-subtext sm:text-base">
-			{m['pages.network.subtitle']()}
-		</p>
-	</div>
+		<p class="text-sm text-muted-foreground">{m['pages.network.subtitle']()}</p>
+	</header>
 
 	{#if keyringUnavailable && !keyringWarningDismissed}
-		<div class="flex items-start gap-3 rounded-card bg-destructive-soft p-4">
-			<ShieldAlertIcon size={18} class="mt-0.5 shrink-0 text-destructive" />
-			<p class="flex-1 text-sm text-foreground">{m['pages.network.keyringUnavailable']()}</p>
+		<div
+			class="flex items-center gap-3 rounded-card bg-destructive-soft p-4 text-destructive"
+			role="alert"
+		>
+			<ShieldAlertIcon size={18} class="shrink-0" />
+			<p class="flex-1 text-sm font-semibold">{m['pages.network.keyringUnavailable']()}</p>
 			<AcerolaButtonIcon
 				events={{ onClick: () => (keyringWarningDismissed = true) }}
 				ui={{
-					variant: 'ghost',
-					tone: 'muted',
-					class: 'size-8 shrink-0 rounded-inner p-1',
+					tone: 'destructive',
 					title: m['pages.network.dismiss'](),
 					'aria-label': m['pages.network.dismiss']()
 				}}
 			>
-				<XIcon size={14} />
+				<XIcon size={16} />
 			</AcerolaButtonIcon>
 		</div>
 	{/if}
 
-	<!-- 2 Columns: items on the left, QR Code pinned on the right ignoring the scroll -->
-	<div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-		<!-- Left column: interactive items and device list -->
-		<div class="flex flex-col gap-8 lg:col-span-7">
+	<!-- Two columns: the settings on the left, the connection code pinned on the right. -->
+	<div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+		<div class="grid gap-6 lg:col-span-7">
 			<AcerolaNetworkMyDeviceCard
 				data={{
 					deviceName: peers.localDeviceInfo?.name,
@@ -219,49 +210,45 @@
 				}}
 			/>
 
-			<!-- Relay Settings and History -->
-			<div class="space-y-6">
-				<AcerolaNetworkRelaySettingsCard
-					data={relay.relayInfo}
-					events={{
-						onToggleAcerolaRelay: (value) => relay.setUseAcerolaRelay(value),
-						onToggleIrohPublicNetwork: (value) => relay.setUseIrohPublicNetwork(value),
-						onAddCustomRelayUrl: (url) => relay.addCustomRelayUrl(url),
-						onRemoveCustomRelayUrl: (url) => relay.removeCustomRelayUrl(url),
-						onSetIrohServicesTicket: (ticket) => relay.setIrohServicesTicket(ticket),
-						onClearIrohServicesTicket: () => relay.clearIrohServicesTicket(),
-						onRestart: async () => {
-							await relay.restartP2p();
-							toast.success(m['pages.network.relaySettings.restart.success']());
-						}
-					}}
-				/>
+			<AcerolaNetworkRelaySettingsCard
+				data={relay.relayInfo}
+				events={{
+					onToggleAcerolaRelay: (value) => relay.setUseAcerolaRelay(value),
+					onToggleIrohPublicNetwork: (value) => relay.setUseIrohPublicNetwork(value),
+					onAddCustomRelayUrl: (url) => relay.addCustomRelayUrl(url),
+					onRemoveCustomRelayUrl: (url) => relay.removeCustomRelayUrl(url),
+					onSetIrohServicesTicket: (ticket) => relay.setIrohServicesTicket(ticket),
+					onClearIrohServicesTicket: () => relay.clearIrohServicesTicket(),
+					onRestart: async () => {
+						await relay.restartP2p();
+						toast.success(m['pages.network.relaySettings.restart.success']());
+					}
+				}}
+			/>
 
-				<!-- Transfers -->
-				<AcerolaNetworkTransfersLog
-					data={{ entries: sync.log, peerLabel: peers.peerLabel }}
-					events={{
-						onRefresh: async () => {
-							try {
-								await sync.refreshLog();
-							} catch (err) {
-								toast.error(extractErrorMessage(err));
-							}
-						},
-						onClear: async () => {
-							try {
-								await sync.clearLog();
-							} catch (err) {
-								toast.error(extractErrorMessage(err));
-							}
+			<!-- Transfers -->
+			<AcerolaNetworkTransfersLog
+				data={{ entries: sync.log, peerLabel: peers.peerLabel }}
+				events={{
+					onRefresh: async () => {
+						try {
+							await sync.refreshLog();
+						} catch (err) {
+							toast.error(extractErrorMessage(err));
 						}
-					}}
-				/>
-			</div>
+					},
+					onClear: async () => {
+						try {
+							await sync.clearLog();
+						} catch (err) {
+							toast.error(extractErrorMessage(err));
+						}
+					}
+				}}
+			/>
 		</div>
 
-		<!-- Right column: Pairing QR Card pinned, ignoring the scroll -->
-		<div class="lg:sticky lg:top-20 lg:col-span-5">
+		<div class="lg:sticky lg:top-22 lg:col-span-5">
 			<AcerolaNetworkPairingCard data={{ code: peers.connectionCode() }} />
 		</div>
 	</div>

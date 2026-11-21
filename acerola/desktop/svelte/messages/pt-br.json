@@ -36,8 +36,8 @@
 			"title": "Mudar tema"
 		},
 		"bookmarkRibbon": {
-			"defaultLabel": "Com bookmark",
-			"label": "Bookmark: {name}"
+			"defaultLabel": "Com marcador",
+			"label": "Marcador: {name}"
 		},
 		"copyButton": {
 			"copy": "Copiar",
@@ -170,7 +170,8 @@
 		"command": {
 			"navigationGroup": "Navegação",
 			"libraryGroup": "Biblioteca",
-			"noResults": "Nenhum quadrinho encontrado."
+			"noResults": "Nenhum quadrinho encontrado",
+			"chapterCount": "{count} capítulos"
 		},
 		"syncIndicator": {
 			"syncing": "Sincronizando com {peer}",
@@ -187,7 +188,7 @@
 	"pages": {
 		"home": {
 			"loading": "Carregando...",
-			"noComics": "Nenhum quadrinho encontrado.",
+			"noComics": "Nenhum quadrinho encontrado",
 			"empty": {
 				"desc": "Sua biblioteca está vazia no momento. Execute uma sincronização rápida na pasta atual ou selecione outra pasta contendo seus quadrinhos (.cbz, .cbr, .pdf).",
 				"quickSync": "Sincronização rápida",
@@ -245,9 +246,14 @@
 				"filterCategoriesPlaceholder": "Filtrar categorias...",
 				"selection": {
 					"all": "Todos os itens selecionados",
-					"partial": "Seleção parcial"
+					"partial": "Seleção parcial",
+					"count": "{selected} de {total} selecionados"
 				},
-				"collectionsHint": "Organize os quadrinhos selecionados em coleções"
+				"collectionsHint": "Organize os quadrinhos selecionados em coleções",
+				"categories": {
+					"empty": "Nenhum marcador criado",
+					"noMatch": "Nenhum marcador encontrado para \"{query}\""
+				}
 			},
 			"toast": {
 				"hidden": "{count} quadrinho(s) ocultado(s)",
@@ -289,11 +295,11 @@
 					"anilist": "AniList",
 					"noMetadata": "Sem metadados"
 				},
-				"bookmarkFilterTitle": "Filtrar por bookmark",
-				"bookmarkFilterAria": "Filtrar por bookmark",
+				"bookmarkFilterTitle": "Filtrar por marcador",
+				"bookmarkFilterAria": "Filtrar por marcador",
 				"bookmarkFilter": {
 					"all": "Todos",
-					"none": "Sem bookmark"
+					"none": "Sem marcador"
 				},
 				"reset": "Resetar",
 				"apply": "Aplicar"
@@ -311,7 +317,7 @@
 				"chapters": "Capítulos",
 				"preferences": "Preferências"
 			},
-			"filterPlaceholder": "FILTRAR...",
+			"filterPlaceholder": "Filtrar capítulos",
 			"sort": {
 				"button": "Ordenar",
 				"number": {
@@ -351,15 +357,15 @@
 				"chapters": {
 					"count": "{count} caps"
 				},
-				"readNow": "LER AGORA",
-				"completed": "CONCLUÍDO",
-				"conflict": "CONFLITO"
+				"readNow": "Ler agora",
+				"completed": "Concluído",
+				"conflict": "Conflito"
 			},
 			"preferences": {
 				"reading": "Leitura",
 				"categories": {
 					"reading": {
-						"desc": "Exibição de volume, marcador"
+						"desc": "Como este quadrinho aparece e em qual marcador ele fica"
 					},
 					"sync": {
 						"title": "Sincronização",
@@ -368,6 +374,21 @@
 					"advanced": {
 						"title": "Avançado",
 						"desc": "Capa e zona de risco"
+					},
+					"metadata": {
+						"desc": "De onde vêm título, capa e sinopse deste quadrinho"
+					},
+					"files": {
+						"desc": "Mantenha os capítulos em dia com a pasta"
+					},
+					"devices": {
+						"desc": "Leve só este quadrinho para outro dispositivo"
+					},
+					"cover": {
+						"desc": "Troque a capa pelas páginas do próprio quadrinho"
+					},
+					"danger": {
+						"desc": "Ações que não dá para desfazer"
 					}
 				},
 				"volumeHighlight": {
@@ -400,13 +421,16 @@
 						"desc": "Sincroniza só este quadrinho com o dispositivo escolhido, sem mexer no resto da biblioteca.",
 						"button": "Escolher dispositivo",
 						"push": "Enviar para este dispositivo",
-						"pull": "Puxar deste dispositivo"
+						"pull": "Puxar deste dispositivo",
+						"pushShort": "Enviar",
+						"pullShort": "Puxar"
 					},
 					"toast": {
 						"start": "Sincronizando quadrinho com o dispositivo...",
 						"success": "Quadrinho sincronizado com o dispositivo!",
 						"error": "Erro ao sincronizar quadrinho: {msg}"
-					}
+					},
+					"emptyTitle": "Nenhum dispositivo pareado"
 				},
 				"cover": {
 					"title": "Capa",
@@ -431,6 +455,12 @@
 							"action": "Limpar metadados"
 						}
 					}
+				},
+				"actions": {
+					"sync": "Sincronizar",
+					"read": "Ler arquivo",
+					"generate": "Gerar",
+					"clear": "Limpar"
 				}
 			},
 			"volume": {
@@ -552,7 +582,7 @@
 		"history": {
 			"title": "Histórico",
 			"loading": "Carregando...",
-			"noEvents": "Nenhum histórico encontrado.",
+			"noEvents": "Nenhum histórico ainda",
 			"resume": "Continuar lendo",
 			"chapterLabel": "Capítulo {chapter}",
 			"pageLabel": "Página {page}",
@@ -576,30 +606,32 @@
 				"retry": "Tentar de novo"
 			},
 			"emptyHint": "O que você ler aparece aqui, pronto para continuar.",
-			"emptyAction": "Ir para a biblioteca"
+			"emptyAction": "Ir para a biblioteca",
+			"eyebrow": "Sua leitura"
 		},
 		"config": {
 			"title": "Configurações",
 			"desc": "Personalize sua experiência de leitura.",
 			"categories": {
 				"files": {
-					"desc": "Pasta da biblioteca e geração de ComicInfo.xml"
+					"desc": "Onde ficam seus quadrinhos e o que o Acerola grava na pasta"
 				},
 				"library": {
-					"desc": "Sincronização e templates de nomenclatura"
+					"desc": "Mantenha a biblioteca em dia com os arquivos do disco"
 				},
 				"metadata": {
-					"desc": "Idioma, MangaDex e AniList"
+					"desc": "De onde vêm títulos, capas e sinopses"
 				},
 				"bookmarks": {
 					"desc": "Crie e organize marcadores"
 				}
 			},
 			"fileSystem": {
-				"title": "Configuração dos arquivos",
+				"title": "Arquivos",
 				"comicPath": {
 					"title": "Pasta dos quadrinhos",
-					"desc": "Pasta onde será buscado e salvo: {path}"
+					"desc": "Pasta onde será buscado e salvo: {path}",
+					"empty": "Nenhuma pasta escolhida"
 				},
 				"comicInfo": {
 					"title": "Gerar ComicInfo.xml",
@@ -617,7 +649,7 @@
 				}
 			},
 			"metadata": {
-				"title": "Configuração de metadados",
+				"title": "Metadados",
 				"lang": {
 					"title": "Idioma",
 					"desc": "Selecione o idioma padrão para os metadados.",
@@ -625,7 +657,7 @@
 					"popoverDesc": "Atual: {language}",
 					"searchPlaceholder": "Buscar idioma...",
 					"groupTitle": "Idiomas disponíveis",
-					"empty": "Nenhum idioma encontrado.",
+					"empty": "Nenhum idioma encontrado",
 					"itemDesc": "Código {code}"
 				},
 				"mangadex": {
@@ -647,8 +679,9 @@
 				"name": "Nome do marcador",
 				"color": "Cor",
 				"create": "Criar",
-				"empty": "Nenhum marcador criado.",
-				"colorOption": "Cor {hex}"
+				"empty": "Nenhum marcador criado",
+				"colorOption": "Cor {hex}",
+				"remove": "Remover {name}"
 			},
 			"toast": {
 				"sync": {
@@ -724,6 +757,14 @@
 					"deleteError": "Não foi possível remover o template: {msg}",
 					"loadError": "Não foi possível carregar os templates: {msg}"
 				}
+			},
+			"eyebrow": "Preferências",
+			"actions": {
+				"chooseFolder": "Escolher pasta",
+				"sync": "Sincronizar",
+				"rebuild": "Reconstruir",
+				"open": "Abrir",
+				"syncing": "Sincronizando"
 			}
 		},
 		"network": {
@@ -763,7 +804,8 @@
 					"replaceButton": "Trocar ticket",
 					"removeButton": "Remover ticket",
 					"invalid": "Ticket inválido. Confira se você copiou o texto completo.",
-					"help": "Crie uma conta gratuita em services.iroh.computer, gere um ticket no seu projeto e cole aqui — a credencial fica só neste dispositivo, nunca é enviada pro relay."
+					"help": "Crie uma conta gratuita em services.iroh.computer, gere um ticket no seu projeto e cole aqui — a credencial fica só neste dispositivo, nunca é enviada pro relay.",
+					"manage": "Ticket"
 				},
 				"customRelays": {
 					"title": "Seus relays próprios",
@@ -771,7 +813,8 @@
 					"addButton": "Adicionar relay próprio",
 					"empty": "Nenhum relay próprio adicionado.",
 					"count": "{count} configurado(s)",
-					"remove": "Remover relay próprio"
+					"remove": "Remover relay próprio",
+					"manage": "Gerenciar"
 				},
 				"invalidUrl": "Digite uma URL válida (ex.: https://relay.exemplo.com).",
 				"summaryMdnsOnly": "Só rede local (mDNS) — nenhum relay ativo, só dispositivos na mesma rede conseguem conectar.",
@@ -796,7 +839,7 @@
 				"desc": "Escaneie este QR Code no outro dispositivo, ou copie o código abaixo.",
 				"securityNote": "Só pareie com dispositivos que você confia — a primeira conexão dá acesso permanente à sua biblioteca.",
 				"copy": "Copiar código",
-				"showCode": "Mostrar código como texto",
+				"showCode": "Ver código",
 				"hideCode": "Ocultar código",
 				"loading": "Gerando código...",
 				"qrError": "Não foi possível gerar o QR Code. Use o código de texto abaixo."
@@ -808,7 +851,8 @@
 				"loading": "Conectando...",
 				"success": "Conectado!",
 				"error": "Não foi possível conectar. Confira se o código está certo e se o outro dispositivo está com o Acerola aberto.",
-				"invalidCode": "Código inválido. Confira se você copiou o código completo do outro dispositivo."
+				"invalidCode": "Código inválido. Confira se você copiou o código completo do outro dispositivo.",
+				"lead": "Cole o código que aparece no outro dispositivo"
 			},
 			"peerPicker": {
 				"title": "Escolher dispositivo"
@@ -841,11 +885,12 @@
 					"desc": "Esse dispositivo deixa de ter acesso à sua biblioteca. Se ele tentar se conectar de novo depois, vai passar pela mesma confirmação de um dispositivo nunca pareado.",
 					"cancel": "Cancelar",
 					"confirm": "Remover"
-				}
+				},
+				"lead": "Dispositivos que já podem trocar quadrinhos e histórico com este"
 			},
 			"transfers": {
 				"title": "Transferências",
-				"empty": "Nenhuma transferência em andamento.",
+				"empty": "Nenhuma transferência em andamento",
 				"historyStarted": "Sincronizando histórico com {peer}...",
 				"historyComplete": "Histórico sincronizado com {peer}.",
 				"historyError": "Falha ao sincronizar histórico: {msg}",
@@ -868,16 +913,18 @@
 					"desc": "Remove todo o histórico de sincronizações persistido. Essa ação não pode ser desfeita.",
 					"cancel": "Cancelar",
 					"confirm": "Sim, limpar tudo"
-				}
+				},
+				"lead": "O que foi enviado e recebido nesta sessão"
 			},
 			"remoteLibrary": {
 				"title": "Biblioteca remota",
 				"searchPlaceholder": "Buscar quadrinho...",
 				"loading": "Consultando biblioteca do dispositivo...",
-				"empty": "Nenhum quadrinho encontrado.",
+				"empty": "Nenhum quadrinho encontrado",
 				"chapterCount": "{count} capítulos",
 				"syncButton": "Sincronizar"
-			}
+			},
+			"eyebrow": "Seus dispositivos"
 		}
 	},
 	"onboarding": {
@@ -914,7 +961,7 @@
 				"badge": "Recomendado",
 				"desc": "Container ZIP de acesso randômico. Leitura instantânea com cache inteligente em memória e pré-carregamento.",
 				"feature1": "Acesso randômico direto",
-				"feature2": "Cache LRU em memória"
+				"feature2": "Cache em memória"
 			},
 			"cbr": {
 				"title": "Comic Book RAR",

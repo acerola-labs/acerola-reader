@@ -35,10 +35,10 @@
 	import ArrowUp from '@lucide/svelte/icons/arrow-up';
 	import ArrowDown from '@lucide/svelte/icons/arrow-down';
 	import X from '@lucide/svelte/icons/x';
-	import Check from '@lucide/svelte/icons/check';
 	import Eye from '@lucide/svelte/icons/eye';
 	import Bookmark from '@lucide/svelte/icons/bookmark';
 	import AcerolaSwitch from '#lib/components/acerola-switch/acerola-switch.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -107,6 +107,16 @@
 		localBookmarkFilter = 'all';
 	}
 
+	/** Brand book chip (`.ac-chip`): the selected one is bg-foreground, the rest sit on bg-surface. */
+	function chip(isSelected: boolean) {
+		return [
+			'flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-bold transition-colors duration-300 ease-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+			isSelected
+				? 'bg-foreground text-background'
+				: 'bg-surface text-muted-foreground hover:text-foreground'
+		];
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && controlState?.open) {
 			events.onClose();
@@ -132,65 +142,36 @@
 	<!-- Backdrop -->
 	<div
 		role="presentation"
-		class="fixed inset-x-0 top-8 bottom-0 z-40 bg-background/40 backdrop-blur-sm"
+		class="fixed inset-x-0 top-8 bottom-0 z-40 bg-scrim/50"
 		transition:fade={{ duration: 200 }}
 		onclick={events.onClose}
 	></div>
 
-	<!-- Panel -->
+	<!-- Panel: brand book sheet (rounded-sheet on the open side, bg-card, shadow-float). -->
 	<div
 		role="dialog"
 		aria-modal="true"
 		aria-label={m['pages.home.filterPanel.ariaLabel']()}
-		class="fixed top-8 right-0 bottom-0 z-50 flex w-full max-w-full flex-col border-l border-border/60 bg-background/95 shadow-float backdrop-blur-xl sm:max-w-sm"
-		transition:fly={{ x: 400, duration: 300, easing: cubicOut }}
+		class="fixed top-8 right-0 bottom-0 z-50 flex w-full max-w-full flex-col rounded-l-sheet bg-card shadow-float sm:max-w-sm"
+		transition:fly={{ x: 400, duration: 320, easing: cubicOut }}
 	>
 		<!-- Header -->
-		<div class="flex items-center justify-between border-b border-border/40 px-6 py-5">
-			<div class="flex items-center gap-3">
-				<div
-					class="flex h-8 w-8 items-center justify-center rounded-inner bg-primary/15 text-primary"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<line x1="21" y1="4" x2="14" y2="4"></line>
-						<line x1="10" y1="4" x2="3" y2="4"></line>
-						<line x1="21" y1="12" x2="12" y2="12"></line>
-						<line x1="8" y1="12" x2="3" y2="12"></line>
-						<line x1="21" y1="20" x2="16" y2="20"></line>
-						<line x1="12" y1="20" x2="3" y2="20"></line>
-						<line x1="14" y1="2" x2="14" y2="6"></line>
-						<line x1="8" y1="10" x2="8" y2="14"></line>
-						<line x1="16" y1="18" x2="16" y2="22"></line>
-					</svg>
-				</div>
-				<div>
-					<h2 class="font-bold tracking-tight text-base text-foreground">
-						{m['pages.home.filterPanel.ariaLabel']()}
-					</h2>
-					{#if hasActiveFilters}
-						<span
-							class="text-[10px] font-semibold tracking-wider text-primary uppercase"
-							>{m['pages.home.filterPanel.activeFilters']()}</span
-						>
-					{/if}
-				</div>
+		<div class="flex items-start justify-between gap-3 px-6 pt-6 pb-4">
+			<div>
+				{#if hasActiveFilters}
+					<p class="text-xs font-semibold text-primary">
+						{m['pages.home.filterPanel.activeFilters']()}
+					</p>
+				{/if}
+				<h2 class="text-xl font-black tracking-tight text-foreground">
+					{m['pages.home.filterPanel.ariaLabel']()}
+				</h2>
 			</div>
 			<AcerolaButtonIcon
 				events={{ onClick: events.onClose }}
 				ui={{
-					variant: 'ghost',
-					tone: 'muted',
-					class: 'h-8 w-8',
+					variant: 'secondary',
+					class: 'size-11 shrink-0',
 					title: m['pages.home.filterPanel.closeAria'](),
 					'aria-label': m['pages.home.filterPanel.closeAria']()
 				}}
@@ -200,106 +181,98 @@
 		</div>
 
 		<!-- Content - scrollable -->
-		<div class="flex-1 space-y-7 overflow-y-auto px-6 py-5">
+		<div class="flex-1 space-y-7 overflow-y-auto px-6 pb-6">
 			<!-- Sort Section -->
 			<section>
-				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
+				<h3 class="mb-3 text-sm font-black tracking-tight text-foreground">
 					{m['pages.home.filterPanel.sortSectionTitle']()}
-				</p>
+				</h3>
 				<div
-					class="space-y-1.5"
+					class="space-y-2"
 					role="radiogroup"
 					aria-label={m['pages.home.filterPanel.sortRadiogroupAria']()}
 				>
-					{#each sortOptions as option}
+					{#each sortOptions as option (option.value)}
 						{@const isSelected = localSortBy === option.value}
 						<button
 							type="button"
 							role="radio"
 							aria-checked={isSelected}
-							class="group flex w-full items-center justify-between rounded-inner px-3.5 py-3 text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none {isSelected
-								? 'bg-primary/15 text-foreground ring-1 ring-primary/30'
-								: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+							class={[
+								'flex min-h-11 w-full items-center justify-between gap-2 rounded-full px-4 text-sm font-bold transition-colors duration-300 ease-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+								isSelected
+									? 'bg-foreground text-background'
+									: 'bg-surface text-muted-foreground hover:text-foreground'
+							]}
 							onclick={() => selectSort(option.value)}
 						>
 							<span class="truncate">{option.labelKey}</span>
 							{#if isSelected}
-								<div class="ml-2 flex shrink-0 items-center gap-1.5">
-									<div
-										class="flex items-center gap-1 rounded-inner bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary"
-									>
-										{#if localSortOrder === 'asc'}
-											<ArrowUp size={10} />
-											<span>A–Z</span>
-										{:else}
-											<ArrowDown size={10} />
-											<span>Z–A</span>
-										{/if}
-									</div>
-									<Check size={14} class="text-primary" />
-								</div>
+								<span class="flex shrink-0 items-center gap-1 text-xs font-black">
+									{#if localSortOrder === 'asc'}
+										<ArrowUp size={14} />
+										A–Z
+									{:else}
+										<ArrowDown size={14} />
+										Z–A
+									{/if}
+								</span>
 							{/if}
 						</button>
 					{/each}
 				</div>
 			</section>
 
-			<!-- Divider -->
-			<div class="h-px bg-border/40"></div>
-
 			<!-- Filter Section -->
 			<section>
-				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
+				<h3 class="mb-3 text-sm font-black tracking-tight text-foreground">
 					{m['pages.home.filterPanel.filterSectionTitle']()}
-				</p>
+				</h3>
 
 				<!-- Show Hidden Toggle Row -->
 				<button
 					type="button"
 					role="switch"
 					aria-checked={localShowHidden}
-					class="flex w-full cursor-pointer items-center justify-between rounded-inner px-3.5 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+					class="flex w-full cursor-pointer items-center justify-between gap-3 rounded-tile bg-surface p-3 text-left transition-[filter] duration-200 ease-brand hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					onclick={() => (localShowHidden = !localShowHidden)}
 				>
-					<div class="flex items-center gap-3">
-						<div
-							class="flex h-8 w-8 items-center justify-center rounded-inner bg-muted/60 text-muted-foreground"
+					<span class="flex min-w-0 items-center gap-3">
+						<span
+							class="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground"
 						>
-							<Eye size={15} />
-						</div>
-						<div>
-							<p class="text-sm font-medium text-foreground">
+							<Eye size={18} />
+						</span>
+						<span class="min-w-0">
+							<span class="block text-sm font-black tracking-tight text-foreground">
 								{m['pages.home.filterPanel.showHidden.title']()}
-							</p>
-							<p class="text-xs text-muted-foreground">
+							</span>
+							<span class="block text-xs text-muted-foreground">
 								{m['pages.home.filterPanel.showHidden.desc']()}
-							</p>
-						</div>
-					</div>
-					<div class="pointer-events-none">
+							</span>
+						</span>
+					</span>
+					<span class="pointer-events-none">
 						<AcerolaSwitch state={{ checked: localShowHidden }} ui={{ size: 'sm' }} />
-					</div>
+					</span>
 				</button>
 			</section>
 
 			<!-- Metadata Source Section -->
 			<section>
-				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
+				<h3 class="mb-3 text-sm font-black tracking-tight text-foreground">
 					{m['pages.home.filterPanel.metadataSourcesTitle']()}
-				</p>
+				</h3>
 				<div
 					class="flex flex-wrap gap-2"
 					role="group"
 					aria-label={m['pages.home.filterPanel.metadataSourcesAria']()}
 				>
-					{#each metadataSources as source}
-						{@const isSelected = localMetadataSource === source.value}
+					{#each metadataSources as source (source.value)}
 						<button
 							type="button"
-							aria-pressed={isSelected}
-							class="rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
-								? ' bg-primary/20 text-primary'
-								: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
+							aria-pressed={localMetadataSource === source.value}
+							class={chip(localMetadataSource === source.value)}
 							onclick={() => (localMetadataSource = source.value)}
 						>
 							{source.label}
@@ -310,9 +283,9 @@
 
 			<!-- Bookmark Filter Section -->
 			<section>
-				<p class="mb-3 text-[11px] font-bold tracking-widest text-primary uppercase">
+				<h3 class="mb-3 text-sm font-black tracking-tight text-foreground">
 					{m['pages.home.filterPanel.bookmarkFilterTitle']()}
-				</p>
+				</h3>
 				<div
 					class="flex flex-wrap gap-2"
 					role="group"
@@ -321,10 +294,7 @@
 					<button
 						type="button"
 						aria-pressed={localBookmarkFilter === 'all'}
-						class="rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
-						'all'
-							? ' bg-primary/20 text-primary'
-							: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
+						class={chip(localBookmarkFilter === 'all')}
 						onclick={() => (localBookmarkFilter = 'all')}
 					>
 						{m['pages.home.filterPanel.bookmarkFilter.all']()}
@@ -332,29 +302,23 @@
 					<button
 						type="button"
 						aria-pressed={localBookmarkFilter === 'none'}
-						class="flex items-center gap-1.5 rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {localBookmarkFilter ===
-						'none'
-							? ' bg-primary/20 text-primary'
-							: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
+						class={chip(localBookmarkFilter === 'none')}
 						onclick={() => (localBookmarkFilter = 'none')}
 					>
-						<Bookmark size={12} class="opacity-70" />
+						<Bookmark size={14} />
 						{m['pages.home.filterPanel.bookmarkFilter.none']()}
 					</button>
 					{#each data.bookmarks as category (category.id)}
-						{@const isSelected = localBookmarkFilter === category.id}
 						{@const hexColor =
 							'#' + (category.color & 0xffffff).toString(16).padStart(6, '0')}
 						<button
 							type="button"
-							aria-pressed={isSelected}
-							class="flex items-center gap-1.5 rounded-inner border px-3.5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95 {isSelected
-								? ' bg-primary/20 text-primary'
-								: 'border-border/60 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground'}"
+							aria-pressed={localBookmarkFilter === category.id}
+							class={chip(localBookmarkFilter === category.id)}
 							onclick={() => (localBookmarkFilter = category.id)}
 						>
 							<span
-								class="h-2.5 w-2.5 shrink-0 rounded-full"
+								class="size-2.5 shrink-0 rounded-full"
 								style="background-color: {hexColor};"
 							></span>
 							{category.name}
@@ -365,24 +329,20 @@
 		</div>
 
 		<!-- Footer Actions -->
-		<div class="border-t border-border/40 px-6 py-5">
-			<div class="flex gap-3">
-				<button
-					type="button"
-					class="flex-1 rounded-inner border border-border/60 bg-muted/30 px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98] disabled:opacity-40"
-					onclick={handleReset}
-					disabled={!hasChanges && !hasActiveFilters}
-				>
-					{m['pages.home.filterPanel.reset']()}
-				</button>
-				<button
-					type="button"
-					class="flex-1 rounded-inner bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-lift transition-all hover:bg-primary/90 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-[0.98]"
-					onclick={handleApply}
-				>
-					{m['pages.home.filterPanel.apply']()}
-				</button>
-			</div>
+		<div class="flex gap-3 px-6 pt-2 pb-6">
+			<AcerolaButton
+				ui={{
+					variant: 'secondary',
+					class: 'flex-1',
+					disabled: !hasChanges && !hasActiveFilters
+				}}
+				events={{ onClick: handleReset }}
+			>
+				{m['pages.home.filterPanel.reset']()}
+			</AcerolaButton>
+			<AcerolaButton ui={{ class: 'flex-1' }} events={{ onClick: handleApply }}>
+				{m['pages.home.filterPanel.apply']()}
+			</AcerolaButton>
 		</div>
 	</div>
 {/if}

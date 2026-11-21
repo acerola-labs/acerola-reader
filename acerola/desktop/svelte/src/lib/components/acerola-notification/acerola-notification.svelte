@@ -19,7 +19,7 @@
 			variant: {
 				warning: 'text-warning bg-warning-soft',
 				success: 'text-success bg-success-soft',
-				error: 'text-destructive bg-destructive/5',
+				error: 'text-destructive bg-destructive-soft',
 				info: 'text-info bg-info-soft'
 			}
 		}
@@ -77,16 +77,22 @@
 		align: 'end',
 		sideOffset: 8,
 		collisionPadding: 16,
-		contentClass:
-			'p-0 w-84 overflow-hidden rounded-inner border-border/40 bg-card/95 backdrop-blur-md shadow-float'
+		contentClass: 'p-0 w-84 overflow-hidden'
 	}}
 >
 	{#snippet trigger()}
-		<AcerolaButtonIcon ui={{ tone: 'accent', class: 'relative' }}>
+		<AcerolaButtonIcon
+			ui={{
+				variant: 'secondary',
+				class: 'relative',
+				title: m['components.notification.title'](),
+				'aria-label': m['components.notification.title']()
+			}}
+		>
 			<BellIcon size={20} />
 			{#if notifications.length > 0}
 				<span
-					class="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-background bg-primary px-1 text-[10px] font-bold text-primary-foreground"
+					class="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground ring-2 ring-background"
 				>
 					{notifications.length}
 				</span>
@@ -96,16 +102,14 @@
 
 	{#snippet content()}
 		<div class="flex flex-col">
-			<div
-				class="flex items-center justify-between border-b border-border/40 bg-muted/20 px-4 py-3"
-			>
+			<div class="flex items-center justify-between px-4 pt-4 pb-2">
 				<div class="flex items-center gap-2">
-					<h3 class="text-xs font-bold tracking-widest text-foreground/80 uppercase">
+					<h3 class="text-base font-black tracking-tight text-foreground">
 						{m['components.notification.title']()}
 					</h3>
 					{#if notifications.length > 0}
 						<span
-							class="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary"
+							class="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-black text-primary tabular-nums"
 						>
 							{notifications.length}
 						</span>
@@ -115,7 +119,7 @@
 					<Button
 						variant="ghost"
 						size="xs"
-						class="h-7 px-2 text-[10px] font-semibold hover:bg-destructive/10 hover:text-destructive"
+						class="h-8 px-3 text-xs hover:bg-destructive-soft hover:text-destructive"
 						onclick={clearAll}
 					>
 						{m['components.notification.clear.all']()}
@@ -133,16 +137,15 @@
 						<div class="flex flex-col items-center justify-center py-12 text-center">
 							<div class="relative mb-4">
 								<div
-									class="absolute inset-0 animate-ping rounded-full bg-primary/10"
-								></div>
-								<div class="relative rounded-full bg-muted/30 p-4">
-									<BellIcon size={28} class="text-muted-foreground/30" />
+									class="relative flex size-14 items-center justify-center rounded-full bg-surface"
+								>
+									<BellIcon size={24} class="text-muted-foreground" />
 								</div>
 							</div>
-							<p class="text-sm font-semibold text-foreground/60">
+							<p class="text-base font-black tracking-tight text-foreground">
 								{m['components.notification.empty']()}
 							</p>
-							<p class="mt-1 text-xs text-muted-foreground/60">
+							<p class="mt-1 text-sm text-muted-foreground">
 								{m['components.notification.emptyHint']()}
 							</p>
 						</div>
@@ -154,7 +157,7 @@
 								animate:flip={{ duration: 200 }}
 								in:fly={{ y: 10, duration: 250, easing: cubicOut }}
 								out:fade={{ duration: 150 }}
-								class="group relative flex flex-col gap-2 rounded-inner border border-transparent p-3 transition-all hover:bg-muted/40"
+								class="group relative flex flex-col gap-2 rounded-tile p-3 transition-colors hover:bg-surface"
 							>
 								<!-- Indicator Bar -->
 								<div
@@ -170,7 +173,7 @@
 								<div class="flex items-start justify-between gap-2 pl-2">
 									<div class="flex items-start gap-3">
 										<div
-											class="mt-0.5 rounded-inner p-1.5 {notifyVariants({
+											class="mt-0.5 rounded-full p-1.5 {notifyVariants({
 												variant: notify.variant
 											})
 												.split(' ')
@@ -187,7 +190,7 @@
 											</p>
 											{#if notify.description}
 												<p
-													class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground/80"
+													class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground"
 												>
 													{notify.description}
 												</p>
@@ -208,7 +211,7 @@
 										<Button
 											variant="secondary"
 											size="xs"
-											class="h-7 rounded-inner border border-border/50 px-3 text-[10px] font-bold"
+											class="h-8 px-3 text-xs"
 											onclick={() => {
 												notify.action?.onClick();
 												pop(notify.id);
@@ -227,12 +230,12 @@
 				{#if showScrollIndicator}
 					<div
 						transition:fade={{ duration: 200 }}
-						class="pointer-events-none absolute right-0 bottom-0 left-0 h-16 bg-gradient-to-t from-card/80 to-transparent"
+						class="pointer-events-none absolute right-0 bottom-0 left-0 h-16 bg-gradient-to-t from-card to-transparent"
 					></div>
 					<button
 						onclick={scrollToBottom}
 						transition:fly={{ y: 10, duration: 200 }}
-						class="absolute bottom-4 left-1/2 flex size-8 -translate-x-1/2 items-center justify-center rounded-full border border-border/40 bg-card/90 text-foreground shadow-lift backdrop-blur-sm transition-all hover:scale-110 hover:bg-accent active:scale-95"
+						class="absolute bottom-4 left-1/2 flex size-9 -translate-x-1/2 items-center justify-center rounded-full bg-surface text-foreground shadow-lift transition-[filter,transform] hover:brightness-110 active:scale-95"
 						aria-label={m['components.notification.scrollToBottom']()}
 					>
 						<ChevronDownIcon size={16} />

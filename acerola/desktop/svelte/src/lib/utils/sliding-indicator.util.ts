@@ -26,7 +26,8 @@ const DEFAULT_DURATION = 0.22;
 /// indicator that slides to the active item's position/size — reapplied whenever the attribute
 /// marking "active" changes in the container (via `MutationObserver`, not a reactive prop).
 export const slidingIndicator: Action<HTMLElement, SlidingIndicatorOptions> = (node, opts) => {
-	node.classList.add('relative');
+	// `isolate` keeps the `-z-10` indicator above the container's own (solid) background.
+	node.classList.add('relative', 'isolate');
 
 	const indicator = document.createElement('div');
 	indicator.className = cn(

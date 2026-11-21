@@ -3,7 +3,7 @@
 		value?: string | null;
 		label?: string;
 		copiedLabel?: string;
-		variant?: 'default' | 'outline' | 'ghost' | 'secondary';
+		variant?: 'default' | 'contrast' | 'outline' | 'ghost' | 'secondary';
 		size?: 'default' | 'sm' | 'icon' | 'icon-sm';
 		class?: string;
 		disabled?: boolean;
@@ -22,8 +22,8 @@
 		value,
 		label,
 		copiedLabel,
-		variant = 'outline',
-		size = 'sm',
+		variant = 'secondary',
+		size = 'default',
 		class: className,
 		disabled = false,
 		onCopy
@@ -69,24 +69,25 @@
 	disabled={disabled || !value}
 	onclick={handleCopy}
 	class={cn(
-		'relative transition-all duration-200 active:scale-95',
-		size === 'icon-sm' && 'size-8 rounded-inner',
-		copied && ' bg-success-soft text-success dark:text-success',
+		'relative gap-2 transition-[filter,background-color,color] duration-200 ease-brand',
+		size === 'icon-sm' && 'size-9',
+		copied && 'bg-success-soft! text-success!',
 		className
 	)}
 	aria-label={copied ? defaultCopiedLabel : defaultLabel}
 >
+	<!-- Brand book copy pill (AcerolaCode): icon + verb, turning into a check in the success tone. -->
 	{#if copied}
-		<CheckIcon size={14} class="animate-in duration-200 zoom-in-50" strokeWidth={2.5} />
+		<CheckIcon size={16} class="animate-in duration-200 zoom-in-50" strokeWidth={2.5} />
 		{#if copiedLabel}
-			<span class="ml-1.5 text-xs font-semibold">{defaultCopiedLabel}</span>
+			<span>{defaultCopiedLabel}</span>
 		{:else if label}
-			<span class="ml-1.5 text-xs font-semibold">{defaultLabel}</span>
+			<span>{defaultLabel}</span>
 		{/if}
 	{:else}
-		<CopyIcon size={14} class="transition-transform group-hover:scale-105" />
+		<CopyIcon size={16} />
 		{#if label}
-			<span class="ml-1.5 text-xs font-semibold">{defaultLabel}</span>
+			<span>{defaultLabel}</span>
 		{/if}
 	{/if}
 </Button>

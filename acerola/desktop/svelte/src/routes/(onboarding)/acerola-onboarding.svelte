@@ -61,60 +61,41 @@
 </script>
 
 <div class="relative flex h-full w-full flex-col overflow-hidden bg-background">
-	<!-- Ambient Glow Background -->
-	<div
-		class="pointer-events-none absolute inset-0 opacity-30 transition-opacity duration-700 ease-out"
-		style="background: radial-gradient(circle 800px at 50% -10%, var(--color-primary) 0%, transparent 70%);"
-	></div>
-
-	<!-- Top Stepper Navigation (VibePrompts inspired) -->
-	<div
-		class="relative z-10 border-b border-border/40 bg-background/80 px-6 py-4 backdrop-blur-xl"
-	>
+	<!-- Stepper: solid header, steps as pills (current bg-primary, done bg-primary-soft). -->
+	<div class="relative z-10 bg-background px-6 py-4">
 		<div class="mx-auto flex max-w-4xl flex-col gap-3">
 			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-2">
-					<span
-						class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-					>
-						{m['onboarding.setupTitle']()}
-					</span>
-				</div>
-				<span class="text-xs font-medium text-muted-foreground">
+				<span class="text-xs font-semibold text-muted-foreground">
+					{m['onboarding.setupTitle']()}
+				</span>
+				<span class="text-xs font-black text-muted-foreground tabular-nums">
 					{currentStepIndex + 1} / {STEPS.length} ({Math.round(progressPercent)}%)
 				</span>
 			</div>
 
-			<!-- Stepper progress pills -->
-			<div class="relative flex items-center justify-between gap-2">
-				{#each STEPS as step, it}
+			<div class="flex w-full items-center gap-1 rounded-full bg-surface p-1">
+				{#each STEPS as step, it (it)}
 					{@const isCompleted = it < currentStepIndex}
 					{@const isCurrent = it === currentStepIndex}
 					<div
-						class="flex flex-1 items-center gap-2 rounded-inner border px-3 py-2 text-xs font-medium transition-all duration-300 {isCurrent
-							? ' bg-primary/10 text-primary shadow-lift ring-1 ring-primary/30'
-							: isCompleted
-								? 'border-border/60 bg-muted/40 text-foreground'
-								: 'border-transparent bg-transparent text-muted-foreground/60'}"
-					>
-						<span
-							class="flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300 {isCurrent
+						class={[
+							'flex h-9 flex-1 items-center justify-center gap-2 rounded-full px-3 text-xs font-bold transition-colors duration-300 ease-brand',
+							isCurrent
 								? 'bg-primary text-primary-foreground'
 								: isCompleted
-									? 'bg-primary/20 text-primary'
-									: 'bg-muted/60 text-muted-foreground'}"
-						>
-							{it + 1}
-						</span>
-						<span class="truncate font-medium max-sm:hidden">{step.label()}</span>
+									? 'bg-primary-soft text-primary'
+									: 'text-muted-foreground'
+						]}
+					>
+						<span class="font-black tabular-nums">{it + 1}</span>
+						<span class="truncate max-sm:hidden">{step.label()}</span>
 					</div>
 				{/each}
 			</div>
 
-			<!-- Progress track bar -->
-			<div class="h-1 w-full overflow-hidden rounded-full bg-muted/40">
+			<div class="h-1 w-full overflow-hidden rounded-full bg-surface">
 				<div
-					class="h-full bg-linear-to-r from-primary/80 via-primary to-chart-1 transition-all duration-500 ease-out"
+					class="h-full rounded-full bg-primary transition-[width] duration-500 ease-brand"
 					style="width: {progressPercent}%;"
 				></div>
 			</div>

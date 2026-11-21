@@ -44,7 +44,7 @@
 	data-slot="switch"
 	data-size={ui?.size ?? 'default'}
 	class={cn(
-		'peer group/switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input',
+		'peer group/switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground/35',
 		(ui?.size ?? 'default') === 'default' ? 'h-8 w-14' : 'h-6 w-11',
 		ui?.class
 	)}
@@ -52,7 +52,9 @@
 >
 	<SwitchPrimitive.Thumb
 		class={cn(
-			'pointer-events-none block rounded-full bg-background shadow-lift ring-0 transition-transform data-[state=checked]:translate-x-full data-[state=unchecked]:translate-x-0',
+			// Off: light thumb on a grey track; on: dark thumb on primary. The track must never
+			// match the row it sits on (`input` and `surface` are the same color).
+			'pointer-events-none block rounded-full shadow-lift ring-0 transition-transform duration-200 ease-brand data-[state=checked]:translate-x-full data-[state=checked]:bg-primary-foreground data-[state=unchecked]:translate-x-0 data-[state=unchecked]:bg-foreground',
 			(ui?.size ?? 'default') === 'default' ? 'h-6 w-6' : 'h-5 w-5'
 		)}
 	/>

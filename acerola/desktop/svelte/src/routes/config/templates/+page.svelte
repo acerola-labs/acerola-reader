@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { fly, fade } from 'svelte/transition';
 
@@ -113,12 +114,15 @@
 	out:fade={{ duration: 100 }}
 	class="mx-auto w-full max-w-5xl space-y-10 p-8"
 >
-	<div class="space-y-1">
-		<AcerolaSettingsHeader data={{ title: m['pages.config.templates.title']() }} />
-		<p class="text-muted-foreground">
-			{m['pages.config.templates.desc']()}
-		</p>
-	</div>
+	<AcerolaSettingsHeader
+		data={{
+			eyebrow: m['pages.config.title'](),
+			title: m['pages.config.templates.title'](),
+			lead: m['pages.config.templates.desc']()
+		}}
+		events={{ onBack: () => goto('/config') }}
+		ui={{ backLabel: m['pages.config.templates.back']() }}
+	/>
 
 	<!-- Reference: how to build a template -->
 	<AcerolaAccordionCard
@@ -135,33 +139,31 @@
 
 		{#snippet children()}
 			<div class="grid gap-3 sm:grid-cols-2">
-				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{chapter}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.macroChapterDesc']()}
 					</p>
 				</div>
-				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{volume}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.macroVolumeDesc']()}
 					</p>
 				</div>
-				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{decimal}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.macroDecimalDesc']()}
 					</p>
 				</div>
-				<div class="rounded-inner border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{extension}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.macroExtensionDesc']()}
 					</p>
 				</div>
-				<div
-					class="rounded-inner border border-border/40 bg-background/50 p-3 sm:col-span-2"
-				>
+				<div class="rounded-tile bg-surface p-3 sm:col-span-2">
 					<code class="text-sm font-bold text-primary">*</code>
 					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.wildcardDesc']()}
@@ -170,25 +172,25 @@
 			</div>
 
 			<div class="mt-5 grid gap-3 sm:grid-cols-2">
-				<div class="rounded-inner bg-muted/30 p-3">
+				<div class="rounded-tile bg-primary-soft p-3">
 					<p class="text-xs font-semibold text-foreground">
 						{m['pages.config.templates.help.exampleChapterLabel']()}
 					</p>
 					<code class="mt-1 block truncate text-xs text-muted-foreground"
 						>{CHAPTER_EXAMPLE}</code
 					>
-					<p class="mt-1 text-xs text-muted-foreground/80">
+					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.exampleChapterMatch']()}
 					</p>
 				</div>
-				<div class="rounded-inner bg-muted/30 p-3">
+				<div class="rounded-tile bg-primary-soft p-3">
 					<p class="text-xs font-semibold text-foreground">
 						{m['pages.config.templates.help.exampleVolumeLabel']()}
 					</p>
 					<code class="mt-1 block truncate text-xs text-muted-foreground"
 						>{VOLUME_EXAMPLE}</code
 					>
-					<p class="mt-1 text-xs text-muted-foreground/80">
+					<p class="mt-1 text-xs text-muted-foreground">
 						{m['pages.config.templates.help.exampleVolumeMatch']()}
 					</p>
 				</div>
@@ -341,13 +343,13 @@
 	<section class="grid gap-8 sm:grid-cols-2">
 		{#each [{ title: m['pages.config.templates.list.chapterTitle'](), items: chapterTemplates, empty: m['pages.config.templates.list.emptyChapter']() }, { title: m['pages.config.templates.list.volumeTitle'](), items: volumeTemplates, empty: m['pages.config.templates.list.emptyVolume']() }] as group (group.title)}
 			<div class="space-y-3">
-				<h2 class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+				<h2 class="text-lg font-black tracking-tight text-foreground">
 					{group.title}
 				</h2>
 
 				{#if group.items.length === 0}
 					<div
-						class="rounded-inner border border-dashed border-border/40 p-6 text-center text-sm text-muted-foreground"
+						class="rounded-tile bg-surface p-6 text-center text-sm text-muted-foreground"
 					>
 						{group.empty}
 					</div>
@@ -355,17 +357,19 @@
 					<div class="space-y-2" use:autoAnimateList>
 						{#each group.items as template (template.id)}
 							<div
-								class="flex items-center justify-between gap-3 rounded-inner border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
+								class="flex items-center justify-between gap-3 rounded-tile bg-surface p-3 transition-[filter] duration-200 ease-brand hover:brightness-110"
 							>
 								<div class="min-w-0">
 									<div class="flex items-center gap-2">
-										<span class="truncate font-medium">{template.label}</span>
+										<span class="truncate font-black tracking-tight"
+											>{template.label}</span
+										>
 										{#if template.is_default}
 											<span
 												title={m[
 													'pages.config.templates.list.defaultHint'
 												]()}
-												class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary uppercase"
+												class="flex shrink-0 items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-bold text-primary"
 											>
 												<LockIcon size={10} />
 												{m['pages.config.templates.list.defaultBadge']()}

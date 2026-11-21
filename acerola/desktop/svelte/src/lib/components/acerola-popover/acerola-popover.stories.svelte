@@ -47,7 +47,7 @@
 			</button>
 		{/snippet}
 		{#snippet content()}
-			<div class="rounded-inner border bg-popover p-4 text-popover-foreground shadow-lift">
+			<div class="rounded-card bg-card p-4 text-card-foreground shadow-lift">
 				Conteudo do Popover
 			</div>
 		{/snippet}

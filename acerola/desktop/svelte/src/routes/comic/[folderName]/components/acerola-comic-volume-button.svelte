@@ -32,24 +32,24 @@
 
 <button
 	onclick={events.onClick}
-	class="group relative flex w-full items-center justify-between overflow-hidden rounded-tile border border-surface/40 bg-mantle/50 p-5 text-left transition-all duration-300 hover:bg-mantle/70"
+	class="group relative flex w-full items-center justify-between overflow-hidden rounded-tile bg-surface p-4 text-left transition-[filter] duration-200 ease-brand hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 >
 	{#if activeBanner}
 		<div class="pointer-events-none absolute inset-0 z-0 overflow-hidden">
 			<img
 				src={activeBanner}
 				alt={data.title}
-				class="h-full w-full scale-105 object-cover opacity-20 blur-[2px] transition-all duration-300 group-hover:scale-110 group-hover:opacity-30"
+				class="h-full w-full object-cover opacity-20 transition-opacity duration-300 group-hover:opacity-30"
 			/>
 
 			<div
-				class="absolute inset-0 bg-linear-to-r from-mantle via-mantle/90 to-transparent"
+				class="absolute inset-0 bg-linear-to-r from-surface via-surface/90 to-transparent"
 			></div>
 		</div>
 	{/if}
 
 	<div class="relative z-10 flex min-w-0 items-center gap-4">
-		<div class="w-18 shrink-0 overflow-hidden rounded-inner border bg-muted">
+		<div class="w-18 shrink-0 overflow-hidden rounded-inner bg-card text-muted-foreground">
 			<AspectRatio ratio={2 / 3}>
 				{#if activeCover}
 					<img
@@ -66,7 +66,7 @@
 		</div>
 
 		<div class="min-w-0">
-			<h3 class="line-clamp-1 text-lg font-bold text-foreground">
+			<h3 class="line-clamp-1 text-lg font-black tracking-tight text-foreground">
 				{data.title}
 			</h3>
 

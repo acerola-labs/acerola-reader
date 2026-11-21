@@ -34,10 +34,13 @@
 		$props();
 </script>
 
+<!-- Brand book list row (same look as AcerolaSettingRow): rounded-tile on bg-surface, round icon
+     on bg-card, font-black title, one line of help and the action on the right. -->
 <Item.Root
+	data-surface="surface"
 	class={cn(
-		'group flex min-w-0 items-center justify-between rounded-tile border border-border bg-card p-6 transition-colors',
-		events?.onClick ? 'cursor-pointer transition-transform active:scale-[0.98]' : '',
+		'group flex min-w-0 items-center justify-between gap-4 rounded-tile bg-surface p-4 transition-[filter] duration-200 ease-brand',
+		events?.onClick ? 'cursor-pointer hover:brightness-110 active:scale-[0.99]' : '',
 		ui?.class
 	)}
 	onclick={events?.onClick}
@@ -46,7 +49,7 @@
 		{#if icon}
 			<Item.Media
 				class={cn(
-					'flex h-12 w-12 shrink-0 items-center justify-center rounded-inner bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+					'flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-foreground',
 					ui?.iconClass
 				)}
 			>
@@ -55,12 +58,14 @@
 		{/if}
 
 		<Item.Content class="min-w-0 flex-1 text-left">
-			<Item.Title class="block w-full truncate text-lg font-bold text-foreground">
+			<Item.Title
+				class="block w-full truncate text-sm font-black tracking-tight text-foreground"
+			>
 				{data?.title ?? m['components.heroButton.default.title']()}
 			</Item.Title>
 
 			{#if data?.description}
-				<Item.Description class="block w-full truncate text-sm text-muted-foreground"
+				<Item.Description class="block w-full truncate text-xs text-muted-foreground"
 					>{data.description}</Item.Description
 				>
 			{/if}
@@ -68,7 +73,7 @@
 	</div>
 
 	{#if action}
-		<Item.Actions class="ml-4 shrink-0">
+		<Item.Actions class="flex shrink-0 items-center gap-2">
 			{@render action()}
 		</Item.Actions>
 	{/if}

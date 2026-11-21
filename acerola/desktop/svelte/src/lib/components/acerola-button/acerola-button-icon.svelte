@@ -15,11 +15,13 @@
 	// own `bg-background`) could win in the final CSS depending on Tailwind's generation
 	// order, leaving the icon invisible (dark bg + dark text).
 	const TONE_CLASS: Record<AcerolaButtonIconTone, string> = {
-		accent: 'bg-accent-hero! text-accent-hero-foreground! transition-[filter] hover:brightness-110',
+		// Brand book round button: bg-surface. `accent-hero` is one highlight per screen, never
+		// every icon button.
+		accent: 'bg-surface! text-foreground! transition-[filter] hover:brightness-110 in-data-[surface=surface]:bg-card!',
 		destructive:
-			'bg-destructive! text-destructive-foreground! transition-[filter] hover:brightness-110',
-		success: 'bg-chart-4! text-primary-foreground! transition-[filter] hover:brightness-110',
-		muted: 'bg-muted! text-muted-foreground! transition-[filter] hover:brightness-110'
+			'bg-destructive-soft! text-destructive! transition-[filter] hover:brightness-110',
+		success: 'bg-success-soft! text-success! transition-[filter] hover:brightness-110',
+		muted: 'bg-surface! text-muted-foreground! transition-[filter] hover:brightness-110 in-data-[surface=surface]:bg-card!'
 	};
 
 	export type AcerolaButtonIconProps = {

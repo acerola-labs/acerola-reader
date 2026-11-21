@@ -199,24 +199,25 @@
 
 <div class="flex h-full flex-col overflow-hidden">
 	<div class="flex shrink-0 items-center justify-between px-8 py-6">
-		<h2 class="text-2xl font-bold tracking-tight">{m['pages.history.title']()}</h2>
+		<div>
+			<p class="text-xs font-semibold text-muted-foreground">
+				{m['pages.history.eyebrow']()}
+			</p>
+			<h2 class="text-[44px] leading-none font-black tracking-tighter">
+				{m['pages.history.title']()}
+			</h2>
+		</div>
 		<div class="flex items-center gap-2">
 			<AcerolaPopover
 				state={{ open: syncMenuOpen }}
 				events={{ onOpenChange: (open) => (syncMenuOpen = open) }}
 				ui={{
 					align: 'end',
-					contentClass:
-						'w-72 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
+					contentClass: 'w-72 p-2'
 				}}
 			>
 				{#snippet trigger()}
-					<span
-						class={cn(
-							buttonVariants({ variant: 'outline', size: 'sm' }),
-							'gap-2 font-medium tracking-wide'
-						)}
-					>
+					<span class={cn(buttonVariants({ variant: 'secondary' }), 'gap-2')}>
 						<RefreshCwIcon size={14} class={anyHistorySyncing ? 'animate-spin' : ''} />
 						{m['pages.history.sync.button']()}
 					</span>
@@ -224,14 +225,12 @@
 
 				{#snippet content()}
 					<div class="flex flex-col gap-0.5">
-						<p
-							class="px-2.5 pt-1.5 pb-2 text-xs font-bold tracking-widest text-muted-foreground uppercase"
-						>
+						<p class="px-3 pt-1.5 pb-2 text-xs font-semibold text-muted-foreground">
 							{m['pages.history.sync.title']()}
 						</p>
 
 						{#if uniquePeers.length === 0}
-							<p class="px-2.5 pb-2 text-xs text-muted-foreground">
+							<p class="px-3 pb-2 text-sm text-muted-foreground">
 								{m['pages.history.sync.empty']()}
 							</p>
 						{:else}
@@ -240,16 +239,22 @@
 								{@const syncing = sync.isSyncing(peer.peerId, 'history')}
 								<button
 									type="button"
-									class="flex items-center gap-2.5 rounded-inner px-2.5 py-2 text-left text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+									class="flex items-center gap-3 rounded-tile p-3 text-left text-sm transition-colors duration-200 ease-brand hover:bg-surface focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
 									disabled={!addrs || syncing}
 									onclick={() => {
 										syncMenuOpen = false;
 										handleSyncHistory(peer.peerId);
 									}}
 								>
-									<MonitorIcon size={16} class="shrink-0 text-muted-foreground" />
+									<span
+										class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+									>
+										<MonitorIcon size={18} />
+									</span>
 									<span class="min-w-0 flex-1">
-										<span class="block truncate text-foreground">
+										<span
+											class="block truncate font-black tracking-tight text-foreground"
+										>
 											{peer.nickname ??
 												peer.deviceName ??
 												shortId(peer.peerId)}
@@ -259,7 +264,7 @@
 										</span>
 									</span>
 									<RefreshCwIcon
-										size={14}
+										size={16}
 										class={cn(
 											'shrink-0 text-muted-foreground',
 											syncing && 'animate-spin'
@@ -288,8 +293,7 @@
 					<AcerolaButton
 						ui={{
 							variant: 'destructive',
-							size: 'sm',
-							class: 'gap-2 font-medium tracking-wide'
+							class: 'gap-2'
 						}}
 					>
 						<Trash2 size={16} />
@@ -337,9 +341,7 @@
 						alt=""
 					/>
 				{:else}
-					<div
-						class="absolute inset-0 bg-linear-to-b from-primary/20 via-base/50 to-base"
-					></div>
+					<div class="absolute inset-0 bg-surface"></div>
 				{/if}
 				<div
 					class="absolute inset-0 bg-linear-to-t from-scrim/80 via-scrim/40 to-transparent"
@@ -351,7 +353,7 @@
 				<div class="absolute right-8 bottom-8 left-8 flex items-end gap-8">
 					{#if heroCover}
 						<button
-							class="relative h-64 w-48 overflow-hidden rounded-inner shadow-float ring-1 ring-surface transition-transform hover:scale-105"
+							class="relative h-64 w-48 overflow-hidden rounded-tile shadow-float transition-transform duration-300 ease-brand hover:scale-105"
 							onclick={() => openComic(heroItem)}
 						>
 							<img
@@ -363,7 +365,7 @@
 						</button>
 					{:else}
 						<button
-							class="flex h-64 w-48 items-center justify-center rounded-inner bg-surface text-muted-foreground transition-transform hover:scale-105"
+							class="flex h-64 w-48 items-center justify-center overflow-hidden rounded-tile bg-surface text-muted-foreground transition-transform duration-300 ease-brand hover:scale-105"
 							onclick={() => openComic(heroItem)}
 						>
 							<PlaceholderManga class="h-full w-full" preserveAspectRatio="none" />
@@ -380,7 +382,7 @@
 							</h3>
 						</button>
 
-						<div class="flex items-center gap-2 text-lg font-medium text-on-scrim/80">
+						<div class="flex items-center gap-2 text-lg font-semibold text-on-scrim">
 							<BookOpen size={20} />
 							<span
 								>{m['pages.history.chapterLabel']({
@@ -398,7 +400,8 @@
 						<AcerolaButton
 							events={{ onClick: () => resumeReading(heroItem) }}
 							ui={{
-								class: 'mt-4 px-8 py-6 rounded-full font-black tracking-widest text-sm hover:scale-105 transition-all shadow-float'
+								size: 'lg',
+								class: 'mt-4 px-8'
 							}}
 						>
 							{m['pages.history.resume']()}
@@ -409,7 +412,7 @@
 
 			{#if history.items.length > 1}
 				<div class="px-8">
-					<h3 class="mb-6 text-xl font-bold tracking-tight opacity-80">
+					<h3 class="mb-6 text-lg font-black tracking-tight">
 						{m['pages.history.older']()}
 					</h3>
 					<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
@@ -429,7 +432,7 @@
 								{#snippet footer()}
 									<div class="mt-1 flex flex-col gap-1">
 										<span
-											class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
+											class="flex items-center gap-1 text-[10px] font-black tracking-wider text-muted-foreground uppercase"
 										>
 											<BookOpen size={10} class="shrink-0" />
 											<span class="truncate">
@@ -439,7 +442,7 @@
 											</span>
 										</span>
 
-										<span class="text-overlay text-[10px] opacity-80">
+										<span class="text-[10px] text-muted-foreground opacity-80">
 											{m['pages.history.pageLabel']({
 												page: item.lastPage + 1
 											})}

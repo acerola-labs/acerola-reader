@@ -41,10 +41,9 @@
 	}}
 	ui={{
 		class: cn(
-			variant === 'desktop' &&
-				'hidden shrink-0 gap-1 rounded-inner border border-surface/40 bg-mantle/60 p-1 md:flex',
+			variant === 'desktop' && 'hidden shrink-0 gap-0.5 rounded-full bg-surface p-1 md:flex',
 			variant === 'mobile' &&
-				'grid grid-cols-3 gap-1 rounded-inner border border-surface/40 bg-mantle/60 p-1 md:hidden',
+				'grid grid-cols-3 gap-0.5 rounded-full bg-surface p-1 md:hidden',
 			ui?.class
 		)
 	}}
@@ -54,7 +53,7 @@
 			value="vertical"
 			title={m['pages.reader.modes.vertical.full']()}
 			class={cn(
-				'h-9 gap-2 rounded-inner text-[10px] font-black tracking-widest uppercase data-[state=on]:bg-primary data-[state=on]:text-primary-foreground',
+				'h-9 gap-2 rounded-full text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-foreground data-[state=on]:text-background',
 				variant === 'desktop' && 'px-3'
 			)}
 		>
@@ -70,7 +69,7 @@
 			value="horizontal"
 			title={m['pages.reader.modes.horizontal.full']()}
 			class={cn(
-				'h-9 gap-2 rounded-inner text-[10px] font-black tracking-widest uppercase data-[state=on]:bg-primary data-[state=on]:text-primary-foreground',
+				'h-9 gap-2 rounded-full text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-foreground data-[state=on]:text-background',
 				variant === 'desktop' && 'px-3'
 			)}
 		>
@@ -86,7 +85,7 @@
 			value="webtoon"
 			title={m['pages.reader.modes.webtoon']()}
 			class={cn(
-				'h-9 gap-2 rounded-inner text-[10px] font-black tracking-widest uppercase data-[state=on]:bg-primary data-[state=on]:text-primary-foreground',
+				'h-9 gap-2 rounded-full text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-foreground data-[state=on]:text-background',
 				variant === 'desktop' && 'px-3'
 			)}
 		>

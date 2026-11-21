@@ -13,7 +13,7 @@
 	bind:ref
 	data-slot="alert-dialog-title"
 	class={cn(
-		'font-medium text-base sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2',
+		'text-lg leading-tight font-black tracking-tight sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2',
 		className
 	)}
 	{...restProps}

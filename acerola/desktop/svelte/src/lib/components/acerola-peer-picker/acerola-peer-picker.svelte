@@ -21,6 +21,7 @@
 <script lang="ts">
 	import { m } from '#lib/paraglide/messages.js';
 	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import { shortId } from '#lib/utils/connection-code.util.ts';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 
@@ -39,25 +40,28 @@
 	state={{ open: state?.open ?? false }}
 	data={{ title: m['pages.network.peerPicker.title']() }}
 	events={{ onOpenChange: safeEvents.onOpenChange }}
-	ui={{
-		contentClass:
-			'w-full max-w-[calc(100vw-2rem)] sm:max-w-sm border-border/60 bg-background/95 backdrop-blur-xl shadow-float p-6 rounded-tile overflow-hidden'
-	}}
+	ui={{ contentClass: 'sm:max-w-sm' }}
 >
 	{#if safeData.peers.length === 0}
-		<p class="p-4 text-center text-sm text-muted-foreground">
-			{m['pages.network.peers.empty']()}
-		</p>
+		<AcerolaEmptyState
+			data={{ title: m['pages.network.peers.empty'](), icon: MonitorIcon }}
+			ui={{ class: 'py-4' }}
+		/>
 	{:else}
-		<div class="flex flex-col gap-1 py-1">
+		<!-- List rows (brand book): rounded-tile on bg-surface, round soft icon, font-black name. -->
+		<div class="flex flex-col gap-2">
 			{#each safeData.peers as peer (peer.peerId)}
 				<button
 					type="button"
-					class="flex items-center gap-3 rounded-inner px-3 py-2.5 text-left transition-colors hover:bg-muted"
+					class="flex items-center gap-3 rounded-tile bg-surface p-3 text-left transition-[filter] duration-200 ease-brand hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					onclick={() => safeEvents.onSelect(peer)}
 				>
-					<MonitorIcon size={18} class="shrink-0 text-muted-foreground" />
-					<span class="truncate text-sm font-medium text-foreground">
+					<span
+						class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+					>
+						<MonitorIcon size={18} />
+					</span>
+					<span class="truncate text-sm font-black tracking-tight text-foreground">
 						{safeData.nicknameFor?.(peer.peerId) ??
 							peer.deviceName ??
 							shortId(peer.peerId)}

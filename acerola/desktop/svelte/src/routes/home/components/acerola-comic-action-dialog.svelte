@@ -162,175 +162,145 @@
 			if (!isOpen) events.onClose();
 		}
 	}}
-	ui={{
-		contentClass:
-			'w-full max-w-[calc(100vw-2rem)] sm:max-w-md border-border/60 bg-background/95 backdrop-blur-xl shadow-float p-6 rounded-tile overflow-hidden'
-	}}
+	ui={{ contentClass: 'sm:max-w-md' }}
 >
-	<div class="flex w-full min-w-0 flex-col gap-4 py-1">
-		<!-- Selection Hero Header & Select All Option -->
+	<div class="flex w-full min-w-0 flex-col gap-3">
+		<!-- Selection: number tile in the primary tone + select all / deselect. -->
 		{#if events.onSelectAll && totalCount > 0}
 			<div
-				class="relative overflow-hidden rounded-inner border bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-3.5 transition-all duration-300"
+				class="flex min-w-0 items-center justify-between gap-3 rounded-tile bg-primary-soft p-4"
 			>
-				<div class="flex min-w-0 items-center justify-between gap-3">
-					<div class="flex min-w-0 flex-1 items-center gap-3">
-						<div
-							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner bg-primary/15 text-primary"
-						>
-							<Layers
-								size={20}
-								class="transition-transform duration-300 group-hover:scale-110"
-							/>
-						</div>
-						<div class="flex min-w-0 flex-1 flex-col">
-							<span
-								class="truncate text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-							>
-								{selectedIds.length} / {totalCount} Selecionados
-							</span>
-							<span class="truncate text-sm font-bold tracking-tight text-foreground">
-								{isAllSelected
-									? m['pages.home.actions.selection.all']()
-									: m['pages.home.actions.selection.partial']()}
-							</span>
-						</div>
-					</div>
-
-					<AcerolaButton
-						ui={{
-							variant: isAllSelected ? 'default' : 'outline',
-							class: 'h-9 px-3.5 rounded-inner font-medium text-xs transition-all duration-200 active:scale-95 shrink-0',
-							disabled: isProcessing
-						}}
-						events={{ onClick: events.onSelectAll }}
-					>
-						{#if isAllSelected}
-							<CheckSquare size={16} class="mr-1.5 shrink-0" />
-						{:else}
-							<Square size={16} class="mr-1.5 shrink-0 opacity-70" />
-						{/if}
-						<span class="truncate">
-							{isAllSelected
-								? m['pages.home.selection.all.deselect']()
-								: m['pages.home.selection.all.selectTotal']({ total: totalCount })}
+				<div class="flex min-w-0 flex-1 items-center gap-3 text-primary">
+					<Layers size={20} class="shrink-0" />
+					<div class="flex min-w-0 flex-1 flex-col">
+						<span class="truncate text-sm font-black tracking-tight tabular-nums">
+							{m['pages.home.actions.selection.count']({
+								selected: selectedIds.length,
+								total: totalCount
+							})}
 						</span>
-					</AcerolaButton>
+						<span class="truncate text-xs font-semibold opacity-80">
+							{isAllSelected
+								? m['pages.home.actions.selection.all']()
+								: m['pages.home.actions.selection.partial']()}
+						</span>
+					</div>
 				</div>
+
+				<AcerolaButton
+					ui={{
+						variant: isAllSelected ? 'contrast' : 'secondary',
+						size: 'sm',
+						class: 'h-9 shrink-0 px-3.5 text-xs',
+						disabled: isProcessing
+					}}
+					events={{ onClick: events.onSelectAll }}
+				>
+					{#if isAllSelected}
+						<CheckSquare size={16} class="shrink-0" />
+					{:else}
+						<Square size={16} class="shrink-0" />
+					{/if}
+					<span class="truncate">
+						{isAllSelected
+							? m['pages.home.selection.all.deselect']()
+							: m['pages.home.selection.all.selectTotal']({ total: totalCount })}
+					</span>
+				</AcerolaButton>
 			</div>
 		{/if}
 
-		<!-- Bookmark Accordion Section -->
-		<div
-			class="group relative overflow-hidden rounded-inner border border-border/80 bg-muted/40 transition-all duration-300 hover:border-border hover:bg-muted/60"
-		>
-			<AcerolaButton
-				ui={{
-					variant: 'ghost',
-					class: 'w-full justify-between h-auto py-3.5 px-4 rounded-inner text-left hover:bg-transparent min-w-0',
-					disabled: isProcessing || selectedIds.length === 0
-				}}
-				events={{ onClick: () => (showBookmarkMenu = !showBookmarkMenu) }}
+		<!-- Bookmark: list row that opens the category list. -->
+		<div class="min-w-0 overflow-hidden rounded-tile bg-surface">
+			<button
+				type="button"
+				class="flex w-full min-w-0 items-center gap-3 p-3 text-left transition-[filter] duration-200 ease-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+				disabled={isProcessing || selectedIds.length === 0}
+				aria-expanded={showBookmarkMenu}
+				onclick={() => (showBookmarkMenu = !showBookmarkMenu)}
 			>
-				<div class="flex min-w-0 flex-1 items-center gap-3 pr-2">
-					<div
-						class="flex h-9 w-9 shrink-0 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] group-hover:brightness-110"
+				<span
+					class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+				>
+					<Bookmark size={18} />
+				</span>
+				<span class="flex min-w-0 flex-1 flex-col">
+					<span class="truncate text-sm font-black tracking-tight text-foreground">
+						{m['pages.home.actions.bookmark']()}
+					</span>
+					<span class="truncate text-xs text-muted-foreground">
+						{m['pages.home.actions.collectionsHint']()}
+					</span>
+				</span>
+				{#if bookmarks.length > 0}
+					<span
+						class="shrink-0 rounded-full bg-card px-2.5 py-0.5 text-[11px] font-black text-muted-foreground tabular-nums"
 					>
-						<Bookmark size={18} />
-					</div>
-					<div class="flex min-w-0 flex-1 flex-col">
-						<span class="truncate text-sm font-semibold text-foreground">
-							{m['pages.home.actions.bookmark']()}
-						</span>
-						<span class="truncate text-xs text-muted-foreground">
-							{m['pages.home.actions.collectionsHint']()}
-						</span>
-					</div>
-				</div>
-
-				<div class="flex shrink-0 items-center gap-2">
-					{#if bookmarks.length > 0}
-						<span
-							class="shrink-0 rounded-full border border-border bg-surface/80 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
-						>
-							{bookmarks.length}
-						</span>
-					{/if}
-					<div class="shrink-0 text-muted-foreground transition-transform duration-200">
-						{#if showBookmarkMenu}
-							<ChevronUp size={18} />
-						{:else}
-							<ChevronDown size={18} />
-						{/if}
-					</div>
-				</div>
-			</AcerolaButton>
+						{bookmarks.length}
+					</span>
+				{/if}
+				{#if showBookmarkMenu}
+					<ChevronUp size={18} class="shrink-0 text-muted-foreground" />
+				{:else}
+					<ChevronDown size={18} class="shrink-0 text-muted-foreground" />
+				{/if}
+			</button>
 
 			{#if showBookmarkMenu}
-				<div
-					transition:slide={{ duration: 220 }}
-					class="min-w-0 border-t border-border/60 bg-background/60 p-2.5"
-				>
+				<div transition:slide={{ duration: 220 }} class="min-w-0 px-2 pb-2">
 					{#if bookmarks.length === 0}
-						<div
-							class="flex flex-col items-center justify-center gap-1.5 py-4 text-center"
-						>
-							<span class="text-xs font-medium text-muted-foreground">
-								Nenhuma categoria de bookmark criada
-							</span>
-						</div>
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							{m['pages.home.actions.categories.empty']()}
+						</p>
 					{:else}
-						<!-- Search Filter for 5+ Bookmarks -->
 						{#if bookmarks.length > 5}
 							<div class="relative mb-2 w-full">
 								<Search
-									size={14}
-									class="absolute top-1/2 left-3 shrink-0 -translate-y-1/2 text-muted-foreground"
+									size={16}
+									class="absolute top-1/2 left-4 shrink-0 -translate-y-1/2 text-muted-foreground"
 								/>
 								<input
 									type="text"
 									placeholder={m[
 										'pages.home.actions.filterCategoriesPlaceholder'
 									]()}
+									aria-label={m[
+										'pages.home.actions.filterCategoriesPlaceholder'
+									]()}
 									bind:value={searchQuery}
-									class="h-8 w-full rounded-inner border border-border/60 bg-muted/60 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+									class="h-11 w-full rounded-full bg-input pr-4 pl-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 								/>
 							</div>
 						{/if}
 
-						<div class="max-h-52 w-full min-w-0 space-y-1 overflow-y-auto pr-1">
+						<div class="max-h-52 w-full min-w-0 space-y-1 overflow-y-auto">
 							{#if filteredBookmarks.length === 0}
-								<div
-									class="truncate px-2 py-3 text-center text-xs text-muted-foreground"
-								>
-									Nenhuma categoria encontrada para "{searchQuery}"
-								</div>
+								<p class="truncate py-3 text-center text-sm text-muted-foreground">
+									{m['pages.home.actions.categories.noMatch']({
+										query: searchQuery
+									})}
+								</p>
 							{:else}
-								{#each filteredBookmarks as category}
+								{#each filteredBookmarks as category (category.id)}
 									{@const hexColor =
 										'#' +
 										(category.color & 0xffffff).toString(16).padStart(6, '0')}
-									<AcerolaButton
-										ui={{
-											variant: 'ghost',
-											class: 'group/item w-full justify-between h-auto min-h-10 py-2 px-3 rounded-inner text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-surface-elevated min-w-0 overflow-hidden',
-											disabled: isProcessing || selectedIds.length === 0
-										}}
-										events={{ onClick: () => handleBookmark(category.id) }}
+									<button
+										type="button"
+										class="group/item flex min-h-11 w-full min-w-0 items-center gap-3 rounded-full px-3 text-left text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none enabled:hover:bg-card disabled:cursor-not-allowed disabled:opacity-60"
+										disabled={isProcessing || selectedIds.length === 0}
+										onclick={() => handleBookmark(category.id)}
 									>
-										<div class="flex min-w-0 flex-1 items-center gap-2.5 pr-2">
-											<span
-												class="h-3 w-3 shrink-0 rounded-full transition-transform duration-200 group-hover/item:scale-125"
-												style="background-color: {hexColor}; box-shadow: 0 0 8px {hexColor}66;"
-											></span>
-											<span
-												class="min-w-0 truncate font-medium text-foreground"
-												title={category.name}
-											>
-												{category.name}
-											</span>
-										</div>
-
+										<span
+											class="size-3 shrink-0 rounded-full"
+											style="background-color: {hexColor};"
+										></span>
+										<span
+											class="min-w-0 flex-1 truncate font-semibold text-foreground"
+											title={category.name}
+										>
+											{category.name}
+										</span>
 										{#if isProcessing && activeAction === 'bookmark' && activeCategoryId === category.id}
 											<Loader2
 												size={16}
@@ -338,11 +308,11 @@
 											/>
 										{:else}
 											<Check
-												size={14}
+												size={16}
 												class="shrink-0 text-primary opacity-0 transition-opacity group-hover/item:opacity-100"
 											/>
 										{/if}
-									</AcerolaButton>
+									</button>
 								{/each}
 							{/if}
 						</div>
@@ -351,77 +321,66 @@
 			{/if}
 		</div>
 
-		<!-- Action Buttons Grid: Hide, Clear Metadata & Delete -->
-		<div class="grid w-full grid-cols-1 gap-2.5 pt-1">
-			<!-- Hide Action -->
-			<AcerolaButton
-				ui={{
-					variant: 'outline',
-					class: 'w-full justify-start h-12 px-4 rounded-inner text-warning hover:text-warning hover:bg-warning-soft font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
-					disabled: isProcessing || selectedIds.length === 0
-				}}
-				events={{ onClick: handleHideClick }}
+		<!-- Actions: list rows with a round icon in the action's tone. -->
+		{#snippet actionRow(
+			label: string,
+			tone: 'warning' | 'destructive',
+			Icon: typeof EyeOff,
+			busy: boolean,
+			onClick: () => void
+		)}
+			<button
+				type="button"
+				class="flex w-full min-w-0 items-center gap-3 rounded-tile bg-surface p-3 text-left transition-[filter] duration-200 ease-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+				disabled={isProcessing || selectedIds.length === 0}
+				onclick={onClick}
 			>
-				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-warning-soft"
+				<span
+					class={[
+						'flex size-10 shrink-0 items-center justify-center rounded-full',
+						tone === 'warning'
+							? 'bg-warning-soft text-warning'
+							: 'bg-destructive-soft text-destructive'
+					]}
 				>
-					{#if isProcessing && activeAction === 'hide'}
-						<Loader2 size={18} class="shrink-0 animate-spin text-warning" />
+					{#if busy}
+						<Loader2 size={18} class="animate-spin" />
 					{:else}
-						<EyeOff size={18} class="shrink-0 text-warning" />
+						<Icon size={18} />
 					{/if}
-				</div>
-				<div class="flex min-w-0 flex-1 flex-col text-left">
-					<span class="truncate">{m['pages.home.actions.hide']()}</span>
-				</div>
-			</AcerolaButton>
+				</span>
+				<span
+					class={[
+						'min-w-0 flex-1 truncate text-sm font-black tracking-tight',
+						tone === 'warning' ? 'text-warning' : 'text-destructive'
+					]}
+				>
+					{label}
+				</span>
+			</button>
+		{/snippet}
 
-			<!-- Clear Metadata Action -->
-			<AcerolaButton
-				ui={{
-					variant: 'outline',
-					class: 'w-full justify-start h-12 px-4 rounded-inner text-destructive hover:text-destructive hover:bg-destructive/10 font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
-					disabled: isProcessing || selectedIds.length === 0
-				}}
-				events={{ onClick: handleClearMetadataClick }}
-			>
-				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-destructive/15"
-				>
-					{#if isProcessing && activeAction === 'clearMetadata'}
-						<Loader2 size={18} class="shrink-0 animate-spin text-destructive" />
-					{:else}
-						<Eraser size={18} class="shrink-0 text-destructive" />
-					{/if}
-				</div>
-				<div class="flex min-w-0 flex-1 flex-col text-left">
-					<span class="truncate">{m['pages.home.actions.clearMetadata']()}</span>
-				</div>
-			</AcerolaButton>
-
-			<!-- Delete Action -->
-			<AcerolaButton
-				ui={{
-					variant: 'destructive',
-					class: 'w-full justify-start h-12 px-4 rounded-inner bg-destructive/15 hover:bg-destructive/25 text-destructive border font-semibold text-sm transition-all duration-200 active:scale-[0.98] min-w-0',
-					disabled: isProcessing || selectedIds.length === 0
-				}}
-				events={{ onClick: handleDeleteClick }}
-			>
-				<div
-					class="mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-inner bg-destructive/20"
-				>
-					{#if isProcessing && activeAction === 'delete'}
-						<Loader2 size={18} class="shrink-0 animate-spin text-destructive" />
-					{:else}
-						<Trash2 size={18} class="shrink-0 text-destructive" />
-					{/if}
-				</div>
-				<div class="flex min-w-0 flex-1 flex-col text-left">
-					<span class="truncate">{m['pages.home.actions.delete']()}</span>
-				</div>
-			</AcerolaButton>
-		</div>
+		{@render actionRow(
+			m['pages.home.actions.hide'](),
+			'warning',
+			EyeOff,
+			isProcessing && activeAction === 'hide',
+			handleHideClick
+		)}
+		{@render actionRow(
+			m['pages.home.actions.clearMetadata'](),
+			'destructive',
+			Eraser,
+			isProcessing && activeAction === 'clearMetadata',
+			handleClearMetadataClick
+		)}
+		{@render actionRow(
+			m['pages.home.actions.delete'](),
+			'destructive',
+			Trash2,
+			isProcessing && activeAction === 'delete',
+			handleDeleteClick
+		)}
 	</div>
 </AcerolaDialog>
 

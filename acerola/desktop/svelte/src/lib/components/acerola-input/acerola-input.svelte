@@ -17,6 +17,8 @@
 			id?: string;
 			name?: string;
 			autocomplete?: InputProps['autocomplete'];
+			/** Accessible name when the field has no visible label (placeholder is not one). */
+			'aria-label'?: string;
 		};
 	};
 </script>

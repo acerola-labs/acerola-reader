@@ -85,19 +85,17 @@
 	// fires a fetch. See the same reasoning in acerola-comic-chapter-list.svelte.
 	let visiblePages = new SvelteSet<number>();
 
-	const ITEM_HEIGHT = 112;
-	const BUTTON_HEIGHT = 100;
+	const ITEM_HEIGHT = 80;
+	const BUTTON_HEIGHT = 72;
 
 	function rowClass(chapter: VolumeChapter, isSelected: boolean, isOpening: boolean): string {
 		const base = 'h-full flex-nowrap overflow-hidden';
-		const selectedRing = isSelected
-			? ' ring-2 ring-primary ring-offset-2 ring-offset-background'
-			: '';
+		const selectedRing = isSelected ? ' bg-primary-soft!' : '';
 		const openingState = isOpening ? ' pointer-events-none opacity-70' : '';
 		if (chapter.isRead) {
-			return `${base} bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
+			return `${base} bg-primary-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
-		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
+		return `${base} bg-surface hover:brightness-110${selectedRing}${openingState}`;
 	}
 
 	const toggleVolume = (volumeId: string) => {
@@ -206,7 +204,7 @@
 			{#if expandedVolumeId === volume.id}
 				{@const totalPages = Math.ceil(volume.totalChapters / pageSize)}
 
-				<div transition:slide class="ml-10 border-l border-surface/30 p-4 pt-0">
+				<div transition:slide class="ml-6 p-4 pt-0">
 					<div class="relative flex w-full flex-col">
 						{#if volume.totalChapters > 0}
 							{#each Array(totalPages) as _, pageIndex}
@@ -242,7 +240,10 @@
 											<AcerolaHeroButton
 												data={{
 													title: chapter.title,
-													description: chapter.fileName
+													description:
+														chapter.fileName !== chapter.title
+															? chapter.fileName
+															: undefined
 												}}
 												events={{
 													onClick: () => {
@@ -273,7 +274,7 @@
 													{:else if data.isSelectionMode}
 														{#if data.isSelected?.(chapter.id)}
 															<div
-																class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+																class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 															>
 																<Check size={16} strokeWidth={3} />
 															</div>
@@ -282,7 +283,7 @@
 																class="flex h-6 w-6 items-center justify-center"
 															>
 																<div
-																	class="h-5 w-5 rounded-full border-2"
+																	class="size-5 rounded-full border-2 border-border"
 																></div>
 															</div>
 														{/if}
@@ -294,7 +295,7 @@
 														>
 															{#if chapter.isRead}
 																<div
-																	class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+																	class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 																>
 																	<Check
 																		size={16}
@@ -302,7 +303,7 @@
 																	/>
 																</div>
 															{:else}
-																<BookOpen size={24} />
+																<BookOpen size={18} />
 															{/if}
 														</div>
 													{/if}
@@ -312,13 +313,11 @@
 													<div class="flex items-center gap-2">
 														{#if chapter.isRead}
 															<span
-																class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black tracking-widest text-primary uppercase"
+																class="rounded-full bg-primary-soft px-3 py-1 text-[11px] font-black text-primary"
 															>
-																{m['pages.comic.metadata.completed']
-																	? m[
-																			'pages.comic.metadata.completed'
-																		]()
-																	: 'LIDO'}
+																{m[
+																	'pages.comic.metadata.completed'
+																]()}
 															</span>
 														{/if}
 														<div
@@ -338,13 +337,12 @@
 																}}
 																ui={{
 																	align: 'end',
-																	contentClass:
-																		'w-52 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
+																	contentClass: 'w-52 p-1.5'
 																}}
 															>
 																{#snippet trigger()}
 																	<span
-																		class="flex size-10 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+																		class="flex size-10 items-center justify-center rounded-full bg-card text-foreground transition-[filter] hover:brightness-110"
 																	>
 																		<MoreVertical size={20} />
 																	</span>
@@ -359,7 +357,7 @@
 																				ui={{
 																					variant:
 																						'ghost',
-																					class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-warning hover:bg-warning-soft hover:text-warning'
+																					class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-warning hover:bg-warning-soft hover:text-warning'
 																				}}
 																				events={{
 																					onClick: () => {
@@ -384,7 +382,7 @@
 																				ui={{
 																					variant:
 																						'ghost',
-																					class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																					class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-primary hover:bg-primary-soft'
 																				}}
 																				events={{
 																					onClick: () => {
@@ -407,13 +405,13 @@
 																		{/if}
 
 																		<div
-																			class="mx-1 my-1 h-px bg-border/60"
+																			class="mx-3 my-1 h-px bg-border"
 																		></div>
 
 																		<AcerolaButton
 																			ui={{
 																				variant: 'ghost',
-																				class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+																				class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold'
 																			}}
 																			events={{
 																				onClick: () => {
@@ -447,15 +445,22 @@
 						{/if}
 
 						{#if loading}
-							<div class="flex items-center justify-center py-4">
-								<RefreshCw size={24} class="animate-spin text-primary" />
+							<!-- Loading: chapter-row skeleton, never a loose spinner. -->
+							<div
+								class="space-y-3 py-4"
+								role="status"
+								aria-label={m['pages.comic.loading']()}
+							>
+								{#each Array.from({ length: 3 }, (_, i) => i) as i (i)}
+									<div
+										class="h-16 w-full animate-pulse rounded-tile bg-surface"
+									></div>
+								{/each}
 							</div>
 						{/if}
 
 						{#if volume.totalChapters === 0 && !loading}
-							<p
-								class="py-4 text-center text-xs font-black tracking-widest uppercase opacity-50"
-							>
+							<p class="py-4 text-center text-sm font-semibold text-muted-foreground">
 								{m['pages.comic.volume.noChapters']()}
 							</p>
 						{/if}
@@ -465,10 +470,12 @@
 		{/each}
 	{:else}
 		<div
-			class="flex flex-col items-center space-y-4 rounded-tile border-2 border-dashed border-surface py-20 text-center opacity-50"
+			class="flex flex-col items-center gap-3 rounded-card bg-card py-16 text-center text-muted-foreground shadow-lift"
 		>
-			<RefreshCw size={48} class="animate-spin text-primary" />
-			<p class="text-sm font-black tracking-widest uppercase">
+			<span class="flex size-14 items-center justify-center rounded-full bg-surface">
+				<BookOpen size={18} />
+			</span>
+			<p class="text-base font-black tracking-tight text-foreground">
 				{m['pages.comic.volume.noVolumes']()}
 			</p>
 		</div>

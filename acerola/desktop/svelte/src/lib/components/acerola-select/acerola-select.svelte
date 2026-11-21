@@ -65,7 +65,7 @@
 <Select type="single" bind:value>
 	<SelectTrigger
 		class={cn(
-			'h-10 w-auto min-w-48 justify-between border-surface/30 bg-surface/20 transition-all hover:bg-surface/40',
+			'h-11 w-auto min-w-48 justify-between rounded-full border-0 bg-input px-4.5 font-medium transition-[filter] hover:brightness-110',
 			ui?.class
 		)}
 	>
@@ -73,11 +73,11 @@
 			{#if selectedOption?.color != null}
 				{@const hex = (selectedOption.color & 0xffffff).toString(16).padStart(6, '0')}
 				<div
-					class="flex items-center gap-2 rounded-inner border px-2 py-0.5"
-					style="background-color: #{hex}15; border-color: #{hex}30; color: #{hex}"
+					class="flex items-center gap-2 rounded-full px-2.5 py-0.5"
+					style="background-color: #{hex}26; color: #{hex}"
 				>
 					<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>
-					<span class="text-xs font-bold tracking-widest uppercase">{selectedLabel}</span>
+					<span class="text-xs font-black">{selectedLabel}</span>
 				</div>
 			{:else}
 				<span class="text-sm font-medium text-foreground">{selectedLabel}</span>
@@ -99,9 +99,7 @@
 								class="h-2 w-2 rounded-full"
 								style="background-color: #{hex}"
 							></div>
-							<span class="text-xs font-bold tracking-widest uppercase"
-								>{option.label}</span
-							>
+							<span class="text-xs font-black">{option.label}</span>
 						</div>
 					{:else}
 						<span class="text-sm font-medium">{option.label}</span>

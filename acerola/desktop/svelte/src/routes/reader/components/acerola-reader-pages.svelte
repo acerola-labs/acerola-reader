@@ -62,33 +62,41 @@
 </script>
 
 {#if !data.chapterAvailable}
-	<div class="text-overlay flex h-full items-center justify-center text-sm font-black uppercase">
+	<div
+		class="flex h-full items-center justify-center text-base font-black tracking-tight text-muted-foreground"
+	>
 		{m['pages.reader.fallback.chapterUnavailable']()}
 	</div>
 {:else if data.openFailed}
-	<div class="flex h-full flex-col items-center justify-center gap-4 px-8 text-center">
-		<AlertTriangle size={40} class="text-destructive" />
-		<div class="space-y-1.5">
-			<p class="text-sm font-black tracking-widest text-foreground uppercase">
-				{m['pages.reader.fallback.openFailed.title']()}
-			</p>
-			<p class="text-overlay max-w-sm text-xs">
-				{m['pages.reader.fallback.openFailed.desc']()}
-			</p>
+	<!-- Error: destructive-soft notice with what happened and what to do. -->
+	<div class="flex h-full items-center justify-center px-8">
+		<div
+			class="flex max-w-md flex-col items-center gap-4 rounded-card bg-destructive-soft p-6 text-center text-destructive"
+		>
+			<AlertTriangle size={32} />
+			<div class="space-y-1.5">
+				<p class="text-base font-black tracking-tight">
+					{m['pages.reader.fallback.openFailed.title']()}
+				</p>
+				<p class="text-sm">
+					{m['pages.reader.fallback.openFailed.desc']()}
+				</p>
+			</div>
+			{#if events?.onRetry}
+				<AcerolaButton
+					ui={{ variant: 'contrast', class: 'gap-2' }}
+					events={{ onClick: events.onRetry }}
+				>
+					<RefreshCw size={16} />
+					{m['pages.reader.fallback.retry']()}
+				</AcerolaButton>
+			{/if}
 		</div>
-		{#if events?.onRetry}
-			<AcerolaButton
-				ui={{ variant: 'secondary', class: 'rounded-inner gap-2' }}
-				events={{ onClick: events.onRetry }}
-			>
-				<RefreshCw size={16} />
-				{m['pages.reader.fallback.retry']()}
-			</AcerolaButton>
-		{/if}
 	</div>
 {:else if data.pageCount === 0}
-	<div class="flex h-full items-center justify-center">
-		<RefreshCw size={40} class="animate-spin text-primary" />
+	<!-- Loading: skeleton in the shape of a page, never a loose spinner. -->
+	<div class="flex h-full items-center justify-center p-6" aria-hidden="true">
+		<div class="aspect-2/3 h-full max-h-[70vh] animate-pulse rounded-tile bg-surface"></div>
 	</div>
 {:else}
 	<div
@@ -127,10 +135,10 @@
 							src={pageItem.url}
 							alt={m['pages.reader.pages.imageAlt']({ page: pageIndex + 1 })}
 							class={cn(
-								'bg-base object-contain',
+								'bg-background object-contain',
 								data.mode === 'webtoon' && 'w-full',
 								data.mode !== 'webtoon' &&
-									'max-h-full max-w-full shadow-float shadow-base/40'
+									'shadow-base/40 max-h-full max-w-full shadow-float'
 							)}
 							loading={Math.abs(pageIndex - data.currentPage) <= 2 ? 'eager' : 'lazy'}
 							draggable="false"
@@ -141,13 +149,12 @@
 						use:loadIfMissing={pageIndex}
 						class={cn(
 							data.mode !== 'webtoon' &&
-								'flex h-full w-full max-w-4xl items-center justify-center border border-surface/40 bg-base/50',
+								'h-full w-full max-w-4xl animate-pulse rounded-tile bg-surface',
 							data.mode === 'webtoon' &&
-								'flex min-h-[64vh] w-full items-center justify-center border-y border-surface/40 bg-base/50'
+								'min-h-[64vh] w-full animate-pulse bg-surface'
 						)}
-					>
-						<RefreshCw size={32} class="animate-spin text-primary" />
-					</div>
+						aria-hidden="true"
+					></div>
 				{/if}
 			</section>
 		{/each}

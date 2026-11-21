@@ -336,11 +336,13 @@
 		<div class="mb-4 flex items-center justify-between">
 			{#if selection.isSelectionMode}
 				<div class="flex items-center gap-2">
-					<span class="text-sm font-medium text-muted-foreground">
+					<span
+						class="flex h-11 items-center rounded-full bg-primary-soft px-4 text-sm font-black text-primary tabular-nums"
+					>
 						{m['pages.home.selection.selected']({ count: selection.selectedCount })}
 					</span>
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
+						ui={{ variant: 'ghost' }}
 						events={{ onClick: handleSelectAllToggle }}
 					>
 						{selection.selectedCount === visibleComics.length
@@ -351,8 +353,7 @@
 					<AcerolaButton
 						ui={{
 							variant: 'secondary',
-							size: 'sm',
-							class: 'rounded-inner font-semibold gap-1.5'
+							class: 'gap-1.5'
 						}}
 						events={{ onClick: () => (showActionDialog = true) }}
 					>
@@ -363,7 +364,7 @@
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
+						ui={{ variant: 'ghost' }}
 						events={{ onClick: () => selection.exitSelectionMode() }}
 					>
 						{m['pages.home.selection.cancel']()}
@@ -373,7 +374,7 @@
 				<div class="flex items-center gap-2">
 					<!-- Filter & Sort Button -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-inner gap-2' }}
+						ui={{ variant: 'secondary', class: 'gap-2' }}
 						events={{ onClick: () => (showFilterPanel = !showFilterPanel) }}
 					>
 						<SlidersHorizontal size={16} />
@@ -389,7 +390,7 @@
 
 					<!-- Fetch/sync comics from another paired device -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-inner gap-2' }}
+						ui={{ variant: 'secondary', class: 'gap-2' }}
 						events={{ onClick: () => (showPeerPicker = true) }}
 					>
 						<MonitorIcon size={16} />
@@ -399,7 +400,7 @@
 					<!-- Active sort indicator -->
 					{#if summary.sortBy !== 'title' || summary.sortOrder !== 'asc'}
 						<span
-							class="rounded-inner bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary"
+							class="flex h-9 items-center rounded-full bg-primary-soft px-3.5 text-xs font-black text-primary"
 						>
 							{summary.sortBy === 'title'
 								? m['pages.home.sort.indicator.title']()
@@ -453,7 +454,7 @@
 					{#snippet footer()}
 						<div class="mt-1 flex items-center justify-between">
 							<span
-								class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
+								class="flex items-center gap-1 text-[10px] font-black tracking-wider text-muted-foreground uppercase"
 							>
 								<BookOpen size={10} />
 								{comic.metadata.chapterCount}
@@ -485,7 +486,7 @@
 					{#snippet overlay()}
 						{#if isSelected}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-inner bg-primary/30"
+								class="absolute inset-0 flex items-center justify-center bg-primary/30"
 							>
 								<div class="rounded-full bg-primary p-2">
 									<Check size={24} class="text-primary-foreground" />
@@ -493,9 +494,9 @@
 							</div>
 						{:else if selection.isSelectionMode}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-inner bg-surface/50"
+								class="absolute inset-0 flex items-center justify-center bg-scrim/50"
 							>
-								<div class="rounded-full border-2 p-2">
+								<div class="rounded-full bg-on-scrim/20 p-2">
 									<div class="h-6 w-6"></div>
 								</div>
 							</div>

@@ -35,13 +35,11 @@
 	let { data, events, state }: ComicMetadataPanelProps = $props();
 </script>
 
-<div
-	class="relative z-10 hidden h-full w-100 shrink-0 flex-col border-r border-surface/30 bg-mantle/60 backdrop-blur-3xl select-none lg:flex"
->
+<div class="relative z-10 hidden h-full w-100 shrink-0 flex-col bg-mantle select-none lg:flex">
 	<div class="flex h-full flex-col p-10">
 		<AcerolaButtonIcon
 			events={{ onClick: events.onBack }}
-			ui={{ tone: 'accent', class: 'group mb-10 shadow-lift' }}
+			ui={{ tone: 'accent', class: 'group mb-10' }}
 		>
 			<ArrowLeft size={24} />
 		</AcerolaButtonIcon>
@@ -85,30 +83,28 @@
 
 				<div class="flex flex-wrap justify-center gap-2">
 					<span
-						class="text-text rounded-inner border border-surface/30 bg-surface/80 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase"
+						class="rounded-full bg-surface px-4 py-1.5 text-[11px] font-bold text-foreground"
 						>{data.status}</span
 					>
 					<span
-						class="text-text rounded-inner border border-surface/30 bg-surface/80 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase"
+						class="rounded-full bg-surface px-4 py-1.5 text-[11px] font-bold text-foreground"
 						>{data.source}</span
 					>
 				</div>
 			</div>
 
-			<div
-				class="w-full space-y-3 rounded-tile border border-surface/30 bg-base/30 p-6 text-left"
-			>
+			<div class="w-full space-y-3 rounded-tile bg-surface p-5 text-left">
 				<div class="flex items-center justify-between">
-					<h3 class="text-overlay text-[10px] font-black tracking-widest uppercase">
+					<h3 class="text-sm font-black tracking-tight text-foreground">
 						{m['pages.comic.metadata.synopsis']()}
 					</h3>
-					<span class="text-[9px] font-black tracking-widest text-primary/60 uppercase"
+					<span class="text-xs font-semibold text-muted-foreground tabular-nums"
 						>{m['pages.comic.metadata.chapters.count']({
 							count: data.chaptersCount
 						})}</span
 					>
 				</div>
-				<p class="line-clamp-6 text-xs leading-relaxed font-medium text-subtext">
+				<p class="line-clamp-6 text-sm leading-relaxed text-muted-foreground">
 					{data.description}
 				</p>
 			</div>
@@ -117,15 +113,14 @@
 				<AcerolaButton
 					events={{ onClick: events.onReadNow }}
 					ui={{
-						class: 'flex w-full items-center justify-center gap-3 rounded-tile py-8 font-black',
+						size: 'lg',
+						class: 'flex w-full items-center justify-center gap-3',
 						disabled: state?.isLoading
 					}}
 				>
-					<Play size={24} fill="currentColor" />
+					<Play size={20} fill="currentColor" />
 					{state?.isResuming
-						? m['pages.history.resume']
-							? m['pages.history.resume']()
-							: 'Continue Reading'
+						? m['pages.history.resume']()
 						: m['pages.comic.metadata.readNow']()}
 				</AcerolaButton>
 			</div>

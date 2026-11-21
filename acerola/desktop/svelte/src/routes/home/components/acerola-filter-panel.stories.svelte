@@ -39,7 +39,7 @@
 			<button
 				type="button"
 				onclick={() => (openDefault = true)}
-				class="bg-surface-elevated rounded-inner border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Panel
 			</button>
@@ -65,7 +65,7 @@
 			<button
 				type="button"
 				onclick={() => (openActiveFilters = true)}
-				class="bg-surface-elevated rounded-inner border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Panel
 			</button>
@@ -91,7 +91,7 @@
 			<button
 				type="button"
 				onclick={() => (openNoBookmarks = true)}
-				class="bg-surface-elevated rounded-inner border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Panel
 			</button>
