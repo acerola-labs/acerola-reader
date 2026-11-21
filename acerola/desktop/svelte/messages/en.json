@@ -170,7 +170,8 @@
 		"command": {
 			"navigationGroup": "Navigation",
 			"libraryGroup": "Library",
-			"noResults": "No comics found."
+			"noResults": "No comics found",
+			"chapterCount": "{count} chapters"
 		},
 		"syncIndicator": {
 			"syncing": "Syncing with {peer}",
@@ -187,7 +188,7 @@
 	"pages": {
 		"home": {
 			"loading": "Loading...",
-			"noComics": "No comics found.",
+			"noComics": "No comics found",
 			"empty": {
 				"desc": "Your library is empty right now. Perform a quick sync in the current folder or select another folder containing your comics (.cbz, .cbr, .pdf).",
 				"quickSync": "Quick sync",
@@ -245,9 +246,14 @@
 				"filterCategoriesPlaceholder": "Filter categories...",
 				"selection": {
 					"all": "All items selected",
-					"partial": "Partial selection"
+					"partial": "Partial selection",
+					"count": "{selected} of {total} selected"
 				},
-				"collectionsHint": "Organize the selected comics into collections"
+				"collectionsHint": "Organize the selected comics into collections",
+				"categories": {
+					"empty": "No bookmarks created",
+					"noMatch": "No bookmarks found for \"{query}\""
+				}
 			},
 			"toast": {
 				"hidden": "{count} comic(s) hidden",
@@ -311,7 +317,7 @@
 				"chapters": "Chapters",
 				"preferences": "Preferences"
 			},
-			"filterPlaceholder": "FILTER...",
+			"filterPlaceholder": "Filter chapters",
 			"sort": {
 				"button": "Sort",
 				"number": {
@@ -351,15 +357,15 @@
 				"chapters": {
 					"count": "{count} chaps"
 				},
-				"readNow": "READ NOW",
-				"completed": "COMPLETED",
-				"conflict": "CONFLICT"
+				"readNow": "Read now",
+				"completed": "Completed",
+				"conflict": "Conflict"
 			},
 			"preferences": {
 				"reading": "Reading",
 				"categories": {
 					"reading": {
-						"desc": "Volume display, bookmark"
+						"desc": "How this comic looks and which bookmark it lives in"
 					},
 					"sync": {
 						"title": "Sync",
@@ -368,6 +374,21 @@
 					"advanced": {
 						"title": "Advanced",
 						"desc": "Cover and danger zone"
+					},
+					"metadata": {
+						"desc": "Where this comic's title, cover and synopsis come from"
+					},
+					"files": {
+						"desc": "Keep the chapters in step with the folder"
+					},
+					"devices": {
+						"desc": "Take just this comic to another device"
+					},
+					"cover": {
+						"desc": "Swap the cover for the comic's own pages"
+					},
+					"danger": {
+						"desc": "Actions that can't be undone"
 					}
 				},
 				"volumeHighlight": {
@@ -400,13 +421,16 @@
 						"desc": "Syncs only this comic with the chosen device, without touching the rest of the library.",
 						"button": "Choose device",
 						"push": "Send to this device",
-						"pull": "Pull from this device"
+						"pull": "Pull from this device",
+						"pushShort": "Send",
+						"pullShort": "Pull"
 					},
 					"toast": {
 						"start": "Syncing comic with device...",
 						"success": "Comic synced with device!",
 						"error": "Failed to sync comic: {msg}"
-					}
+					},
+					"emptyTitle": "No paired devices"
 				},
 				"cover": {
 					"title": "Cover",
@@ -431,6 +455,12 @@
 							"action": "Clear metadata"
 						}
 					}
+				},
+				"actions": {
+					"sync": "Sync",
+					"read": "Read file",
+					"generate": "Generate",
+					"clear": "Clear"
 				}
 			},
 			"volume": {
@@ -552,7 +582,7 @@
 		"history": {
 			"title": "History",
 			"loading": "Loading...",
-			"noEvents": "No history found.",
+			"noEvents": "No history yet",
 			"resume": "Keep reading",
 			"chapterLabel": "Chapter {chapter}",
 			"pageLabel": "Page {page}",
@@ -576,30 +606,32 @@
 				"retry": "Try again"
 			},
 			"emptyHint": "What you read shows up here, ready to continue.",
-			"emptyAction": "Go to the library"
+			"emptyAction": "Go to the library",
+			"eyebrow": "Your reading"
 		},
 		"config": {
 			"title": "Settings",
 			"desc": "Customize your reading experience.",
 			"categories": {
 				"files": {
-					"desc": "Library folder and ComicInfo.xml generation"
+					"desc": "Where your comics live and what Acerola writes to the folder"
 				},
 				"library": {
-					"desc": "Sync and naming templates"
+					"desc": "Keep the library in step with the files on disk"
 				},
 				"metadata": {
-					"desc": "Language, MangaDex and AniList"
+					"desc": "Where titles, covers and synopses come from"
 				},
 				"bookmarks": {
 					"desc": "Create and organize bookmarks"
 				}
 			},
 			"fileSystem": {
-				"title": "File settings",
+				"title": "Files",
 				"comicPath": {
 					"title": "Comics folder",
-					"desc": "Folder where comics are searched and saved: {path}"
+					"desc": "Folder where comics are searched and saved: {path}",
+					"empty": "No folder chosen"
 				},
 				"comicInfo": {
 					"title": "Generate ComicInfo.xml",
@@ -617,7 +649,7 @@
 				}
 			},
 			"metadata": {
-				"title": "Metadata settings",
+				"title": "Metadata",
 				"lang": {
 					"title": "Language",
 					"desc": "Select the default language for metadata.",
@@ -625,7 +657,7 @@
 					"popoverDesc": "Current: {language}",
 					"searchPlaceholder": "Search language...",
 					"groupTitle": "Available languages",
-					"empty": "No language found.",
+					"empty": "No language found",
 					"itemDesc": "Code {code}"
 				},
 				"mangadex": {
@@ -647,8 +679,9 @@
 				"name": "Bookmark name",
 				"color": "Color",
 				"create": "Create",
-				"empty": "No bookmarks created.",
-				"colorOption": "Color {hex}"
+				"empty": "No bookmarks created",
+				"colorOption": "Color {hex}",
+				"remove": "Remove {name}"
 			},
 			"toast": {
 				"sync": {
@@ -724,6 +757,14 @@
 					"deleteError": "Could not remove the template: {msg}",
 					"loadError": "Could not load templates: {msg}"
 				}
+			},
+			"eyebrow": "Preferences",
+			"actions": {
+				"chooseFolder": "Choose folder",
+				"sync": "Sync",
+				"rebuild": "Rebuild",
+				"open": "Open",
+				"syncing": "Syncing"
 			}
 		},
 		"network": {
@@ -763,7 +804,8 @@
 					"replaceButton": "Replace ticket",
 					"removeButton": "Remove ticket",
 					"invalid": "Invalid ticket. Check that you copied the full text.",
-					"help": "Create a free account at services.iroh.computer, generate a ticket in your project, and paste it here — the credential stays on this device only, it's never sent to the relay."
+					"help": "Create a free account at services.iroh.computer, generate a ticket in your project, and paste it here — the credential stays on this device only, it's never sent to the relay.",
+					"manage": "Ticket"
 				},
 				"customRelays": {
 					"title": "Your own relays",
@@ -771,7 +813,8 @@
 					"addButton": "Add custom relay",
 					"empty": "No custom relay added.",
 					"count": "{count} configured",
-					"remove": "Remove custom relay"
+					"remove": "Remove custom relay",
+					"manage": "Manage"
 				},
 				"invalidUrl": "Enter a valid URL (e.g. https://relay.example.com).",
 				"summaryMdnsOnly": "Local network only (mDNS) — no relay active, only devices on the same network can connect.",
@@ -796,7 +839,7 @@
 				"desc": "Scan this QR code on the other device, or copy the code below.",
 				"securityNote": "Only pair with devices you trust — the first connection permanently grants access to your library.",
 				"copy": "Copy code",
-				"showCode": "Show code as text",
+				"showCode": "Show code",
 				"hideCode": "Hide code",
 				"loading": "Generating code...",
 				"qrError": "Couldn't generate the QR code. Use the text code below instead."
@@ -808,7 +851,8 @@
 				"loading": "Connecting...",
 				"success": "Connected!",
 				"error": "Couldn't connect. Make sure the code is correct and the other device has Acerola open.",
-				"invalidCode": "Invalid code. Make sure you copied the full code from the other device."
+				"invalidCode": "Invalid code. Make sure you copied the full code from the other device.",
+				"lead": "Paste the code shown on the other device"
 			},
 			"peerPicker": {
 				"title": "Choose a device"
@@ -841,11 +885,12 @@
 					"desc": "This device loses access to your library. If it tries to connect again later, it'll go through the same confirmation as a never-paired device.",
 					"cancel": "Cancel",
 					"confirm": "Remove"
-				}
+				},
+				"lead": "Devices that can already swap comics and history with this one"
 			},
 			"transfers": {
 				"title": "Transfers",
-				"empty": "No transfers in progress.",
+				"empty": "No transfers in progress",
 				"historyStarted": "Syncing reading history with {peer}...",
 				"historyComplete": "Reading history synced with {peer}.",
 				"historyError": "History sync failed: {msg}",
@@ -868,16 +913,18 @@
 					"desc": "Removes the entire persisted sync history. This can't be undone.",
 					"cancel": "Cancel",
 					"confirm": "Yes, clear everything"
-				}
+				},
+				"lead": "What was sent and received in this session"
 			},
 			"remoteLibrary": {
 				"title": "Remote library",
 				"searchPlaceholder": "Search comic...",
 				"loading": "Querying device's library...",
-				"empty": "No comics found.",
+				"empty": "No comics found",
 				"chapterCount": "{count} chapters",
 				"syncButton": "Sync"
-			}
+			},
+			"eyebrow": "Your devices"
 		}
 	},
 	"onboarding": {
@@ -914,7 +961,7 @@
 				"badge": "Recommended",
 				"desc": "Random access ZIP container. Instant reading with smart in-memory caching and prefetching.",
 				"feature1": "Direct random access",
-				"feature2": "In-memory LRU cache"
+				"feature2": "In-memory cache"
 			},
 			"cbr": {
 				"title": "Comic Book RAR",

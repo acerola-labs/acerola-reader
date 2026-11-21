@@ -1,23 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
-	import AcerolaToggleCard from '#lib/components/acerola-toggle-card/acerola-toggle-card.svelte';
 	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
 
-	import Trash2Icon from '@lucide/svelte/icons/trash-2';
+	import BookmarkIcon from '@lucide/svelte/icons/bookmark';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 
 	const bookmarkStore = useBookmarks();
 
-	// Bookmark creation sits behind a "drawer" collapsed by default — 19 always-visible color
-	// options were the heaviest text/UI weight on the Config screen before this existed. The
-	// list of already created bookmarks stays always visible right below, no expanding needed.
-	let createExpanded = $state(false);
-
+	// Bookmark colors are user data (stored as ARGB ints, shared with Android), not theme colors.
 	const CATEGORY_COLORS = [
 		0xfff44336, 0xffe91e63, 0xff9c27b0, 0xff673ab7, 0xff3f51b5, 0xff2196f3, 0xff03a9f4,
 		0xff00bcd4, 0xff009688, 0xff4caf50, 0xff8bc34a, 0xffcddc39, 0xffffeb3b, 0xffffc107,
@@ -27,122 +24,95 @@
 	let newBookmarkName = $state('');
 	let newBookmarkColor = $state<number>(CATEGORY_COLORS[0]);
 
+	const toHex = (color: number) => '#' + (color & 0xffffff).toString(16).padStart(6, '0');
+
+	async function create() {
+		await bookmarkStore.createBookmark(newBookmarkName, newBookmarkColor);
+		newBookmarkName = '';
+	}
+
 	onMount(() => {
 		bookmarkStore.loadBookmarks();
 	});
 </script>
 
-<div class="space-y-4">
-	<div class="grid gap-4">
-		<div class="rounded-inner border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
-			<p class="mb-4 text-sm text-muted-foreground">{m['pages.config.bookmarks.desc']()}</p>
-
-			<div class="mb-6">
-				<AcerolaToggleCard
-					data={{ title: m['pages.config.bookmarks.add']() }}
-					state={{ active: false, expanded: createExpanded }}
-					events={{ onClick: () => (createExpanded = !createExpanded) }}
-					ui={{ iconClass: 'bg-accent-hero text-accent-hero-foreground' }}
-				>
-					{#snippet icon()}
-						<PlusIcon size={18} />
-					{/snippet}
-
-					{#snippet children()}
-						<!-- Row 1: Name and Button -->
-						<div class="flex items-end gap-4">
-							<div class="flex-1 space-y-1">
-								<label for="bookmarkName" class="text-xs font-semibold"
-									>{m['pages.config.bookmarks.name']()}</label
-								>
-								<Input
-									id="bookmarkName"
-									placeholder={m['pages.config.bookmarks.name']()}
-									bind:value={newBookmarkName}
-									class="h-10 bg-background text-foreground"
-								/>
-							</div>
-							<Button
-								disabled={!newBookmarkName.trim() || bookmarkStore.isLoading}
-								onclick={async () => {
-									await bookmarkStore.createBookmark(
-										newBookmarkName,
-										newBookmarkColor
-									);
-									newBookmarkName = '';
-								}}
-								class="h-10 gap-2 px-6"
-							>
-								<PlusIcon size={16} />
-								{m['pages.config.bookmarks.create']()}
-							</Button>
-						</div>
-
-						<!-- Row 2: Colors -->
-						<div class="space-y-2">
-							<span class="block text-xs font-semibold"
-								>{m['pages.config.bookmarks.color']()}</span
-							>
-							<div class="flex flex-wrap gap-2">
-								{#each CATEGORY_COLORS as hexColor}
-									{@const hexLabel =
-										'#' + (hexColor & 0xffffff).toString(16).padStart(6, '0')}
-									<button
-										type="button"
-										class="relative h-8 w-8 cursor-pointer rounded-full transition-transform hover:scale-110"
-										style="background-color: {hexLabel}"
-										onclick={() => (newBookmarkColor = hexColor)}
-										aria-label={m['pages.config.bookmarks.colorOption']({
-											hex: hexLabel
-										})}
-										aria-pressed={newBookmarkColor === hexColor}
-									>
-										{#if newBookmarkColor === hexColor}
-											<div
-												class="absolute inset-0 rounded-full border-2 ring-2 ring-background"
-											></div>
-										{/if}
-									</button>
-								{/each}
-							</div>
-						</div>
-					{/snippet}
-				</AcerolaToggleCard>
-			</div>
-
-			<div class="space-y-2" use:autoAnimateList>
-				{#if bookmarkStore.bookmarks.length === 0}
-					<div
-						class="rounded-inner border border-dashed border-border/40 p-8 text-center text-sm text-muted-foreground"
-					>
-						{m['pages.config.bookmarks.empty']()}
-					</div>
-				{:else}
-					{#each bookmarkStore.bookmarks as bookmark (bookmark.id)}
-						<div
-							class="flex items-center justify-between rounded-inner border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
-						>
-							<div class="flex items-center gap-3">
-								<div
-									class="h-6 w-6 rounded-full"
-									style="background-color: #{(bookmark.color & 0xffffff)
-										.toString(16)
-										.padStart(6, '0')}"
-								></div>
-								<span class="font-medium">{bookmark.name}</span>
-							</div>
-							<AcerolaButtonIcon
-								events={{
-									onClick: () => bookmarkStore.deleteBookmark(bookmark.id)
-								}}
-								ui={{ variant: 'ghost', tone: 'destructive', class: 'h-8 w-8' }}
-							>
-								<Trash2Icon size={16} />
-							</AcerolaButtonIcon>
-						</div>
-					{/each}
-				{/if}
-			</div>
-		</div>
+<!-- New bookmark: name + create on one line, the color swatches below. -->
+<form
+	class="grid gap-3 rounded-tile bg-surface p-4"
+	onsubmit={(event) => {
+		event.preventDefault();
+		if (newBookmarkName.trim()) create();
+	}}
+>
+	<div class="flex items-center gap-2">
+		<Input
+			id="bookmarkName"
+			aria-label={m['pages.config.bookmarks.name']()}
+			placeholder={m['pages.config.bookmarks.name']()}
+			bind:value={newBookmarkName}
+			class="flex-1 bg-card"
+		/>
+		<AcerolaButton
+			ui={{
+				variant: 'contrast',
+				type: 'submit',
+				disabled: !newBookmarkName.trim() || bookmarkStore.isLoading
+			}}
+		>
+			<PlusIcon size={16} />
+			{m['pages.config.bookmarks.create']()}
+		</AcerolaButton>
 	</div>
+
+	<div class="flex flex-wrap gap-2" role="group" aria-label={m['pages.config.bookmarks.color']()}>
+		{#each CATEGORY_COLORS as color (color)}
+			<button
+				type="button"
+				class={[
+					'size-7 cursor-pointer rounded-full transition-transform duration-200 ease-brand hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+					newBookmarkColor === color &&
+						'ring-2 ring-foreground ring-offset-2 ring-offset-surface'
+				]}
+				style="background-color: {toHex(color)}"
+				onclick={() => (newBookmarkColor = color)}
+				aria-label={m['pages.config.bookmarks.colorOption']({ hex: toHex(color) })}
+				aria-pressed={newBookmarkColor === color}
+			></button>
+		{/each}
+	</div>
+</form>
+
+<!-- Existing bookmarks: one list row each. -->
+<div class="grid gap-2" use:autoAnimateList>
+	{#if bookmarkStore.bookmarks.length === 0}
+		<AcerolaEmptyState
+			data={{ title: m['pages.config.bookmarks.empty'](), icon: BookmarkIcon }}
+			ui={{ class: 'py-6' }}
+		/>
+	{:else}
+		{#each bookmarkStore.bookmarks as bookmark (bookmark.id)}
+			<div class="flex min-w-0 items-center gap-4 rounded-tile bg-surface p-4">
+				<span
+					class="flex size-10 shrink-0 items-center justify-center rounded-full bg-card"
+				>
+					<span
+						class="size-4 rounded-full"
+						style="background-color: {toHex(bookmark.color)}"
+					></span>
+				</span>
+				<span class="min-w-0 flex-1 truncate text-sm font-black tracking-tight">
+					{bookmark.name}
+				</span>
+				<AcerolaButtonIcon
+					events={{ onClick: () => bookmarkStore.deleteBookmark(bookmark.id) }}
+					ui={{
+						tone: 'destructive',
+						'aria-label': m['pages.config.bookmarks.remove']({ name: bookmark.name })
+					}}
+				>
+					<Trash2Icon size={16} />
+				</AcerolaButtonIcon>
+			</div>
+		{/each}
+	{/if}
 </div>

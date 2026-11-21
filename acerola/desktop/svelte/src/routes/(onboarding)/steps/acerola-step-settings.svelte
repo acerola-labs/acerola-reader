@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { m } from '#lib/paraglide/messages.js';
-	import { Button } from '#lib/components/ui/button/index.ts';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import FolderIcon from '@lucide/svelte/icons/folder';
-	import PaletteIcon from '@lucide/svelte/icons/palette';
 	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
 
 	import { onMount } from 'svelte';
@@ -23,15 +22,14 @@
 
 <div class="flex h-full w-full items-center justify-center overflow-y-auto p-6 sm:p-8">
 	<div class="w-full max-w-xl space-y-8 text-center sm:text-left">
-		<!-- Header -->
-		<div class="flex flex-col items-center gap-3 sm:flex-row sm:items-start">
-			<div
-				class="flex size-14 items-center justify-center rounded-inner bg-chart-4/10 text-chart-4"
+		<div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
+			<span
+				class="flex size-14 shrink-0 items-center justify-center rounded-full bg-success-soft text-success"
 			>
-				<FolderIcon size={28} />
-			</div>
+				<FolderIcon size={24} />
+			</span>
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+				<h1 class="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
 					{m['onboarding.settings.title']()}
 				</h1>
 				<p class="mt-1 text-sm text-muted-foreground">
@@ -40,58 +38,65 @@
 			</div>
 		</div>
 
-		<!-- Dropzone-style Folder Selection Card -->
+		<!-- Folder picker: solid block, primary tone once a folder is chosen. -->
 		<div
-			class="relative flex flex-col items-center rounded-tile border-2 border-dashed p-8 text-center backdrop-blur-md transition-all duration-300 {folder.folderPath
-				? ' bg-primary/5 shadow-lift'
-				: 'border-border/70 bg-card/40 hover:bg-card/60'}"
+			class={[
+				'flex flex-col items-center rounded-card p-8 text-center transition-colors duration-300 ease-brand',
+				folder.folderPath ? 'bg-primary-soft' : 'bg-surface'
+			]}
 		>
-			<div
-				class="mb-4 flex size-16 items-center justify-center rounded-inner transition-transform duration-300 hover:scale-105 {folder.folderPath
-					? 'bg-primary/20 text-primary'
-					: 'bg-muted/60 text-muted-foreground'}"
+			<span
+				class={[
+					'mb-4 flex size-16 items-center justify-center rounded-full',
+					folder.folderPath
+						? 'bg-primary text-primary-foreground'
+						: 'bg-card text-muted-foreground'
+				]}
 			>
-				<FolderIcon size={32} />
-			</div>
+				<FolderIcon size={24} />
+			</span>
 
-			<h2 class="mb-1 text-xl font-bold text-foreground">
+			<h2 class="mb-1 text-xl font-black tracking-tight text-foreground">
 				{m['onboarding.settings.folder.title']()}
 			</h2>
 
-			<p class="mb-5 max-w-sm text-xs text-muted-foreground">
+			<p class="mb-5 max-w-sm text-sm text-muted-foreground">
 				{m['onboarding.settings.folder.desc']()}
 			</p>
 
 			{#if folder.folderPath}
 				<div
-					class="mb-5 flex max-w-full items-center gap-2 rounded-full border bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary"
+					class="mb-5 flex max-w-full items-center gap-2 rounded-full bg-card px-4 py-1.5 text-xs font-black text-primary"
 				>
-					<CheckIcon size={14} strokeWidth={2.5} />
+					<CheckIcon size={16} strokeWidth={2.5} />
 					<span>{m['onboarding.settings.folder.selected']()}</span>
 				</div>
 			{/if}
 
-			<Button
-				onclick={folder.selectFolder}
-				variant={folder.folderPath ? 'outline' : 'default'}
-				class="w-full max-w-md truncate rounded-inner px-6 py-5 text-sm font-semibold"
+			<AcerolaButton
+				ui={{
+					variant: folder.folderPath ? 'secondary' : 'default',
+					class: 'w-full max-w-md truncate px-6'
+				}}
+				events={{ onClick: folder.selectFolder }}
 			>
 				{folder.folderPath || m['onboarding.settings.folder.select']()}
-			</Button>
+			</AcerolaButton>
 		</div>
 
-		<!-- Action Controls -->
 		<div class="flex items-center justify-between pt-2">
-			<Button onclick={onPrev} variant="outline" class="rounded-inner px-6">
+			<AcerolaButton
+				ui={{ variant: 'secondary', class: 'px-6' }}
+				events={{ onClick: onPrev }}
+			>
 				{m['onboarding.back']()}
-			</Button>
-			<Button
-				onclick={onNext}
-				disabled={!folder.folderPath}
-				class="rounded-inner px-8 font-semibold shadow-lift transition-all hover:shadow-lift disabled:opacity-40"
+			</AcerolaButton>
+			<AcerolaButton
+				ui={{ class: 'px-8', disabled: !folder.folderPath }}
+				events={{ onClick: onNext }}
 			>
 				{m['onboarding.next']()}
-			</Button>
+			</AcerolaButton>
 		</div>
 	</div>
 </div>

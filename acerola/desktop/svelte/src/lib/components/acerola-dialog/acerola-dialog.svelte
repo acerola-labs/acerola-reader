@@ -35,19 +35,15 @@
 </script>
 
 <Dialog.Root open={state?.open} onOpenChange={events?.onOpenChange}>
-	<Dialog.Content
-		class={cn('font-dm-sans rounded-inner', ui?.contentClass)}
-		showCloseButton={ui?.showCloseButton}
-	>
+	<!-- Brand book dialog: rounded-sheet sheet with shadow-float over a scrim (ui/dialog). -->
+	<Dialog.Content class={cn(ui?.contentClass)} showCloseButton={ui?.showCloseButton}>
 		{#if data?.title || data?.description}
 			<Dialog.Header>
 				{#if data?.title}
-					<Dialog.Title class="text-xl font-bold tracking-tight"
-						>{data.title}</Dialog.Title
-					>
+					<Dialog.Title class="text-xl">{data.title}</Dialog.Title>
 				{/if}
 				{#if data?.description}
-					<Dialog.Description class="opacity-80">
+					<Dialog.Description>
 						{data.description}
 					</Dialog.Description>
 				{/if}

@@ -669,20 +669,8 @@
 	<div
 		in:fade={{ duration: 200 }}
 		out:fade={{ duration: 200 }}
-		class="text-text fixed inset-x-0 top-8 bottom-0 z-50 flex overflow-hidden bg-base"
+		class="fixed inset-x-0 top-8 bottom-0 z-50 flex overflow-hidden bg-background text-foreground"
 	>
-		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			<img
-				alt={manga.title}
-				src={manga.banner || manga.cover}
-				referrerpolicy="no-referrer"
-				class="h-full w-full scale-150 object-cover opacity-20 blur-[120px]"
-			/>
-
-			<!-- NOTE: This is where the data is injected into the banner -->
-			<div class="absolute inset-0 bg-base/40"></div>
-		</div>
-
 		<ComicMetadataPanel
 			data={{
 				title: manga.title,
@@ -710,13 +698,13 @@
 			class="scrollbar-hide relative z-10 flex flex-1 flex-col overflow-y-auto [overflow-anchor:none]"
 		>
 			<div
-				class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-surface/30 bg-base/90 px-6 py-2 backdrop-blur-md lg:hidden"
+				class="sticky top-0 z-50 flex h-20 items-center justify-between bg-background px-6 py-2 lg:hidden"
 			>
 				<AcerolaButtonIcon events={{ onClick: onBack }} ui={{ size: 'sm', tone: 'accent' }}>
 					<ArrowLeft size={20} />
 				</AcerolaButtonIcon>
 
-				<span class="max-w-50 truncate text-sm font-black tracking-widest uppercase">
+				<span class="max-w-50 truncate text-base font-black tracking-tight">
 					{manga.title}
 				</span>
 
@@ -734,14 +722,15 @@
 
 			<div class="mx-auto w-full max-w-5xl space-y-12 p-8 lg:p-16">
 				<div
-					class="sticky top-0 z-40 -mx-4 flex items-center justify-between border-b border-surface/30 bg-base/5 px-4 backdrop-blur-3xl"
+					class="sticky top-0 z-40 -mx-4 flex items-center justify-between bg-background px-4 py-3"
 				>
+					<!-- Brand book chip tabs (`.ac-chip-tabs`): bg-surface track, the active chip is
+					     bg-foreground and slides with GSAP. -->
 					<div
-						class="relative"
+						class="relative isolate rounded-full bg-surface p-1"
 						use:slidingIndicator={{
 							selector: '[data-state="on"]',
-							indicatorClass: 'bottom-0 h-1 rounded-full bg-primary',
-							track: ['x', 'width']
+							indicatorClass: 'rounded-full bg-foreground'
 						}}
 					>
 						<AcerolaToggleGroup
@@ -757,7 +746,7 @@
 							{#snippet children()}
 								<ToggleGroupItem
 									value="content"
-									class="border-none bg-transparent py-6 text-sm font-black tracking-[0.2em] uppercase data-[state=on]:bg-transparent data-[state=on]:text-primary"
+									class="h-9 rounded-full border-none bg-transparent px-4 text-sm font-bold text-muted-foreground transition-colors duration-300 ease-brand hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-background"
 								>
 									{chapterStore.chapters?.hasVolumeStructure
 										? m['pages.comic.tabs.volumes']()
@@ -766,7 +755,7 @@
 
 								<ToggleGroupItem
 									value="preferences"
-									class="border-none bg-transparent py-6 text-sm font-black tracking-[0.2em] uppercase data-[state=on]:bg-transparent data-[state=on]:text-primary"
+									class="h-9 rounded-full border-none bg-transparent px-4 text-sm font-bold text-muted-foreground transition-colors duration-300 ease-brand hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-background"
 								>
 									{m['pages.comic.tabs.preferences']()}
 								</ToggleGroupItem>
@@ -781,7 +770,8 @@
 									type="text"
 									bind:value={searchQuery}
 									placeholder={m['pages.comic.filterPlaceholder']()}
-									class="w-40 rounded-full border border-surface/30 bg-surface/20 px-6 py-2 text-[10px] font-black tracking-widest transition-all focus:w-60 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+									aria-label={m['pages.comic.filterPlaceholder']()}
+									class="h-11 w-44 rounded-full bg-input px-4.5 text-sm font-medium text-foreground transition-[width] duration-300 ease-brand placeholder:text-muted-foreground focus:w-64 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 								/>
 							{/if}
 
@@ -792,15 +782,15 @@
 									align: 'end',
 									side: 'bottom',
 									sideOffset: 8,
-									contentClass: 'w-64 overflow-hidden rounded-inner p-2'
+									contentClass: 'w-64 p-2'
 								}}
 							>
 								{#snippet trigger()}
 									<AcerolaButton
 										ui={{
-											variant: 'ghost',
+											variant: 'secondary',
 											size: 'sm',
-											class: 'rounded-inner'
+											class: 'h-11 gap-2 px-4'
 										}}
 									>
 										<ArrowUpDown size={16} />
@@ -812,7 +802,7 @@
 									<AcerolaButton
 										ui={{
 											variant: 'ghost',
-											class: 'w-full justify-start rounded-inner'
+											class: 'w-full justify-start'
 										}}
 										events={{
 											onClick: () => {
@@ -833,7 +823,7 @@
 									<AcerolaButton
 										ui={{
 											variant: 'ghost',
-											class: 'w-full justify-start rounded-inner'
+											class: 'w-full justify-start'
 										}}
 										events={{
 											onClick: () => {
@@ -854,7 +844,7 @@
 									<AcerolaButton
 										ui={{
 											variant: 'ghost',
-											class: 'w-full justify-start rounded-inner'
+											class: 'w-full justify-start'
 										}}
 										events={{
 											onClick: () => {
@@ -875,7 +865,7 @@
 									<AcerolaButton
 										ui={{
 											variant: 'ghost',
-											class: 'w-full justify-start rounded-inner'
+											class: 'w-full justify-start'
 										}}
 										events={{
 											onClick: () => {
@@ -900,26 +890,26 @@
 				</div>
 
 				{#if activeTab === 'content' && chapterSelection.isSelectionMode}
-					<div class="-mx-4 flex items-center gap-2 border-b border-surface/30 px-4 py-3">
+					<div class="-mx-4 flex items-center gap-2 rounded-full bg-surface px-4 py-2">
 						<span class="text-sm font-medium text-muted-foreground">
 							{m['pages.comic.selection.selected']({
 								count: chapterSelection.selectedCount
 							})}
 						</span>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
+							ui={{ variant: 'ghost', size: 'sm' }}
 							events={{ onClick: handleSelectAllChapters }}
 						>
 							{m['pages.comic.selection.selectAll']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner' }}
+							ui={{ variant: 'secondary', size: 'sm' }}
 							events={{ onClick: handleBatchMarkRead }}
 						>
 							{m['pages.comic.selection.markRead']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-inner' }}
+							ui={{ variant: 'secondary', size: 'sm' }}
 							events={{ onClick: handleBatchMarkUnread }}
 						>
 							{m['pages.comic.selection.markUnread']()}
@@ -928,7 +918,7 @@
 							ui={{
 								variant: 'secondary',
 								size: 'sm',
-								class: 'gap-1.5 rounded-inner'
+								class: 'gap-1.5'
 							}}
 							events={{ onClick: () => (sendToPeerPickerOpen = true) }}
 						>
@@ -936,7 +926,7 @@
 							{m['pages.comic.selection.sendToPeer.button']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-inner' }}
+							ui={{ variant: 'ghost', size: 'sm' }}
 							events={{ onClick: () => chapterSelection.exitSelectionMode() }}
 						>
 							{m['pages.comic.selection.cancel']()}

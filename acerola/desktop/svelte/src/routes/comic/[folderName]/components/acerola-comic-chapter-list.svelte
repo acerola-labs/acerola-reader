@@ -58,11 +58,11 @@
 	let openingChapterId = $state<string | null>(null);
 
 	/**
-	 * ITEM_HEIGHT (112px): Total slot height (item + gap).
-	 * BUTTON_HEIGHT (100px): Real button height to fit Title + Description + Padding.
+	 * ITEM_HEIGHT (80px): Total slot height (item + gap).
+	 * BUTTON_HEIGHT (72px): Real row height (brand list row: p-4 + size-10 icon).
 	 */
-	const ITEM_HEIGHT = 112;
-	const BUTTON_HEIGHT = 100;
+	const ITEM_HEIGHT = 80;
+	const BUTTON_HEIGHT = 72;
 
 	const totalPages = $derived(Math.ceil(data.totalChapters / data.pageSize));
 
@@ -71,17 +71,15 @@
 	// chapter).
 	function rowClass(chapter: Chapter, isSelected: boolean, isOpening: boolean): string {
 		const base = 'h-full flex-nowrap overflow-hidden';
-		const selectedRing = isSelected
-			? ' ring-2 ring-primary ring-offset-2 ring-offset-background'
-			: '';
+		const selectedRing = isSelected ? ' bg-primary-soft!' : '';
 		const openingState = isOpening ? ' pointer-events-none opacity-70' : '';
 		if (chapter.hasConflict) {
-			return `${base} bg-destructive/10 hover:bg-destructive/20${selectedRing}${openingState}`;
+			return `${base} bg-destructive-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
 		if (chapter.isRead) {
-			return `${base} bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
+			return `${base} bg-primary-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
-		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
+		return `${base} bg-surface hover:brightness-110${selectedRing}${openingState}`;
 	}
 
 	// INFO: Reactive on purpose — decides what stays mounted in the DOM. Chapter data
@@ -200,7 +198,10 @@
 						<AcerolaHeroButton
 							data={{
 								title: chapter.title,
-								description: chapter.fileName
+								description:
+									chapter.fileName !== chapter.title
+										? chapter.fileName
+										: undefined
 							}}
 							events={{
 								onClick: () => {
@@ -223,18 +224,20 @@
 							{#snippet icon()}
 								{#if openingChapterId === chapter.id && !data.isSelectionMode}
 									<div class="text-primary">
-										<RefreshCw size={24} class="animate-spin" />
+										<RefreshCw size={18} class="animate-spin" />
 									</div>
 								{:else if data.isSelectionMode}
 									{#if data.isSelected?.(chapter.id)}
 										<div
-											class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+											class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 										>
 											<Check size={16} strokeWidth={3} />
 										</div>
 									{:else}
 										<div class="flex h-6 w-6 items-center justify-center">
-											<div class="h-5 w-5 rounded-full border-2"></div>
+											<div
+												class="size-5 rounded-full border-2 border-border"
+											></div>
 										</div>
 									{/if}
 								{:else if chapter.hasConflict}
@@ -246,19 +249,19 @@
 									     `text-destructive` color over the background behind, which is already
 									     used elsewhere in the app. -->
 									<div
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/15 text-destructive"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-destructive-soft text-destructive"
 									>
 										<TriangleAlert size={16} />
 									</div>
 								{:else if chapter.isRead}
 									<div
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 									>
 										<Check size={16} strokeWidth={3} />
 									</div>
 								{:else}
 									<div class="text-primary">
-										<BookOpen size={24} />
+										<BookOpen size={18} />
 									</div>
 								{/if}
 							{/snippet}
@@ -267,18 +270,16 @@
 								<div class="flex items-center gap-2">
 									{#if chapter.hasConflict}
 										<span
-											class="rounded-full bg-muted px-3 py-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
+											class="rounded-full bg-destructive-soft px-3 py-1 text-[11px] font-black text-destructive"
 										>
 											{m['pages.comic.metadata.conflict']()}
 										</span>
 									{/if}
 									{#if chapter.isRead}
 										<span
-											class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black tracking-widest text-primary uppercase"
+											class="rounded-full bg-primary-soft px-3 py-1 text-[11px] font-black text-primary"
 										>
-											{m['pages.comic.metadata.completed']
-												? m['pages.comic.metadata.completed']()
-												: 'LIDO'}
+											{m['pages.comic.metadata.completed']()}
 										</span>
 									{/if}
 									<div
@@ -293,15 +294,14 @@
 											}}
 											ui={{
 												align: 'end',
-												contentClass:
-													'w-52 overflow-hidden rounded-inner border-border/40 bg-card/95 p-1.5 shadow-float backdrop-blur-md'
+												contentClass: 'w-52 p-1.5'
 											}}
 										>
 											{#snippet trigger()}
 												<span
-													class="flex size-10 items-center justify-center rounded-inner bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+													class="flex size-10 items-center justify-center rounded-full bg-card text-foreground transition-[filter] hover:brightness-110"
 												>
-													<MoreVertical size={20} />
+													<MoreVertical size={18} />
 												</span>
 											{/snippet}
 
@@ -311,7 +311,7 @@
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-warning hover:bg-warning-soft hover:text-warning'
+																class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-warning hover:bg-warning-soft hover:text-warning'
 															}}
 															events={{
 																onClick: () => {
@@ -329,7 +329,7 @@
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-primary hover:bg-primary-soft'
 															}}
 															events={{
 																onClick: () => {
@@ -343,12 +343,12 @@
 														</AcerolaButton>
 													{/if}
 
-													<div class="mx-1 my-1 h-px bg-border/60"></div>
+													<div class="mx-3 my-1 h-px bg-border"></div>
 
 													<AcerolaButton
 														ui={{
 															variant: 'ghost',
-															class: 'h-9 w-full justify-start gap-2.5 rounded-inner px-2.5 text-sm font-medium'
+															class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold'
 														}}
 														events={{
 															onClick: () => {

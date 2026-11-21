@@ -24,6 +24,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
 	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
@@ -74,37 +75,46 @@
 		description: safeData.peerLabel
 	}}
 	events={{ onOpenChange: safeEvents.onOpenChange }}
-	ui={{
-		contentClass:
-			'w-full max-w-[calc(100vw-2rem)] sm:max-w-2xl border-border/60 bg-background/95 backdrop-blur-xl shadow-float p-6 rounded-tile overflow-hidden'
-	}}
+	ui={{ contentClass: 'sm:max-w-2xl' }}
 >
-	<div class="flex w-full min-w-0 flex-col gap-4 py-1">
+	<div class="flex w-full min-w-0 flex-col gap-4">
+		<!-- Search field (brand book): pill on bg-surface, no border. -->
 		<div class="relative w-full">
 			<SearchIcon
-				size={14}
-				class="absolute top-1/2 left-3 shrink-0 -translate-y-1/2 text-muted-foreground"
+				size={16}
+				class="absolute top-1/2 left-4 shrink-0 -translate-y-1/2 text-muted-foreground"
 			/>
 			<input
 				type="text"
 				placeholder={m['pages.network.remoteLibrary.searchPlaceholder']()}
+				aria-label={m['pages.network.remoteLibrary.searchPlaceholder']()}
 				bind:value={searchQuery}
-				class="h-9 w-full rounded-inner border border-border/60 bg-muted/60 pr-3 pl-8 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+				class="h-11 w-full rounded-full bg-input pr-4 pl-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 			/>
 		</div>
 
 		{#if safeData.isLoading}
-			<p class="p-4 text-center text-sm text-muted-foreground">
-				{m['pages.network.remoteLibrary.loading']()}
-			</p>
+			<!-- Loading: skeleton in the shape of the cover grid. -->
+			<div
+				class="grid w-full grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-4"
+				role="status"
+				aria-label={m['pages.network.remoteLibrary.loading']()}
+			>
+				{#each Array.from({ length: 8 }, (_, i) => i) as i (i)}
+					<div class="aspect-2/3 animate-pulse rounded-inner bg-surface"></div>
+				{/each}
+			</div>
 		{:else if safeData.errorMessage}
-			<p class="p-4 text-center text-sm text-destructive">
+			<div
+				class="rounded-card bg-destructive-soft p-5 text-sm font-semibold text-destructive"
+			>
 				{safeData.errorMessage}
-			</p>
+			</div>
 		{:else if filteredComics.length === 0}
-			<p class="p-4 text-center text-sm text-muted-foreground">
-				{m['pages.network.remoteLibrary.empty']()}
-			</p>
+			<AcerolaEmptyState
+				data={{ title: m['pages.network.remoteLibrary.empty'](), icon: BookOpenIcon }}
+				ui={{ class: 'py-6' }}
+			/>
 		{:else}
 			<div
 				class="grid max-h-[28rem] w-full grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-4 overflow-y-auto p-1"
@@ -127,7 +137,7 @@
 					>
 						{#snippet footer()}
 							<span
-								class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
+								class="flex items-center gap-1 text-[10px] font-black tracking-wider text-muted-foreground uppercase"
 							>
 								<BookOpenIcon size={10} />
 								{m['pages.network.remoteLibrary.chapterCount']({
@@ -145,7 +155,7 @@
 						{#snippet overlay()}
 							{#if comicSyncing}
 								<div
-									class="absolute inset-0 flex items-center justify-center bg-crust/60"
+									class="absolute inset-0 flex items-center justify-center bg-scrim/50"
 								>
 									<Loader2Icon size={24} class="animate-spin text-primary" />
 								</div>

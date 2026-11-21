@@ -47,11 +47,11 @@
 </script>
 
 <Story name="Open" asChild>
-	<div class="relative h-96 overflow-hidden rounded-inner border border-surface/40 bg-base">
+	<div class="relative h-96 overflow-hidden rounded-card bg-background">
 		<button
 			type="button"
 			onclick={() => (openDefault = true)}
-			class="bg-surface-elevated m-4 rounded-inner border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+			class="m-4 rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 		>
 			Open Command Palette
 		</button>
@@ -64,11 +64,11 @@
 </Story>
 
 <Story name="Zoom Mode Active" asChild>
-	<div class="relative h-96 overflow-hidden rounded-inner border border-surface/40 bg-base">
+	<div class="relative h-96 overflow-hidden rounded-card bg-background">
 		<button
 			type="button"
 			onclick={() => (openZoomMode = true)}
-			class="bg-surface-elevated m-4 rounded-inner border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+			class="m-4 rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 		>
 			Open Command Palette
 		</button>
@@ -81,7 +81,7 @@
 </Story>
 
 <Story name="Closed" asChild>
-	<div class="relative h-64 overflow-hidden rounded-inner border border-surface/40 bg-base">
+	<div class="relative h-64 overflow-hidden rounded-card bg-background">
 		<AcerolaReaderCommandPalette
 			data={{ zoomMode: false }}
 			state={{ open: false, value: '', readingMode: 'vertical' }}

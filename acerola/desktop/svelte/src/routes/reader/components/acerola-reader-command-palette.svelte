@@ -52,13 +52,13 @@
 		<button
 			type="button"
 			aria-label={m['pages.reader.actions.closeCommands']()}
-			class="absolute inset-0 bg-base/20 backdrop-blur-[2px]"
+			class="absolute inset-0 bg-scrim/50"
 			onclick={closeCommand}
 			transition:fade={{ duration: 120 }}
 		></button>
 
 		<div
-			class="absolute top-1/2 left-1/2 w-[min(34rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-inner border border-surface/50 bg-base/95 shadow-float shadow-crust/60"
+			class="absolute top-1/2 left-1/2 w-[min(34rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-sheet bg-card shadow-float"
 			transition:scale={{ start: 0.97, duration: 120 }}
 		>
 			<AcerolaCommand

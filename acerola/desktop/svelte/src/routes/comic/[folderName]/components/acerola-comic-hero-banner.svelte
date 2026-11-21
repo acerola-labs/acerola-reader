@@ -29,13 +29,15 @@
 				class="h-full w-full object-cover"
 				referrerpolicy="no-referrer"
 			/>
-			<div class="absolute inset-0 bg-linear-to-t from-base via-base/20 to-transparent"></div>
 			<div
-				class="absolute inset-0 hidden bg-linear-to-l from-transparent via-transparent to-base/40 lg:block"
+				class="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent"
+			></div>
+			<div
+				class="absolute inset-0 hidden bg-linear-to-l from-transparent via-transparent to-background/40 lg:block"
 			></div>
 		</div>
 	{:else}
-		<div class="h-full w-full bg-linear-to-b from-primary/20 via-base/50 to-base"></div>
+		<div class="h-full w-full bg-linear-to-b from-primary-soft to-background"></div>
 	{/if}
 
 	<!-- Floating stats and Genres on Banner -->
@@ -43,7 +45,7 @@
 		<div class="flex shrink-0 gap-4 lg:gap-6">
 			{#if data?.rating != null}
 				<div
-					class="flex items-center gap-3 rounded-inner border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
+					class="flex h-12 items-center gap-3 rounded-full bg-scrim/50 px-5 text-on-scrim"
 				>
 					<Star size={20} class="fill-warning text-warning" />
 					<span class="text-xl font-black tracking-tighter">{data.rating.toFixed(1)}</span
@@ -53,7 +55,7 @@
 
 			{#if data?.chapterCount != null}
 				<div
-					class="flex items-center gap-3 rounded-inner border border-surface/30 bg-surface/20 px-6 py-3 backdrop-blur-xl"
+					class="flex h-12 items-center gap-3 rounded-full bg-scrim/50 px-5 text-on-scrim"
 				>
 					<BookOpen size={20} class="text-primary" />
 					<span class="text-xl font-black tracking-tighter"
@@ -74,7 +76,7 @@
 				<div class="flex gap-2 pr-6 pb-3">
 					{#each genres as genre}
 						<span
-							class="text-text rounded-full border border-surface/30 bg-surface/40 px-4 py-1.5 text-[10px] font-black tracking-widest whitespace-nowrap uppercase backdrop-blur-xl"
+							class="rounded-full bg-scrim/50 px-4 py-1.5 text-[11px] font-bold whitespace-nowrap text-on-scrim"
 							>{genre}</span
 						>
 					{/each}

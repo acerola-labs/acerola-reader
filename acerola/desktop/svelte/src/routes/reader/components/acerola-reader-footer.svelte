@@ -32,12 +32,10 @@
 	let { data, events, state }: ReaderFooterProps = $props();
 </script>
 
-<footer
-	class="relative z-20 shrink-0 border-t border-surface/40 bg-base/95 px-4 py-3 backdrop-blur-md"
->
+<footer class="relative z-20 shrink-0 bg-mantle px-4 py-3">
 	<div class="flex flex-col gap-3">
 		<div
-			class="text-overlay flex items-center justify-between gap-3 text-[10px] font-black tracking-widest uppercase"
+			class="flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground tabular-nums"
 		>
 			<span class="shrink-0"
 				>{m['pages.reader.progress.readPercent']({
@@ -55,7 +53,7 @@
 			aria-valuemin="0"
 			aria-valuemax="100"
 			aria-valuenow={data.pageProgressPercent}
-			class="h-2 overflow-hidden rounded-full bg-surface/60"
+			class="h-2 overflow-hidden rounded-full bg-surface"
 			title={data.chapterProgressLabel}
 		>
 			<div
@@ -68,7 +66,7 @@
 			<div class="flex items-center gap-2">
 				{#if data.hasPreviousChapter && events.onPreviousChapter}
 					<button
-						class="flex items-center gap-2 rounded-inner bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
+						class="flex h-11 items-center gap-2 rounded-full bg-surface px-4 text-sm font-black text-foreground transition-[filter,transform] duration-200 ease-brand hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
 						onclick={events.onPreviousChapter}
 					>
 						<ChevronLeft size={16} />
@@ -87,7 +85,7 @@
 
 			{#if data.hasNextChapter && events.onNextChapter}
 				<button
-					class="flex items-center gap-2 rounded-inner bg-surface/60 px-4 py-2 text-xs font-bold text-primary transition-all hover:bg-surface active:scale-95"
+					class="flex h-11 items-center gap-2 rounded-full bg-surface px-4 text-sm font-black text-foreground transition-[filter,transform] duration-200 ease-brand hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
 					onclick={events.onNextChapter}
 				>
 					<span class="hidden md:inline">{m['pages.reader.actions.chapter.next']()}</span>

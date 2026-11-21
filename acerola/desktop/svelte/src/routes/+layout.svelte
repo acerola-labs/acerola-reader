@@ -11,7 +11,7 @@
 	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 
-	import AcerolaLogo from '#lib/assets/icons/acerola.svg?component';
+	import AcerolaLogo from '#lib/assets/icons/acerola-logo-foreground.svg?component';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import SquareIcon from '@lucide/svelte/icons/square';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -52,7 +52,6 @@
 	import { resolveCover } from '#lib/utils/artwork.util.ts';
 
 	import AcerolaModePicker from '#lib/components/acerola-mode-picker/acerola-mode-picker.svelte';
-	import AcerolaSelect from '#lib/components/acerola-select/acerola-select.svelte';
 	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
 	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 	import AcerolaSidebar from '#lib/components/acerola-sidebar/acerola-sidebar.svelte';
@@ -63,11 +62,11 @@
 	import { Command as CommandPrimitive } from 'bits-ui';
 
 	import AcerolaNotification from '#lib/components/acerola-notification/acerola-notification.svelte';
-	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
 	import AcerolaOnboarding from './(onboarding)/acerola-onboarding.svelte';
 	import '$theme/layout.css';
 	import Search from '@lucide/svelte/icons/search';
+	import BookOpenIcon from '@lucide/svelte/icons/book-open';
+	import CheckIcon from '@lucide/svelte/icons/check';
 	import GlobeIcon from '@lucide/svelte/icons/globe';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 
@@ -183,7 +182,7 @@
 	<!-- Titlebar Global -->
 	<div
 		data-tauri-drag-region
-		class="z-100 flex h-8 shrink-0 items-center justify-between border-b border-border/50 bg-background select-none"
+		class="z-100 flex h-8 shrink-0 items-center justify-between bg-mantle select-none"
 	>
 		<div
 			data-tauri-drag-region
@@ -252,7 +251,7 @@
 				<AcerolaOnboarding />
 			{:else}
 				<header
-					class="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-surface/50 bg-base/80 px-8 backdrop-blur-xl transition-all"
+					class="sticky top-0 z-40 flex h-18 items-center justify-between bg-background px-8"
 				>
 					<div class="max-w-xl flex-1">
 						<button
@@ -264,15 +263,15 @@
 							}}
 						>
 							<Search
-								class="text-overlay absolute top-1/2 left-4 -translate-y-1/2 transition-colors group-hover:text-primary"
+								class="absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-foreground"
 								size={18}
 							/>
 							<div
-								class="text-overlay/50 flex w-full items-center justify-between rounded-inner border border-surface bg-mantle py-2 pr-4 pl-11 text-sm transition-all"
+								class="flex h-11 w-full items-center justify-between rounded-full bg-input pr-2 pl-11 text-sm text-muted-foreground"
 							>
 								<span>{m['layout.searchPlaceholder']()}</span>
 								<kbd
-									class="pointer-events-none hidden items-center gap-1 rounded-inner border border-surface/80 bg-surface/50 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground select-none sm:flex"
+									class="pointer-events-none hidden items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[10px] font-black text-muted-foreground select-none sm:flex"
 								>
 									Ctrl+K
 								</kbd>
@@ -290,7 +289,7 @@
 							{@const progress = headerSync.activeProgressMessage()}
 							<button
 								type="button"
-								class="flex max-w-56 items-center gap-2 rounded-inner border bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
+								class="flex h-11 max-w-56 items-center gap-2 rounded-full bg-primary-soft px-4 text-xs font-black text-primary transition-[filter] hover:brightness-110"
 								title={progress ?? m['layout.syncIndicator.tooltip']()}
 								onclick={() => goto('/network')}
 							>
@@ -310,15 +309,14 @@
 								align: 'end',
 								side: 'bottom',
 								sideOffset: 8,
-								contentClass:
-									'w-56 p-3 rounded-inner border-border/40 bg-card/95 backdrop-blur-md shadow-float'
+								contentClass: 'w-56 p-2'
 							}}
 						>
 							{#snippet trigger()}
 								<AcerolaButtonIcon
 									ui={{
 										title: m['layout.languagePicker.title'](),
-										tone: 'accent'
+										variant: 'secondary'
 									}}
 								>
 									<GlobeIcon size={16} />
@@ -326,13 +324,32 @@
 							{/snippet}
 
 							{#snippet content()}
-								<AcerolaSelect
-									data={{ options: localeOptions }}
-									state={{ value: currentLocale }}
-									events={{
-										onValueChange: (value) => (currentLocale = value as Locale)
-									}}
-								/>
+								<!-- The languages as a plain list: one click picks, the current one is marked. -->
+								<div
+									class="grid gap-0.5"
+									role="radiogroup"
+									aria-label={m['layout.languagePicker.title']()}
+								>
+									{#each localeOptions as option (option.value)}
+										<button
+											type="button"
+											role="radio"
+											aria-checked={currentLocale === option.value}
+											class={[
+												'flex h-11 w-full items-center justify-between gap-3 rounded-full px-4 text-left text-sm font-bold transition-colors duration-200 ease-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+												currentLocale === option.value
+													? 'bg-primary-soft text-primary'
+													: 'text-foreground hover:bg-surface'
+											]}
+											onclick={() => (currentLocale = option.value as Locale)}
+										>
+											{option.label}
+											{#if currentLocale === option.value}
+												<CheckIcon size={16} />
+											{/if}
+										</button>
+									{/each}
+								</div>
 							{/snippet}
 						</AcerolaPopover>
 
@@ -351,20 +368,20 @@
 	events={{ onOpenChange: (open) => (isSearchDialogOpen = open) }}
 	ui={{
 		contentClass:
-			'p-0 border border-surface/50 overflow-hidden w-full max-w-4xl sm:max-w-4xl bg-base/95 backdrop-blur-xl shadow-float top-10 portrait:top-4 sm:top-10 translate-y-0',
+			'p-0 gap-0 overflow-hidden w-full max-w-4xl sm:max-w-4xl top-10 portrait:top-4 sm:top-10 translate-y-0',
 		showCloseButton: false
 	}}
 >
 	<AcerolaCommand>
-		<div class="border-b border-surface/50 p-4">
+		<div class="p-4 pb-2">
 			<div class="group relative">
 				<Search
-					class="text-overlay absolute top-1/2 left-4 -translate-y-1/2 transition-colors group-focus-within:text-primary"
-					size={24}
+					class="absolute top-1/2 left-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-foreground"
+					size={20}
 				/>
 				<CommandPrimitive.Input
 					placeholder={m['layout.searchPlaceholder']()}
-					class="placeholder:text-overlay/50 h-16 w-full rounded-inner border border-surface bg-mantle py-3 pr-4 pl-14 text-xl font-medium transition-all outline-none focus:ring-2 focus:ring-primary/50"
+					class="h-14 w-full rounded-full bg-input pr-5 pl-13 text-lg font-semibold outline-none placeholder:text-muted-foreground"
 				/>
 			</div>
 		</div>
@@ -384,7 +401,7 @@
 							isSearchDialogOpen = false;
 							goto(item.href);
 						}}
-						class="flex cursor-pointer items-center gap-3 rounded-inner px-4 py-3 transition-colors data-[selected=true]:bg-surface/50"
+						class="flex cursor-pointer items-center gap-3 rounded-full px-4 py-3 transition-colors data-[selected=true]:bg-surface"
 					>
 						<item.icon size={18} />
 						<span class="text-sm font-semibold text-foreground">{item.label}</span>
@@ -397,7 +414,8 @@
 					heading={m['layout.command.libraryGroup']()}
 					class="px-2 text-muted-foreground"
 				>
-					<div class="flex flex-col gap-2">
+					<!-- Compact list row: small cover, title, chapter count and the bookmark dot. -->
+					<div class="flex flex-col gap-1">
 						{#each summary.comics.comics as comic (comic.relations.directoryId)}
 							{@const cover = resolveCover(comic.artwork)}
 							{@const comicBookmark = bookmarkStore.getBookmarkForComic(
@@ -411,34 +429,38 @@
 										n.goto(`/comic/${comic.filesystem.folderName}`)
 									);
 								}}
-								class="flex cursor-pointer items-center gap-6 rounded-inner px-4 py-4 transition-colors data-[selected=true]:bg-surface/50"
+								class="flex cursor-pointer items-center gap-4 rounded-tile p-2 pr-4 transition-colors data-[selected=true]:bg-surface"
 							>
-								<AcerolaCardImage
-									data={{
-										title: comic.metadata.title || comic.filesystem.folderName,
-										cover
-									}}
-									ui={{ size: 'sm', hideTitle: true }}
+								<span
+									class="flex aspect-2/3 w-10 shrink-0 items-center justify-center overflow-hidden rounded-inner bg-surface text-muted-foreground"
 								>
-									{#snippet floatingBadge()}
-										{#if comicBookmark != null}
-											<AcerolaBookmarkRibbon
-												color={comicBookmark.color}
-												name={comicBookmark.name}
-											/>
-										{/if}
-									{/snippet}
-								</AcerolaCardImage>
-								<div class="flex flex-col gap-2 overflow-hidden">
-									<span class="truncate text-xl font-bold text-foreground">
+									{#if cover}
+										<img src={cover} alt="" class="size-full object-cover" />
+									{:else}
+										<BookOpenIcon size={16} />
+									{/if}
+								</span>
+								<span class="flex min-w-0 flex-1 flex-col">
+									<span
+										class="truncate text-sm font-black tracking-tight text-foreground"
+									>
 										{comic.metadata.title || comic.filesystem.folderName}
 									</span>
-									<span
-										class="truncate text-sm font-medium text-muted-foreground"
-									>
-										{comic.filesystem.folderName}
+									<span class="text-xs text-muted-foreground tabular-nums">
+										{m['layout.command.chapterCount']({
+											count: comic.metadata.chapterCount
+										})}
 									</span>
-								</div>
+								</span>
+								{#if comicBookmark != null}
+									<span
+										class="size-2.5 shrink-0 rounded-full"
+										style="background-color: #{(comicBookmark.color & 0xffffff)
+											.toString(16)
+											.padStart(6, '0')}"
+										title={comicBookmark.name}
+									></span>
+								{/if}
 							</Command.Item>
 						{/each}
 					</div>

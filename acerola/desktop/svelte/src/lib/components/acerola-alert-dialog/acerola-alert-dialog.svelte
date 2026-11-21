@@ -15,7 +15,8 @@
 			onCancel?: () => void;
 		};
 		ui?: {
-			variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+			variant?:
+				'default' | 'contrast' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 		};
 	};
 </script>
@@ -43,21 +44,24 @@
 			{@render children()}
 		{/if}
 	</AlertDialog.Trigger>
-	<AlertDialog.Content class="font-dm-sans rounded-inner">
+	<!-- Brand book dialog: rounded-sheet sheet; the confirm action is bg-foreground (contrast), or the
+	     destructive tone when it can't be undone. -->
+	<AlertDialog.Content>
 		<AlertDialog.Header>
-			<AlertDialog.Title class="text-xl font-bold tracking-tight"
-				>{data?.title}</AlertDialog.Title
-			>
-			<AlertDialog.Description class="opacity-80">
+			<AlertDialog.Title class="text-xl">{data?.title}</AlertDialog.Title>
+			<AlertDialog.Description>
 				{data?.description}
 			</AlertDialog.Description>
 		</AlertDialog.Header>
-		<AlertDialog.Footer class="mt-6">
-			<AlertDialog.Cancel class="rounded-inner" onclick={events?.onCancel}>
+		<AlertDialog.Footer class="mt-2">
+			<AlertDialog.Cancel
+				class={buttonVariants({ variant: 'secondary' })}
+				onclick={events?.onCancel}
+			>
 				{data?.cancelText ?? 'Cancel'}
 			</AlertDialog.Cancel>
 			<AlertDialog.Action
-				class={cn('rounded-inner', buttonVariants({ variant: ui?.variant ?? 'default' }))}
+				class={cn(buttonVariants({ variant: ui?.variant ?? 'contrast' }))}
 				onclick={events?.onAction}
 			>
 				{data?.actionText ?? 'Continue'}

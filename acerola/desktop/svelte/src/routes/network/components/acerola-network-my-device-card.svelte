@@ -13,19 +13,19 @@
 
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';
-	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
 	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
 	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shortId } from '#lib/utils/connection-code.util.ts';
 	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import AcerolaSettingRow from '#lib/components/acerola-setting-row/acerola-setting-row.svelte';
+	import AcerolaSettingSection from '#lib/components/acerola-setting-section/acerola-setting-section.svelte';
 
 	let { data, events }: NetworkMyDeviceCardProps = $props();
 
@@ -87,37 +87,48 @@
 	}
 </script>
 
-<section class="space-y-4">
-	<div
-		class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
-	>
-		<Share2Icon size={16} />
-		{m['pages.network.myDevice.title']()}
-	</div>
-
+<AcerolaSettingSection
+	data={{
+		id: 'this-device',
+		title: m['pages.network.myDevice.title'](),
+		lead:
+			safeData.mode === 'relay'
+				? m['pages.network.myDevice.modeRelay']()
+				: m['pages.network.myDevice.modeLocal']()
+	}}
+>
 	{#if editingName}
-		<div class="flex items-center gap-3 rounded-tile border border-border bg-card p-6">
+		<form
+			class="flex items-center gap-2 rounded-tile bg-surface p-4"
+			onsubmit={(event) => {
+				event.preventDefault();
+				confirmEditingName();
+			}}
+		>
 			<AcerolaInput
 				state={{ value: nameDraft }}
 				events={{ onValueChange: (value) => (nameDraft = value) }}
 				ui={{
 					placeholder: m['pages.network.myDevice.rename.placeholder'](),
-					class: 'flex-1',
+					'aria-label': m['pages.network.myDevice.rename.placeholder'](),
+					class: 'flex-1 bg-card',
 					disabled: savingName
 				}}
 			/>
 			<AcerolaButton
-				events={{ onClick: confirmEditingName }}
-				ui={{ size: 'sm', disabled: !nameDraft.trim() || savingName }}
+				ui={{
+					variant: 'contrast',
+					type: 'submit',
+					disabled: !nameDraft.trim() || savingName
+				}}
 			>
-				<CheckIcon size={14} />
+				<CheckIcon size={16} />
 				{m['pages.network.myDevice.rename.save']()}
 			</AcerolaButton>
 			<AcerolaButtonIcon
 				events={{ onClick: cancelEditingName }}
 				ui={{
-					variant: 'ghost',
-					tone: 'muted',
+					variant: 'secondary',
 					disabled: savingName,
 					title: m['pages.network.myDevice.rename.cancel'](),
 					'aria-label': m['pages.network.myDevice.rename.cancel']()
@@ -125,56 +136,41 @@
 			>
 				<XIcon size={16} />
 			</AcerolaButtonIcon>
-		</div>
+		</form>
 	{:else}
-		<AcerolaHeroButton
+		<AcerolaSettingRow
 			data={{
-				title: safeData.deviceName ?? '...',
-				description: safeData.localId ? shortId(safeData.localId) : '...'
+				title: safeData.deviceName ?? '…',
+				description: safeData.localId ? shortId(safeData.localId) : '…'
 			}}
-			ui={{ iconClass: 'bg-accent-hero text-accent-hero-foreground' }}
 		>
-			{#snippet icon()}
-				<MonitorIcon size={22} />
-			{/snippet}
-
-			{#snippet action()}
+			{#snippet icon()}<MonitorIcon size={18} />{/snippet}
+			{#snippet control()}
 				{#if events?.onRenameDevice}
 					<AcerolaButtonIcon
 						events={{ onClick: startEditingName }}
 						ui={{
-							variant: 'outline',
-							tone: 'accent',
+							variant: 'secondary',
+							class: 'bg-card',
 							title: m['pages.network.myDevice.rename.action'](),
 							'aria-label': m['pages.network.myDevice.rename.action']()
 						}}
 					>
-						<PencilIcon size={14} />
+						<PencilIcon size={16} />
 					</AcerolaButtonIcon>
 				{/if}
 				<AcerolaButton
 					events={{ onClick: copyLocalId }}
-					ui={{
-						variant: 'outline',
-						size: 'sm',
-						class: 'gap-2',
-						disabled: !safeData.localId
-					}}
+					ui={{ variant: 'secondary', class: 'bg-card', disabled: !safeData.localId }}
 				>
 					{#if idJustCopied}
-						<CheckIcon size={14} class="text-chart-3" />
+						<CheckIcon size={16} class="text-success" />
 					{:else}
-						<CopyIcon size={14} />
+						<CopyIcon size={16} />
 					{/if}
 					{m['pages.network.myDevice.copyId']()}
 				</AcerolaButton>
 			{/snippet}
-		</AcerolaHeroButton>
+		</AcerolaSettingRow>
 	{/if}
-
-	<p class="px-2 text-xs text-muted-foreground">
-		{safeData.mode === 'relay'
-			? m['pages.network.myDevice.modeRelay']()
-			: m['pages.network.myDevice.modeLocal']()}
-	</p>
-</section>
+</AcerolaSettingSection>

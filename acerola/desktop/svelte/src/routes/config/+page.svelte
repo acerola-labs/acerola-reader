@@ -2,15 +2,14 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import { SvelteSet } from 'svelte/reactivity';
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 	import { toast } from 'svelte-sonner';
-	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 	import AcerolaCommand from '#lib/components/acerola-command/acerola-command.svelte';
-	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
 	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaSettingRow from '#lib/components/acerola-setting-row/acerola-setting-row.svelte';
+	import AcerolaSettingSection from '#lib/components/acerola-setting-section/acerola-setting-section.svelte';
 	import AcerolaSwitch from '#lib/components/acerola-switch/acerola-switch.svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import * as Command from '#lib/components/ui/command/index.ts';
@@ -30,18 +29,15 @@
 
 	import AniListIcon from '#lib/assets/icons/anilist.svg?component';
 	import MangaDexIcon from '#lib/assets/icons/mangadex.svg?component';
-	import BookmarkIcon from '@lucide/svelte/icons/bookmark';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-	import CloudSync from '@lucide/svelte/icons/cloud-sync';
+	import DatabaseIcon from '@lucide/svelte/icons/database';
 	import FileCode2 from '@lucide/svelte/icons/file-code-2';
 	import FileTextIcon from '@lucide/svelte/icons/file-text';
 	import FolderIcon from '@lucide/svelte/icons/folder';
 	import FolderSync from '@lucide/svelte/icons/folder-sync';
 	import LanguagesIcon from '@lucide/svelte/icons/languages';
-	import PlayIcon from '@lucide/svelte/icons/play';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
-	import SettingsIcon from '@lucide/svelte/icons/settings';
 
 	const { notify } = notificationStore;
 
@@ -169,413 +165,256 @@
 	$effect(() => {
 		metadataLanguageStore.loadSavedMetadataLanguage();
 	});
-
-	// Categories collapse/expand inline in the list itself — none navigates to another screen.
-	// More than one can be open at the same time (SvelteSet instead of a single string).
-	const expandedCategories = new SvelteSet<string>();
-
-	function toggleCategory(id: string) {
-		if (expandedCategories.has(id)) {
-			expandedCategories.delete(id);
-		} else {
-			expandedCategories.add(id);
-		}
-	}
-
-	// Hover lift of each collapsible category. No colored border (Acerola standard): the card
-	// rises with shadow-lift. Appearance and Bookmarks stay out: they are always open
-	// (`ui.collapsible: false`), with no click to highlight on hover.
-	const CATEGORY_HOVER_BORDER: Record<string, string> = {
-		files: 'hover:shadow-lift transition-all duration-200',
-		library: 'hover:shadow-lift transition-all duration-200',
-		metadata: 'hover:shadow-lift transition-all duration-200'
-	};
 </script>
 
-<div in:fade={{ duration: 150 }} class="relative mx-auto w-full max-w-5xl space-y-8 p-6 sm:p-8">
-	<!-- Ambient Background Glow -->
-	<div
-		class="pointer-events-none absolute -top-24 left-1/2 -z-10 size-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl"
-	></div>
-
-	<!-- Page Title & Header -->
-	<div class="space-y-2">
-		<div
-			class="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-xs"
-		>
-			<SettingsIcon size={13} class="text-primary" />
-			<span>{m['pages.config.title']()}</span>
-		</div>
-		<h1 class="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+<div in:fade={{ duration: 150 }} class="mx-auto grid w-full max-w-3xl gap-6 px-8 pt-8 pb-14">
+	<header class="grid gap-2">
+		<p class="text-xs font-semibold text-muted-foreground">{m['pages.config.eyebrow']()}</p>
+		<h1 class="text-[44px] leading-none font-black tracking-tighter text-foreground">
 			{m['pages.config.title']()}
 		</h1>
-		<p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
-			{m['pages.config.desc']()}
-		</p>
-	</div>
+		<p class="text-sm text-muted-foreground">{m['pages.config.desc']()}</p>
+	</header>
 
-	<div class="grid gap-5">
-		<!-- Files -->
-		<AcerolaAccordionCard
+	<AcerolaSettingSection
+		data={{
+			id: 'files',
+			title: m['pages.config.fileSystem.title'](),
+			lead: m['pages.config.categories.files.desc']()
+		}}
+	>
+		<AcerolaSettingRow
 			data={{
-				title: m['pages.config.fileSystem.title'](),
-				description: m['pages.config.categories.files.desc']()
-			}}
-			state={{ expanded: expandedCategories.has('files') }}
-			events={{ onToggle: () => toggleCategory('files') }}
-			ui={{
-				class: CATEGORY_HOVER_BORDER.files,
-				iconClass: 'bg-chart-5 text-primary-foreground'
+				title: m['pages.config.fileSystem.comicPath.title'](),
+				description: folder.folderPath || m['pages.config.fileSystem.comicPath.empty']()
 			}}
 		>
-			{#snippet icon()}
-				<FolderIcon size={24} />
-			{/snippet}
-
-			{#snippet children()}
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.fileSystem.comicPath.title'](),
-						description: m['pages.config.fileSystem.comicPath.desc']({
-							path: folder.folderPath ?? ''
-						})
-					}}
+			{#snippet icon()}<FolderIcon size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary' }}
 					events={{ onClick: folder.selectFolder }}
-					ui={{ iconClass: 'bg-chart-5 text-primary-foreground' }}
 				>
-					{#snippet icon()}
-						<FolderIcon size={24} />
-					{/snippet}
+					{m['pages.config.actions.chooseFolder']()}
+				</AcerolaButton>
+			{/snippet}
+		</AcerolaSettingRow>
 
-					{#snippet action()}
-						<AcerolaButtonIcon ui={{ tone: 'accent', class: 'rounded-full' }}>
-							<PlayIcon />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
-
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.fileSystem.comicInfo.title'](),
-						description: m['pages.config.fileSystem.comicInfo.desc']()
-					}}
+		<AcerolaSettingRow
+			data={{
+				title: m['pages.config.fileSystem.comicInfo.title'](),
+				description: m['pages.config.fileSystem.comicInfo.desc']()
+			}}
+		>
+			{#snippet icon()}<FileTextIcon size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaSwitch
+					state={{ checked: comicInfoPreference.comicInfoPreference ?? false }}
 					events={{
-						onClick: () =>
-							comicInfoPreference.selectComicInfoPreference(
-								!(comicInfoPreference.comicInfoPreference ?? false)
-							)
+						onCheckedChange: async (checked) => {
+							await comicInfoPreference.selectComicInfoPreference(checked);
+						}
 					}}
-					ui={{ iconClass: 'bg-chart-2 text-primary-foreground' }}
-				>
-					{#snippet icon()}
-						<FileTextIcon size={24} />
-					{/snippet}
-
-					{#snippet action()}
-						<AcerolaSwitch
-							state={{ checked: comicInfoPreference.comicInfoPreference ?? false }}
-							events={{
-								onCheckedChange: async (checked) => {
-									await comicInfoPreference.selectComicInfoPreference(checked);
-								}
-							}}
-						/>
-					{/snippet}
-				</AcerolaHeroButton>
+					ui={{ 'aria-label': m['pages.config.fileSystem.comicInfo.title']() }}
+				/>
 			{/snippet}
-		</AcerolaAccordionCard>
+		</AcerolaSettingRow>
+	</AcerolaSettingSection>
 
-		<!-- Library -->
-		<AcerolaAccordionCard
+	<AcerolaSettingSection
+		data={{
+			id: 'library',
+			title: m['pages.config.library.title'](),
+			lead: m['pages.config.categories.library.desc']()
+		}}
+	>
+		<AcerolaSettingRow
 			data={{
-				title: m['pages.config.library.title'](),
-				description: m['pages.config.categories.library.desc']()
-			}}
-			state={{ expanded: expandedCategories.has('library') }}
-			events={{ onToggle: () => toggleCategory('library') }}
-			ui={{
-				class: CATEGORY_HOVER_BORDER.library,
-				iconClass: 'bg-chart-3 text-primary-foreground'
+				title: m['pages.config.fileSystem.sync.fast.title'](),
+				description: m['pages.config.fileSystem.sync.fast.desc']()
 			}}
 		>
-			{#snippet icon()}
-				<FolderSync size={24} />
-			{/snippet}
-
-			{#snippet children()}
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.fileSystem.sync.fast.title'](),
-						description: m['pages.config.fileSystem.sync.fast.desc']()
-					}}
+			{#snippet icon()}<FolderSync size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary', disabled: refreshScanner.scanning }}
 					events={{ onClick: () => refreshScanner.start() }}
-					ui={{ iconClass: 'bg-chart-3 text-primary-foreground' }}
 				>
-					{#snippet icon()}
-						<FolderSync size={24} />
-					{/snippet}
+					<RefreshCw class={refreshScanner.scanning ? 'animate-spin' : ''} />
+					{refreshScanner.scanning
+						? m['pages.config.actions.syncing']()
+						: m['pages.config.actions.sync']()}
+				</AcerolaButton>
+			{/snippet}
+		</AcerolaSettingRow>
 
-					{#snippet action()}
-						<AcerolaButtonIcon
-							ui={{
-								tone: 'accent',
-								class: 'rounded-full',
-								disabled: refreshScanner.scanning
-							}}
-						>
-							<RefreshCw class={refreshScanner.scanning ? 'animate-spin' : ''} />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
-
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.fileSystem.sync.deep.title'](),
-						description: m['pages.config.fileSystem.sync.deep.desc']()
-					}}
+		<AcerolaSettingRow
+			data={{
+				title: m['pages.config.fileSystem.sync.deep.title'](),
+				description: m['pages.config.fileSystem.sync.deep.desc']()
+			}}
+		>
+			{#snippet icon()}<DatabaseIcon size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary', disabled: rebuildScanner.scanning }}
 					events={{ onClick: () => rebuildScanner.start() }}
-					ui={{ iconClass: 'bg-chart-1 text-primary-foreground' }}
 				>
-					{#snippet icon()}
-						<FolderSync size={24} />
-					{/snippet}
+					<RefreshCw class={rebuildScanner.scanning ? 'animate-spin' : ''} />
+					{rebuildScanner.scanning
+						? m['pages.config.actions.syncing']()
+						: m['pages.config.actions.rebuild']()}
+				</AcerolaButton>
+			{/snippet}
+		</AcerolaSettingRow>
 
-					{#snippet action()}
-						<AcerolaButtonIcon
-							ui={{
-								tone: 'accent',
-								class: 'rounded-full',
-								disabled: rebuildScanner.scanning
-							}}
-						>
-							<RefreshCw class={rebuildScanner.scanning ? 'animate-spin' : ''} />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
-
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.templates.nav.title'](),
-						description: m['pages.config.templates.nav.desc']()
-					}}
+		<AcerolaSettingRow
+			data={{
+				title: m['pages.config.templates.nav.title'](),
+				description: m['pages.config.templates.nav.desc']()
+			}}
+		>
+			{#snippet icon()}<FileCode2 size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary' }}
 					events={{ onClick: () => goto('/config/templates') }}
-					ui={{ iconClass: 'bg-chart-2 text-primary-foreground' }}
 				>
-					{#snippet icon()}
-						<FileCode2 size={24} />
-					{/snippet}
-
-					{#snippet action()}
-						<AcerolaButtonIcon ui={{ tone: 'accent', class: 'rounded-full' }}>
-							<ChevronRightIcon />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
+					{m['pages.config.actions.open']()}
+					<ChevronRightIcon />
+				</AcerolaButton>
 			{/snippet}
-		</AcerolaAccordionCard>
+		</AcerolaSettingRow>
+	</AcerolaSettingSection>
 
-		<!-- Metadata -->
-		<AcerolaAccordionCard
+	<AcerolaSettingSection
+		data={{
+			id: 'metadata',
+			title: m['pages.config.metadata.title'](),
+			lead: m['pages.config.categories.metadata.desc']()
+		}}
+	>
+		<AcerolaSettingRow
 			data={{
-				title: m['pages.config.metadata.title'](),
-				description: m['pages.config.categories.metadata.desc']()
-			}}
-			state={{ expanded: expandedCategories.has('metadata') }}
-			events={{ onToggle: () => toggleCategory('metadata') }}
-			ui={{
-				class: CATEGORY_HOVER_BORDER.metadata,
-				iconClass: 'bg-chart-4 text-primary-foreground'
+				title: m['pages.config.metadata.lang.title'](),
+				description: m['pages.config.metadata.lang.desc']()
 			}}
 		>
-			{#snippet icon()}
-				<CloudSync size={24} />
-			{/snippet}
-
-			{#snippet children()}
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.metadata.lang.title'](),
-						description: m['pages.config.metadata.lang.desc']()
-					}}
-					ui={{ iconClass: 'bg-chart-4 text-primary-foreground' }}
+			{#snippet icon()}<LanguagesIcon size={18} />{/snippet}
+			{#snippet control()}
+				<AcerolaPopover
+					state={{ open: metadataLanguagePopoverOpen }}
+					events={{ onOpenChange: (open) => (metadataLanguagePopoverOpen = open) }}
+					ui={{ align: 'end', contentClass: 'w-80 overflow-hidden p-0' }}
 				>
-					{#snippet icon()}
-						<LanguagesIcon size={24} />
+					{#snippet trigger()}
+						<Button variant="secondary" class="min-w-24 gap-2">
+							<span class="max-w-36 truncate">{selectedMetadataLanguageLabel}</span>
+							<ChevronDownIcon class="size-4" />
+						</Button>
 					{/snippet}
 
-					{#snippet action()}
-						<AcerolaPopover
-							state={{ open: metadataLanguagePopoverOpen }}
-							events={{
-								onOpenChange: (open) => (metadataLanguagePopoverOpen = open)
-							}}
-							ui={{
-								contentClass:
-									'w-80 overflow-hidden rounded-card border-border/40 bg-card/95 p-0 shadow-float backdrop-blur-md'
-							}}
-						>
-							{#snippet trigger()}
-								<Button
-									variant="outline"
-									class="h-10 min-w-24 gap-2 rounded-full border-border/60 bg-background/70 px-3 font-medium transition-all group-hover:bg-primary group-hover:text-primary-foreground"
+					{#snippet content()}
+						<div class="grid gap-1 px-4 pt-4 pb-2">
+							<h3 class="text-sm font-black tracking-tight text-foreground">
+								{m['pages.config.metadata.lang.popoverTitle']()}
+							</h3>
+							<p class="text-xs text-muted-foreground">
+								{m['pages.config.metadata.lang.popoverDesc']({
+									language: selectedMetadataLanguageLabel
+								})}
+							</p>
+						</div>
+
+						<AcerolaCommand state={{ value: metadataLanguageStore.metadataLanguage }}>
+							<div class="px-2">
+								<Command.Input
+									placeholder={m[
+										'pages.config.metadata.lang.searchPlaceholder'
+									]()}
+								/>
+							</div>
+
+							<Command.List class="max-h-72 p-2">
+								<Command.Empty
+									class="px-4 py-8 text-center text-sm text-muted-foreground"
 								>
-									<span class="max-w-36 truncate text-sm"
-										>{selectedMetadataLanguageLabel}</span
-									>
-									<ChevronDownIcon class="size-4 opacity-70" />
-								</Button>
-							{/snippet}
+									{m['pages.config.metadata.lang.empty']()}
+								</Command.Empty>
 
-							{#snippet content()}
-								<div class="flex flex-col">
-									<div class="border-b border-border/40 bg-muted/20 px-4 py-3">
-										<div class="flex items-start gap-3">
-											<div
-												class="rounded-inner bg-chart-4 p-2 text-primary-foreground"
+								<Command.Group
+									heading={m['pages.config.metadata.lang.groupTitle']()}
+								>
+									{#each LANGUAGES as lang (lang.code)}
+										<Command.Item
+											value={lang.code}
+											class="cursor-pointer rounded-full px-3 py-2.5 data-[checked=true]:bg-primary-soft"
+											onSelect={() => selectMetadataLanguage(lang.code)}
+										>
+											<span class="min-w-0 flex-1 truncate font-semibold">
+												{lang.label}
+											</span>
+											<span class="text-xs text-muted-foreground"
+												>{lang.code}</span
 											>
-												<LanguagesIcon size={18} />
-											</div>
-											<div class="min-w-0">
-												<h3 class="text-sm font-bold text-foreground">
-													{m['pages.config.metadata.lang.popoverTitle']()}
-												</h3>
-												<p
-													class="mt-0.5 text-xs leading-relaxed text-muted-foreground"
-												>
-													{m['pages.config.metadata.lang.popoverDesc']({
-														language: selectedMetadataLanguageLabel
-													})}
-												</p>
-											</div>
-										</div>
-									</div>
-
-									<AcerolaCommand
-										state={{ value: metadataLanguageStore.metadataLanguage }}
-									>
-										<Command.Input
-											placeholder={m[
-												'pages.config.metadata.lang.searchPlaceholder'
-											]()}
-										/>
-
-										<Command.List class="max-h-72 p-2">
-											<Command.Empty
-												class="px-4 py-8 text-center text-sm text-muted-foreground"
-											>
-												{m['pages.config.metadata.lang.empty']()}
-											</Command.Empty>
-
-											<Command.Group
-												heading={m[
-													'pages.config.metadata.lang.groupTitle'
-												]()}
-											>
-												{#each LANGUAGES as lang}
-													<Command.Item
-														value={lang.code}
-														class="group/language cursor-pointer rounded-inner px-3 py-2.5 data-selected:bg-primary/10 data-selected:text-foreground data-[checked=true]:bg-primary/10"
-														onSelect={() =>
-															selectMetadataLanguage(lang.code)}
-													>
-														<div class="min-w-0 flex-1">
-															<p class="truncate font-semibold">
-																{lang.label}
-															</p>
-															<p
-																class="text-xs text-muted-foreground"
-															>
-																{lang.code}
-															</p>
-														</div>
-													</Command.Item>
-												{/each}
-											</Command.Group>
-										</Command.List>
-									</AcerolaCommand>
-								</div>
-							{/snippet}
-						</AcerolaPopover>
+										</Command.Item>
+									{/each}
+								</Command.Group>
+							</Command.List>
+						</AcerolaCommand>
 					{/snippet}
-				</AcerolaHeroButton>
-
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.metadata.mangadex.title'](),
-						description: m['pages.config.metadata.mangadex.desc']()
-					}}
-					events={{ onClick: syncingSource ? undefined : handleSyncAllMangadex }}
-				>
-					{#snippet icon()}
-						<span style="all: unset; display: inline-flex;">
-							<MangaDexIcon class="h-6 w-6 rounded-inner" />
-						</span>
-					{/snippet}
-
-					{#snippet action()}
-						<AcerolaButtonIcon
-							ui={{
-								tone: 'accent',
-								class: 'rounded-full',
-								disabled: syncingSource !== null
-							}}
-						>
-							<RefreshCw class={syncingSource === 'mangadex' ? 'animate-spin' : ''} />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
-
-				<AcerolaHeroButton
-					data={{
-						title: m['pages.config.metadata.anilist.title'](),
-						description: m['pages.config.metadata.anilist.desc']()
-					}}
-					events={{ onClick: syncingSource ? undefined : handleSyncAllAnilist }}
-				>
-					{#snippet icon()}
-						<span style="all: unset; display: inline-flex;">
-							<AniListIcon class="h-6 w-6 rounded-inner" />
-						</span>
-					{/snippet}
-
-					{#snippet action()}
-						<AcerolaButtonIcon
-							ui={{
-								tone: 'accent',
-								class: 'rounded-full',
-								disabled: syncingSource !== null
-							}}
-						>
-							<RefreshCw class={syncingSource === 'anilist' ? 'animate-spin' : ''} />
-						</AcerolaButtonIcon>
-					{/snippet}
-				</AcerolaHeroButton>
+				</AcerolaPopover>
 			{/snippet}
-		</AcerolaAccordionCard>
+		</AcerolaSettingRow>
 
-		<!-- Bookmarks — always open (flat): it is the most used management screen here, and the
-		     create-bookmark form already collapses on its own inside (see
-		     acerola-bookmark-manager.svelte), so opening it right away doesn't overload the screen. -->
-		<AcerolaAccordionCard
+		<AcerolaSettingRow
 			data={{
-				title: m['pages.config.bookmarks.title'](),
-				description: m['pages.config.categories.bookmarks.desc']()
-			}}
-			state={{ expanded: true }}
-			events={{ onToggle: () => {} }}
-			ui={{
-				collapsible: false,
-				iconClass: 'bg-chart-2 text-primary-foreground',
-				class: 'border-border/60 bg-card/60 backdrop-blur-sm'
+				title: m['pages.config.metadata.mangadex.title'](),
+				description: m['pages.config.metadata.mangadex.desc']()
 			}}
 		>
-			{#snippet icon()}
-				<BookmarkIcon size={24} />
+			{#snippet icon()}<MangaDexIcon class="size-5" />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary', disabled: syncingSource !== null }}
+					events={{ onClick: handleSyncAllMangadex }}
+				>
+					<RefreshCw class={syncingSource === 'mangadex' ? 'animate-spin' : ''} />
+					{syncingSource === 'mangadex'
+						? m['pages.config.actions.syncing']()
+						: m['pages.config.actions.sync']()}
+				</AcerolaButton>
 			{/snippet}
+		</AcerolaSettingRow>
 
-			{#snippet children()}
-				<AcerolaBookmarkManager />
+		<AcerolaSettingRow
+			data={{
+				title: m['pages.config.metadata.anilist.title'](),
+				description: m['pages.config.metadata.anilist.desc']()
+			}}
+		>
+			{#snippet icon()}<AniListIcon class="size-5" />{/snippet}
+			{#snippet control()}
+				<AcerolaButton
+					ui={{ variant: 'secondary', disabled: syncingSource !== null }}
+					events={{ onClick: handleSyncAllAnilist }}
+				>
+					<RefreshCw class={syncingSource === 'anilist' ? 'animate-spin' : ''} />
+					{syncingSource === 'anilist'
+						? m['pages.config.actions.syncing']()
+						: m['pages.config.actions.sync']()}
+				</AcerolaButton>
 			{/snippet}
-		</AcerolaAccordionCard>
-	</div>
+		</AcerolaSettingRow>
+	</AcerolaSettingSection>
+
+	<AcerolaSettingSection
+		data={{
+			id: 'bookmarks',
+			title: m['pages.config.bookmarks.title'](),
+			lead: m['pages.config.categories.bookmarks.desc']()
+		}}
+	>
+		<AcerolaBookmarkManager />
+	</AcerolaSettingSection>
 </div>
