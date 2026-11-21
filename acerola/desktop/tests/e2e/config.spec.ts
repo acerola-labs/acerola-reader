@@ -34,15 +34,15 @@ test.describe('library configuration', () => {
 
 		await page.goto('/config');
 
-		// Categories come collapsed by default (accordion) — they must be expanded before
-		// items inside each card's body can be clicked.
-		await page.getByText('Configuração dos Arquivos').click();
-		await page.getByText('Pasta dos quadrinhos').click();
+		// Every section is open (no accordion): each setting row carries its own pill button.
+		await page.getByRole('button', { name: 'Escolher pasta' }).click();
 		await expect(page).not.toHaveURL(/\/home$/);
 		await expect(page.getByText(/C:\\Comics/)).toBeVisible();
 
-		await page.getByText('Biblioteca', { exact: true }).click();
-		await page.getByText('Sincronização rápida').click();
+		const quickSync = page
+			.locator('[data-surface="surface"]')
+			.filter({ hasText: 'Sincronização rápida' });
+		await quickSync.getByRole('button', { name: 'Sincronizar' }).click();
 		await expect(page).not.toHaveURL(/\/home$/);
 
 		await emitTauriEvent(page, LIBRARY_EVENTS.scanComplete);

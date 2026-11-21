@@ -62,7 +62,7 @@ describe('AcerolaRemoteLibraryDialog', () => {
 		expect(screen.getByText('Berserk')).toBeInTheDocument();
 	});
 
-	it('shows a loading message and hides the grid while loading', () => {
+	it('shows the skeleton grid and hides the comics while loading', () => {
 		render(AcerolaRemoteLibraryDialog, {
 			props: {
 				state: { open: true },
@@ -72,7 +72,9 @@ describe('AcerolaRemoteLibraryDialog', () => {
 		});
 
 		expect(
-			screen.getByText(/Querying device's library|Consultando biblioteca/i)
+			screen.getByRole('status', {
+				name: /Querying device's library|Consultando biblioteca/i
+			})
 		).toBeInTheDocument();
 		expect(screen.queryByText('One Piece')).not.toBeInTheDocument();
 	});

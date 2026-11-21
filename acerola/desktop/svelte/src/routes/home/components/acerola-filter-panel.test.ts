@@ -10,9 +10,9 @@ const CHAPTER_COUNT_SORT = /Chapter Count|Quantidade de Capítulos/i;
 const APPLY = /Apply|Aplicar/i;
 const RESET = /Reset|Resetar/i;
 const ALL = /All|Todos/i;
-const NO_BOOKMARK = /No bookmark|Sem bookmark/i;
+const NO_BOOKMARK = /No bookmark|Sem marcador/i;
 const SHOW_HIDDEN = /Show hidden|Mostrar ocultos/i;
-const BOOKMARK_FILTER_GROUP = /Filter by bookmark|Filtrar por bookmark/i;
+const BOOKMARK_FILTER_GROUP = /Filter by bookmark|Filtrar por marcador/i;
 
 function bookmarkFilterGroup() {
 	return within(screen.getByRole('group', { name: BOOKMARK_FILTER_GROUP }));

@@ -39,7 +39,7 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 	}
 }));
 
-describe('config +page (accordion)', () => {
+describe('config +page', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		_resetBookmarksState();
@@ -63,60 +63,35 @@ describe('config +page (accordion)', () => {
 		});
 	});
 
-	// Bookmarks is always open (flat, no click) — only Files/Library/Metadata collapse by
-	// default. Same UI/UX mix as the Network screen (not every section needs a click to show
-	// its content).
-	it('renders the flat categories already open and the collapsible ones collapsed by default', () => {
+	// No accordions anymore: every section (AcerolaSettingSection) renders open, with its rows
+	// (AcerolaSettingRow) visible right away — no click needed to reach a setting.
+	it('renders every section open with its settings visible', () => {
 		render(ConfigPage);
 
-		expect(screen.getByText(/^configuração dos arquivos$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^biblioteca$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^configuração de metadados$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^marcadores$/i)).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^arquivos$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^biblioteca$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^metadados$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^marcadores$/i })).toBeInTheDocument();
 
 		// There is no theme switching section anymore — only the light/dark mode in the header.
 		expect(screen.queryByText(/^aparência$/i)).not.toBeInTheDocument();
-		// Library is still collapsible — content hidden until clicked.
-		expect(screen.queryByText(/^templates de nomenclatura$/i)).not.toBeInTheDocument();
+		// Rows of every section are already there, no expanding.
+		expect(screen.getByText(/^templates de nomenclatura$/i)).toBeInTheDocument();
+		expect(screen.getByText(/sincronização com mangadex/i)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /escolher pasta/i })).toBeInTheDocument();
 	});
 
-	it('expands a collapsible category inline instead of navigating', async () => {
-		const user = userEvent.setup();
+	it('does not navigate when just viewing the sections', () => {
 		render(ConfigPage);
 
-		await user.click(screen.getByText(/^configuração de metadados$/i));
-
-		expect(await screen.findByText(/sincronização com mangadex/i)).toBeInTheDocument();
 		expect(mockGoto).not.toHaveBeenCalled();
-
-		// aria-expanded on the header changes synchronously — removing the content itself goes
-		// through transition:slide, whose outro may not complete in jsdom (no real layout), so
-		// the reliable signal here is the attribute, not the content.
-		await user.click(screen.getByText(/^configuração de metadados$/i));
-
-		expect(screen.getByText(/^configuração de metadados$/i).closest('button')).toHaveAttribute(
-			'aria-expanded',
-			'false'
-		);
 	});
 
-	it('keeps a flat section visible alongside an expanded collapsible category', async () => {
+	it('navigates to the templates route from the library "Open" button', async () => {
 		const user = userEvent.setup();
 		render(ConfigPage);
 
-		await user.click(screen.getByText(/^biblioteca$/i));
-
-		// Bookmarks (flat) never stopped being visible; Library (collapsible) now is too.
-		expect(screen.getByText(/^marcadores$/i)).toBeInTheDocument();
-		expect(await screen.findByText(/^templates de nomenclatura$/i)).toBeInTheDocument();
-	});
-
-	it('still navigates to the templates route from within library', async () => {
-		const user = userEvent.setup();
-		render(ConfigPage);
-
-		await user.click(screen.getByText(/^biblioteca$/i));
-		await user.click(await screen.findByText(/^templates de nomenclatura$/i));
+		await user.click(screen.getByRole('button', { name: /^abrir$/i }));
 
 		expect(mockGoto).toHaveBeenCalledWith('/config/templates');
 	});
