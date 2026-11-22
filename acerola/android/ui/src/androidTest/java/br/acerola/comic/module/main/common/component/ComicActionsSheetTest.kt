@@ -27,6 +27,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
@@ -45,6 +46,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
@@ -65,6 +67,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
