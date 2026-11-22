@@ -3,35 +3,35 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.GlassButton
-import br.acerola.comic.common.ux.modifier.glass
-import br.acerola.comic.common.ux.modifier.glassContainer
+import br.acerola.comic.common.ux.component.ScrimButton
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.reader.Reader
 import br.acerola.comic.ui.R
@@ -58,18 +58,11 @@ fun Reader.Template.TopBar(
                     .padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
         ) {
             // Back Button
-            Box(modifier = Modifier.size(SizeTokens.ClickTarget)) {
-                Acerola.Component.GlassButton(
-                    onClick = onBackClick,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.description_icon_navigation_back),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    },
-                )
-            }
+            Acerola.Component.ScrimButton(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.description_icon_navigation_back),
+                onClick = onBackClick,
+            )
 
             Box(
                 modifier =
@@ -81,18 +74,11 @@ fun Reader.Template.TopBar(
                 TitleCapsule(title = title, subtitle = subtitle)
             }
 
-            Box(modifier = Modifier.size(SizeTokens.ClickTarget)) {
-                Acerola.Component.GlassButton(
-                    onClick = onSettingsClick,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = stringResource(id = R.string.label_config_activity),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    },
-                )
-            }
+            Acerola.Component.ScrimButton(
+                icon = Icons.Filled.Settings,
+                contentDescription = stringResource(id = R.string.label_config_activity),
+                onClick = onSettingsClick,
+            )
         }
     }
 }
@@ -102,41 +88,31 @@ fun Reader.Template.TitleCapsule(
     title: String,
     subtitle: String,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-    val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
-    val shape = AcerolaShapes.Tile
-
-    Box(
+    // Solid `bg-card` pill with `shadow-float` over the page, like the brand's floating bars.
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier =
             Modifier
                 .wrapContentWidth(Alignment.CenterHorizontally)
-                .glassContainer(shape),
+                .float(AcerolaShapes.Full)
+                .clip(AcerolaShapes.Full)
+                .background(AcerolaExtendedTheme.colors.card)
+                .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Small),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .matchParentSize()
-                    .glass(shape, glassColor, borderColor),
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = AcerolaExtendedTheme.colors.foreground,
         )
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.ExtraSmall),
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            )
-        }
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = AcerolaExtendedTheme.colors.mutedForeground,
+        )
     }
 }
 

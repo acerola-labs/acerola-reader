@@ -12,6 +12,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +30,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -52,7 +53,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
 
 @Composable
@@ -80,6 +83,7 @@ fun <T> Acerola.Component.SearchBar(
         modifier = modifier.animateContentSize(),
         inputField = {
             InputField(
+                modifier = if (expanded) Modifier.padding(horizontal = SpacingTokens.Small) else Modifier,
                 query = query,
                 onQueryChange = onQueryChange,
                 onSearch = onSearch,
@@ -112,8 +116,6 @@ fun <T> Acerola.Component.SearchBar(
                             icon = Icons.Default.Close,
                             onClick = { onQueryChange("") },
                             contentDescription = stringResource(R.string.common_clear),
-                            iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            iconBackground = MaterialTheme.colorScheme.surfaceVariant,
                         )
                     }
                 },
@@ -124,14 +126,10 @@ fun <T> Acerola.Component.SearchBar(
         shape = animatedShape,
         colors =
             SearchBarDefaults.colors(
-                containerColor =
-                    if (expanded) {
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainer
-                    },
+                containerColor = if (expanded) AcerolaExtendedTheme.colors.background else AcerolaExtendedTheme.colors.input,
+                dividerColor = Color.Transparent,
             ),
-        tonalElevation = if (expanded) 0.dp else 3.dp,
+        tonalElevation = 0.dp,
         shadowElevation = 0.dp,
         windowInsets =
             androidx.compose.foundation.layout
@@ -145,18 +143,14 @@ fun <T> Acerola.Component.SearchBar(
             Surface(
                 shape = RectangleShape,
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                color = AcerolaExtendedTheme.colors.background,
             ) {
                 Column {
                     if (isLoading) {
                         LinearProgressIndicator(
                             modifier = Modifier.fillMaxWidth(),
                             color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
-                        )
-                    } else {
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                            trackColor = AcerolaExtendedTheme.colors.surface,
                         )
                     }
 
@@ -176,7 +170,11 @@ fun <T> Acerola.Component.SearchBar(
                             )
                         }
                     } else {
-                        LazyColumn(contentPadding = contentPadding) {
+                        LazyColumn(
+                            contentPadding = contentPadding,
+                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
+                            modifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
+                        ) {
                             items(
                                 items = items,
                                 key = { item -> itemKey(item) },
@@ -199,7 +197,7 @@ private fun rememberSearchBarShape(expanded: Boolean): RoundedCornerShape {
             label = stringResource(R.string.common_search_transition),
         )
 
-    val collapsedRadius = 28.dp
+    val collapsedRadius = 999.dp
 
     val cornerRadius by transition.animateDp(
         transitionSpec = {
@@ -217,7 +215,7 @@ private fun rememberSearchBarShape(expanded: Boolean): RoundedCornerShape {
         },
         label = stringResource(R.string.common_search_corner_radius),
     ) { isExpanded ->
-        if (isExpanded) 12.dp else collapsedRadius
+        if (isExpanded) 0.dp else collapsedRadius
     }
 
     return remember(cornerRadius) {

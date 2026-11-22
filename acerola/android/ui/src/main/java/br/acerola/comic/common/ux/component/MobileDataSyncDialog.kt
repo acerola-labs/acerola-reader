@@ -3,21 +3,13 @@ package br.acerola.comic.common.ux.component
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.theme.AcerolaTheme
@@ -46,8 +38,6 @@ fun Acerola.Component.MobileDataSyncDialog(
             Acerola.Component.DialogButton(
                 text = stringResource(id = R.string.action_mobile_data_sync_confirm),
                 onClick = { onConfirm(rememberChoice) },
-                contentColor = MaterialTheme.colorScheme.tertiary,
-                fontWeight = FontWeight.Bold,
             )
         },
         dismissButtonContent = {
@@ -57,21 +47,14 @@ fun Acerola.Component.MobileDataSyncDialog(
             )
         },
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large)) {
             Text(text = stringResource(id = R.string.description_mobile_data_sync_confirm))
 
-            Spacer(modifier = Modifier.height(SpacingTokens.Medium))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.label_mobile_data_sync_remember),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Switch(checked = rememberChoice, onCheckedChange = { rememberChoice = it })
-            }
+            Acerola.Component.SettingRow(
+                title = stringResource(id = R.string.label_mobile_data_sync_remember),
+                onClick = { rememberChoice = !rememberChoice },
+                control = { Acerola.Component.Switch(checked = rememberChoice, onCheckedChange = { rememberChoice = it }) },
+            )
         }
     }
 }

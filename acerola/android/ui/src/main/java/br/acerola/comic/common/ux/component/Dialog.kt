@@ -1,73 +1,65 @@
 package br.acerola.comic.common.ux.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
+import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
 
+// Which footer slot a DialogButton sits in, so it picks the brand variant by itself: confirm is
+// `bg-foreground` (contrast), dismiss is secondary.
+private val LocalDialogSlotVariant = compositionLocalOf { ButtonVariant.Secondary }
+
+/**
+ * A dialog button. Without a [variant] it follows its slot: [ButtonVariant.Contrast] as the confirm
+ * action, [ButtonVariant.Secondary] as the dismiss one. Pass [ButtonVariant.Destructive] when
+ * confirming erases something.
+ */
 @Composable
 fun Acerola.Component.DialogButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = Color.Transparent,
-    contentColor: Color = MaterialTheme.colorScheme.primary,
-    fontWeight: FontWeight = FontWeight.Normal,
+    variant: ButtonVariant? = null,
+    enabled: Boolean = true,
 ) {
-    Surface(
+    Acerola.Component.Button(
+        text = text,
         onClick = onClick,
-        modifier = modifier.fillMaxSize(),
-        color = containerColor,
-        contentColor = contentColor,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
-                fontWeight = fontWeight,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
+        modifier = modifier.fillMaxWidth(),
+        variant = variant ?: LocalDialogSlotVariant.current,
+        enabled = enabled,
+    )
 }
 
+/**
+ * Brand dialog (`.ac-sheet` on `bg-scrim/50`): `rounded-sheet bg-card p-6 shadow-float`, a
+ * `font-black` title, muted body text and the actions as two pills of the same width.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun Acerola.Component.Dialog(
@@ -78,111 +70,53 @@ fun Acerola.Component.Dialog(
     dismissButtonContent: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    if (show) {
-        BasicAlertDialog(
-            onDismissRequest = onDismiss,
-            modifier = Modifier.clip(MaterialTheme.shapes.extraLarge),
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.extraLarge,
-                tonalElevation = 6.dp,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Column(
-                        modifier =
-                            Modifier
-                                .padding(24.dp)
-                                .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        title?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
+    if (!show) return
 
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CompositionLocalProvider(
-                                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
-                            ) {
-                                ProvideTextStyle(value = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)) {
-                                    content()
-                                }
-                            }
+    val brand = AcerolaExtendedTheme.colors
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        ProvideSurfaceLevel(AcerolaSurfaceLevel.Card) {
+            Column(
+                modifier =
+                    Modifier
+                        .float(AcerolaShapes.Sheet)
+                        .clip(AcerolaShapes.Sheet)
+                        .background(brand.card)
+                        .padding(SpacingTokens.Huge),
+                verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+            ) {
+                title?.let {
+                    Text(text = it, style = MaterialTheme.typography.titleLarge, color = brand.foreground)
+                }
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    CompositionLocalProvider(LocalContentColor provides brand.mutedForeground) {
+                        ProvideTextStyle(value = MaterialTheme.typography.bodyMedium) {
+                            content()
                         }
                     }
+                }
 
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        thickness = 0.5.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
-                    )
-
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Min),
+                // Stacked like the desktop dialog footer on a narrow screen (`flex-col-reverse`):
+                // the confirm action on top, full width, so no label ever gets cut.
+                if (dismissButtonContent != null || confirmButtonContent != null) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(top = SpacingTokens.Small),
+                        verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                     ) {
-                        if (dismissButtonContent != null) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                dismissButtonContent()
+                        if (confirmButtonContent != null) {
+                            CompositionLocalProvider(LocalDialogSlotVariant provides ButtonVariant.Contrast) {
+                                confirmButtonContent()
                             }
                         }
-
-                        if (dismissButtonContent != null && confirmButtonContent != null) {
-                            VerticalDivider(
-                                modifier = Modifier.fillMaxHeight(),
-                                thickness = 0.5.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
-                            )
-                        }
-
-                        if (confirmButtonContent != null) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                confirmButtonContent()
+                        if (dismissButtonContent != null) {
+                            CompositionLocalProvider(LocalDialogSlotVariant provides ButtonVariant.Secondary) {
+                                dismissButtonContent()
                             }
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun DialogButtonPreview() {
-    AcerolaTheme {
-        Acerola.Component.DialogButton(
-            text = stringResource(R.string.action_confirm),
-            onClick = {},
-        )
     }
 }
 
@@ -199,20 +133,14 @@ private fun DialogPreview() {
                 Acerola.Component.DialogButton(
                     text = stringResource(R.string.action_delete),
                     onClick = {},
-                    contentColor = MaterialTheme.colorScheme.error,
+                    variant = ButtonVariant.Destructive,
                 )
             },
             dismissButtonContent = {
-                Acerola.Component.DialogButton(
-                    text = stringResource(R.string.action_cancel),
-                    onClick = {},
-                )
+                Acerola.Component.DialogButton(text = stringResource(R.string.action_cancel), onClick = {})
             },
         ) {
-            Text(
-                text = stringResource(R.string.dialog_delete_message),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Text(text = stringResource(R.string.dialog_delete_message))
         }
     }
 }

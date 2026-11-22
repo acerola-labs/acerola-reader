@@ -1,34 +1,18 @@
 package br.acerola.comic.module.main.config
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,8 +21,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,12 +34,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.AccordionCard
+import br.acerola.comic.common.ux.component.ScreenHeader
+import br.acerola.comic.common.ux.component.SettingSection
 import br.acerola.comic.common.ux.component.SnackbarVariant
+import br.acerola.comic.common.ux.component.Tone
+import br.acerola.comic.common.ux.component.colors
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.common.viewmodel.archive.FileSystemAccessViewModel
 import br.acerola.comic.common.viewmodel.library.archive.ComicDirectoryViewModel
@@ -79,7 +67,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Main.Config.Template.Screen(
     metadataSettingsViewModel: MetadataSettingsViewModel = hiltViewModel(),
@@ -209,7 +196,6 @@ fun Main.Config.Template.Screen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ConfigScreenContent(
     uiState: ConfigUiState,
@@ -218,200 +204,134 @@ private fun ConfigScreenContent(
     getSyncActionVisualState: (ConfigAction) -> SyncActionVisualState,
     onAction: (ConfigAction) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
+    // Same screen as the desktop's /config: brand header, then one section per subject (files,
+    // library, metadata, bookmarks), each a card of surface rows.
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val metadataSyncing =
+        getSyncActionVisualState(ConfigAction.SyncMangadexMetadata) == SyncActionVisualState.LOADING ||
+            getSyncActionVisualState(ConfigAction.SyncAnilistMetadata) == SyncActionVisualState.LOADING
 
-    // Categories collapse/expand inline in the list itself, same pattern as the desktop's config
-    // screen (see acerola-accordion-card.svelte) — more than one can be open at the
-    // same time, that's why it's a Set instead of a single selected category.
-    var expandedCategories by remember { mutableStateOf(setOf<String>()) }
-
-    fun toggleCategory(id: String) {
-        expandedCategories = if (id in expandedCategories) expandedCategories - id else expandedCategories + id
-    }
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Large),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Surface(
-                    shape = AcerolaShapes.Inner,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    modifier = Modifier.size(SizeTokens.ClickTarget),
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(SizeTokens.IconMedium),
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(SpacingTokens.Large))
-
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.label_config_activity),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.description_config_activity),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        },
-    ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier =
-                    Modifier
-                        .padding(paddingValues)
-                        .padding(bottom = 64.dp)
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
-            ) {
-                if (!tutorialShown) {
-                    OnboardingGuideCard()
-                }
-
-                val categoryModifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small)
-
-                // NOTE: Local Files
-                Acerola.Component.AccordionCard(
-                    title = stringResource(id = R.string.title_text_archive_configs_in_app),
-                    icon = Icons.Default.Folder,
-                    accentColor = MaterialTheme.colorScheme.primary,
-                    expanded = "files" in expandedCategories,
-                    onToggleExpanded = { toggleCategory("files") },
-                    modifier = categoryModifier,
-                ) {
-                    Main.Config.Component.SelectComicDirectory(
-                        folderName = uiState.folderName,
-                        onFolderSelected = { onAction(ConfigAction.SelectFolder(it)) },
-                    )
-
-                    Main.Config.Component.MetadataExportSettings(
-                        enabled = uiState.generateComicInfo,
-                        onCheckedChange = { onAction(ConfigAction.UpdateGenerateComicInfo(it)) },
-                    )
-
-                    Main.Config.Component.TemplateManager(
-                        onManageTemplates = { onAction(ConfigAction.NavigateToTemplateConfig) },
-                    )
-                }
-
-                // NOTE: Library
-                Acerola.Component.AccordionCard(
-                    title = stringResource(id = R.string.label_library_context),
-                    icon = Icons.Default.Refresh,
-                    accentColor = MaterialTheme.colorScheme.secondary,
-                    expanded = "library" in expandedCategories,
-                    onToggleExpanded = { toggleCategory("library") },
-                    modifier = categoryModifier,
-                ) {
-                    Main.Config.Component.SyncLibraryArchive(
-                        onDeepScan = { onAction(ConfigAction.DeepScanLibrary) },
-                        onQuickSync = { onAction(ConfigAction.QuickSyncLibrary) },
-                        deepScanState = getSyncActionVisualState(ConfigAction.DeepScanLibrary),
-                        quickSyncState = getSyncActionVisualState(ConfigAction.QuickSyncLibrary),
-                    )
-                }
-
-                // NOTE: Categories — always open (flat), same reasoning as the desktop's
-                // Bookmarks card.
-                Acerola.Component.AccordionCard(
-                    title = stringResource(id = R.string.title_config_categories),
-                    icon = Icons.Rounded.Bookmark,
-                    accentColor = MaterialTheme.colorScheme.primary,
-                    expanded = true,
-                    onToggleExpanded = {},
-                    collapsible = false,
-                    modifier = categoryModifier,
-                ) {
-                    Main.Config.Component.GlobalCategoryManager(
-                        categories = allCategories,
-                        onCreateCategory = { name, color -> onAction(ConfigAction.CreateCategory(name, color)) },
-                        onDeleteCategory = { id -> onAction(ConfigAction.DeleteCategory(id)) },
-                    )
-                }
-
-                // NOTE: Metadata
-                Acerola.Component.AccordionCard(
-                    title = stringResource(id = R.string.label_sync_group),
-                    icon = Icons.Default.Public,
-                    accentColor = MaterialTheme.colorScheme.secondary,
-                    expanded = "metadata" in expandedCategories,
-                    onToggleExpanded = { toggleCategory("metadata") },
-                    modifier = categoryModifier,
-                ) {
-                    Main.Config.Component.LanguageSettings(
-                        selectedLanguage = uiState.metadataLanguage,
-                        onLanguageSelected = { onAction(ConfigAction.UpdateMetadataLanguage(it)) },
-                    )
-
-                    Main.Config.Component.SyncMangadexData(
-                        onRescan = { onAction(ConfigAction.SyncMangadexMetadata) },
-                        state = getSyncActionVisualState(ConfigAction.SyncMangadexMetadata),
-                    )
-
-                    Main.Config.Component.SyncAnilistData(
-                        onRescan = { onAction(ConfigAction.SyncAnilistMetadata) },
-                        state = getSyncActionVisualState(ConfigAction.SyncAnilistMetadata),
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(SizeTokens.ClickTarget))
-            }
-        }
-    }
-}
-
-@Composable
-private fun OnboardingGuideCard() {
-    Card(
+    Column(
         modifier =
             Modifier
-                .padding(SpacingTokens.Large)
-                .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        shape = AcerolaShapes.Inner,
+                .fillMaxSize()
+                .background(AcerolaExtendedTheme.colors.background)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = if (isLandscape) SpacingTokens.Huge else BottomBarClearance),
     ) {
-        Column(modifier = Modifier.padding(SpacingTokens.Large)) {
-            Icon(imageVector = Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
-            Spacer(modifier = Modifier.height(SpacingTokens.Small))
+        Acerola.Component.ScreenHeader(
+            eyebrow = stringResource(id = R.string.label_config_eyebrow),
+            title = stringResource(id = R.string.label_config_activity),
+            lead = stringResource(id = R.string.description_config_activity),
+        )
+
+        Column(
+            modifier = Modifier.padding(horizontal = SpacingTokens.Large),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+        ) {
+            if (!tutorialShown) {
+                OnboardingGuideCard()
+            }
+
+            Acerola.Component.SettingSection(
+                title = stringResource(id = R.string.title_config_files),
+                lead = stringResource(id = R.string.description_config_files),
+            ) {
+                Main.Config.Component.SelectComicDirectory(
+                    folderName = uiState.folderName,
+                    onFolderSelected = { onAction(ConfigAction.SelectFolder(it)) },
+                )
+                Main.Config.Component.MetadataExportSettings(
+                    enabled = uiState.generateComicInfo,
+                    onCheckedChange = { onAction(ConfigAction.UpdateGenerateComicInfo(it)) },
+                )
+            }
+
+            Acerola.Component.SettingSection(
+                title = stringResource(id = R.string.label_library_context),
+                lead = stringResource(id = R.string.description_config_library),
+            ) {
+                Main.Config.Component.SyncLibraryArchive(
+                    onDeepScan = { onAction(ConfigAction.DeepScanLibrary) },
+                    onQuickSync = { onAction(ConfigAction.QuickSyncLibrary) },
+                    deepScanState = getSyncActionVisualState(ConfigAction.DeepScanLibrary),
+                    quickSyncState = getSyncActionVisualState(ConfigAction.QuickSyncLibrary),
+                )
+                Main.Config.Component.TemplateManager(
+                    onManageTemplates = { onAction(ConfigAction.NavigateToTemplateConfig) },
+                )
+            }
+
+            Acerola.Component.SettingSection(
+                title = stringResource(id = R.string.title_config_metadata),
+                lead = stringResource(id = R.string.description_config_metadata),
+            ) {
+                Main.Config.Component.LanguageSettings(
+                    selectedLanguage = uiState.metadataLanguage,
+                    onLanguageSelected = { onAction(ConfigAction.UpdateMetadataLanguage(it)) },
+                )
+                Main.Config.Component.SyncMangadexData(
+                    onRescan = { onAction(ConfigAction.SyncMangadexMetadata) },
+                    state = getSyncActionVisualState(ConfigAction.SyncMangadexMetadata),
+                    enabled = !metadataSyncing,
+                )
+                Main.Config.Component.SyncAnilistData(
+                    onRescan = { onAction(ConfigAction.SyncAnilistMetadata) },
+                    state = getSyncActionVisualState(ConfigAction.SyncAnilistMetadata),
+                    enabled = !metadataSyncing,
+                )
+            }
+
+            Acerola.Component.SettingSection(
+                title = stringResource(id = R.string.title_config_categories),
+                lead = stringResource(id = R.string.description_config_categories),
+            ) {
+                Main.Config.Component.GlobalCategoryManager(
+                    categories = allCategories,
+                    onCreateCategory = { name, color -> onAction(ConfigAction.CreateCategory(name, color)) },
+                    onDeleteCategory = { id -> onAction(ConfigAction.DeleteCategory(id)) },
+                )
+            }
+        }
+    }
+}
+
+// First-run notice (`rounded-card`, `primary-soft` with `primary` text): the two steps to start.
+@Composable
+private fun OnboardingGuideCard() {
+    val tone = Tone.Primary.colors()
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(AcerolaShapes.Card)
+                .background(tone.container)
+                .padding(SpacingTokens.ExtraLarge),
+        horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+    ) {
+        Icon(imageVector = Icons.Default.Info, contentDescription = null, tint = tone.content)
+        Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall)) {
             Text(
                 text = stringResource(id = R.string.title_tutorial_setup),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+                color = tone.content,
             )
-            Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
             Text(
                 text = "1. " + stringResource(id = R.string.description_tutorial_folder_select),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.bodyMedium,
+                color = tone.content,
             )
-            Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
             Text(
                 text = "2. " + stringResource(id = R.string.description_tutorial_sync_deep),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.bodyMedium,
+                color = tone.content,
             )
         }
     }
 }
+
+// The floating pill navigation (52dp + 12dp gap) plus breathing room under the last section.
+private val BottomBarClearance = 96.dp
 
 @Preview(name = "Light", showBackground = true)
 @Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)

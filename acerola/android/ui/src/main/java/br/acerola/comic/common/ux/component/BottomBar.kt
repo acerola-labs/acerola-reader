@@ -1,5 +1,7 @@
 package br.acerola.comic.common.ux.component
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,17 +14,16 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,12 +32,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import br.acerola.comic.common.navigation.Destination
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.tokens.SizeTokens
+import br.acerola.comic.common.ux.tokens.SpacingTokens
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -50,6 +58,11 @@ private val navDestinations =
         Destination.CONFIG,
     )
 
+/**
+ * Brand pill navigation (`AcerolaPillNav`, `.ac-pill-nav`): a floating `bg-card/95` pill with
+ * `shadow-float` and a backdrop blur; each item is a 40dp round icon, the active one becomes a
+ * `bg-primary` pill with its name. Takes 64dp (52dp pill + 12dp gap) over the navigation bar.
+ */
 @Composable
 fun Acerola.Component.BottomBar(
     navController: NavHostController,
@@ -57,49 +70,79 @@ fun Acerola.Component.BottomBar(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val glassColor = MaterialTheme.colorScheme.surface
+    val brand = AcerolaExtendedTheme.colors
 
-    NavigationBar(
+    Box(
         modifier =
             Modifier
-                .height(64.dp)
-                .hazeEffect(
-                    state = hazeState,
-                    style =
-                        HazeStyle(
-                            backgroundColor = Color.Transparent,
-                            tints =
-                                listOf(
-                                    HazeTint(color = glassColor.copy(alpha = 0.90f)),
-                                ),
-                            blurRadius = 20.dp,
-                        ),
-                ),
-        windowInsets = NavigationBarDefaults.windowInsets,
-        containerColor = Color.Transparent,
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(bottom = SpacingTokens.Medium),
+        contentAlignment = Alignment.Center,
     ) {
-        navDestinations.forEach { destination ->
-            val routeString = stringResource(id = destination.route)
+        Row(
+            modifier =
+                Modifier
+                    .float(AcerolaShapes.Full)
+                    .clip(AcerolaShapes.Full)
+                    .hazeEffect(
+                        state = hazeState,
+                        style =
+                            HazeStyle(
+                                backgroundColor = brand.card,
+                                tints = listOf(HazeTint(color = brand.card.copy(alpha = 0.95f))),
+                                blurRadius = 24.dp,
+                            ),
+                    ).padding(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            navDestinations.forEach { destination ->
+                val routeString = stringResource(id = destination.route)
+                val selected = currentRoute == routeString
+                val container by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent, label = "pillNavBg")
+                val content by animateColorAsState(
+                    if (selected) MaterialTheme.colorScheme.onPrimary else brand.mutedForeground,
+                    label = "pillNavFg",
+                )
 
-            NavigationBarItem(
-                selected = currentRoute == routeString,
-                label = null,
-                onClick = {
-                    if (currentRoute != routeString) {
-                        navController.navigate(routeString) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                },
-                icon = {
+                Row(
+                    modifier =
+                        Modifier
+                            .height(40.dp)
+                            .widthIn(min = 40.dp)
+                            .clip(AcerolaShapes.Full)
+                            .background(container)
+                            .semantics { this.selected = selected }
+                            .clickable {
+                                if (!selected) {
+                                    navController.navigate(routeString) {
+                                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            }.padding(horizontal = SpacingTokens.Medium)
+                            .animateContentSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small, Alignment.CenterHorizontally),
+                ) {
                     Icon(
                         imageVector = destination.icon,
                         contentDescription = stringResource(destination.contentDescriptionRes),
+                        tint = content,
+                        modifier = Modifier.size(SizeTokens.IconSmall),
                     )
-                },
-            )
+                    if (selected) {
+                        Text(
+                            text = stringResource(id = destination.label),
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                            color = content,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -121,7 +164,7 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
         modifier =
             Modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                .background(AcerolaExtendedTheme.colors.mantle),
     ) {
         Column(
             modifier =
@@ -135,24 +178,16 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
             navDestinations.forEach { destination ->
                 val routeString = stringResource(id = destination.route)
                 val isSelected = currentRoute == routeString
-                val itemBackground =
-                    if (isSelected) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                    }
+                // Same as the desktop sidebar: round items, the active one a `bg-primary` pill.
+                val itemBackground = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
                 val contentColor =
-                    if (isSelected) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    if (isSelected) MaterialTheme.colorScheme.onPrimary else AcerolaExtendedTheme.colors.mutedForeground
 
                 Box(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clip(AcerolaShapes.Inner)
+                            .clip(AcerolaShapes.Full)
                             .background(itemBackground)
                             .clickable {
                                 if (currentRoute != routeString) {
@@ -162,7 +197,7 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
                                         restoreState = true
                                     }
                                 }
-                            }.padding(horizontal = 16.dp, vertical = 14.dp),
+                            }.padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +211,7 @@ fun Acerola.Component.SideBar(navController: NavHostController) {
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = stringResource(id = destination.label),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                             color = contentColor,
                         )
                     }

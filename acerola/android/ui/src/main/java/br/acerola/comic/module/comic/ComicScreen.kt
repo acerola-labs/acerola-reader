@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.RemoveDone
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -48,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.GlassButton
+import br.acerola.comic.common.ux.component.ScrimButton
 import br.acerola.comic.common.ux.component.SelectionAction
 import br.acerola.comic.common.ux.component.SelectionActionDock
 import br.acerola.comic.common.ux.component.SelectionTopBar
@@ -590,27 +589,17 @@ private fun ComicScreenContent(
         } else {
             Acerola.Component.TopBar(
                 navigationIcon = {
-                    Acerola.Component.GlassButton(
+                    Acerola.Component.ScrimButton(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.description_icon_navigation_back),
                         onClick = { onAction(ComicAction.NavigateBack) },
-                        icon = {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.description_icon_navigation_back),
-                            )
-                        },
                     )
                 },
                 actions = {
-                    Acerola.Component.GlassButton(
+                    Acerola.Component.ScrimButton(
+                        icon = Icons.Default.FilterList,
+                        contentDescription = stringResource(id = R.string.description_icon_home_filter),
                         onClick = { showSortSheet = true },
-                        icon = {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = stringResource(id = R.string.description_icon_home_filter),
-                            )
-                        },
                     )
                 },
             )

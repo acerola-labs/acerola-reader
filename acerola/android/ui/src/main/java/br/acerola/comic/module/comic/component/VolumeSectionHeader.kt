@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LibraryBooks
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,10 +34,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.Badge
+import br.acerola.comic.common.ux.component.Tone
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -79,8 +81,10 @@ fun Comic.Component.VolumeSectionHeader(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(min = SizeTokens.ClickTarget)
+                    .padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.ExtraSmall)
+                    .clip(AcerolaShapes.Tile)
                     .combinedClickable(onClick = onToggleExpanded, onLongClick = onLongClick)
-                    .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Small),
+                    .padding(horizontal = SpacingTokens.Small, vertical = SpacingTokens.Small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             identity()
@@ -93,9 +97,8 @@ fun Comic.Component.VolumeSectionHeader(
                         text = title,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = AcerolaExtendedTheme.colors.foreground,
                         modifier = Modifier.weight(1f, fill = false),
                     )
 
@@ -108,7 +111,7 @@ fun Comic.Component.VolumeSectionHeader(
                 Text(
                     text = chapterSummary,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AcerolaExtendedTheme.colors.mutedForeground,
                 )
             }
 
@@ -117,18 +120,11 @@ fun Comic.Component.VolumeSectionHeader(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = AcerolaExtendedTheme.colors.mutedForeground,
                 modifier =
                     Modifier
                         .size(SizeTokens.IconMedium)
                         .graphicsLayer { rotationZ = chevronRotation },
-            )
-        }
-
-        if (!expanded) {
-            HorizontalDivider(
-                thickness = SizeTokens.BorderThin,
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
             )
         }
     }
@@ -192,15 +188,14 @@ private fun VolumeNumberBadge(
         modifier =
             modifier
                 .size(IdentitySquareSize)
-                .clip(AcerolaShapes.Inner)
-                .background(MaterialTheme.colorScheme.tertiaryContainer),
+                .clip(AcerolaShapes.Full)
+                .background(AcerolaExtendedTheme.colors.primarySoft),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -249,13 +244,13 @@ private fun VolumeCoverIdentity(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.tertiary),
+                        .background(AcerolaExtendedTheme.colors.surface),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.LibraryBooks,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onTertiary,
+                    tint = AcerolaExtendedTheme.colors.mutedForeground,
                     modifier = Modifier.size(SizeTokens.IconMedium),
                 )
             }
@@ -264,21 +259,8 @@ private fun VolumeCoverIdentity(
 }
 
 @Composable
-private fun SpecialPill(modifier: Modifier = Modifier) {
-    Box(
-        modifier =
-            modifier
-                .clip(AcerolaShapes.Full)
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-                .padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
-    ) {
-        Text(
-            text = stringResource(id = R.string.label_volume_header_special),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-    }
+private fun SpecialPill() {
+    Acerola.Component.Badge(text = stringResource(id = R.string.label_volume_header_special), tone = Tone.Warning)
 }
 
 private fun volumeNumberLabel(volumeSort: String): String = volumeSort.trimStart('0').ifEmpty { "0" }

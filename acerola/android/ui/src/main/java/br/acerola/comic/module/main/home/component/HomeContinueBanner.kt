@@ -19,12 +19,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,13 +38,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.IconButton
+import br.acerola.comic.common.ux.modifier.lift
 import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
@@ -95,18 +96,16 @@ fun Main.Home.Component.HomeContinueBanner(
         label = "banner_height",
     )
 
-    val bannerCornerShape = if (isLandscape) 16.dp else 24.dp
-
-    androidx.compose.material3.ElevatedCard(
-        shape = RoundedCornerShape(bannerCornerShape),
-        colors =
-            androidx.compose.material3.CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-            ),
+    // Brand card (`rounded-card bg-card shadow-lift`); expanded it shows the banner art under a scrim.
+    androidx.compose.material3.Surface(
+        shape = AcerolaShapes.Card,
+        color = AcerolaExtendedTheme.colors.card,
         modifier =
             modifier
                 .fillMaxWidth()
                 .height(animatedHeight.dp)
+                .lift(AcerolaShapes.Card)
+                .clip(AcerolaShapes.Card)
                 .clickable {
                     if (!isExpanded && !isLandscape) {
                         onExpandedChange(true)
@@ -205,44 +204,35 @@ fun Main.Home.Component.HomeContinueBanner(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = stringResource(R.string.label_banner_continue_reading).uppercase(),
-                            style =
-                                MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.sp,
-                                ),
-                            color = MaterialTheme.colorScheme.primary,
+                            text = stringResource(R.string.label_banner_continue_reading),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = AcerolaExtendedTheme.colors.mutedForeground,
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = AcerolaExtendedTheme.colors.foreground,
                         )
                         Text(
                             text = stringResource(R.string.label_banner_chapter_progress, history.chapterSort),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = AcerolaExtendedTheme.colors.mutedForeground,
                             maxLines = 1,
                         )
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    androidx.compose.material3.FilledIconButton(
+                    Acerola.Component.IconButton(
+                        icon = Icons.Filled.PlayArrow,
+                        contentDescription = stringResource(R.string.label_banner_continue),
                         onClick = onContinueClick,
-                        modifier = Modifier.size(56.dp),
-                        shape = AcerolaShapes.Inner,
-                        colors =
-                            androidx.compose.material3.IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                    ) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
-                    }
+                        variant = ButtonVariant.Primary,
+                        size = 48.dp,
+                    )
                 }
             } else {
                 Column(
@@ -258,8 +248,7 @@ fun Main.Home.Component.HomeContinueBanner(
                         text = title,
                         style =
                             MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = if (bannerUri != null) AcerolaColors.OnScrim else MaterialTheme.colorScheme.onSurface,
+                                color = if (bannerUri != null) AcerolaColors.OnScrim else AcerolaExtendedTheme.colors.foreground,
                             ),
                         maxLines = if (isLandscape) 1 else 2,
                         overflow = TextOverflow.Ellipsis,
@@ -277,7 +266,7 @@ fun Main.Home.Component.HomeContinueBanner(
                                     ) {
                                         AcerolaColors.OnScrim.copy(alpha = 0.8f)
                                     } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                        AcerolaExtendedTheme.colors.mutedForeground
                                     },
                             ),
                         maxLines = 1,
@@ -285,30 +274,12 @@ fun Main.Home.Component.HomeContinueBanner(
 
                     Spacer(modifier = Modifier.height(if (isLandscape) SpacingTokens.Medium else SpacingTokens.Large))
 
-                    Button(
+                    Acerola.Component.Button(
+                        text = stringResource(R.string.label_banner_continue),
                         onClick = onContinueClick,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(if (isLandscape) 40.dp else 56.dp),
-                        shape = AcerolaShapes.Full,
-                        colors =
-                            ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                    ) {
-                        Icon(Icons.Filled.PlayArrow, null, modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Text(
-                            text = stringResource(R.string.label_banner_continue).uppercase(),
-                            style =
-                                MaterialTheme.typography.labelLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp,
-                                ),
-                        )
-                    }
+                        icon = Icons.Filled.PlayArrow,
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                    )
                     if (!isLandscape) {
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -326,7 +297,7 @@ fun Main.Home.Component.HomeContinueBanner(
                                 if (isExpanded && bannerUri != null) {
                                     AcerolaColors.OnScrim.copy(alpha = 0.4f)
                                 } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                                    AcerolaExtendedTheme.colors.mutedForeground.copy(alpha = 0.4f)
                                 },
                             ).size(width = 36.dp, height = 4.dp),
                 )

@@ -2,21 +2,14 @@ package br.acerola.comic.module.main.history
 
 import android.content.Intent
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -36,9 +28,11 @@ import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.EmptyState
+import br.acerola.comic.common.ux.component.ScreenHeader
 import br.acerola.comic.common.ux.component.SnackbarVariant
-import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.component.SyncButton
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.dto.ComicDto
 import br.acerola.comic.dto.archive.ComicDirectoryDto
@@ -134,94 +128,69 @@ fun HistoryScreenContent(
 ) {
     var showPeerPicker by remember { mutableStateOf(false) }
 
-    // `MainActivity` renders `BottomBar` as a sibling outside this screen's own Scaffold
-    // (`applyScaffoldPadding = false` in `BaseActivity`, on purpose — screens draw edge-to-edge
-    // behind the translucent/blurred bar), so this inner Scaffold's automatic FAB placement has
-    // no idea that 64dp bar exists and only clears the raw system nav-bar inset. Same fixed
-    // height as `BottomBar.kt`'s `Modifier.height(64.dp)` / `HomeScreen.kt`'s
-    // `mainBottomBarHeight` — hidden in landscape too, where `SideBar` replaces it instead.
+    // Same page as the desktop's /history: brand header (with "Sync" as its action), the most
+    // recent comic as the hero card, then the older ones as surface rows. The floating pill
+    // navigation takes 64dp at the bottom in portrait.
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val bottomBarClearance = if (isLandscape) 0.dp else 64.dp
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            Acerola.Component.SyncActionIcon(
-                state = historySyncState,
-                modifier =
-                    Modifier
-                        .padding(bottom = bottomBarClearance)
-                        .clickable(enabled = historySyncState != SyncActionVisualState.LOADING) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().background(AcerolaExtendedTheme.colors.background),
+        contentPadding = PaddingValues(bottom = 32.dp + bottomBarClearance),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item {
+            Acerola.Component.ScreenHeader(
+                eyebrow = stringResource(id = R.string.label_history_eyebrow),
+                title = stringResource(id = R.string.label_history_activity),
+                lead = stringResource(id = R.string.description_history_screen),
+                actions = {
+                    Acerola.Component.SyncButton(
+                        state = historySyncState,
+                        text = stringResource(id = R.string.action_history_sync),
+                        loadingText = stringResource(id = R.string.action_config_syncing),
+                        onClick = {
                             onAction(HistoryAction.LoadPairedPeersForSync)
                             showPeerPicker = true
                         },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Sync,
-                    contentDescription = stringResource(id = R.string.description_icon_history_sync_with_peer),
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                        enabled = historySyncState != SyncActionVisualState.LOADING,
+                    )
+                },
+            )
+        }
+
+        if (uiState.items.isEmpty()) {
+            item {
+                Acerola.Component.EmptyState(
+                    title = stringResource(id = R.string.description_history_empty_state),
+                    hint = stringResource(id = R.string.description_history_empty_hint),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 48.dp),
                 )
             }
-        },
-    ) { paddingValues ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-        ) {
-            if (uiState.items.isEmpty()) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    // Empty: mascot + title (Acerola standard).
-                    Acerola.Component.EmptyState(title = stringResource(id = R.string.description_history_empty_state))
-                }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(bottom = 16.dp + 64.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    item {
-                        val firstItem = uiState.items.first()
-                        Main.History.Component.HistoryHeroCard(
-                            comic = firstItem.comic,
-                            onClick = { onAction(HistoryAction.ClickManga(firstItem.comic)) },
-                            onContinueClick = { onAction(HistoryAction.ClickContinue(firstItem.comic, firstItem.history)) },
-                        )
+        } else {
+            item {
+                val firstItem = uiState.items.first()
+                Main.History.Component.HistoryHeroCard(
+                    comic = firstItem.comic,
+                    onClick = { onAction(HistoryAction.ClickManga(firstItem.comic)) },
+                    onContinueClick = { onAction(HistoryAction.ClickContinue(firstItem.comic, firstItem.history)) },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
 
-                        if (uiState.items.size > 1) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
-                    }
+            items(uiState.items.drop(1), key = { it.comic.directory.id }) { item ->
+                val chapterInfo = item.history.chapterName ?: stringResource(id = R.string.label_chapter_unknown)
+                val progressInfo = stringResource(id = R.string.label_history_chapter_progress, chapterInfo, item.history.lastPage + 1)
 
-                    items(uiState.items.drop(1), key = { it.comic.directory.id }) { item ->
-                        val chapterInfo =
-                            item.history.chapterName ?: stringResource(
-                                id = R.string.label_chapter_unknown,
-                            )
-
-                        val progressInfo =
-                            stringResource(
-                                id = R.string.label_history_chapter_progress,
-                                chapterInfo,
-                                item.history.lastPage + 1,
-                            )
-
-                        Main.Common.Component.ComicListItem(
-                            comic = item.comic,
-                            subtitle = progressInfo,
-                            chapterCount = item.chapterCount,
-                            isCompleted = item.history.isCompleted,
-                            onPlayClick = { onAction(HistoryAction.ClickContinue(item.comic, item.history)) },
-                            onClick = { onAction(HistoryAction.ClickManga(item.comic)) },
-                        )
-                    }
-                }
+                Main.Common.Component.ComicListItem(
+                    comic = item.comic,
+                    subtitle = progressInfo,
+                    chapterCount = item.chapterCount,
+                    isCompleted = item.history.isCompleted,
+                    onPlayClick = { onAction(HistoryAction.ClickContinue(item.comic, item.history)) },
+                    onClick = { onAction(HistoryAction.ClickManga(item.comic)) },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
             }
         }
     }

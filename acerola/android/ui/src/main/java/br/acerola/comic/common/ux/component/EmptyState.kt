@@ -27,8 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.theme.raised
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
 
@@ -57,12 +59,12 @@ fun Acerola.Component.EmptyState(
                     Modifier
                         .size(56.dp)
                         .clip(AcerolaShapes.Full)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(AcerolaExtendedTheme.colors.raised),
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = AcerolaExtendedTheme.colors.mutedForeground,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -79,7 +81,7 @@ fun Acerola.Component.EmptyState(
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = AcerolaExtendedTheme.colors.foreground,
             textAlign = TextAlign.Center,
         )
 
@@ -88,7 +90,7 @@ fun Acerola.Component.EmptyState(
             Text(
                 text = hint,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = AcerolaExtendedTheme.colors.mutedForeground,
                 textAlign = TextAlign.Center,
             )
         }

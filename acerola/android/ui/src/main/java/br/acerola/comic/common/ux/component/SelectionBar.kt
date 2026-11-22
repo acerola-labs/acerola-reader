@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
@@ -50,17 +51,15 @@ fun Acerola.Component.SelectionTopBar(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        shape = AcerolaShapes.Inner,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        tonalElevation = 6.dp,
-        shadowElevation = 8.dp,
-        modifier = modifier.fillMaxWidth(),
+        shape = AcerolaShapes.Full,
+        color = AcerolaExtendedTheme.colors.card,
+        modifier = modifier.fillMaxWidth().float(AcerolaShapes.Full),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(60.dp)
                     .padding(horizontal = SpacingTokens.Small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -70,27 +69,20 @@ fun Acerola.Component.SelectionTopBar(
                     icon = Icons.Default.Close,
                     onClick = onClear,
                     contentDescription = stringResource(id = R.string.action_cancel),
-                    iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    iconBackground = MaterialTheme.colorScheme.surfaceVariant,
                 )
                 Spacer(modifier = Modifier.width(SpacingTokens.Small))
                 Text(
                     text = stringResource(id = R.string.label_selection_count, selectedCount),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = AcerolaExtendedTheme.colors.foreground,
                 )
             }
 
-            TextButton(onClick = onToggleSelectAll) {
-                Text(
-                    text =
-                        stringResource(
-                            id = if (isAllSelected) R.string.action_deselect_all else R.string.action_select_all,
-                        ),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            Acerola.Component.Button(
+                text = stringResource(id = if (isAllSelected) R.string.action_deselect_all else R.string.action_select_all),
+                onClick = onToggleSelectAll,
+                variant = ButtonVariant.Secondary,
+            )
         }
     }
 }
@@ -101,11 +93,9 @@ fun Acerola.Component.SelectionActionDock(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        shape = AcerolaShapes.Inner,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        tonalElevation = 8.dp,
-        shadowElevation = 12.dp,
-        modifier = modifier,
+        shape = AcerolaShapes.Card,
+        color = AcerolaExtendedTheme.colors.card,
+        modifier = modifier.float(AcerolaShapes.Card),
     ) {
         Row(
             modifier = Modifier.padding(all = SpacingTokens.Small),
@@ -133,22 +123,12 @@ private fun SelectionActionButton(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
-    val containerColor =
-        if (isError) {
-            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHigh
-        }
-    val contentColor =
-        if (isError) {
-            MaterialTheme.colorScheme.error
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        }
+    val containerColor = if (isError) AcerolaExtendedTheme.colors.destructiveSoft else AcerolaExtendedTheme.colors.surface
+    val contentColor = if (isError) MaterialTheme.colorScheme.error else AcerolaExtendedTheme.colors.foreground
 
     Surface(
         onClick = onClick,
-        shape = AcerolaShapes.Inner,
+        shape = AcerolaShapes.Tile,
         color = containerColor,
         contentColor = contentColor,
         modifier = modifier.height(selectionActionButtonHeight),

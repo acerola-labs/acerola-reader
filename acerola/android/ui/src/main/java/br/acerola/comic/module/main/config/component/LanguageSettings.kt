@@ -1,30 +1,20 @@
 package br.acerola.comic.module.main.config.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.mapper.LanguageMapper
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.HeroButton
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
 import br.acerola.comic.common.ux.component.LanguagePicker
-import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SizeTokens
-import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
 import br.acerola.comic.type.Language
 import br.acerola.comic.ui.R
@@ -42,32 +32,18 @@ fun Main.Config.Component.LanguageSettings(
         selectedLanguage = resolvedLanguage,
         onLanguageSelected = onLanguageSelected,
         trigger = { onClick ->
-            Acerola.Component.HeroButton(
+            Acerola.Component.SettingRow(
                 title = stringResource(id = R.string.title_settings_metadata_language),
-                description = languageLabel,
-                icon = Icons.Filled.Language,
+                description = stringResource(id = R.string.description_config_metadata_language),
+                icon = Icons.Filled.Translate,
                 modifier = modifier,
-                action = {
-                    IconButton(onClick = onClick) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier =
-                                Modifier
-                                    .size(size = SpacingTokens.Giant)
-                                    .clip(AcerolaShapes.Full)
-                                    .background(color = MaterialTheme.colorScheme.primary),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = stringResource(id = R.string.label_select_language),
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier =
-                                    Modifier
-                                        .size(size = SizeTokens.IconLarge)
-                                        .padding(all = SpacingTokens.ExtraSmall),
-                            )
-                        }
-                    }
+                content = {
+                    Acerola.Component.Button(
+                        text = languageLabel,
+                        onClick = onClick,
+                        variant = ButtonVariant.Secondary,
+                        trailingIcon = Icons.Filled.ExpandMore,
+                    )
                 },
             )
         },
