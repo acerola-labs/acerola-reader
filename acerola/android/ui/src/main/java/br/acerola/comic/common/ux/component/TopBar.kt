@@ -1,5 +1,6 @@
 package br.acerola.comic.common.ux.component
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,13 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.modifier.glass
-import br.acerola.comic.common.ux.modifier.glassContainer
+import br.acerola.comic.common.ux.theme.AcerolaColors
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -69,38 +69,25 @@ fun Acerola.Component.TopBar(
     }
 }
 
+/** Title pill over a cover or page art: `bg-scrim/50` with `text-on-scrim`, like the scrim buttons. */
 @Composable
 fun Acerola.Component.TitleCapsule(
     text: String,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-    val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
-    val shape = AcerolaShapes.Tile
-
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.CenterHorizontally)
-                .glassContainer(shape),
+                .clip(AcerolaShapes.Full)
+                .background(AcerolaColors.Scrim.copy(alpha = 0.5f)),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .matchParentSize()
-                    .glass(shape, glassColor, borderColor),
-        )
-
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
-            style =
-                MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.5.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                ),
+            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+            color = AcerolaColors.OnScrim,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

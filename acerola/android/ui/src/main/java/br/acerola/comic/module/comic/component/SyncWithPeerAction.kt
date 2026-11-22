@@ -3,35 +3,30 @@ package br.acerola.comic.module.comic.component
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.PhoneAndroid
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.ActionIcon
-import br.acerola.comic.common.ux.component.HeroButton
-import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.ui.R
 
 /**
- * Single entry point for `acerola/sync-comic/1`, shared by the Comic Detail's config section
- * and (via [br.acerola.comic.module.main.common.component.PeerPickerSheet]) the Home's
+ * Single entry point for `acerola/sync-comic/1`, shared by the Comic Detail's preferences and
+ * (via [br.acerola.comic.module.main.common.component.PeerPickerSheet]) the Home's
  * `ComicActionsSheet`. Two explicit actions — push (send this comic to a device) and pull
- * (fetch it from a device) — each open the peer picker on click; the actual `syncComic` call
- * only fires once a peer is chosen, with the direction already decided by which icon started
- * the flow.
+ * (fetch it from a device) — each open the peer picker; the actual `syncComic` call only fires
+ * once a peer is chosen, with the direction already decided by which button started the flow.
  */
 @Composable
 fun Comic.Component.SyncWithPeerAction(
@@ -40,36 +35,31 @@ fun Comic.Component.SyncWithPeerAction(
     onPull: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Acerola.Component.HeroButton(
-        title = stringResource(id = R.string.action_sync_comic_with_peer),
+    val loading = state == SyncActionVisualState.LOADING
+
+    Acerola.Component.SettingRow(
+        title = stringResource(id = R.string.title_sync_comic_send),
         description = stringResource(id = R.string.description_sync_comic_with_peer),
-        icon = {
-            Acerola.Component.SyncActionIcon(state = state) {
-                Icon(
-                    imageVector = Icons.Rounded.PhoneAndroid,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(24.dp),
+        icon = Icons.Rounded.PhoneAndroid,
+        modifier = modifier,
+        content = {
+            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                Acerola.Component.Button(
+                    text = stringResource(id = R.string.action_sync_comic_push),
+                    onClick = onPush,
+                    variant = ButtonVariant.Secondary,
+                    icon = Icons.Rounded.CloudUpload,
+                    loading = loading,
+                )
+                Acerola.Component.Button(
+                    text = stringResource(id = R.string.action_sync_comic_pull),
+                    onClick = onPull,
+                    variant = ButtonVariant.Secondary,
+                    icon = Icons.Rounded.CloudDownload,
+                    enabled = !loading,
                 )
             }
         },
-        action = {
-            if (state != SyncActionVisualState.LOADING) {
-                Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                    Acerola.Component.ActionIcon(
-                        icon = Icons.Rounded.CloudUpload,
-                        onClick = onPush,
-                        contentDescription = stringResource(id = R.string.action_sync_comic_push),
-                    )
-                    Acerola.Component.ActionIcon(
-                        icon = Icons.Rounded.CloudDownload,
-                        onClick = onPull,
-                        contentDescription = stringResource(id = R.string.action_sync_comic_pull),
-                    )
-                }
-            }
-        },
-        modifier = modifier,
     )
 }
 

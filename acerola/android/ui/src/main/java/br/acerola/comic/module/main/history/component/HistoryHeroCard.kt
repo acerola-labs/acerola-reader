@@ -11,15 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,8 +28,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
+import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.modifier.lift
 import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -57,14 +56,16 @@ fun Main.History.Component.HistoryHeroCard(
     val bannerUri = comic.directory.bannerUri ?: comic.directory.coverUri ?: comic.remoteInfo?.banner?.url
     val title = comic.remoteInfo?.title ?: comic.directory.name
 
-    Card(
+    // Brand hero card: `rounded-card` art with the scrim, a "most recent" pill and the primary action.
+    androidx.compose.material3.Surface(
         onClick = onClick,
-        shape = AcerolaShapes.Tile,
+        shape = AcerolaShapes.Card,
+        color = AcerolaExtendedTheme.colors.surface,
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(SizeTokens.HistoryHeroHeight),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                .height(SizeTokens.HistoryHeroHeight)
+                .lift(AcerolaShapes.Card),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -113,17 +114,13 @@ fun Main.History.Component.HistoryHeroCard(
                         modifier =
                             Modifier
                                 .background(
-                                    color = AcerolaColors.OnScrim.copy(alpha = 0.2f),
-                                    shape = AcerolaShapes.Inner,
-                                ).padding(horizontal = SpacingTokens.Small, vertical = SpacingTokens.ExtraSmall),
+                                    color = AcerolaColors.Scrim.copy(alpha = 0.5f),
+                                    shape = AcerolaShapes.Full,
+                                ).padding(horizontal = 10.dp, vertical = SpacingTokens.ExtraSmall),
                     ) {
                         Text(
                             text = stringResource(id = R.string.label_history_hero_most_recent),
-                            style =
-                                MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp,
-                                ),
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = AcerolaColors.OnScrim,
                         )
                     }
@@ -134,49 +131,19 @@ fun Main.History.Component.HistoryHeroCard(
                 Text(
                     text = title,
                     style =
-                        MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            color = AcerolaColors.OnScrim,
-                        ),
+                        MaterialTheme.typography.headlineSmall.copy(color = AcerolaColors.OnScrim),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(modifier = Modifier.height(SpacingTokens.ExtraLarge))
 
-                Button(
+                Acerola.Component.Button(
+                    text = stringResource(id = R.string.label_history_hero_continue),
                     onClick = onContinueClick,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(SizeTokens.FabDefault),
-                    shape = AcerolaShapes.Full,
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.label_history_hero_continue),
-                            style =
-                                MaterialTheme.typography.labelLarge.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 1.2.sp,
-                                ),
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                        Icon(
-                            imageVector = Icons.Filled.PlayArrow,
-                            contentDescription = null,
-                            modifier = Modifier.size(SizeTokens.IconSmall),
-                        )
-                    }
-                }
+                    trailingIcon = Icons.Filled.PlayArrow,
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                )
             }
         }
     }

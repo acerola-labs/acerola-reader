@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -120,11 +122,10 @@ fun Acerola.Component.FabGroup(
                         ) {
                             item.label?.let { label ->
                                 Surface(
-                                    shape = AcerolaShapes.Inner,
-                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
-                                    tonalElevation = 2.dp,
+                                    shape = AcerolaShapes.Full,
+                                    color = AcerolaExtendedTheme.colors.card,
                                     modifier =
-                                        Modifier.clickable {
+                                        Modifier.float(AcerolaShapes.Full).clickable {
                                             item.onClick()
                                             expanded = false
                                         },
@@ -134,17 +135,19 @@ fun Acerola.Component.FabGroup(
                                         style = MaterialTheme.typography.labelLarge,
                                         modifier =
                                             Modifier.padding(
-                                                horizontal = SpacingTokens.Small,
-                                                vertical = SpacingTokens.ExtraSmall,
+                                                horizontal = SpacingTokens.MediumLarge,
+                                                vertical = SpacingTokens.Small,
                                             ),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        color = AcerolaExtendedTheme.colors.foreground,
                                     )
                                 }
                             }
 
                             FloatingActionButton(
                                 modifier = Modifier.size(SizeTokens.ClickTarget),
-                                containerColor = MaterialTheme.colorScheme.secondary,
+                                shape = AcerolaShapes.Full,
+                                containerColor = AcerolaExtendedTheme.colors.card,
+                                contentColor = AcerolaExtendedTheme.colors.foreground,
                                 elevation =
                                     FloatingActionButtonDefaults.elevation(
                                         defaultElevation = 0.dp,
@@ -166,11 +169,13 @@ fun Acerola.Component.FabGroup(
 
             FloatingActionButton(
                 modifier = Modifier.size(SizeTokens.FabDefault),
+                shape = AcerolaShapes.Full,
                 containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 elevation =
                     FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 8.dp,
+                        defaultElevation = 6.dp,
+                        pressedElevation = 6.dp,
                     ),
                 onClick = { expanded = !expanded },
             ) {

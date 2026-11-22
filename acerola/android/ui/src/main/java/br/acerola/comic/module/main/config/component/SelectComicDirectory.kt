@@ -4,28 +4,17 @@ import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.HeroButton
-import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SizeTokens
-import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
 import br.acerola.comic.ui.R
 
@@ -43,40 +32,17 @@ fun Main.Config.Component.SelectComicDirectory(
             },
         )
 
-    val description =
-        if (folderName != null) {
-            stringResource(id = R.string.description_text_selected_comic_directory, folderName)
-        } else {
-            stringResource(id = R.string.description_text_config_select_path_comic)
-        }
-
-    Acerola.Component.HeroButton(
+    Acerola.Component.SettingRow(
         title = stringResource(id = R.string.title_text_config_select_path_comic),
-        description = description,
+        description = folderName ?: stringResource(id = R.string.label_config_comic_folder_empty),
         icon = Icons.Filled.Folder,
         modifier = modifier,
-        onClick = { launcher.launch(input = null) },
-        action = {
-            IconButton(onClick = { launcher.launch(input = null) }) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .size(size = SpacingTokens.Giant)
-                            .clip(AcerolaShapes.Full)
-                            .background(color = MaterialTheme.colorScheme.primary),
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = stringResource(R.string.description_icon_select_folder_comics),
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier =
-                            Modifier
-                                .size(size = SizeTokens.IconLarge)
-                                .padding(all = SpacingTokens.ExtraSmall),
-                    )
-                }
-            }
+        content = {
+            Acerola.Component.Button(
+                text = stringResource(id = R.string.action_config_choose_folder),
+                onClick = { launcher.launch(input = null) },
+                variant = ButtonVariant.Secondary,
+            )
         },
     )
 }

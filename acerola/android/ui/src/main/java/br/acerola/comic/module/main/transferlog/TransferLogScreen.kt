@@ -1,38 +1,26 @@
 package br.acerola.comic.module.main.transferlog
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.SwapVert
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,18 +29,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.ActionIcon
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
 import br.acerola.comic.common.ux.component.EmptyState
+import br.acerola.comic.common.ux.component.RoundIcon
+import br.acerola.comic.common.ux.component.ScreenHeader
+import br.acerola.comic.common.ux.component.SettingRow
+import br.acerola.comic.common.ux.component.Spinner
+import br.acerola.comic.common.ux.component.Tone
+import br.acerola.comic.common.ux.component.colors
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
@@ -88,7 +80,8 @@ fun Main.TransferLog.Template.Screen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+// Brand page (the desktop's transfers card, full screen here like LocalSend): header with back,
+// "Refresh" and "Clear" as pills, then one surface row per entry.
 @Composable
 private fun TransferLogScreenContent(
     uiState: TransferLogUiState,
@@ -98,79 +91,35 @@ private fun TransferLogScreenContent(
 ) {
     var showClearDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.title_sync_activity_log),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    Acerola.Component.ActionIcon(
-                        icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        onClick = onBack,
-                        contentDescription = stringResource(id = R.string.description_icon_navigation_back),
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+    Column(modifier = Modifier.fillMaxSize().background(AcerolaExtendedTheme.colors.background)) {
+        Acerola.Component.ScreenHeader(
+            eyebrow = stringResource(id = R.string.label_sync_activity),
+            title = stringResource(id = R.string.title_sync_activity_log),
+            lead = stringResource(id = R.string.description_sync_activity_log),
+            onBack = onBack,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
+            horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
+        ) {
+            Acerola.Component.Button(
+                text = stringResource(id = R.string.action_sync_activity_log_refresh),
+                onClick = onRefresh,
+                variant = ButtonVariant.Secondary,
+                icon = Icons.Default.Refresh,
             )
-        },
-    ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
-                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
-            ) {
-                FilledTonalButton(
-                    onClick = onRefresh,
-                    colors =
-                        ButtonDefaults.filledTonalButtonColors(
-                            containerColor = AcerolaExtendedTheme.colors.accent,
-                            contentColor = AcerolaExtendedTheme.colors.onAccent,
-                        ),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = null,
-                        modifier = Modifier.size(SizeTokens.IconExtraSmall),
-                    )
-                    Text(
-                        text = stringResource(id = R.string.action_sync_activity_log_refresh),
-                        modifier = Modifier.padding(start = SpacingTokens.ExtraSmall),
-                    )
-                }
-
-                if (uiState.entries.isNotEmpty()) {
-                    FilledTonalButton(
-                        onClick = { showClearDialog = true },
-                        colors =
-                            ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            ),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = null,
-                            modifier = Modifier.size(SizeTokens.IconExtraSmall),
-                        )
-                        Text(
-                            text = stringResource(id = R.string.action_sync_activity_log_clear),
-                            modifier = Modifier.padding(start = SpacingTokens.ExtraSmall),
-                        )
-                    }
-                }
+            if (uiState.entries.isNotEmpty()) {
+                Acerola.Component.Button(
+                    text = stringResource(id = R.string.action_sync_activity_log_clear),
+                    onClick = { showClearDialog = true },
+                    variant = ButtonVariant.Destructive,
+                    icon = Icons.Default.Delete,
+                )
             }
-
-            TransferLogList(entries = uiState.entries, modifier = Modifier.fillMaxSize())
         }
+
+        TransferLogList(entries = uiState.entries, modifier = Modifier.fillMaxSize())
     }
 
     Acerola.Component.Dialog(
@@ -180,11 +129,11 @@ private fun TransferLogScreenContent(
         confirmButtonContent = {
             Acerola.Component.DialogButton(
                 text = stringResource(id = R.string.action_sync_activity_log_clear_confirm),
-                contentColor = MaterialTheme.colorScheme.error,
                 onClick = {
                     onClear()
                     showClearDialog = false
                 },
+                variant = ButtonVariant.Destructive,
             )
         },
         dismissButtonContent = {
@@ -228,83 +177,31 @@ private fun TransferLogList(
  *  old format, unreadable on a screen dedicated to this). */
 @Composable
 private fun TransferLogCard(entry: TransferLogEntry) {
-    val containerColor: Color
-    val contentColor: Color
-    when (entry.state) {
-        LogState.SUCCESS -> {
-            containerColor = MaterialTheme.colorScheme.primary
-            contentColor = MaterialTheme.colorScheme.onPrimary
+    // State as a round icon in its tone: success, error, or a spinner while it runs.
+    val tone =
+        when (entry.state) {
+            LogState.SUCCESS -> Tone.Success
+            LogState.ERROR -> Tone.Destructive
+            LogState.IN_PROGRESS -> Tone.Neutral
         }
-        LogState.ERROR -> {
-            containerColor = MaterialTheme.colorScheme.error
-            contentColor = MaterialTheme.colorScheme.onError
-        }
-        LogState.IN_PROGRESS -> {
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        }
-    }
 
-    Surface(
-        shape = AcerolaShapes.Inner,
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(SpacingTokens.Medium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Surface(
-                shape = AcerolaShapes.Inner,
-                color = containerColor,
-                modifier = Modifier.size(SizeTokens.ClickTarget),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    when (entry.state) {
-                        LogState.IN_PROGRESS ->
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(SizeTokens.IconSmall),
-                                strokeWidth = 2.dp,
-                                color = contentColor,
-                            )
-                        LogState.SUCCESS ->
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = contentColor,
-                                modifier = Modifier.size(SizeTokens.IconMedium),
-                            )
-                        LogState.ERROR ->
-                            Icon(
-                                imageVector = Icons.Default.Error,
-                                contentDescription = null,
-                                tint = contentColor,
-                                modifier = Modifier.size(SizeTokens.IconMedium),
-                            )
+    Acerola.Component.SettingRow(
+        title = describeEntry(entry),
+        description = formatLogTimestamp(entry.timestamp),
+        leading = {
+            when (entry.state) {
+                LogState.IN_PROGRESS ->
+                    Box(
+                        modifier = Modifier.size(SizeTokens.ClickTargetSmall).clip(AcerolaShapes.Full).background(tone.colors().container),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Acerola.Component.Spinner(color = MaterialTheme.colorScheme.primary)
                     }
-                }
+                LogState.SUCCESS -> Acerola.Component.RoundIcon(icon = Icons.Default.CheckCircle, tone = tone)
+                LogState.ERROR -> Acerola.Component.RoundIcon(icon = Icons.Default.Error, tone = tone)
             }
-
-            Spacer(modifier = Modifier.width(SpacingTokens.Medium))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = describeEntry(entry),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
-                Text(
-                    text = formatLogTimestamp(entry.timestamp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
+        },
+    )
 }
 
 @Preview(name = "Light", showBackground = true)

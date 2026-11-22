@@ -4,22 +4,16 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Inbox
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,21 +24,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.EmptyState
 import br.acerola.comic.common.ux.component.ErrorKind
 import br.acerola.comic.common.ux.component.ErrorScreen
+import br.acerola.comic.common.ux.component.ScreenHeader
 import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.showSnackbar
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -96,36 +89,20 @@ fun Main.RemoteLibrary.Template.Screen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.title_sync_remote_library, uiState.peerDisplayName),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                    )
-                },
-                navigationIcon = {
-                    Acerola.Component.ActionIcon(
-                        icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        onClick = onBack,
-                        contentDescription = stringResource(id = R.string.description_icon_navigation_back),
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-            )
-        },
-    ) { paddingValues ->
+    // Brand header with back (the desktop's remote library dialog, full screen on the phone).
+    Column(modifier = Modifier.fillMaxSize().background(AcerolaExtendedTheme.colors.background)) {
+        Acerola.Component.ScreenHeader(
+            eyebrow = stringResource(id = R.string.label_sync_activity),
+            title = uiState.peerDisplayName,
+            lead = stringResource(id = R.string.title_sync_remote_library, uiState.peerDisplayName),
+            onBack = onBack,
+        )
         RemoteLibraryContent(
             uiState = uiState,
             justSyncedComicName = justSyncedComicName,
             onSelectComic = viewModel::syncComic,
             onRetry = viewModel::retry,
             onBack = onBack,
-            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -145,7 +122,7 @@ private fun RemoteLibraryContent(
             !uiState.loaded ->
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = SizeTokens.ComicGridMinSize),
-                    contentPadding = PaddingValues(all = SpacingTokens.Small),
+                    contentPadding = PaddingValues(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
                     verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                     horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                     userScrollEnabled = false,
@@ -156,7 +133,7 @@ private fun RemoteLibraryContent(
                                 Modifier
                                     .aspectRatio(2f / 3f)
                                     .clip(AcerolaShapes.Tile)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                                    .background(AcerolaExtendedTheme.colors.surface),
                         )
                     }
                 }
@@ -181,7 +158,7 @@ private fun RemoteLibraryContent(
             else ->
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = SizeTokens.ComicGridMinSize),
-                    contentPadding = PaddingValues(all = SpacingTokens.Small),
+                    contentPadding = PaddingValues(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
                     verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                     horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                 ) {

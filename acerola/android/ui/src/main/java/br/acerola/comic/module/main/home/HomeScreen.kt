@@ -16,38 +16,38 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.LayersClear
@@ -82,17 +82,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonSurface
+import br.acerola.comic.common.ux.component.ButtonVariant
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
 import br.acerola.comic.common.ux.component.EmptyState
-import br.acerola.comic.common.ux.component.FabGroup
-import br.acerola.comic.common.ux.component.FabGroupItem
+import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.SelectionAction
 import br.acerola.comic.common.ux.component.SelectionActionDock
 import br.acerola.comic.common.ux.component.SelectionTopBar
 import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.showSnackbar
-import br.acerola.comic.common.ux.theme.AcerolaDimens
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
@@ -128,6 +130,9 @@ import br.acerola.comic.util.p2p.PairingCode
 import kotlinx.coroutines.launch
 
 private val homeTopOverlayHeight = 56.dp
+
+// Toolbar under the search (filter, other device, layout, sync all), the desktop's home toolbar.
+private val homeToolbarHeight = 44.dp
 private val homeTopContentOffset = 6.dp
 private val mainBottomBarHeight = 64.dp
 private val selectionActionButtonHeight = 54.dp
@@ -360,10 +365,11 @@ private fun HomeScreenContent(
             } else {
                 topOverlayTopPadding
             }
-        val gridTopPadding = topOverlayTopPadding + homeTopOverlayHeight + SpacingTokens.Medium + homeTopContentOffset
+        val toolbarTopPadding = topOverlayTopPadding + homeTopOverlayHeight + SpacingTokens.Medium
+        val gridTopPadding = toolbarTopPadding + homeToolbarHeight + SpacingTokens.Medium + homeTopContentOffset
         val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         val bottomNavigationHeight = if (isLandscape) 0.dp else mainBottomBarHeight
-        val bottomSafeAreaPadding = maxOf(navBarHeight, bottomNavigationHeight)
+        val bottomSafeAreaPadding = navBarHeight + bottomNavigationHeight
         val selectionDockHeight = selectionActionButtonHeight + SpacingTokens.Small + SpacingTokens.Small
         val selectionDockBottomPadding = bottomSafeAreaPadding + SpacingTokens.Small
         val selectionDockGridPadding =
@@ -372,7 +378,7 @@ private fun HomeScreenContent(
             } else {
                 0.dp
             }
-        val fabGridPadding = 88.dp
+        val fabGridPadding = SpacingTokens.Large
         val gridBottomPadding =
             bottomSafeAreaPadding +
                 if (isSelectionMode) {
@@ -383,7 +389,8 @@ private fun HomeScreenContent(
 
         when {
             comicList == null -> LoadingSkeleton()
-            comicList.isEmpty() ->
+            // A search with no match keeps the search open ("Nenhum resultado"), not the empty library.
+            comicList.isEmpty() && searchQuery.isBlank() && !isSearchExpanded ->
                 EmptyState(
                     isIndexing = uiState.isIndexing,
                     hasFolder = hasFolder,
@@ -392,6 +399,54 @@ private fun HomeScreenContent(
                 )
             else -> {
                 Box(modifier = Modifier.fillMaxSize()) {
+                    // Solid top (`bg-background`, like the desktop topbar): the grid scrolls under it.
+                    Box(
+                        modifier =
+                            Modifier
+                                .align(Alignment.TopCenter)
+                                .zIndex(0.5f)
+                                .fillMaxWidth()
+                                .height(gridTopPadding - homeTopContentOffset)
+                                .background(AcerolaExtendedTheme.colors.background),
+                    )
+
+                    if (!isSelectionMode && !isSearchExpanded) {
+                        HomeToolbar(
+                            layout = uiState.layout,
+                            activeFilterCount =
+                                listOf(
+                                    filterSettings.showHidden,
+                                    filterSettings.bookmarkCategoryId != null,
+                                    filterSettings.metadataSource != null,
+                                ).count { it },
+                            onFilterClick = { showFilterSheet = true },
+                            onBrowseRemoteClick = {
+                                onLoadPairedPeers()
+                                showRemoteLibraryPeerPicker = true
+                            },
+                            onToggleLayout = {
+                                onAction(
+                                    HomeAction.UpdateLayout(
+                                        layout =
+                                            when (uiState.layout) {
+                                                HomeLayoutType.LIST -> HomeLayoutType.GRID
+                                                HomeLayoutType.GRID -> HomeLayoutType.LIST
+                                            },
+                                    ),
+                                )
+                            },
+                            onSyncAllClick = {
+                                onLoadPairedPeers()
+                                showSyncAllPeerPicker = true
+                            },
+                            modifier =
+                                Modifier
+                                    .align(Alignment.TopStart)
+                                    .zIndex(1f)
+                                    .padding(top = toolbarTopPadding),
+                        )
+                    }
+
                     if (!isSelectionMode) {
                         Main.Home.Component.HomeSearchBar(
                             query = searchQuery,
@@ -410,8 +465,19 @@ private fun HomeScreenContent(
                                     .zIndex(1f)
                                     .fillMaxWidth(if (isLandscape) 0.7f else 1f)
                                     .padding(
-                                        start = if (isLandscape) SizeTokens.LandscapeSidePadding else SpacingTokens.Small,
-                                        end = if (isLandscape) SizeTokens.LandscapeSidePadding else SpacingTokens.Small,
+                                        // Open, the search covers the whole width (the field keeps its own inset).
+                                        start =
+                                            when {
+                                                isSearchExpanded -> SpacingTokens.None
+                                                isLandscape -> SizeTokens.LandscapeSidePadding
+                                                else -> SpacingTokens.Small
+                                            },
+                                        end =
+                                            when {
+                                                isSearchExpanded -> SpacingTokens.None
+                                                isLandscape -> SizeTokens.LandscapeSidePadding
+                                                else -> SpacingTokens.Small
+                                            },
                                         top = searchBarTopPadding,
                                     ),
                         )
@@ -464,9 +530,9 @@ private fun HomeScreenContent(
                         horizontalArrangement = Arrangement.spacedBy(space = SpacingTokens.Small),
                         contentPadding =
                             PaddingValues(
-                                start = SpacingTokens.Small,
+                                start = SpacingTokens.Large,
                                 top = gridTopPadding,
-                                end = SpacingTokens.Small,
+                                end = SpacingTokens.Large,
                                 bottom = gridBottomPadding,
                             ),
                     ) {
@@ -551,78 +617,6 @@ private fun HomeScreenContent(
                     }
                 }
             }
-        }
-
-        if (!isSelectionMode) {
-            Acerola.Component.FabGroup(
-                modifier = Modifier.padding(bottom = bottomSafeAreaPadding),
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(id = R.string.description_icon_home_floating_tool_hub),
-                    )
-                },
-                items =
-                    listOf(
-                        FabGroupItem(
-                            onClick = {
-                                onAction(
-                                    HomeAction.UpdateLayout(
-                                        layout =
-                                            when (uiState.layout) {
-                                                HomeLayoutType.LIST -> HomeLayoutType.GRID
-                                                HomeLayoutType.GRID -> HomeLayoutType.LIST
-                                            },
-                                    ),
-                                )
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector =
-                                        if (uiState.layout == HomeLayoutType.GRID) {
-                                            Icons.AutoMirrored.Filled.ViewList
-                                        } else {
-                                            Icons.Default.GridView
-                                        },
-                                    contentDescription = stringResource(id = R.string.description_icon_home_change_layout),
-                                )
-                            },
-                        ),
-                        FabGroupItem(
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Default.FilterList,
-                                    contentDescription = stringResource(id = R.string.description_icon_home_filter),
-                                )
-                            },
-                            onClick = { showFilterSheet = true },
-                        ),
-                        FabGroupItem(
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Rounded.PhoneAndroid,
-                                    contentDescription = stringResource(id = R.string.description_icon_home_browse_remote_library),
-                                )
-                            },
-                            onClick = {
-                                onLoadPairedPeers()
-                                showRemoteLibraryPeerPicker = true
-                            },
-                        ),
-                        FabGroupItem(
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Default.Sync,
-                                    contentDescription = stringResource(id = R.string.description_icon_home_sync_all_peer),
-                                )
-                            },
-                            onClick = {
-                                onLoadPairedPeers()
-                                showSyncAllPeerPicker = true
-                            },
-                        ),
-                    ),
-            )
         }
 
         if (showRemoteLibraryPeerPicker) {
@@ -772,16 +766,12 @@ private fun HomeScreenContent(
                                 onHideSelectedComics()
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold,
                     )
                 },
                 dismissButtonContent = {
                     Acerola.Component.DialogButton(
                         text = stringResource(id = R.string.action_cancel),
                         onClick = { showBatchHideDialog = false },
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 content = {
@@ -807,16 +797,13 @@ private fun HomeScreenContent(
                             showBatchDeleteDialog = false
                             onDeleteSelectedComics()
                         },
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                        fontWeight = FontWeight.Bold,
+                        variant = ButtonVariant.Destructive,
                     )
                 },
                 dismissButtonContent = {
                     Acerola.Component.DialogButton(
                         text = stringResource(id = R.string.action_cancel),
                         onClick = { showBatchDeleteDialog = false },
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 content = { Text(text = stringResource(id = R.string.dialog_batch_delete_message, selectedComicIds.size)) },
@@ -830,21 +817,18 @@ private fun HomeScreenContent(
                 title = stringResource(id = R.string.dialog_batch_clear_metadata_title, selectedComicIds.size),
                 confirmButtonContent = {
                     Acerola.Component.DialogButton(
-                        text = stringResource(id = R.string.action_clear_metadata),
+                        text = stringResource(id = R.string.action_comic_preferences_clear),
                         onClick = {
                             showBatchClearMetadataDialog = false
                             onClearMetadataForSelectedComics()
                         },
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                        fontWeight = FontWeight.Bold,
+                        variant = ButtonVariant.Destructive,
                     )
                 },
                 dismissButtonContent = {
                     Acerola.Component.DialogButton(
                         text = stringResource(id = R.string.action_cancel),
                         onClick = { showBatchClearMetadataDialog = false },
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 content = { Text(text = stringResource(id = R.string.dialog_batch_clear_metadata_message, selectedComicIds.size)) },
@@ -861,6 +845,68 @@ private fun HomeScreenContent(
                 onFilterChange = onUpdateFilterSettings,
             )
         }
+    }
+}
+
+// Desktop home toolbar: "Filter and sort" (with the active filter count) and "Browse another
+// device" as secondary pills, then layout and sync-all as round buttons. Scrolls sideways on narrow
+// screens instead of squeezing the labels.
+@Composable
+private fun HomeToolbar(
+    layout: HomeLayoutType,
+    activeFilterCount: Int,
+    onFilterClick: () -> Unit,
+    onBrowseRemoteClick: () -> Unit,
+    onToggleLayout: () -> Unit,
+    onSyncAllClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = SpacingTokens.Large),
+        horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box {
+            Acerola.Component.Button(
+                text = stringResource(id = R.string.action_home_filter),
+                onClick = onFilterClick,
+                variant = ButtonVariant.Secondary,
+                icon = Icons.Default.Tune,
+            )
+            if (activeFilterCount > 0) {
+                Text(
+                    text = activeFilterCount.toString(),
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .size(20.dp)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .wrapContentSize(Alignment.Center),
+                )
+            }
+        }
+        Acerola.Component.Button(
+            text = stringResource(id = R.string.action_home_browse_remote),
+            onClick = onBrowseRemoteClick,
+            variant = ButtonVariant.Secondary,
+            icon = Icons.Rounded.PhoneAndroid,
+        )
+        Acerola.Component.IconButton(
+            icon = if (layout == HomeLayoutType.GRID) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+            contentDescription = stringResource(id = R.string.description_icon_home_change_layout),
+            onClick = onToggleLayout,
+        )
+        Acerola.Component.IconButton(
+            icon = Icons.Default.Sync,
+            contentDescription = stringResource(id = R.string.description_icon_home_sync_all_peer),
+            onClick = onSyncAllClick,
+        )
     }
 }
 
@@ -905,27 +951,27 @@ private fun EmptyState(
             title = stringResource(id = R.string.description_text_home_empty_state),
             hint = stringResource(id = R.string.description_text_home_empty_subtitle),
         ) {
-            Button(
+            Acerola.Component.ButtonSurface(
                 onClick = { if (hasFolder) onQuickSync() else launcher.launch(null) },
-                shape = AcerolaShapes.Full,
-                modifier = Modifier.heightIn(min = AcerolaDimens.ControlHeight),
+                variant = ButtonVariant.Primary,
             ) {
-                Icon(
-                    imageVector = if (hasFolder) Icons.Default.Refresh else Icons.Default.FolderOpen,
-                    contentDescription = null,
-                    modifier =
-                        Modifier
-                            .size(18.dp)
-                            .graphicsLayer { rotationZ = if (hasFolder && isIndexing) angle else 0f },
-                )
-                Spacer(modifier = Modifier.width(SpacingTokens.Small))
-                Text(
-                    text =
-                        stringResource(
-                            id = if (hasFolder) R.string.action_home_quick_sync else R.string.action_home_select_folder,
-                        ),
-                    style = MaterialTheme.typography.labelLarge,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                    Icon(
+                        imageVector = if (hasFolder) Icons.Default.Refresh else Icons.Default.FolderOpen,
+                        contentDescription = null,
+                        modifier =
+                            Modifier
+                                .size(18.dp)
+                                .graphicsLayer { rotationZ = if (hasFolder && isIndexing) angle else 0f },
+                    )
+                    Text(
+                        text =
+                            stringResource(
+                                id = if (hasFolder) R.string.action_home_quick_sync else R.string.action_home_select_folder,
+                            ),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
             }
         }
     }
@@ -955,7 +1001,7 @@ private fun LoadingSkeleton() {
                                 .aspectRatio(2f / 3f)
                                 .graphicsLayer { alpha = pulse }
                                 .clip(AcerolaShapes.Tile)
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                                .background(AcerolaExtendedTheme.colors.surface),
                     )
                 }
             }

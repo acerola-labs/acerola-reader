@@ -2,7 +2,6 @@ package br.acerola.comic.module.main.home.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,8 +40,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.BookmarkRibbon
+import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.ImageCard
 import br.acerola.comic.common.ux.theme.AcerolaColors
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
@@ -148,7 +148,7 @@ fun Main.Home.Component.ComicGridItem(
                         .fillMaxWidth()
                         .height(40.dp)
                         .align(Alignment.BottomCenter)
-                        .clip(AcerolaShapes.Inner.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
+                        .clip(AcerolaShapes.Tile.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(Color.Transparent, AcerolaColors.Scrim.copy(alpha = 0.5f)),
@@ -215,8 +215,8 @@ fun Main.Home.Component.ComicGridItem(
                             Modifier
                                 .fillMaxSize()
                                 .padding(top = SpacingTokens.Small)
-                                .clip(AcerolaShapes.Inner)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+                                .clip(AcerolaShapes.Tile)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Box(
@@ -243,22 +243,15 @@ fun Main.Home.Component.ComicGridItem(
                             Modifier
                                 .fillMaxSize()
                                 .padding(top = SpacingTokens.Small)
-                                .clip(AcerolaShapes.Inner)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f)),
+                                .clip(AcerolaShapes.Tile)
+                                .background(AcerolaColors.Scrim.copy(alpha = 0.5f)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Box(
                             modifier =
                                 Modifier
-                                    .size(36.dp)
-                                    .background(
-                                        color = AcerolaColors.Scrim.copy(alpha = 0.3f),
-                                        shape = CircleShape,
-                                    ).border(
-                                        width = 2.dp,
-                                        color = AcerolaColors.OnScrim.copy(alpha = 0.8f),
-                                        shape = CircleShape,
-                                    ),
+                                    .size(40.dp)
+                                    .background(color = AcerolaColors.OnScrim.copy(alpha = 0.2f), shape = CircleShape),
                         )
                     }
                 }
@@ -272,8 +265,8 @@ fun Main.Home.Component.ComicGridItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = SpacingTokens.ExtraSmall),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = AcerolaExtendedTheme.colors.foreground,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Black),
         )
 
         Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
@@ -294,7 +287,7 @@ fun Main.Home.Component.ComicGridItem(
                     Text(
                         text = score.toString(),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = AcerolaExtendedTheme.colors.mutedForeground,
                     )
                 }
 
@@ -302,13 +295,13 @@ fun Main.Home.Component.ComicGridItem(
                     Icon(
                         imageVector = Icons.Rounded.AutoStories,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = AcerolaExtendedTheme.colors.mutedForeground,
                         modifier = Modifier.size(14.dp),
                     )
                     Text(
                         text = chapterCount.toString(),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = AcerolaExtendedTheme.colors.mutedForeground,
                     )
                 }
 
@@ -317,7 +310,7 @@ fun Main.Home.Component.ComicGridItem(
                         Text(
                             text = "•",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.outline,
+                            color = AcerolaExtendedTheme.colors.mutedForeground,
                         )
                     }
                     Text(
@@ -328,10 +321,12 @@ fun Main.Home.Component.ComicGridItem(
                 }
             }
 
-            Acerola.Component.ActionIcon(
+            Acerola.Component.IconButton(
                 icon = Icons.Default.MoreVert,
                 onClick = onShowActions,
                 contentDescription = stringResource(id = R.string.description_icon_chapter_more_options),
+                variant = ButtonVariant.Ghost,
+                size = 36.dp,
             )
         }
     }

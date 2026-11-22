@@ -32,6 +32,7 @@ import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ImageCard
 import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
@@ -119,8 +120,8 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = SpacingTokens.ExtraSmall),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = AcerolaExtendedTheme.colors.foreground,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Black),
         )
 
         Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
@@ -140,13 +141,13 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
                 Icon(
                     imageVector = Icons.Rounded.AutoStories,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = AcerolaExtendedTheme.colors.mutedForeground,
                     modifier = Modifier.size(SizeTokens.IconExtraSmall),
                 )
                 Text(
                     text = chapterCount.toString(),
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AcerolaExtendedTheme.colors.mutedForeground,
                 )
             }
 
@@ -154,12 +155,12 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
                 state = syncState,
                 containerSize = SizeTokens.ClickTargetSmall,
                 iconSize = SizeTokens.IconSmall,
-                defaultBackground = MaterialTheme.colorScheme.surfaceVariant,
             ) {
                 Icon(
                     imageVector = Icons.Default.Sync,
                     contentDescription = stringResource(id = R.string.action_sync_comic_with_peer),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(SizeTokens.IconSmall),
                 )
             }
         }
