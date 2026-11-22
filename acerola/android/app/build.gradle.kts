@@ -25,17 +25,21 @@ android {
     val localProps =
         Properties().apply {
             val file = rootProject.file("local.properties")
-            if (file.exists()) load(file.inputStream())
+            if (file.exists()) file.inputStream().use { load(it) }
         }
 
-    fun localOrEnv(key: String) = localProps.getProperty(key) ?: System.getenv(key)
+    // Local build reads local.properties (lowercase, dotted); CI reads the environment (secrets).
+    fun localOrEnv(
+        localKey: String,
+        envKey: String,
+    ) = localProps.getProperty(localKey) ?: System.getenv(envKey)
 
     signingConfigs {
         create("release") {
-            storeFile = file(localOrEnv("KEYSTORE_PATH") ?: "acerola")
-            storePassword = localOrEnv("KEYSTORE_PASSWORD")
-            keyPassword = localOrEnv("KEY_PASSWORD")
-            keyAlias = localOrEnv("KEY_ALIAS")
+            storeFile = file(localOrEnv("keystore.dir", "KEYSTORE_PATH") ?: "acerola")
+            storePassword = localOrEnv("keystore.password", "KEYSTORE_PASSWORD")
+            keyPassword = localOrEnv("key.password", "KEY_PASSWORD")
+            keyAlias = localOrEnv("key.alias", "KEY_ALIAS")
         }
     }
 
