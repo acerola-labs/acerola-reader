@@ -1,17 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// IMPORTANT: the webServer below runs `wrangler dev`, NOT `npm run dev` or
-// `npm run preview`. This is deliberate:
+// IMPORTANT: the webServer below runs the production server (`node build`), NOT
+// `npm run dev` or `npm run preview`. This is deliberate:
 //   - `search-dialog.svelte` shows an "unavailable" placeholder whenever
 //     `import.meta.env.DEV` is true, skipping Pagefind entirely in dev mode.
-//   - The Pagefind index (`pagefind.js` + data files) is built directly into
-//     `.svelte-kit/cloudflare/pagefind` (`pagefind --site .svelte-kit/cloudflare
-//     --output-subdir pagefind`, part of the `build` script) — that's also the exact
-//     directory `wrangler.toml`'s `[assets] directory` serves in production.
-//   - `vite preview` does NOT serve from `.svelte-kit/cloudflare` (it serves the
-//     adapter-agnostic `.svelte-kit/output/client`), so it 404s on `/pagefind/*` even
-//     after a real build — only `wrangler dev` reproduces the actual Cloudflare Worker
-//     asset serving locally, pagefind included.
+//   - The Pagefind index (`pagefind.js` + data files) is built into
+//     `build/client/pagefind` (`pagefind --site build/prerendered --output-path
+//     build/client/pagefind`, part of the `build` script) — the static directory the
+//     Node server serves in production.
+//   - `vite preview` serves the adapter-agnostic `.svelte-kit/output/client`, so it
+//     404s on `/pagefind/*` even after a real build — only `node build` serves exactly
+//     what production does, pagefind included.
 // So a real `npm run build` must happen before `npx playwright test` for the search
 // spec to have anything real to hit.
 export default defineConfig({
@@ -40,7 +39,8 @@ export default defineConfig({
 		}
 	},
 	webServer: {
-		command: 'npx wrangler dev --port 5173',
+		command: 'node build',
+		env: { HOST: '127.0.0.1', PORT: '5173' },
 		url: 'http://127.0.0.1:5173',
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000

@@ -16,7 +16,7 @@ export default {
 		'playwright-report',
 		'mutants.out',
 		'mutants.out.old',
-		'.svelte-kit/cloudflare',
+		'build',
 		'.wrangler'
 	],
 	mutate: [
