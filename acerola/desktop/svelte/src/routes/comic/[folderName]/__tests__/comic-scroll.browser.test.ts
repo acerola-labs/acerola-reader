@@ -112,7 +112,8 @@ class MockIntersectionObserver {
 describe('ComicPage Scroll Integration', () => {
 	const TOTAL_CHAPTERS = 1000;
 	const RENDER_CHUNK_SIZE = 25;
-	const ITEM_HEIGHT = 112;
+	// Same slot height as ITEM_HEIGHT in acerola-comic-chapter-list.svelte (item + gap).
+	const ITEM_HEIGHT = 80;
 
 	let rustEventEmitter:
 		((event: { payload: ReturnType<typeof generateChaptersPayload> }) => void) | undefined;
