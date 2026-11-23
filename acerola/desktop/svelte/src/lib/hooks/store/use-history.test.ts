@@ -3,9 +3,10 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'svelte-sonner';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { HISTORY_COMMANDS } from '$lib/contracts/history/history.commands';
-import type { ReadingHistoryPayload } from '$lib/contracts/history/history.payloads';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
+import type { ReadingHistoryPayload } from '#lib/contracts/history/history.payloads.ts';
+import { m } from '#lib/paraglide/messages.js';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useHistory } from './use-history.svelte';
 
@@ -106,7 +107,7 @@ describe('useHistory', () => {
 
 		expect(hook.loading).toBe(false);
 		expect(toast.error).toHaveBeenCalledWith('backend offline');
-		expect(notificationStore.notifications[0]?.message).toBe('Erro ao carregar histórico');
+		expect(notificationStore.notifications[0]?.message).toBe(m['hooks.history.error.load']());
 	});
 
 	it('clears history successfully', async () => {
@@ -128,7 +129,7 @@ describe('useHistory', () => {
 		await hook.clear();
 
 		expect(toast.error).toHaveBeenCalledWith('cannot clear');
-		expect(notificationStore.notifications[0]?.message).toBe('Erro ao limpar histórico');
+		expect(notificationStore.notifications[0]?.message).toBe(m['hooks.history.error.clear']());
 	});
 
 	it('updates reading progress', async () => {
@@ -188,7 +189,9 @@ describe('useHistory', () => {
 		invokeMock.mockRejectedValueOnce('failed to unmark');
 		const hook = await renderHook();
 
-		await expect(hook.unmarkChapterRead('comic-1', 'chapter-1')).rejects.toBe('failed to unmark');
+		await expect(hook.unmarkChapterRead('comic-1', 'chapter-1')).rejects.toBe(
+			'failed to unmark'
+		);
 		expect(toast.error).toHaveBeenCalledWith('failed to unmark');
 	});
 

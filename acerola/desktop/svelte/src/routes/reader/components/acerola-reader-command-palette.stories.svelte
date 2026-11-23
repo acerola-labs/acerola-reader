@@ -3,7 +3,7 @@
 	import AcerolaReaderCommandPalette from './acerola-reader-command-palette.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderCommandPalette',
+		title: 'Pages/Reader/AcerolaReaderCommandPalette',
 		component: AcerolaReaderCommandPalette,
 		tags: ['autodocs'],
 		argTypes: {
@@ -15,9 +15,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaReaderCommandPalette e totalmente controlado (state.open + events.onOpenChange) e
-	// nao tem trigger proprio — cada story precisa do seu proprio estado local e de um botao
-	// real pra abrir, senao a aba Docs mostra as variantes com a palette aberta ao mesmo tempo.
+	// AcerolaReaderCommandPalette is fully controlled (state.open + events.onOpenChange) and has
+	// no trigger of its own — each story needs its own local state and a real button to open
+	// it, otherwise the Docs tab shows the variants with the palette open at the same time.
 	let value = $state('');
 	let openDefault = $state(false);
 	let readingMode = $state<'vertical' | 'horizontal' | 'webtoon'>('vertical');
@@ -47,11 +47,11 @@
 </script>
 
 <Story name="Open" asChild>
-	<div class="relative h-96 overflow-hidden rounded-lg border border-surface/40 bg-base">
+	<div class="relative h-96 overflow-hidden rounded-card bg-background">
 		<button
 			type="button"
 			onclick={() => (openDefault = true)}
-			class="bg-surface-elevated m-4 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+			class="m-4 rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 		>
 			Open Command Palette
 		</button>
@@ -64,11 +64,11 @@
 </Story>
 
 <Story name="Zoom Mode Active" asChild>
-	<div class="relative h-96 overflow-hidden rounded-lg border border-surface/40 bg-base">
+	<div class="relative h-96 overflow-hidden rounded-card bg-background">
 		<button
 			type="button"
 			onclick={() => (openZoomMode = true)}
-			class="bg-surface-elevated m-4 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+			class="m-4 rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 		>
 			Open Command Palette
 		</button>
@@ -81,7 +81,7 @@
 </Story>
 
 <Story name="Closed" asChild>
-	<div class="relative h-64 overflow-hidden rounded-lg border border-surface/40 bg-base">
+	<div class="relative h-64 overflow-hidden rounded-card bg-background">
 		<AcerolaReaderCommandPalette
 			data={{ zoomMode: false }}
 			state={{ open: false, value: '', readingMode: 'vertical' }}

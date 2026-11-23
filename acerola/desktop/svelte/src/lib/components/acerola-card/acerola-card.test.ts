@@ -9,7 +9,9 @@ describe('AcerolaCard', () => {
 	});
 
 	it('renders the description when provided', () => {
-		render(AcerolaCard, { props: { data: { title: 'Berserk', description: 'Kentaro Miura' } } });
+		render(AcerolaCard, {
+			props: { data: { title: 'Berserk', description: 'Kentaro Miura' } }
+		});
 		expect(screen.getByText('Kentaro Miura')).toBeInTheDocument();
 	});
 

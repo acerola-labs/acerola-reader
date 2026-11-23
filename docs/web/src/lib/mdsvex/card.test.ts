@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import Card from './card.svelte';
-import GithubIcon from '$lib/icons/github.svelte';
+import GithubIcon from '#lib/icons/github.svelte';
 
 function bodySnippet(text: string) {
 	return createRawSnippet(() => ({
@@ -41,7 +41,7 @@ describe('Card (mdsvex)', () => {
 
 	it('opens external links in a new tab without leaking a referrer', () => {
 		render(Card, {
-			props: { title: 'Storybook', href: 'https://storybook-web.acerola.app' }
+			props: { title: 'Storybook', href: 'https://storybook-web.reader.acerola.app' }
 		});
 
 		const link = screen.getByRole('link');
@@ -56,10 +56,18 @@ describe('Card (mdsvex)', () => {
 	});
 
 	it('renders the icon before the title when provided', () => {
-		const { container } = render(Card, { props: { title: 'Getting Started', icon: GithubIcon } });
+		const { container } = render(Card, {
+			props: { title: 'Getting Started', icon: GithubIcon }
+		});
 
-		const titleEl = screen.getByText('Getting Started').closest('[data-slot="card-title"]');
-		expect(titleEl?.querySelector('svg')).toBeInTheDocument();
+		const card = screen.getByText('Getting Started').closest('[data-slot="card"]');
+		const icon = card?.querySelector('svg');
+		expect(icon).toBeInTheDocument();
+		// The icon comes before the title in document order.
+		expect(
+			icon!.compareDocumentPosition(screen.getByText('Getting Started')) &
+				Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
 	});
 
 	it('omits the icon element entirely when none is provided', () => {
@@ -74,5 +82,13 @@ describe('Card (mdsvex)', () => {
 		});
 
 		expect(container.querySelector('[data-slot="card"]')).toHaveClass('my-custom-card');
+	});
+
+	it('renders the badge when provided', () => {
+		render(Card, {
+			props: { title: 'acerola/android', badge: 'Android' }
+		});
+
+		expect(screen.getByText('Android')).toBeInTheDocument();
 	});
 });

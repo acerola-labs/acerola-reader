@@ -12,25 +12,25 @@ import coil.fetch.Fetcher.Factory
 import coil.request.Options
 
 /**
- * Fetcher customizado do Coil para interceptar requisições de imagens locais do nosso leitor.
+ * Custom Coil fetcher that intercepts our reader's local image requests.
  *
- * **Por que isso existe?**
- * Nossas páginas de mangá/comic não são arquivos soltos no sistema de arquivos. Elas estão
- * embutidas dentro de arquivos compactados (ex: .cbz, .zip). O Coil nativamente não sabe como
- * extrair e carregar uma página específica de dentro de um ZIP.
+ * **Why does this exist?**
+ * Our manga/comic pages are not loose files on the file system. They are
+ * embedded inside compressed archives (e.g. .cbz, .zip). Coil natively does not know how
+ * to extract and load a specific page from inside a ZIP.
  *
- * **Como resolvemos:**
- * Criamos este "Plugin" pro Coil. Sempre que a UI pedir uma imagem usando nosso esquema customizado
- * (ex: "acerola://page/comicId/chapterId/5"), o Coil delega o trabalho pesado de decodificação
- * para este Fetcher, que por sua vez chama o [ReaderProcessor].
+ * **How we solve it:**
+ * We created this Coil "plugin". Whenever the UI asks for an image using our custom scheme
+ * (e.g. "acerola://page/comicId/chapterId/5"), Coil delegates the heavy decoding work
+ * to this Fetcher, which in turn calls [ReaderProcessor].
  *
- * **Vantagens Arquiteturais:**
- * 1. **Isolamento da UI:** A UI (Módulo de UI / Jetpack Compose) não precisa saber como um arquivo .cbz
- *    é extraído. Ela apenas pede para desenhar uma URL usando o `AsyncImage` do Coil.
- * 2. **Prevenção de OOM (Out Of Memory):** Não carregamos o Bitmap inteiro na ViewModel (isso estouraria a RAM).
- *    Deixamos que o Coil gerencie o ciclo de vida, decodificação em background e descarte do Bitmap quando
- *    a página sair da tela.
- * 3. **Cache Inteligente:** Aproveitamos todo o sistema de cache de memória em múltiplos níveis nativo do Coil.
+ * **Architectural advantages:**
+ * 1. **UI isolation:** The UI (UI module / Jetpack Compose) does not need to know how a .cbz file
+ *    is extracted. It just asks to draw a URL using Coil's `AsyncImage`.
+ * 2. **OOM (Out Of Memory) prevention:** We do not load the whole Bitmap in the ViewModel (that would blow the RAM).
+ *    We let Coil manage the lifecycle, background decoding and disposal of the Bitmap when
+ *    the page leaves the screen.
+ * 3. **Smart caching:** We take advantage of Coil's whole native multi-level memory cache system.
  *
  * @see PageFetcherFactory
  */
@@ -39,8 +39,8 @@ class PageFetcher(
     private val readerProcessor: ReaderProcessor,
 ) : Fetcher {
     override suspend fun fetch(): FetchResult? {
-        // O ReaderProcessor vai no disco, abre o arquivo (ex: ZIP/CBZ), extrai os bytes
-        // da página solicitada e decodifica para um Bitmap (com otimizações).
+        // ReaderProcessor goes to disk, opens the archive (e.g. ZIP/CBZ), extracts the bytes
+        // of the requested page and decodes them into a Bitmap (with optimizations).
         val result = readerProcessor.loadPage(pageIndex)
 
         return result.fold(
@@ -57,12 +57,12 @@ class PageFetcher(
 }
 
 /**
- * Factory responsável por registrar o [PageFetcher] no ImageLoader global do app.
+ * Factory responsible for registering [PageFetcher] in the app's global ImageLoader.
  *
- * **Fluxo de execução:**
- * 1. A UI chama `AsyncImage(model = "acerola://page/1/1/5")`.
- * 2. O Coil identifica o scheme "acerola" e host "page" e cai nesta factory.
- * 3. A factory extrai o índice da página da URL (ex: 5) e instancia o [PageFetcher].
+ * **Execution flow:**
+ * 1. The UI calls `AsyncImage(model = "acerola://page/1/1/5")`.
+ * 2. Coil identifies the "acerola" scheme and "page" host and lands in this factory.
+ * 3. The factory extracts the page index from the URL (e.g. 5) and instantiates [PageFetcher].
  */
 class PageFetcherFactory(
     private val readerProcessor: ReaderProcessor,
@@ -72,13 +72,13 @@ class PageFetcherFactory(
         options: Options,
         imageLoader: ImageLoader,
     ): Fetcher? {
-        // Ignora requisições que não pertençam ao nosso leitor
+        // Ignores requests that do not belong to our reader
         if (data.scheme != "acerola" || data.host != "page") return null
 
         val segments = data.pathSegments
         if (segments.size < 3) return null
 
-        // Tenta extrair o índice da página a partir da URL
+        // Tries to extract the page index from the URL
         val pageIndex = segments[2].toIntOrNull() ?: return null
 
         return PageFetcher(pageIndex, readerProcessor)

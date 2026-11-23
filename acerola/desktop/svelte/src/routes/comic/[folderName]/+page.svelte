@@ -1,46 +1,48 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 
-	import { ToggleGroupItem } from '$lib/components/ui/toggle-group/index';
+	import { ToggleGroupItem } from '#lib/components/ui/toggle-group/index.ts';
 
-	import { useVolumeViewMode } from '$lib/hooks/preferences/use-volume-view-mode.svelte';
-	import { useComicChapters } from '$lib/hooks/store/use-comic-chapters.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { useChapterSelection } from '$lib/hooks/store/use-chapter-selection.svelte';
-	import { useHistory } from '$lib/hooks/store/use-history.svelte';
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync, SyncDirection } from '$lib/hooks/store/use-network-sync.svelte';
-	import AcerolaPeerPicker from '$lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import { useVolumeViewMode } from '#lib/hooks/preferences/use-volume-view-mode.svelte.ts';
+	import { useComicChapters } from '#lib/hooks/store/use-comic-chapters.svelte.ts';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { useChapterSelection } from '#lib/hooks/store/use-chapter-selection.svelte.ts';
+	import { useHistory } from '#lib/hooks/store/use-history.svelte.ts';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type {
+		useNetworkSync,
+		SyncDirection
+	} from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import AcerolaPeerPicker from '#lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 
-	import { useComicContext } from '$lib/state/comic-context.svelte';
-	import { useMetadataSync } from '$lib/hooks/store/use-metadata-sync.svelte';
+	import { useComicContext } from '#lib/state/comic-context.svelte.ts';
+	import { useMetadataSync } from '#lib/hooks/store/use-metadata-sync.svelte.ts';
 
-	import { resolveArtworkPath, resolveBanner, resolveCover } from '$lib/utils/artwork.utils';
-	import { bumpArtworkVersion } from '$lib/state/artwork-version.svelte';
-	import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+	import { resolveArtworkPath, resolveBanner, resolveCover } from '#lib/utils/artwork.util.ts';
+	import { bumpArtworkVersion } from '#lib/state/artwork-version.svelte.ts';
+	import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 	import { invoke } from '@tauri-apps/api/core';
-	import { HOME_COMMANDS } from '$lib/contracts/home/home.commands';
-	import { HISTORY_COMMANDS } from '$lib/contracts/history/history.commands';
-	import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
+	import { HOME_COMMANDS } from '#lib/contracts/home/home.commands.ts';
+	import { HISTORY_COMMANDS } from '#lib/contracts/history/history.commands.ts';
+	import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
 
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
-	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import ArrowUpDown from '@lucide/svelte/icons/arrow-up-down';
 	import Check from '@lucide/svelte/icons/check';
 	import Share2 from '@lucide/svelte/icons/share-2';
 
 	import { getContext, onMount, untrack } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { m } from '$lib/paraglide/messages';
-	import { extractErrorMessage } from '$lib/utils/error.utils';
-	import { toastAsync } from '$lib/utils/toast-async.utils';
-	import { slidingIndicator } from '$lib/utils/sliding-indicator.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import { toastAsync } from '#lib/utils/toast-async.util.ts';
+	import { slidingIndicator } from '#lib/utils/sliding-indicator.util.ts';
 
 	import ComicChapterList, { type Chapter } from './components/acerola-comic-chapter-list.svelte';
 	import ComicHeroBanner from './components/acerola-comic-hero-banner.svelte';
@@ -55,9 +57,9 @@
 	const activeComic = useComicContext();
 	const chapterStore = useComicChapters();
 
-	// INFO: Tamanho do bloco só pra virtualização de renderização — não tem
-	// mais relação com quantos capítulos são buscados do backend (isso agora
-	// vem tudo de uma vez, ver use-comic-chapters.svelte.ts).
+	// INFO: Chunk size only for render virtualization — it no longer relates to how
+	// many chapters are fetched from the backend (that now comes all at once, see
+	// use-comic-chapters.svelte.ts).
 	const RENDER_CHUNK_SIZE = 25;
 
 	const volumeViewPreference = useVolumeViewMode();
@@ -66,11 +68,11 @@
 	const chapterSelection = useChapterSelection();
 	const historyActions = useHistory();
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. Ver `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` pro porquê: uma
-	// instância só-desta-página, desmontada ao navegar pra outra tela, rejeitava promises de
-	// sync em andamento (`p2pSync.syncComic`) com "sync cancelled: listener stopped" mesmo o
-	// sync de verdade continuando no backend.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. See `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` for why: a
+	// page-only instance, unmounted when navigating to another screen, rejected in-flight sync
+	// promises (`p2pSync.syncComic`) with "sync cancelled: listener stopped" even though the
+	// real sync kept going in the backend.
 	const p2pSync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 
 	let expandedVolumeId = $state<string | null>(null);
@@ -84,13 +86,13 @@
 	let showSortMenu = $state(false);
 	let sendToPeerPickerOpen = $state(false);
 
-	// Bumped pelo efeito de sync P2P abaixo — lido (não escrito) pelo efeito de busca de
-	// capítulos, só pra forçar um re-fetch quando um sync relevante a este quadrinho termina.
+	// Bumped by the P2P sync effect below — read (not written) by the chapter fetch effect,
+	// only to force a re-fetch when a sync relevant to this comic finishes.
 	let syncRefreshTrigger = $state(0);
 
-	// Loading de cada ação de arquivo/capa — sem isso o ícone de refresh não tinha NENHUM
-	// feedback visual de que a ação (que pode demorar, ex. reescanear um quadrinho grande)
-	// estava rodando.
+	// Loading state of each file/cover action — without it the refresh icon had NO visual
+	// feedback that the action (which may take a while, e.g. rescanning a large comic) was
+	// running.
 	let rescanning = $state(false);
 	let regeneratingCover = $state(false);
 	let regeneratingVolumeCovers = $state(false);
@@ -204,13 +206,13 @@
 		chapterSelection.exitSelectionMode();
 	}
 
-	/// Envia o(s) ARQUIVO(S) do(s) capítulo(s) atualmente selecionado(s) pra um peer escolhido
-	/// no `AcerolaPeerPicker` — mesma seleção usada por `handleBatchMarkRead`/
-	/// `handleBatchMarkUnread`, então funciona tanto pra um capítulo só (seleção de 1) quanto
-	/// pra vários de uma vez. Usa `syncComic` (não `syncHistoryEntry`) escopado a esses
-	/// capítulos: diferente do push de histórico (só progresso/"lido"), isso manda o `.cbz`/
-	/// `.cbr` de verdade e cria o quadrinho no destino se ele ainda não existir lá. Direção
-	/// sempre `push`: quem clica "Enviar" está mandando pro peer, nunca puxando dele.
+	/// Sends the FILE(S) of the currently selected chapter(s) to a peer picked in
+	/// `AcerolaPeerPicker` — same selection used by `handleBatchMarkRead`/
+	/// `handleBatchMarkUnread`, so it works both for a single chapter (selection of 1) and for
+	/// several at once. Uses `syncComic` (not `syncHistoryEntry`) scoped to those chapters:
+	/// unlike the history push (progress/"read" only), this sends the actual `.cbz`/`.cbr` and
+	/// creates the comic on the target if it doesn't exist there yet. Direction is always
+	/// `push`: whoever clicks "Send" is sending to the peer, never pulling from it.
 	async function handleSendChaptersToPeer(peer: PairedPeerPayload) {
 		sendToPeerPickerOpen = false;
 		if (!manga?.title) return;
@@ -222,14 +224,16 @@
 			await toastAsync(
 				() => p2pSync.syncComic(peer.peerId, peer.addrs, manga!.title, 'push', chapterIds),
 				{
-					loading: m['pages.comic.selection.send_to_peer.toast.start'](),
-					success: m['pages.comic.selection.send_to_peer.toast.success'](),
+					loading: m['pages.comic.selection.sendToPeer.toast.start'](),
+					success: m['pages.comic.selection.sendToPeer.toast.success'](),
 					error: (err) =>
-						m['pages.comic.selection.send_to_peer.toast.error']({ msg: extractErrorMessage(err) })
+						m['pages.comic.selection.sendToPeer.toast.error']({
+							msg: extractErrorMessage(err)
+						})
 				}
 			);
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -238,14 +242,15 @@
 		if (!id || !manga?.title) return;
 		try {
 			await toastAsync(() => metadataSync.syncMangadex(manga!.title, id.toString()), {
-				loading: m['pages.comic.toast.sync.start_mangadex'](),
+				loading: m['pages.comic.toast.sync.startMangadex'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.mangadex_error']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.mangadexError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -254,14 +259,15 @@
 		if (!id || !manga?.title) return;
 		try {
 			await toastAsync(() => metadataSync.syncAnilist(manga!.title, id.toString()), {
-				loading: m['pages.comic.toast.sync.start_anilist'](),
+				loading: m['pages.comic.toast.sync.startAnilist'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.anilist_error']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.anilistError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -270,13 +276,14 @@
 		if (!id) return;
 		try {
 			await toastAsync(() => metadataSync.syncComicInfo(id.toString()), {
-				loading: m['pages.comic.toast.sync.start_comic_info'](),
+				loading: m['pages.comic.toast.sync.startComicInfo'](),
 				success: m['pages.comic.toast.sync.success'](),
-				error: (err) => m['pages.comic.toast.comic_info.error']({ msg: extractErrorMessage(err) })
+				error: (err) =>
+					m['pages.comic.toast.comicInfo.error']({ msg: extractErrorMessage(err) })
 			});
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -287,20 +294,21 @@
 		rescanning = true;
 		try {
 			await toastAsync(() => invoke(HOME_COMMANDS.rescanComic, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_rescan'](),
-				success: m['pages.comic.toast.sync.rescan_success'](),
-				error: (err) => m['pages.comic.toast.rescan_error']({ msg: extractErrorMessage(err) })
+				loading: m['pages.comic.toast.sync.startRescan'](),
+				success: m['pages.comic.toast.sync.rescanSuccess'](),
+				error: (err) =>
+					m['pages.comic.toast.rescanError']({ msg: extractErrorMessage(err) })
 			});
-			// `invalidateAll()` só recarrega o `load()` do SvelteKit — a lista de capítulos vive
-			// no `chapterStore` (estado Svelte à parte, com seu próprio cache LRU), que
-			// `invalidateAll()` não sabe que existe. Sem isso, a lista ficava com os capítulos
-			// antigos até o usuário sair e voltar pro quadrinho.
+			// `invalidateAll()` only reloads SvelteKit's `load()` — the chapter list lives in
+			// `chapterStore` (separate Svelte state, with its own LRU cache), which
+			// `invalidateAll()` doesn't know exists. Without this, the list kept the old
+			// chapters until the user left and came back to the comic.
 			chapterStore.invalidate();
 			syncRefreshTrigger++;
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			rescanning = false;
 		}
@@ -311,15 +319,15 @@
 		if (!id) return;
 		try {
 			await toastAsync(() => metadataSync.clearMetadata(id.toString()), {
-				loading: m['pages.comic.toast.sync.start_clear_metadata'](),
-				success: m['pages.comic.toast.sync.clear_metadata_success'](),
+				loading: m['pages.comic.toast.sync.startClearMetadata'](),
+				success: m['pages.comic.toast.sync.clearMetadataSuccess'](),
 				error: (err) =>
-					m['pages.comic.toast.clear_metadata_error']({ msg: extractErrorMessage(err) })
+					m['pages.comic.toast.clearMetadataError']({ msg: extractErrorMessage(err) })
 			});
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -328,16 +336,21 @@
 		if (!id) return;
 		regeneratingCover = true;
 		try {
-			await toastAsync(() => invoke(HOME_COMMANDS.regenerateComicCover, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_regenerate_cover'](),
-				success: m['pages.comic.toast.sync.regenerate_cover_success'](),
-				error: (err) =>
-					m['pages.comic.toast.regenerate_cover_error']({ msg: extractErrorMessage(err) })
-			});
+			await toastAsync(
+				() => invoke(HOME_COMMANDS.regenerateComicCover, { id: id.toString() }),
+				{
+					loading: m['pages.comic.toast.sync.startRegenerateCover'](),
+					success: m['pages.comic.toast.sync.regenerateCoverSuccess'](),
+					error: (err) =>
+						m['pages.comic.toast.regenerateCoverError']({
+							msg: extractErrorMessage(err)
+						})
+				}
+			);
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			regeneratingCover = false;
 		}
@@ -348,16 +361,21 @@
 		if (!id) return;
 		regeneratingVolumeCovers = true;
 		try {
-			await toastAsync(() => invoke(HOME_COMMANDS.regenerateVolumeCovers, { id: id.toString() }), {
-				loading: m['pages.comic.toast.sync.start_regenerate_volume_covers'](),
-				success: m['pages.comic.toast.sync.regenerate_volume_covers_success'](),
-				error: (err) =>
-					m['pages.comic.toast.regenerate_volume_covers_error']({ msg: extractErrorMessage(err) })
-			});
+			await toastAsync(
+				() => invoke(HOME_COMMANDS.regenerateVolumeCovers, { id: id.toString() }),
+				{
+					loading: m['pages.comic.toast.sync.startRegenerateVolumeCovers'](),
+					success: m['pages.comic.toast.sync.regenerateVolumeCoversSuccess'](),
+					error: (err) =>
+						m['pages.comic.toast.regenerateVolumeCoversError']({
+							msg: extractErrorMessage(err)
+						})
+				}
+			);
 			bumpArtworkVersion();
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		} finally {
 			regeneratingVolumeCovers = false;
 		}
@@ -368,14 +386,18 @@
 		if (!id) return;
 		try {
 			await toastAsync(
-				() => invoke(HOME_COMMANDS.toggleComicExternalSync, { id: id.toString(), enabled: value }),
+				() =>
+					invoke(HOME_COMMANDS.toggleComicExternalSync, {
+						id: id.toString(),
+						enabled: value
+					}),
 				{
-					loading: m['pages.comic.toast.sync.start_toggle'](),
+					loading: m['pages.comic.toast.sync.startToggle'](),
 					success: value
 						? m['pages.comic.toast.sync.enabled']()
 						: m['pages.comic.toast.sync.disabled'](),
 					error: (err) =>
-						m['pages.comic.toast.sync.toggle_error']({ msg: extractErrorMessage(err) })
+						m['pages.comic.toast.sync.toggleError']({ msg: extractErrorMessage(err) })
 				}
 			);
 			if (manga) {
@@ -383,7 +405,7 @@
 			}
 			await invalidateAll();
 		} catch {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		}
 	}
 
@@ -403,12 +425,12 @@
 	async function handleSyncToDevice(peerId: string, addrs: number[], direction: SyncDirection) {
 		if (!manga?.title) return;
 		await toastAsync(() => p2pSync.syncComic(peerId, addrs, manga!.title, direction), {
-			loading: m['pages.comic.preferences.p2p_sync.toast.start'](),
-			success: m['pages.comic.preferences.p2p_sync.toast.success'](),
+			loading: m['pages.comic.preferences.p2pSync.toast.start'](),
+			success: m['pages.comic.preferences.p2pSync.toast.success'](),
 			error: (err) =>
-				m['pages.comic.preferences.p2p_sync.toast.error']({ msg: extractErrorMessage(err) })
+				m['pages.comic.preferences.p2pSync.toast.error']({ msg: extractErrorMessage(err) })
 		}).catch(() => {
-			// Erro já foi mostrado pelo toastAsync acima.
+			// Error already shown by the toastAsync above.
 		});
 	}
 
@@ -436,20 +458,22 @@
 
 		untrack(() => {
 			isHistoryLoading = true;
-			const fetchHistory = invoke(HISTORY_COMMANDS.getComic, { comicId: id.toString() }).catch(
-				() => null
-			);
+			const fetchHistory = invoke(HISTORY_COMMANDS.getComic, {
+				comicId: id.toString()
+			}).catch(() => null);
 			const fetchRead = invoke<string[]>(HISTORY_COMMANDS.getReadChapters, {
 				comicId: id.toString()
 			}).catch(() => []);
 			const fetchBookmark = bookmarkStore.getComicBookmark(id);
 
-			Promise.all([fetchHistory, fetchRead, fetchBookmark]).then(([history, read, bookmark]) => {
-				readingHistory = history;
-				readChapters = read;
-				currentBookmarkId = bookmark?.id ?? null;
-				isHistoryLoading = false;
-			});
+			Promise.all([fetchHistory, fetchRead, fetchBookmark]).then(
+				([history, read, bookmark]) => {
+					readingHistory = history;
+					readChapters = read;
+					currentBookmarkId = bookmark?.id ?? null;
+					isHistoryLoading = false;
+				}
+			);
 		});
 	});
 
@@ -513,27 +537,27 @@
 		});
 	});
 
-	// Nem `sync:files:complete` (sync em massa, sem escopo de quadrinho) nem
-	// `sync:comic:complete` (escopado, `comicName` no payload — ver
-	// `comic_handler.rs::COMPLETE_EVENT`) atualizavam esta página antes: capítulos recém-
-	// chegados, capa/banner e metadata (ex.: `ComicInfo.xml` reprocessado) ficavam
-	// desatualizados até o usuário navegar pra fora e voltar. `sync:files:complete` não carrega
-	// quais quadrinhos foram tocados, então trata qualquer sync em massa como potencialmente
-	// relevante; `sync:comic:complete` só dispara o refresh se for sobre o quadrinho aberto.
+	// Neither `sync:files:complete` (bulk sync, no comic scope) nor `sync:comic:complete`
+	// (scoped, `comicName` in the payload — see `comic_handler.rs::COMPLETE_EVENT`) used to
+	// refresh this page: newly arrived chapters, cover/banner and metadata (e.g. a reprocessed
+	// `ComicInfo.xml`) stayed stale until the user navigated away and back.
+	// `sync:files:complete` doesn't carry which comics were touched, so any bulk sync is
+	// treated as potentially relevant; `sync:comic:complete` only fires the refresh if it is
+	// about the open comic.
 	//
-	// A checagem do nome do quadrinho atual (e o disparo em si) precisam ficar dentro do
-	// `untrack` — este efeito só pode depender de `p2pSync.log`. Se lesse `activeComic.item`/
-	// `manga` fora do untrack, o próprio `invalidateAll()`/re-fetch de capítulos disparado aqui
-	// mudaria esses valores e re-executaria o efeito de novo, entrando em loop.
+	// The current comic name check (and the firing itself) must stay inside `untrack` — this
+	// effect may only depend on `p2pSync.log`. If it read `activeComic.item`/`manga` outside
+	// untrack, the very `invalidateAll()`/chapter re-fetch fired here would change those
+	// values and re-run the effect again, looping.
 	let lastHandledSyncLogId: number | undefined;
 
 	$effect(() => {
 		const entry = p2pSync.log[0];
-		// `id < 0` marca uma linha carregada do histórico persistido (ver `fromPersisted` em
-		// `use-network-sync.svelte.ts`), não um evento ao vivo desta sessão — sem esse guard, a
-		// linha "complete" mais recente do histórico disparava este refresh assim que a
-		// página montava, mesmo sem nenhum sync ter de fato acontecido agora.
-		// `lastHandledSyncLogId` previne disparos repetidos ou loops em re-render da página.
+		// `id < 0` marks a line loaded from the persisted history (see `fromPersisted` in
+		// `use-network-sync.svelte.ts`), not a live event from this session — without this
+		// guard, the most recent "complete" history line fired this refresh as soon as the
+		// page mounted, even with no sync actually happening now.
+		// `lastHandledSyncLogId` prevents repeated firings or loops on page re-render.
 		if (
 			!entry ||
 			entry.id < 0 ||
@@ -546,10 +570,11 @@
 		lastHandledSyncLogId = entry.id;
 
 		untrack(() => {
-			// `manga.title` é o mesmo valor que `handleSyncToDevice` manda como `comicName` pro
-			// backend (`p2pSync.syncComic(peerId, addrs, manga.title)`) — comparação simétrica
-			// com o que `comic_handler.rs` ecoa de volta no payload de conclusão.
-			if (entry.kind === 'comic' && entry.comicName && entry.comicName !== manga?.title) return;
+			// `manga.title` is the same value `handleSyncToDevice` sends as `comicName` to the
+			// backend (`p2pSync.syncComic(peerId, addrs, manga.title)`) — a symmetric comparison
+			// with what `comic_handler.rs` echoes back in the completion payload.
+			if (entry.kind === 'comic' && entry.comicName && entry.comicName !== manga?.title)
+				return;
 
 			syncRefreshTrigger++;
 			bumpArtworkVersion();
@@ -569,7 +594,9 @@
 				name: comic.name,
 				title: comic.name,
 				fileName: comic.name,
-				isRead: Array.isArray(readChapters) ? readChapters.includes(comic.id.toString()) : false,
+				isRead: Array.isArray(readChapters)
+					? readChapters.includes(comic.id.toString())
+					: false,
 				chapterSort: comic.chapterSort,
 				path: comic.path,
 				volumeId: comic.volumeId,
@@ -580,10 +607,10 @@
 			}))
 			.filter((comic) => !expandedVolumeId || comic.volumeId === expandedVolumeId);
 
-		// Corta a lista plana em blocos fixos só pra virtualização de renderização
-		// (ComicChapterList/ComicVolumeList montam um AcerolaHeroButton por item
-		// só quando o bloco está perto do scroll) — não tem relação com a busca,
-		// que já veio inteira do backend.
+		// Slices the flat list into fixed chunks only for render virtualization
+		// (ComicChapterList/ComicVolumeList mount one AcerolaHeroButton per item
+		// only when the chunk is near the scroll) — unrelated to the fetch, which
+		// already came whole from the backend.
 		const pagesData = Array.from(
 			{ length: Math.ceil(allItems.length / RENDER_CHUNK_SIZE) || 0 },
 			(_, page) => ({
@@ -605,7 +632,9 @@
 				totalChapters: volume.chapterCount,
 				coverUri: volCover || fallbackCover,
 				bannerUri: volBanner || fallbackBanner || fallbackCover,
-				hasMore: expandedVolumeId === volume.id.toString() && allItems.length < volume.chapterCount,
+				hasMore:
+					expandedVolumeId === volume.id.toString() &&
+					allItems.length < volume.chapterCount,
 				chapters: []
 			};
 		});
@@ -613,8 +642,8 @@
 		return {
 			id: item.relations.directoryId.toString(),
 			title: item.metadata.title || item.filesystem.folderName,
-			// Total real de capítulos do quadrinho (soma volumes) — não usar `totalItems`
-			// aqui, pois esse valor reflete a paginação/filtro de volume atualmente aberto.
+			// The comic's real chapter total (sums volumes) — don't use `totalItems` here,
+			// since that value reflects the currently open volume's pagination/filter.
 			chaptersCount: item.metadata.chapterCount,
 			rating: item.metadata.rating ?? null,
 			cover: resolveCover(item.artwork),
@@ -624,7 +653,8 @@
 			pageSize: RENDER_CHUNK_SIZE,
 			metadata: {
 				description:
-					item.metadata.description || m['pages.comic.metadata.description.unavailable'](),
+					item.metadata.description ||
+					m['pages.comic.metadata.description.unavailable'](),
 				author: item.metadata.author || m['pages.comic.metadata.unknown.author'](),
 				status: item.metadata.status || m['pages.comic.metadata.unknown.status'](),
 				source: item.metadata.activeSource || 'LOCAL',
@@ -639,20 +669,8 @@
 	<div
 		in:fade={{ duration: 200 }}
 		out:fade={{ duration: 200 }}
-		class="text-text fixed inset-x-0 top-8 bottom-0 z-50 flex overflow-hidden bg-base"
+		class="fixed inset-x-0 top-8 bottom-0 z-50 flex overflow-hidden bg-background text-foreground"
 	>
-		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			<img
-				alt={manga.title}
-				src={manga.banner || manga.cover}
-				referrerpolicy="no-referrer"
-				class="h-full w-full scale-150 object-cover opacity-20 blur-[120px]"
-			/>
-
-			<!-- NOTE: Aqui é onde os dados são injetados no banner -->
-			<div class="absolute inset-0 bg-base/40"></div>
-		</div>
-
 		<ComicMetadataPanel
 			data={{
 				title: manga.title,
@@ -662,7 +680,8 @@
 				chaptersCount: manga.chaptersCount,
 				description: manga.metadata.description,
 				cover: manga.cover,
-				bookmarkColor: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)?.color,
+				bookmarkColor: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)
+					?.color,
 				bookmarkName: bookmarkStore.bookmarks.find((b) => b.id === currentBookmarkId)?.name
 			}}
 			state={{
@@ -679,13 +698,13 @@
 			class="scrollbar-hide relative z-10 flex flex-1 flex-col overflow-y-auto [overflow-anchor:none]"
 		>
 			<div
-				class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-surface/30 bg-base/90 px-6 py-2 backdrop-blur-md lg:hidden"
+				class="sticky top-0 z-50 flex h-20 items-center justify-between bg-background px-6 py-2 lg:hidden"
 			>
 				<AcerolaButtonIcon events={{ onClick: onBack }} ui={{ size: 'sm', tone: 'accent' }}>
 					<ArrowLeft size={20} />
 				</AcerolaButtonIcon>
 
-				<span class="max-w-50 truncate text-sm font-black tracking-widest uppercase">
+				<span class="max-w-50 truncate text-base font-black tracking-tight">
 					{manga.title}
 				</span>
 
@@ -703,14 +722,15 @@
 
 			<div class="mx-auto w-full max-w-5xl space-y-12 p-8 lg:p-16">
 				<div
-					class="sticky top-0 z-40 -mx-4 flex items-center justify-between border-b border-surface/30 bg-base/5 px-4 backdrop-blur-3xl"
+					class="sticky top-0 z-40 -mx-4 flex items-center justify-between bg-background px-4 py-3"
 				>
+					<!-- Brand book chip tabs (`.ac-chip-tabs`): bg-surface track, the active chip is
+					     bg-foreground and slides with GSAP. -->
 					<div
-						class="relative"
+						class="relative isolate rounded-full bg-surface p-1"
 						use:slidingIndicator={{
 							selector: '[data-state="on"]',
-							indicatorClass: 'bottom-0 h-1 rounded-full bg-primary',
-							track: ['x', 'width']
+							indicatorClass: 'rounded-full bg-foreground'
 						}}
 					>
 						<AcerolaToggleGroup
@@ -726,7 +746,7 @@
 							{#snippet children()}
 								<ToggleGroupItem
 									value="content"
-									class="border-none bg-transparent py-6 text-sm font-black tracking-[0.2em] uppercase data-[state=on]:bg-transparent data-[state=on]:text-primary"
+									class="h-9 rounded-full border-none bg-transparent px-4 text-sm font-bold text-muted-foreground transition-colors duration-300 ease-brand hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-background"
 								>
 									{chapterStore.chapters?.hasVolumeStructure
 										? m['pages.comic.tabs.volumes']()
@@ -735,7 +755,7 @@
 
 								<ToggleGroupItem
 									value="preferences"
-									class="border-none bg-transparent py-6 text-sm font-black tracking-[0.2em] uppercase data-[state=on]:bg-transparent data-[state=on]:text-primary"
+									class="h-9 rounded-full border-none bg-transparent px-4 text-sm font-bold text-muted-foreground transition-colors duration-300 ease-brand hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-background"
 								>
 									{m['pages.comic.tabs.preferences']()}
 								</ToggleGroupItem>
@@ -749,8 +769,9 @@
 								<input
 									type="text"
 									bind:value={searchQuery}
-									placeholder={m['pages.comic.filter_placeholder']()}
-									class="w-40 rounded-full border border-surface/30 bg-surface/20 px-6 py-2 text-[10px] font-black tracking-widest transition-all focus:w-60 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+									placeholder={m['pages.comic.filterPlaceholder']()}
+									aria-label={m['pages.comic.filterPlaceholder']()}
+									class="h-11 w-44 rounded-full bg-input px-4.5 text-sm font-medium text-foreground transition-[width] duration-300 ease-brand placeholder:text-muted-foreground focus:w-64 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 								/>
 							{/if}
 
@@ -761,11 +782,17 @@
 									align: 'end',
 									side: 'bottom',
 									sideOffset: 8,
-									contentClass: 'w-64 overflow-hidden rounded-xl p-2'
+									contentClass: 'w-64 p-2'
 								}}
 							>
 								{#snippet trigger()}
-									<AcerolaButton ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}>
+									<AcerolaButton
+										ui={{
+											variant: 'secondary',
+											size: 'sm',
+											class: 'h-11 gap-2 px-4'
+										}}
+									>
 										<ArrowUpDown size={16} />
 										{m['pages.comic.sort.button']()}
 									</AcerolaButton>
@@ -773,7 +800,10 @@
 
 								{#snippet content()}
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'number_asc';
@@ -786,11 +816,15 @@
 										{:else}
 											<div class="w-4"></div>
 										{/if}
-										<span class="min-w-0 flex-1 truncate">{m['pages.comic.sort.number.asc']()}</span
+										<span class="min-w-0 flex-1 truncate"
+											>{m['pages.comic.sort.number.asc']()}</span
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'number_desc';
@@ -808,7 +842,10 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_desc';
@@ -826,7 +863,10 @@
 										>
 									</AcerolaButton>
 									<AcerolaButton
-										ui={{ variant: 'ghost', class: 'w-full justify-start rounded-lg' }}
+										ui={{
+											variant: 'ghost',
+											class: 'w-full justify-start'
+										}}
 										events={{
 											onClick: () => {
 												sortBy = 'modified_asc';
@@ -850,37 +890,43 @@
 				</div>
 
 				{#if activeTab === 'content' && chapterSelection.isSelectionMode}
-					<div class="-mx-4 flex items-center gap-2 border-b border-surface/30 px-4 py-3">
+					<div class="-mx-4 flex items-center gap-2 rounded-full bg-surface px-4 py-2">
 						<span class="text-sm font-medium text-muted-foreground">
-							{m['pages.comic.selection.selected']({ count: chapterSelection.selectedCount })}
+							{m['pages.comic.selection.selected']({
+								count: chapterSelection.selectedCount
+							})}
 						</span>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'ghost', size: 'sm' }}
 							events={{ onClick: handleSelectAllChapters }}
 						>
-							{m['pages.comic.selection.select_all']()}
+							{m['pages.comic.selection.selectAll']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'secondary', size: 'sm' }}
 							events={{ onClick: handleBatchMarkRead }}
 						>
-							{m['pages.comic.selection.mark_read']()}
+							{m['pages.comic.selection.markRead']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'secondary', size: 'sm' }}
 							events={{ onClick: handleBatchMarkUnread }}
 						>
-							{m['pages.comic.selection.mark_unread']()}
+							{m['pages.comic.selection.markUnread']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'secondary', size: 'sm', class: 'gap-1.5 rounded-lg' }}
+							ui={{
+								variant: 'secondary',
+								size: 'sm',
+								class: 'gap-1.5'
+							}}
 							events={{ onClick: () => (sendToPeerPickerOpen = true) }}
 						>
 							<Share2 size={14} />
-							{m['pages.comic.selection.send_to_peer.button']()}
+							{m['pages.comic.selection.sendToPeer.button']()}
 						</AcerolaButton>
 						<AcerolaButton
-							ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+							ui={{ variant: 'ghost', size: 'sm' }}
 							events={{ onClick: () => chapterSelection.exitSelectionMode() }}
 						>
 							{m['pages.comic.selection.cancel']()}
@@ -943,7 +989,8 @@
 					{:else if activeTab === 'preferences'}
 						<ComicPreferences
 							data={{
-								hasVolumeStructure: chapterStore.chapters?.hasVolumeStructure ?? false,
+								hasVolumeStructure:
+									chapterStore.chapters?.hasVolumeStructure ?? false,
 								bookmarks: bookmarkStore.bookmarks,
 								pairedPeers: pairedPeersForUi
 							}}
@@ -958,10 +1005,12 @@
 								regeneratingVolumeCovers
 							}}
 							events={{
-								onVolumeViewModeChange: (value) => (volumeViewPreference.volumeViewMode = value),
+								onVolumeViewModeChange: (value) =>
+									(volumeViewPreference.volumeViewMode = value),
 								onBookmarkChange: async (value) => {
 									const id =
-										activeComic.item?.relations.directoryId ?? data.comic?.relations.directoryId;
+										activeComic.item?.relations.directoryId ??
+										data.comic?.relations.directoryId;
 									if (!id) return;
 
 									if (value) {
@@ -988,7 +1037,18 @@
 		</div>
 	</div>
 {:else}
-	<div class="text-overlay flex h-screen items-center justify-center bg-base">
-		<RefreshCw size={48} class="animate-spin text-primary" />
+	<!-- Loading: skeleton in the shape of the hero and the chapter list, never a loose spinner. -->
+	<div class="space-y-6 p-8" role="status" aria-label={m['pages.comic.loading']()}>
+		<div class="flex gap-8">
+			<div class="aspect-2/3 w-48 animate-pulse rounded-tile bg-surface"></div>
+			<div class="flex-1 space-y-4 pt-8">
+				<div class="h-12 w-2/3 animate-pulse rounded-full bg-surface"></div>
+				<div class="h-5 w-1/3 animate-pulse rounded-full bg-surface"></div>
+				<div class="h-20 w-full animate-pulse rounded-tile bg-surface"></div>
+			</div>
+		</div>
+		{#each Array.from({ length: 6 }, (_, i) => i) as i (i)}
+			<div class="h-16 w-full animate-pulse rounded-tile bg-surface"></div>
+		{/each}
 	</div>
 {/if}

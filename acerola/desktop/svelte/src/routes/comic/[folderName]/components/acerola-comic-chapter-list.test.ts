@@ -46,9 +46,9 @@ describe('AcerolaComicChapterList', () => {
 			props: { data: { pagesData, totalChapters: 2, pageSize: 2 } }
 		});
 
-		// O bloco só monta o conteúdo real (AcerolaHeroButton) quando a página
-		// está dentro da janela de renderização — em produção o
-		// IntersectionObserver reporta isso pouco depois do mount.
+		// The block only mounts the real content (AcerolaHeroButton) when the page
+		// is inside the render window — in production the
+		// IntersectionObserver reports that shortly after mount.
 		const firstPage = document.querySelector<HTMLElement>('[data-page="0"]');
 		intersectionCallback(
 			[{ target: firstPage!, isIntersecting: true } as unknown as IntersectionObserverEntry],
@@ -67,7 +67,7 @@ describe('AcerolaComicChapterList', () => {
 			props: { data: { pagesData: [], totalChapters: 0, pageSize: 2 } }
 		});
 
-		expect(screen.getByText('Carregando...')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toBeInTheDocument();
 	});
 
 	it('mounts real content only when page enters rendering window', async () => {

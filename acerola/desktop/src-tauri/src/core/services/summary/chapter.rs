@@ -185,7 +185,7 @@ impl ChapterService {
         })
     }
 
-    /// Retorna todos os IDs de capítulo de um quadrinho, sem paginação.
+    /// Returns every chapter ID of a comic, without pagination.
     pub async fn get_all_chapter_ids(
         &self, comic_directory_fk: i64,
     ) -> Result<Vec<i64>, ComicError> {
@@ -201,7 +201,7 @@ mod tests {
         tests::utils::setup_test_db::setup_test_db_with_volumes,
     };
 
-    async fn popular_dados(pool: &SqlitePool) {
+    async fn seed_data(pool: &SqlitePool) {
         let chapter_repo = Repository::<ChapterArchive>::new(pool.clone());
         chapter_repo
             .insert(&ChapterArchive {
@@ -222,7 +222,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_comic_chapters() {
         let pool = setup_test_db_with_volumes().await;
-        popular_dados(&pool).await;
+        seed_data(&pool).await;
 
         let service = ChapterService::new(pool);
         let result = service
@@ -241,7 +241,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_all_chapter_ids() {
         let pool = setup_test_db_with_volumes().await;
-        popular_dados(&pool).await;
+        seed_data(&pool).await;
 
         let service = ChapterService::new(pool);
         let ids = service.get_all_chapter_ids(1).await.unwrap();

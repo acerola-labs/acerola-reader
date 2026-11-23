@@ -20,12 +20,12 @@ class ChapterIndexer
         @param:ApplicationContext private val context: Context,
     ) {
         /**
-         * Calcula o checksum aqui, no scan — em background, sem timeout de rede em cima —
-         * em vez de deixar pra hora do sync P2P (`FileSyncProvider.getFileManifest`), que era
-         * o pior momento possível pra ler o arquivo inteiro. `ChapterSyncService.sync()` só
-         * chama isto pra capítulos novos ou com `lastModified` alterado; um capítulo já
-         * indexado e sem mudança nunca passa por aqui de novo (ver o `return@forEachIndexed`
-         * ali), então o custo é incremental a cada scan, não a biblioteca inteira toda vez.
+         * Computes the checksum here, during the scan — in the background, with no network timeout on top —
+         * instead of leaving it for P2P sync time (`FileSyncProvider.getFileManifest`), which was
+         * the worst possible moment to read the whole file. `ChapterSyncService.sync()` only
+         * calls this for new chapters or ones with a changed `lastModified`; an already indexed,
+         * unchanged chapter never goes through here again (see the `return@forEachIndexed`
+         * there), so the cost is incremental per scan, not the whole library every time.
          */
         suspend fun buildEntity(
             file: FastFileMetadata,
@@ -45,9 +45,9 @@ class ChapterIndexer
                 ).copy(checksum = computeChecksum(fileUri))
 
         /**
-         * Também usado por [ChapterSyncService] pra preencher (backfill) o checksum de um
-         * capítulo já indexado que ficou com `checksum = null` — sem precisar tratar o
-         * capítulo como novo/alterado (sem remapear histórico, sem duplicar linha).
+         * Also used by [ChapterSyncService] to backfill the checksum of an
+         * already indexed chapter left with `checksum = null` — without treating the
+         * chapter as new/changed (no history remapping, no duplicated row).
          */
         suspend fun computeChecksum(fileUri: String): String? =
             runCatching {

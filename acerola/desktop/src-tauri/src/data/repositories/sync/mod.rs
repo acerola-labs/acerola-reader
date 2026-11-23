@@ -8,11 +8,11 @@ use crate::{
     infra::error::DbError,
 };
 
-/// Histórico persistido de sessões de sync P2P — só estados terminais (`complete`/`error`),
-/// nunca `started`/`progress`. `kind` é `"history"` ou `"files"`, `status` é `"complete"`
-/// ou `"error"`. Segue o mesmo padrão `Entity`/`Bindable`/`Repository<T>` de todo model
-/// desta pasta (ver `SyncHistoryLogEntry`); `find_recent` é custom porque o genérico
-/// `Repository::find_all` não suporta ORDER BY/LIMIT.
+/// Persisted history of P2P sync sessions — terminal states only (`complete`/`error`),
+/// never `started`/`progress`. `kind` is `"history"` or `"files"`, `status` is `"complete"`
+/// or `"error"`. Follows the same `Entity`/`Bindable`/`Repository<T>` pattern as every model
+/// in this folder (see `SyncHistoryLogEntry`); `find_recent` is custom because the generic
+/// `Repository::find_all` does not support ORDER BY/LIMIT.
 #[derive(Clone)]
 pub struct SyncHistoryLogRepository {
     pub base: Repository<SyncHistoryLogEntry>,
@@ -24,8 +24,8 @@ impl SyncHistoryLogRepository {
         Self { base: Repository::new(pool.clone()), pool }
     }
 
-    /// Últimas `limit` linhas, mais recente primeiro — usado pra popular o log de
-    /// atividade ao abrir a tela de rede e pra calcular "última sincronização" por peer.
+    /// Last `limit` rows, most recent first — used to fill the activity log when the
+    /// network screen opens and to compute the "last sync" per peer.
     pub async fn find_recent(&self, limit: i64) -> Result<Vec<SyncHistoryLogEntry>, DbError> {
         let rows = sqlx::query_as::<_, SyncHistoryLogEntry>(
             "SELECT id, peer_id, kind, status, message, created_at
@@ -40,9 +40,9 @@ impl SyncHistoryLogRepository {
         Ok(rows)
     }
 
-    /// Apaga todo o histórico de sync persistido — usado pelo botão "Limpar" da tela de Rede.
-    /// Não afeta o log ao vivo em memória do frontend (sessão atual), só o que sobrevive a
-    /// restart.
+    /// Deletes the whole persisted sync history — used by the "Clear" button on the Network
+    /// screen. Does not affect the frontend's in-memory live log (current session), only what
+    /// survives a restart.
     pub async fn delete_all(&self) -> Result<(), DbError> {
         let table = SyncHistoryLogEntry::table_name();
         sqlx::query(&format!("DELETE FROM {}", table)).execute(&self.pool).await?;
@@ -74,7 +74,7 @@ mod tests {
 
         let recent = repo.find_recent(10).await.unwrap();
         assert_eq!(recent.len(), 2);
-        // A segunda inserção (files/error) deve vir primeiro (mais recente).
+        // The second insert (files/error) must come first (most recent).
         assert_eq!(recent[0].kind, "files");
         assert_eq!(recent[0].status, "error");
         assert_eq!(recent[0].message.as_deref(), Some("boom"));

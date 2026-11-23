@@ -14,15 +14,15 @@ use tokio::io::{AsyncRead, AsyncWrite};
 use crate::{callbacks::FileSyncProvider, protocol::sync_error::classify_sync_error};
 use model::LibrarySummary;
 
-/// Lista só os nomes dos quadrinhos de um peer (com contagem de capítulos) — sem transferir
-/// nada. Sem sessão/guard: é uma única leitura curta, não corre risco de duplicar trabalho de
-/// I/O pesado do jeito que `acerola/sync-files/1`/`acerola/sync-comic/1` correm (ver
+/// Lists only the comic names of a peer (with chapter count) — without transferring
+/// anything. No session/guard: it is a single short read, with no risk of duplicating heavy
+/// I/O work the way `acerola/sync-files/1`/`acerola/sync-comic/1` do (see
 /// `protocol::files::FileSyncSessionGuard`).
 pub(crate) const LIBRARY_BROWSE_ALPN: &[u8] = b"acerola/browse-library/1";
 
-/// Papel inbound: responde com o resumo da biblioteca local assim que a conexão é aceita — não
-/// espera nem lê o marcador que o outbound escreve (ver doc em `exchange::run_inbound`), pra não
-/// acoplar a resposta a quanto tempo o path P2P leva pra ficar pronto pra dados de verdade.
+/// Inbound role: replies with the local library summary as soon as the connection is accepted — it
+/// does not wait for nor read the marker the outbound writes (see docs in `exchange::run_inbound`), so
+/// the reply is not coupled to how long the P2P path takes to be ready for real data.
 pub(crate) struct LibraryBrowseInbound {
     provider: Arc<dyn FileSyncProvider>,
 }
@@ -45,9 +45,9 @@ impl Handler for LibraryBrowseInbound {
     }
 }
 
-/// Papel outbound: escreve o marcador de pedido, lê a resposta e emite o resultado como evento
-/// pro Kotlin — quem disparou `P2PNode::browse_library` não tem retorno síncrono (mesmo padrão
-/// fire-and-forget de `connect`), então o resultado só chega via
+/// Outbound role: writes the request marker, reads the reply and emits the result as an event
+/// to Kotlin — whoever triggered `P2PNode::browse_library` has no synchronous return (same
+/// fire-and-forget pattern as `connect`), so the result only arrives via
 /// `browse:library:result`/`browse:library:error`.
 pub(crate) struct LibraryBrowseOutbound {
     emit: EventEmitter,

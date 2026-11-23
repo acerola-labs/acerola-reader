@@ -25,13 +25,13 @@ class NavigationBarsTest {
             AcerolaTheme {
                 Acerola.Component.BottomBar(
                     navController = navController,
-                    hazeState = hazeState, // Passado conforme exigido pelo componente
+                    hazeState = hazeState, // Passed as required by the component
                 )
             }
         }
 
-        // Como o BottomBar usa label = null, precisamos buscar pela contentDescription dos ícones
-        // Substitua os textos abaixo pelas strings exatas retornadas por `stringResource(destination.contentDescriptionRes)`
+        // Since the BottomBar uses label = null, we need to look up the icons' contentDescription
+        // Replace the texts below with the exact strings returned by `stringResource(destination.contentDescriptionRes)`
         composeTestRule.onNodeWithContentDescription("home", ignoreCase = true).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Histórico", ignoreCase = true).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Configurações", ignoreCase = true).assertIsDisplayed()
@@ -58,7 +58,7 @@ class NavigationBarsTest {
             }
         }
 
-        // A SideBar possui o Text(), então onNodeWithText vai funcionar
+        // The SideBar has the Text(), so onNodeWithText will work
         composeTestRule.onNodeWithText("home", ignoreCase = true).assertIsDisplayed()
     }
 }

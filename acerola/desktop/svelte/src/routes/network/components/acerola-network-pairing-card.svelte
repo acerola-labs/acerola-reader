@@ -10,29 +10,25 @@
 	import { toast } from 'svelte-sonner';
 	import { error } from '@tauri-apps/plugin-log';
 	import QRCode from 'qrcode';
-	import QrCodeIcon from '@lucide/svelte/icons/qr-code';
-	import CopyIcon from '@lucide/svelte/icons/copy';
-	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import AcerolaCopyButton from '#lib/components/acerola-button/acerola-copy-button.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaSettingSection from '#lib/components/acerola-setting-section/acerola-setting-section.svelte';
 
 	let { data }: NetworkPairingCardProps = $props();
 
 	let qrDataUrl = $state<string | undefined>(undefined);
 	let qrError = $state(false);
 	let showRawCode = $state(false);
-	// Feedback visual do botão de copiar — além do toast, o próprio ícone vira um check
-	// por um instante, pra quem não pegar o toast a tempo perceber que a cópia aconteceu.
-	let codeJustCopied = $state(false);
 
 	$effect(() => {
-		// No teardown da story (Storybook + vitest browser mode), este efeito roda mais
-		// uma vez com `data` já undefined antes do componente ser destruído de fato —
-		// sem o optional chaining aqui isso vaza como unhandled error e derruba a suíte
-		// mesmo com todos os asserts passando.
+		// On story teardown (Storybook + vitest browser mode), this effect runs once more
+		// with `data` already undefined before the component is actually destroyed —
+		// without the optional chaining here this leaks as an unhandled error and brings
+		// down the suite even with every assert passing.
 		const code = data?.code;
 		if (!code) {
 			qrDataUrl = undefined;
@@ -51,81 +47,85 @@
 			});
 	});
 
-	async function copyCode() {
-		if (!data?.code) return;
-		await navigator.clipboard.writeText(data.code);
+	function handleCopied() {
 		toast.success(m['pages.network.copied']());
-		codeJustCopied = true;
-		setTimeout(() => (codeJustCopied = false), 2000);
 	}
 </script>
 
-<section class="space-y-4">
-	<div
-		class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
-	>
-		<QrCodeIcon size={16} />
-		{m['pages.network.pairing.title']()}
-	</div>
-
-	<div class="rounded-2xl border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
-		<p class="mb-4 text-sm text-muted-foreground">{m['pages.network.pairing.desc']()}</p>
-
-		<div class="flex flex-col items-center gap-4">
-			<div class="flex h-72 w-72 shrink-0 items-center justify-center rounded-xl bg-white p-3">
-				{#if qrDataUrl}
-					<img src={qrDataUrl} alt={m['pages.network.pairing.desc']()} class="h-full w-full" />
-				{:else if qrError}
-					<span class="px-4 text-center text-xs text-destructive">
-						{m['pages.network.pairing.qr_error']()}
-					</span>
-				{:else}
-					<span class="text-xs text-muted-foreground">{m['pages.network.pairing.loading']()}</span>
-				{/if}
-			</div>
-
-			<AcerolaButton
-				events={{ onClick: copyCode }}
-				ui={{ variant: 'outline', size: 'sm', class: 'gap-2', disabled: !data?.code }}
-			>
-				{#if codeJustCopied}
-					<CheckIcon size={14} class="text-chart-3" />
-				{:else}
-					<CopyIcon size={14} />
-				{/if}
-				{m['pages.network.pairing.copy']()}
-			</AcerolaButton>
-
-			<button
-				type="button"
-				class="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-				onclick={() => (showRawCode = !showRawCode)}
-				aria-expanded={showRawCode}
-				aria-controls="pairing-raw-code"
-			>
-				{showRawCode
-					? m['pages.network.pairing.hide_code']()
-					: m['pages.network.pairing.show_code']()}
-				<ChevronDownIcon
-					size={12}
-					class={cn('transition-transform', showRawCode && 'rotate-180')}
+<AcerolaSettingSection
+	data={{
+		id: 'pairing',
+		title: m['pages.network.pairing.title'](),
+		lead: m['pages.network.pairing.desc']()
+	}}
+>
+	<div class="flex flex-col items-center gap-4 rounded-tile bg-surface p-5">
+		<!-- The QR stays black on white whatever the theme, so any camera can read it. -->
+		<div class="flex size-64 shrink-0 items-center justify-center rounded-tile bg-on-scrim p-3">
+			{#if qrDataUrl}
+				<img
+					src={qrDataUrl}
+					alt={m['pages.network.pairing.desc']()}
+					class="h-full w-full rounded-inner"
 				/>
-			</button>
-
-			{#if showRawCode}
-				<textarea
-					id="pairing-raw-code"
-					readonly
-					aria-label={m['pages.network.pairing.title']()}
-					value={data?.code ?? ''}
-					class="h-24 w-full resize-none rounded-xl border border-border/60 bg-background/70 p-3 font-mono text-xs break-all text-muted-foreground"
-				></textarea>
+			{:else if qrError}
+				<span class="px-4 text-center text-xs font-semibold text-destructive">
+					{m['pages.network.pairing.qrError']()}
+				</span>
+			{:else}
+				<div
+					class="size-full animate-pulse rounded-inner bg-surface"
+					role="status"
+					aria-label={m['pages.network.pairing.loading']()}
+				></div>
 			{/if}
 		</div>
 
-		<div class="mt-6 flex items-start gap-2 rounded-xl border border-chart-4/20 bg-chart-4/5 p-3">
-			<ShieldAlertIcon size={16} class="mt-0.5 shrink-0 text-chart-4" />
-			<p class="text-xs text-muted-foreground">{m['pages.network.pairing.security_note']()}</p>
+		<div class="grid w-full grid-cols-2 gap-2">
+			<AcerolaCopyButton
+				value={data?.code}
+				label={m['pages.network.pairing.copy']()}
+				copiedLabel={m['pages.network.copied']()}
+				disabled={!data?.code}
+				onCopy={handleCopied}
+				variant="contrast"
+				class="w-full"
+			/>
+			<AcerolaButton
+				events={{ onClick: () => (showRawCode = !showRawCode) }}
+				ui={{
+					variant: 'secondary',
+					class: 'w-full bg-card',
+					'aria-expanded': showRawCode,
+					'aria-controls': 'pairing-raw-code'
+				}}
+			>
+				{showRawCode
+					? m['pages.network.pairing.hideCode']()
+					: m['pages.network.pairing.showCode']()}
+				<ChevronDownIcon
+					size={16}
+					class={cn('transition-transform duration-200', showRawCode && 'rotate-180')}
+				/>
+			</AcerolaButton>
 		</div>
+
+		{#if showRawCode}
+			<!-- The raw code as a selectable block (no field chrome, no scrollbar): one click selects it all. -->
+			<p
+				id="pairing-raw-code"
+				aria-label={m['pages.network.pairing.title']()}
+				class="w-full rounded-inner bg-card p-4 text-xs leading-relaxed break-all text-muted-foreground select-all"
+			>
+				{data?.code ?? ''}
+			</p>
+		{/if}
 	</div>
-</section>
+
+	<div class="flex items-start gap-3 rounded-tile bg-info-soft p-4 text-info">
+		<ShieldAlertIcon size={16} class="mt-0.5 shrink-0" />
+		<p class="text-xs leading-relaxed font-semibold">
+			{m['pages.network.pairing.securityNote']()}
+		</p>
+	</div>
+</AcerolaSettingSection>

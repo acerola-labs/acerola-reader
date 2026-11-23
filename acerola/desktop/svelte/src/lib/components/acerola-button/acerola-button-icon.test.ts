@@ -9,10 +9,11 @@ describe('AcerolaButtonIcon', () => {
 		expect(screen.getByRole('button')).toBeInTheDocument();
 	});
 
-	it('has square dimensions via class', () => {
+	it('is a round 44px target via class', () => {
 		render(AcerolaButtonIcon);
 		const button = screen.getByRole('button');
-		expect(button.className).toContain('size-10');
+		expect(button.className).toContain('size-11');
+		expect(button.className).toContain('rounded-full');
 	});
 
 	it('calls onclick when clicked', async () => {

@@ -5,10 +5,10 @@ use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
 use crate::data::repositories::{Bindable, Entity};
 
-/// Uma linha do histórico persistido de sessões de sync P2P (histórico e arquivos) —
-/// só estados terminais (`complete`/`error`), não `started`/`progress`. Existe pra sobreviver
-/// a um restart do app; o log "ao vivo" em memória continua existindo à parte pra eventos
-/// que chegam em tempo real durante a sessão atual.
+/// One row of the persisted P2P sync session history (history and files) —
+/// terminal states only (`complete`/`error`), not `started`/`progress`. It exists to survive
+/// an app restart; the in-memory "live" log still exists separately for events that
+/// arrive in real time during the current session.
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct SyncHistoryLogEntry {
@@ -20,10 +20,10 @@ pub struct SyncHistoryLogEntry {
     pub created_at: i64,
 }
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico — mesmo padrão de
-/// todo model nesta pasta (`ChapterArchive`, `ChapterRead`, etc), mesmo sendo uma tabela
-/// append-only: `id` é calculado no Rust (não confia em AUTOINCREMENT do SQLite) e
-/// vinculado explicitamente no insert, igual `ChapterArchive::id` usa `path_hash(...)`.
+/// Contract with the generic [`crate::data::repositories::Repository`] — same pattern as
+/// every model in this folder (`ChapterArchive`, `ChapterRead`, etc), even though the table is
+/// append-only: `id` is computed in Rust (does not rely on SQLite AUTOINCREMENT) and bound
+/// explicitly on insert, just like `ChapterArchive::id` uses `path_hash(...)`.
 impl Entity for SyncHistoryLogEntry {
     fn columns() -> &'static [&'static str] {
         &["id", "peer_id", "kind", "status", "message", "created_at"]
@@ -58,16 +58,16 @@ impl Bindable for SyncHistoryLogEntry {
             .bind(&self.status)
             .bind(&self.message)
             .bind(self.created_at)
-            .bind(self.id) // <- id pro WHERE id = ?
+            .bind(self.id) // <- id for WHERE id = ?
     }
 }
 
 impl SyncHistoryLogEntry {
-    /// `id` calculado no Rust (epoch em nanossegundos) em vez de deixar o SQLite
-    /// autoincrementar — mesma convenção de `ChapterArchive::id` (via `path_hash`), pro
-    /// `Bindable::bind_insert` poder bindar o id explicitamente. Colisão exigiria duas
-    /// chamadas no mesmo nanossegundo, que não acontece pra eventos de sync (rede é ordens
-    /// de magnitude mais lenta que isso).
+    /// `id` computed in Rust (epoch in nanoseconds) instead of letting SQLite
+    /// autoincrement — same convention as `ChapterArchive::id` (via `path_hash`), so
+    /// `Bindable::bind_insert` can bind the id explicitly. A collision would require two
+    /// calls in the same nanosecond, which doesn't happen for sync events (the network is
+    /// orders of magnitude slower than that).
     pub fn new(peer_id: &str, kind: &str, status: &str, message: Option<&str>) -> Self {
         let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
 

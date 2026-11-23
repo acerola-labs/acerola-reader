@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * UseCase para observar a lista de quadrinhos da biblioteca.
+ * UseCase to observe the library's comic list.
  */
 open class ObserveLibraryUseCase<T>(
     private val syncGateway: ComicSyncStatusGateway? = null,

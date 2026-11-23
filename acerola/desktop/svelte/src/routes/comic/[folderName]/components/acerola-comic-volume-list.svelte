@@ -51,11 +51,11 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import { slide } from 'svelte/transition';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 	import ComicVolumeButton from './acerola-comic-volume-button.svelte';
 	import Folder from '@lucide/svelte/icons/folder';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
@@ -66,7 +66,7 @@
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import { onMount, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events }: ComicVolumeListProps = $props();
 
@@ -81,23 +81,21 @@
 
 	let expandedVolumeId = $state<string | null>(null);
 
-	// INFO: Reativo de propósito — decide o que fica montado no DOM, não só o
-	// que dispara fetch. Ver o mesmo raciocínio em acerola-comic-chapter-list.svelte.
+	// INFO: Reactive on purpose — decides what stays mounted in the DOM, not just what
+	// fires a fetch. See the same reasoning in acerola-comic-chapter-list.svelte.
 	let visiblePages = new SvelteSet<number>();
 
-	const ITEM_HEIGHT = 112;
-	const BUTTON_HEIGHT = 100;
+	const ITEM_HEIGHT = 80;
+	const BUTTON_HEIGHT = 72;
 
 	function rowClass(chapter: VolumeChapter, isSelected: boolean, isOpening: boolean): string {
 		const base = 'h-full flex-nowrap overflow-hidden';
-		const selectedRing = isSelected
-			? ' ring-2 ring-primary ring-offset-2 ring-offset-background'
-			: '';
+		const selectedRing = isSelected ? ' bg-primary-soft!' : '';
 		const openingState = isOpening ? ' pointer-events-none opacity-70' : '';
 		if (chapter.isRead) {
-			return `${base} border-primary/30 bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
+			return `${base} bg-primary-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
-		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
+		return `${base} bg-surface hover:brightness-110${selectedRing}${openingState}`;
 	}
 
 	const toggleVolume = (volumeId: string) => {
@@ -112,10 +110,10 @@
 	};
 
 	/**
-	 * Criado de forma eager (não em onMount): as actions `use:trackPage` dos
-	 * blocos do {#each} rodam durante a montagem inicial, antes do onMount do
-	 * componente disparar — se o observer fosse criado em onMount, as páginas
-	 * já montadas nunca seriam observadas.
+	 * Created eagerly (not in onMount): the `use:trackPage` actions of the
+	 * {#each} blocks run during the initial mount, before the component's
+	 * onMount fires — if the observer were created in onMount, the pages
+	 * already mounted would never be observed.
 	 */
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -150,9 +148,9 @@
 	}
 
 	/**
-	 * Reciclagem de nós de DOM — mesmo raciocínio de acerola-comic-chapter-list.svelte.
-	 * Só um volume fica expandido por vez, então um único pool compartilhado
-	 * serve pra qualquer volume que esteja aberto no momento.
+	 * DOM node recycling — same reasoning as acerola-comic-chapter-list.svelte.
+	 * Only one volume is expanded at a time, so a single shared pool serves
+	 * whichever volume is currently open.
 	 */
 	const POOL_SIZE = 6;
 
@@ -206,15 +204,15 @@
 			{#if expandedVolumeId === volume.id}
 				{@const totalPages = Math.ceil(volume.totalChapters / pageSize)}
 
-				<div transition:slide class="ml-10 border-l border-surface/30 p-4 pt-0">
+				<div transition:slide class="ml-6 p-4 pt-0">
 					<div class="relative flex w-full flex-col">
 						{#if volume.totalChapters > 0}
 							{#each Array(totalPages) as _, pageIndex}
 								<!-- prettier-ignore -->
 								{@const itemsInThisPage = pageIndex === totalPages - 1? volume.totalChapters % pageSize || pageSize: pageSize}
 
-								<!-- Espaçador: só reserva a altura no fluxo do documento e dispara o
-								     IntersectionObserver — o conteúdo real vem do pool reciclado abaixo. -->
+								<!-- Spacer: only reserves the height in the document flow and triggers the
+								     IntersectionObserver — the real content comes from the recycled pool below. -->
 								<div
 									use:trackPage={pageIndex}
 									style:height="{itemsInThisPage * ITEM_HEIGHT}px"
@@ -233,14 +231,19 @@
 									{#if chapter}
 										<div
 											class="absolute right-0 left-0 animate-in duration-300 fade-in"
-											style:top="{(slot.pageIndex ?? 0) * pageSize * ITEM_HEIGHT +
+											style:top="{(slot.pageIndex ?? 0) *
+												pageSize *
+												ITEM_HEIGHT +
 												itemIndex * ITEM_HEIGHT}px"
 											style:height="{BUTTON_HEIGHT}px"
 										>
 											<AcerolaHeroButton
 												data={{
 													title: chapter.title,
-													description: chapter.fileName
+													description:
+														chapter.fileName !== chapter.title
+															? chapter.fileName
+															: undefined
 												}}
 												events={{
 													onClick: () => {
@@ -263,32 +266,44 @@
 												{#snippet icon()}
 													{#if openingChapterId === chapter.id && !data.isSelectionMode}
 														<div class="text-primary">
-															<RefreshCw size={24} class="animate-spin" />
+															<RefreshCw
+																size={24}
+																class="animate-spin"
+															/>
 														</div>
 													{:else if data.isSelectionMode}
 														{#if data.isSelected?.(chapter.id)}
 															<div
-																class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+																class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 															>
 																<Check size={16} strokeWidth={3} />
 															</div>
 														{:else}
-															<div class="flex h-6 w-6 items-center justify-center">
+															<div
+																class="flex h-6 w-6 items-center justify-center"
+															>
 																<div
-																	class="h-5 w-5 rounded-full border-2 border-muted-foreground"
+																	class="size-5 rounded-full border-2 border-border"
 																></div>
 															</div>
 														{/if}
 													{:else}
-														<div class={chapter.isRead ? '' : 'text-primary'}>
+														<div
+															class={chapter.isRead
+																? ''
+																: 'text-primary'}
+														>
 															{#if chapter.isRead}
 																<div
-																	class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+																	class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 																>
-																	<Check size={16} strokeWidth={3} />
+																	<Check
+																		size={16}
+																		strokeWidth={3}
+																	/>
 																</div>
 															{:else}
-																<BookOpen size={24} />
+																<BookOpen size={18} />
 															{/if}
 														</div>
 													{/if}
@@ -298,83 +313,113 @@
 													<div class="flex items-center gap-2">
 														{#if chapter.isRead}
 															<span
-																class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black tracking-widest text-primary uppercase"
+																class="rounded-full bg-primary-soft px-3 py-1 text-[11px] font-black text-primary"
 															>
-																{m['pages.comic.metadata.completed']
-																	? m['pages.comic.metadata.completed']()
-																	: 'LIDO'}
+																{m[
+																	'pages.comic.metadata.completed'
+																]()}
 															</span>
 														{/if}
-														<div role="presentation" onclick={(event) => event.stopPropagation()}>
+														<div
+															role="presentation"
+															onclick={(event) =>
+																event.stopPropagation()}
+														>
 															<AcerolaPopover
-																state={{ open: openMenuId === chapter.id }}
+																state={{
+																	open: openMenuId === chapter.id
+																}}
 																events={{
-																	onOpenChange: (open) => (openMenuId = open ? chapter.id : null)
+																	onOpenChange: (open) =>
+																		(openMenuId = open
+																			? chapter.id
+																			: null)
 																}}
 																ui={{
 																	align: 'end',
-																	contentClass:
-																		'w-52 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-1.5 shadow-2xl backdrop-blur-md'
+																	contentClass: 'w-52 p-1.5'
 																}}
 															>
 																{#snippet trigger()}
 																	<span
-																		class="flex size-10 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+																		class="flex size-10 items-center justify-center rounded-full bg-card text-foreground transition-[filter] hover:brightness-110"
 																	>
 																		<MoreVertical size={20} />
 																	</span>
 																{/snippet}
 
 																{#snippet content()}
-																	<div class="flex flex-col gap-0.5">
+																	<div
+																		class="flex flex-col gap-0.5"
+																	>
 																		{#if chapter.isRead}
 																			<AcerolaButton
 																				ui={{
-																					variant: 'ghost',
-																					class:
-																						'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-amber-500 hover:bg-amber-500/10 hover:text-amber-400'
+																					variant:
+																						'ghost',
+																					class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-warning hover:bg-warning-soft hover:text-warning'
 																				}}
 																				events={{
 																					onClick: () => {
-																						openMenuId = null;
-																						events.onMarkUnread?.(chapter);
+																						openMenuId =
+																							null;
+																						events.onMarkUnread?.(
+																							chapter
+																						);
 																					}
 																				}}
 																			>
-																				<BookOpen size={16} class="shrink-0" />
-																				{m['pages.comic.selection.mark_unread']()}
+																				<BookOpen
+																					size={16}
+																					class="shrink-0"
+																				/>
+																				{m[
+																					'pages.comic.selection.markUnread'
+																				]()}
 																			</AcerolaButton>
 																		{:else}
 																			<AcerolaButton
 																				ui={{
-																					variant: 'ghost',
-																					class:
-																						'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																					variant:
+																						'ghost',
+																					class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-primary hover:bg-primary-soft'
 																				}}
 																				events={{
 																					onClick: () => {
-																						openMenuId = null;
-																						events.onMarkRead?.(chapter);
+																						openMenuId =
+																							null;
+																						events.onMarkRead?.(
+																							chapter
+																						);
 																					}
 																				}}
 																			>
-																				<Check size={16} class="shrink-0" />
-																				{m['pages.comic.selection.mark_read']()}
+																				<Check
+																					size={16}
+																					class="shrink-0"
+																				/>
+																				{m[
+																					'pages.comic.selection.markRead'
+																				]()}
 																			</AcerolaButton>
 																		{/if}
 
-																		<div class="mx-1 my-1 h-px bg-border/60"></div>
+																		<div
+																			class="mx-3 my-1 h-px bg-border"
+																		></div>
 
 																		<AcerolaButton
 																			ui={{
 																				variant: 'ghost',
-																				class:
-																					'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+																				class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold'
 																			}}
 																			events={{
 																				onClick: () => {
-																					openMenuId = null;
-																					events.onEnterSelection?.(chapter);
+																					openMenuId =
+																						null;
+																					events.onEnterSelection?.(
+																						chapter
+																					);
 																				}
 																			}}
 																		>
@@ -382,7 +427,9 @@
 																				size={16}
 																				class="shrink-0 text-muted-foreground"
 																			/>
-																			{m['pages.comic.selection.select']()}
+																			{m[
+																				'pages.comic.selection.select'
+																			]()}
 																		</AcerolaButton>
 																	</div>
 																{/snippet}
@@ -398,14 +445,23 @@
 						{/if}
 
 						{#if loading}
-							<div class="flex items-center justify-center py-4">
-								<RefreshCw size={24} class="animate-spin text-primary" />
+							<!-- Loading: chapter-row skeleton, never a loose spinner. -->
+							<div
+								class="space-y-3 py-4"
+								role="status"
+								aria-label={m['pages.comic.loading']()}
+							>
+								{#each Array.from({ length: 3 }, (_, i) => i) as i (i)}
+									<div
+										class="h-16 w-full animate-pulse rounded-tile bg-surface"
+									></div>
+								{/each}
 							</div>
 						{/if}
 
 						{#if volume.totalChapters === 0 && !loading}
-							<p class="py-4 text-center text-xs font-black tracking-widest uppercase opacity-50">
-								{m['pages.comic.volume.no_chapters']()}
+							<p class="py-4 text-center text-sm font-semibold text-muted-foreground">
+								{m['pages.comic.volume.noChapters']()}
 							</p>
 						{/if}
 					</div>
@@ -414,11 +470,13 @@
 		{/each}
 	{:else}
 		<div
-			class="flex flex-col items-center space-y-4 rounded-3xl border-2 border-dashed border-surface py-20 text-center opacity-50"
+			class="flex flex-col items-center gap-3 rounded-card bg-card py-16 text-center text-muted-foreground shadow-lift"
 		>
-			<RefreshCw size={48} class="animate-spin text-primary" />
-			<p class="text-sm font-black tracking-widest uppercase">
-				{m['pages.comic.volume.no_volumes']()}
+			<span class="flex size-14 items-center justify-center rounded-full bg-surface">
+				<BookOpen size={18} />
+			</span>
+			<p class="text-base font-black tracking-tight text-foreground">
+				{m['pages.comic.volume.noVolumes']()}
 			</p>
 		</div>
 	{/if}

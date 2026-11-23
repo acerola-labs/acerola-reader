@@ -6,8 +6,8 @@ order: 2
 ---
 
 <script>
-	import Callout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import Steps from '$lib/mdsvex/steps.svelte';
+	import Callout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import Steps from '#lib/mdsvex/steps.svelte';
 </script>
 
 O `acerola/desktop` adota uma arquitetura em duas camadas: um **backend** em Rust (Tauri), estruturado com princípios de Clean Architecture, e um **frontend** reativo em Svelte 5 (SvelteKit).

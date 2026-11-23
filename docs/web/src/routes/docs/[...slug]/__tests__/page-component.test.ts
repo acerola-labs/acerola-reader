@@ -9,7 +9,11 @@ describe('docs/[...slug]/+page (component)', () => {
 			props: {
 				data: {
 					Doc: FakeDoc,
-					frontmatter: { title: 'Getting Started', section: 'Docs', description: 'Intro doc' },
+					frontmatter: {
+						title: 'Getting Started',
+						section: 'Docs',
+						description: 'Intro doc'
+					},
 					raw: '# Getting Started',
 					prev: null,
 					next: {
@@ -24,9 +28,9 @@ describe('docs/[...slug]/+page (component)', () => {
 		});
 
 		expect(screen.getByTestId('doc-body')).toHaveTextContent('Conteúdo do artigo');
-		// A navegação de anterior/próximo aparece tanto acima quanto abaixo do corpo
-		// do artigo (`position="top"` e o padrão `"bottom"`), então os links dela
-		// legitimamente aparecem duas vezes.
+		// The prev/next navigation appears both above and below the article body
+		// (`position="top"` and the default `"bottom"`), so its links legitimately
+		// show up twice.
 		expect(screen.getAllByText('Próximo Artigo')).toHaveLength(2);
 	});
 });

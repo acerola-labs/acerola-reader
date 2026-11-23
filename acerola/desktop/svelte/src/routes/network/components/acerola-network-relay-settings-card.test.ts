@@ -27,46 +27,32 @@ function events() {
 	};
 }
 
-async function expandCard() {
-	// Precisa do filtro por nome desde que o card passou a renderizar um `AcerolaAlertDialog`
-	// (confirmação antes de trocar de relay) — o trigger dele também é um <button
-	// aria-expanded="false">, então `{ expanded: false }` sozinho virou ambíguo.
-	await fireEvent.click(screen.getByRole('button', { name: /Connection|Conexão/i }));
-}
-
-/// Toggle da fonte de relay ativa (Acerola / Iroh público) agora abre um `AcerolaAlertDialog`
-/// de confirmação em vez de aplicar direto — precisa desse passo extra antes de checar o
-/// handler.
+/// Toggling the active relay source (Acerola / public Iroh) opens a confirmation
+/// `AcerolaAlertDialog` instead of applying directly — this extra step is needed before
+/// checking the handler.
 async function confirmSwitch() {
 	await fireEvent.click(screen.getByRole('button', { name: /Switch relay|Trocar relay/i }));
 }
 
-function acerolaRelayCardButton() {
-	return screen.getByRole('button', { name: /Use Acerola's relay|Usar o relay do Acerola/i });
+function acerolaRelaySwitch() {
+	return screen.getByRole('switch', { name: /Use Acerola's relay|Usar o relay do Acerola/i });
 }
 
-function customRelaysCardButton() {
-	return screen.getByRole('button', { name: /Your own relays|Seus relays próprios/i });
-}
-
-function irohCardButton() {
-	return screen.getByRole('button', {
+function irohSwitch() {
+	return screen.getByRole('switch', {
 		name: /Use Iroh Services \(own account\)|Usar a Iroh Services \(conta própria\)/i
 	});
 }
 
-/// O gerenciamento de ticket fica atrás de um toggle próprio dentro do card 3 (ver
-/// `ticketExpanded` no componente) — pré-expandido só quando ainda não há ticket salvo.
+/// The ticket form sits behind the row's "Ticket" button — pre-expanded only while no ticket
+/// is saved yet (see `ticketExpanded` in the component).
 async function expandTicketSection() {
-	await fireEvent.click(
-		screen.getByRole('button', {
-			name: /Ticket configured|No ticket configured yet|Ticket configurado|Nenhum ticket configurado/i
-		})
-	);
+	await fireEvent.click(screen.getByRole('button', { name: /^Ticket$/i }));
 }
 
+/// The custom relays list opens from the row's "Manage" button, apart from enabling the source.
 async function expandCustomRelaysSection() {
-	await fireEvent.click(customRelaysCardButton());
+	await fireEvent.click(screen.getByRole('button', { name: /Manage|Gerenciar/i }));
 }
 
 describe('AcerolaNetworkRelaySettingsCard', () => {
@@ -90,7 +76,9 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 			}
 		});
 
-		expect(screen.getByText(/2/)).toBeInTheDocument();
+		expect(
+			screen.getByText(/2 relay source\(s\) active|2 fonte\(s\) de relay ativa/i)
+		).toBeInTheDocument();
 	});
 
 	it('shows the iroh public network summary when active', () => {
@@ -98,43 +86,47 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 			props: { data: data({ useIrohPublicNetwork: true }), events: events() }
 		});
 
-		expect(screen.getByText(/Iroh/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/Iroh's public relay network|rede pública de relays do Iroh/i)
+		).toBeInTheDocument();
 	});
 
-	it('toggles the acerola relay card', async () => {
+	it('toggles the acerola relay switch', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 
-		await fireEvent.click(acerolaRelayCardButton());
+		await fireEvent.click(acerolaRelaySwitch());
 		await confirmSwitch();
 
 		expect(handlers.onToggleAcerolaRelay).toHaveBeenCalledWith(false);
 	});
 
-	it('shows a check badge on the acerola relay card only while it is active', async () => {
-		render(AcerolaNetworkRelaySettingsCard, {
+	it('reflects whether the acerola relay is active on its switch', () => {
+		const { unmount } = render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ useAcerolaRelay: true }), events: events() }
 		});
-		await expandCard();
+		expect(acerolaRelaySwitch()).toHaveAttribute('aria-checked', 'true');
+		unmount();
 
-		expect(acerolaRelayCardButton().querySelector('svg.lucide-check')).toBeInTheDocument();
+		render(AcerolaNetworkRelaySettingsCard, {
+			props: { data: data({ useAcerolaRelay: false }), events: events() }
+		});
+		expect(acerolaRelaySwitch()).toHaveAttribute('aria-checked', 'false');
 	});
 
-	it('toggles the iroh public network card when a ticket is configured', async () => {
+	it('toggles the iroh public network switch when a ticket is configured', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ hasIrohServicesTicket: true }), events: handlers }
 		});
-		await expandCard();
 
-		await fireEvent.click(irohCardButton());
+		await fireEvent.click(irohSwitch());
 		await confirmSwitch();
 
 		expect(handlers.onToggleIrohPublicNetwork).toHaveBeenCalledWith(true);
 	});
 
-	it('disables the cards while a toggle is still applying and ignores a second click on it', async () => {
+	it('disables the switches while a toggle is still applying and ignores a second click on it', async () => {
 		const handlers = events();
 		let resolveToggle: (() => void) | undefined;
 		handlers.onToggleAcerolaRelay.mockImplementation(
@@ -146,42 +138,39 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ hasIrohServicesTicket: true }), events: handlers }
 		});
-		await expandCard();
 
-		await fireEvent.click(acerolaRelayCardButton());
+		await fireEvent.click(acerolaRelaySwitch());
 		await confirmSwitch();
 
 		expect(handlers.onToggleAcerolaRelay).toHaveBeenCalledTimes(1);
-		expect(acerolaRelayCardButton()).toBeDisabled();
-		// O card Iroh só ficaria habilitado aqui se não fosse pelo guard de `restarting`
-		// (ticket já configurado, então não é a razão de estar desabilitado).
-		expect(irohCardButton()).toBeDisabled();
+		expect(acerolaRelaySwitch()).toBeDisabled();
+		// The Iroh switch would only be enabled here if not for the `restarting` guard
+		// (ticket already configured, so that isn't why it is disabled).
+		expect(irohSwitch()).toBeDisabled();
 
-		// Um segundo clique enquanto a primeira mudança ainda não terminou (clique duplo, ou
-		// mexer em outra fonte de relay) não pode disparar uma segunda restart em paralelo —
-		// nem pelo atributo `disabled` (bloqueado nativamente), nem pela guarda em
-		// `runRestartingAction` se o clique chegasse a acontecer de outra forma.
-		await fireEvent.click(acerolaRelayCardButton());
+		// A second click while the first change hasn't finished (double click, or touching
+		// another relay source) must not fire a second restart in parallel — neither through
+		// the `disabled` attribute (natively blocked), nor through the guard in
+		// `runRestartingAction` if the click got through some other way.
+		await fireEvent.click(acerolaRelaySwitch());
 		expect(handlers.onToggleAcerolaRelay).toHaveBeenCalledTimes(1);
 
 		resolveToggle?.();
 	});
 
-	it('disables the iroh public network card without a configured ticket', async () => {
+	it('disables the iroh public network switch without a configured ticket', () => {
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ hasIrohServicesTicket: false }), events: events() }
 		});
-		await expandCard();
 
-		expect(irohCardButton()).toBeDisabled();
+		expect(irohSwitch()).toBeDisabled();
 	});
 
 	it('saves an iroh services ticket', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 
-		// Sem ticket configurado, a seção já vem pré-expandida — não precisa clicar pra abrir.
+		// Without a configured ticket, the section comes pre-expanded — no click needed to open it.
 		const input = screen.getByPlaceholderText(/services\.iroh\.computer/i);
 		await fireEvent.input(input, { target: { value: 'services-fake-ticket' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Save ticket|Salvar ticket/i }));
@@ -193,13 +182,14 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		const handlers = events();
 		handlers.onSetIrohServicesTicket.mockRejectedValueOnce(new Error('invalid ticket'));
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 
 		const input = screen.getByPlaceholderText(/services\.iroh\.computer/i);
 		await fireEvent.input(input, { target: { value: 'not-a-valid-ticket' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Save ticket|Salvar ticket/i }));
 
-		expect(await screen.findByText(/[Ii]nvalid ticket|[Tt]icket inválido/i)).toBeInTheDocument();
+		expect(
+			await screen.findByText(/[Ii]nvalid ticket|[Tt]icket inválido/i)
+		).toBeInTheDocument();
 	});
 
 	it('removes a configured iroh services ticket', async () => {
@@ -207,11 +197,12 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ hasIrohServicesTicket: true }), events: handlers }
 		});
-		await expandCard();
-		// Ticket já configurado — a seção vem recolhida por padrão, precisa expandir primeiro.
+		// Ticket already configured — the section comes collapsed by default, expand it first.
 		await expandTicketSection();
 
-		await fireEvent.click(screen.getByRole('button', { name: /Remove ticket|Remover ticket/i }));
+		await fireEvent.click(
+			screen.getByRole('button', { name: /Remove ticket|Remover ticket/i })
+		);
 
 		expect(handlers.onClearIrohServicesTicket).toHaveBeenCalled();
 	});
@@ -219,10 +210,11 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 	it('adds a custom relay url', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 		await expandCustomRelaysSection();
 
-		const input = screen.getByPlaceholderText(/your-relay\.example\.com|seu-relay\.exemplo\.com/i);
+		const input = screen.getByPlaceholderText(
+			/your-relay\.example\.com|seu-relay\.exemplo\.com/i
+		);
 		await fireEvent.input(input, { target: { value: 'https://relay-a.test.local' } });
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Add custom relay|Adicionar relay próprio/i })
@@ -234,10 +226,11 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 	it('rejects an invalid custom relay url without calling the handler', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 		await expandCustomRelaysSection();
 
-		const input = screen.getByPlaceholderText(/your-relay\.example\.com|seu-relay\.exemplo\.com/i);
+		const input = screen.getByPlaceholderText(
+			/your-relay\.example\.com|seu-relay\.exemplo\.com/i
+		);
 		await fireEvent.input(input, { target: { value: 'not-a-url' } });
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Add custom relay|Adicionar relay próprio/i })
@@ -255,7 +248,6 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 				events: handlers
 			}
 		});
-		await expandCard();
 		await expandCustomRelaysSection();
 
 		await fireEvent.click(
@@ -265,23 +257,21 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		expect(handlers.onRemoveCustomRelayUrl).toHaveBeenCalledWith('https://relay-a.test.local');
 	});
 
-	it('shows a check badge on the custom relays card once at least one url is configured', async () => {
+	it('shows how many custom relays are configured once at least one url exists', () => {
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: {
 				data: data({ customRelayUrls: ['https://relay-a.test.local'] }),
 				events: events()
 			}
 		});
-		await expandCard();
 
-		expect(customRelaysCardButton().querySelector('svg.lucide-check')).toBeInTheDocument();
+		expect(screen.getByText(/1 configured|1 configurado/i)).toBeInTheDocument();
 	});
 
 	it('disables the custom relay input while the iroh public network is active', async () => {
 		render(AcerolaNetworkRelaySettingsCard, {
 			props: { data: data({ useIrohPublicNetwork: true }), events: events() }
 		});
-		await expandCard();
 		await expandCustomRelaysSection();
 
 		expect(
@@ -292,7 +282,6 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 	it('restarts the p2p module', async () => {
 		const handlers = events();
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Restart P2P module|Reiniciar módulo P2P/i })
@@ -305,7 +294,6 @@ describe('AcerolaNetworkRelaySettingsCard', () => {
 		const handlers = events();
 		handlers.onRestart.mockRejectedValueOnce(new Error('restart failed'));
 		render(AcerolaNetworkRelaySettingsCard, { props: { data: data(), events: handlers } });
-		await expandCard();
 
 		await fireEvent.click(
 			screen.getByRole('button', { name: /Restart P2P module|Reiniciar módulo P2P/i })

@@ -13,10 +13,10 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * Cobre só o gate de dados móveis (ver `MobileDataSyncGate`) — [P2pUseCase.connect]/
- * [P2pUseCase.syncComic]/[P2pUseCase.syncHistoryEntry] são os três pontos por onde QUALQUER
- * tela (Home/Histórico/Quadrinho/Biblioteca remota/Sync) acaba passando pra mover dados de
- * verdade, então a checagem tem que estar aqui, não em cada ViewModel de tela.
+ * Covers only the mobile data gate (see `MobileDataSyncGate`) — [P2pUseCase.connect]/
+ * [P2pUseCase.syncComic]/[P2pUseCase.syncHistoryEntry] are the three points ANY
+ * screen (Home/History/Comic/Remote library/Sync) ends up going through to actually move
+ * data, so the check must live here, not in each screen ViewModel.
  */
 class P2pUseCaseTest {
     private val p2pService = mockk<P2pService>(relaxed = true)

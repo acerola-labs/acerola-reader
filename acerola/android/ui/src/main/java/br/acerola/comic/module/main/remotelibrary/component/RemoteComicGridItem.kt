@@ -32,6 +32,7 @@ import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ImageCard
 import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
@@ -43,12 +44,12 @@ import coil.size.Size
 import coil.size.SizeResolver
 
 /**
- * Item de grid pra um quadrinho da biblioteca remota — mesma composição visual de
- * [br.acerola.comic.module.main.home.component.ComicGridItem] (capa 2:3 grande +
- * título/contagem de capítulos abaixo), mas sem nada de [br.acerola.comic.dto.ComicDto]
- * (categoria, marcador, nota, histórico) já que um [br.acerola.comic.service.network.ComicSummary]
- * remoto não carrega nenhum desses campos. O card inteiro é o alvo de clique — pede o pull
- * (`acerola/sync-comic/1`) do quadrinho, sem uma ação separada.
+ * Grid item for a remote library comic — same visual composition as
+ * [br.acerola.comic.module.main.home.component.ComicGridItem] (large 2:3 cover +
+ * title/chapter count below), but without anything from [br.acerola.comic.dto.ComicDto]
+ * (category, bookmark, rating, history) since a remote [br.acerola.comic.service.network.ComicSummary]
+ * carries none of those fields. The whole card is the click target — requests the comic's pull
+ * (`acerola/sync-comic/1`), with no separate action.
  */
 @Composable
 fun Main.RemoteLibrary.Component.RemoteComicGridItem(
@@ -119,8 +120,8 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = SpacingTokens.ExtraSmall),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = AcerolaExtendedTheme.colors.foreground,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Black),
         )
 
         Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
@@ -140,13 +141,13 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
                 Icon(
                     imageVector = Icons.Rounded.AutoStories,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = AcerolaExtendedTheme.colors.mutedForeground,
                     modifier = Modifier.size(SizeTokens.IconExtraSmall),
                 )
                 Text(
                     text = chapterCount.toString(),
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AcerolaExtendedTheme.colors.mutedForeground,
                 )
             }
 
@@ -154,12 +155,12 @@ fun Main.RemoteLibrary.Component.RemoteComicGridItem(
                 state = syncState,
                 containerSize = SizeTokens.ClickTargetSmall,
                 iconSize = SizeTokens.IconSmall,
-                defaultBackground = MaterialTheme.colorScheme.surfaceVariant,
             ) {
                 Icon(
                     imageVector = Icons.Default.Sync,
                     contentDescription = stringResource(id = R.string.action_sync_comic_with_peer),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(SizeTokens.IconSmall),
                 )
             }
         }

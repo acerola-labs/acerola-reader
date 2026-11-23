@@ -280,7 +280,7 @@ class LibrarySyncWorkerTest {
             assertTrue(result is Result.Failure)
         }
 
-    // Fallback / tipo de sincronização padrão
+    // Fallback / default sync type
 
     @Test
     fun `doWork should use incrementalScan as fallback for unknown type`() =

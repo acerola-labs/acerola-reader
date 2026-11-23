@@ -28,8 +28,8 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { m } from '#lib/paraglide/messages.js';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
@@ -43,7 +43,7 @@
 </script>
 
 <header
-	class="relative z-20 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-surface/40 bg-base/95 px-4 py-2 backdrop-blur-md"
+	class="relative z-20 flex min-h-16 shrink-0 items-center justify-between gap-3 bg-mantle px-4 py-2"
 >
 	<div class="flex min-w-0 flex-1 items-center gap-3">
 		<AcerolaButtonIcon
@@ -58,9 +58,9 @@
 		</AcerolaButtonIcon>
 
 		<div class="min-w-0">
-			<p class="truncate text-sm font-black">{data.title}</p>
+			<p class="truncate text-sm font-black tracking-tight">{data.title}</p>
 			{#if data.subtitle}
-				<p class="text-overlay truncate text-xs">{data.subtitle}</p>
+				<p class="truncate text-xs text-muted-foreground">{data.subtitle}</p>
 			{/if}
 		</div>
 	</div>
@@ -77,8 +77,8 @@
 				variant: data.zoomLevel > 1 ? 'secondary' : 'ghost',
 				title:
 					data.zoomLevel > 1
-						? `${m['pages.reader.actions.reset_zoom']()} (Ctrl+0)`
-						: `${m['pages.reader.actions.apply_zoom']()} (Ctrl++)`
+						? `${m['pages.reader.actions.resetZoom']()} (Ctrl+0)`
+						: `${m['pages.reader.actions.applyZoom']()} (Ctrl++)`
 			}}
 		>
 			{#if data.zoomLevel > 1}
@@ -92,7 +92,7 @@
 			events={{ onClick: events.onToggleZoomMode }}
 			ui={{
 				variant: data.zoomMode ? 'default' : 'ghost',
-				title: `${m['pages.reader.actions.zoom_mode']()} (Z)`
+				title: `${m['pages.reader.actions.zoomMode']()} (Z)`
 			}}
 		>
 			<Focus size={20} />
@@ -117,7 +117,7 @@
 					tone: 'accent',
 					disabled: !data.canPreviousPage || data.pageControlsDisabled,
 					title: data.pageControlsDisabled
-						? m['pages.reader.actions.page.navigation_locked']()
+						? m['pages.reader.actions.page.navigationLocked']()
 						: `${m['pages.reader.actions.page.previous']()} (←)`
 				}}
 			>
@@ -131,7 +131,7 @@
 					tone: 'accent',
 					disabled: !data.canNextPage || data.pageControlsDisabled,
 					title: data.pageControlsDisabled
-						? m['pages.reader.actions.page.navigation_locked']()
+						? m['pages.reader.actions.page.navigationLocked']()
 						: `${m['pages.reader.actions.page.next']()} (→)`
 				}}
 			>

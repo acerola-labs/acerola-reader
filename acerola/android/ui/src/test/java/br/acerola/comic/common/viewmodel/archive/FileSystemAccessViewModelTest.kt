@@ -50,7 +50,7 @@ class FileSystemAccessViewModelTest {
         coEvery { manager.loadFolderUri() } returns Unit
         every { manager.folderUri } returns null
 
-        // Mocka DocumentFile para evitar problemas com fromTreeUri
+        // Mocks DocumentFile to avoid problems with fromTreeUri
         every { DocumentFile.fromTreeUri(any(), any()) } returns null
 
         viewModel = FileSystemAccessViewModel(manager, context)

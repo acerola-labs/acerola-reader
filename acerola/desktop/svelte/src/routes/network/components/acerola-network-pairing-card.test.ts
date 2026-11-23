@@ -48,13 +48,18 @@ describe('AcerolaNetworkPairingCard', () => {
 		expect(navigator.clipboard.writeText).toHaveBeenCalledWith('connect-me');
 	});
 
-	it('toggles the raw code textarea', async () => {
-		render(AcerolaNetworkPairingCard, { props: { data: { code: 'connect-me' } } });
+	it('toggles the raw code block', async () => {
+		const { container } = render(AcerolaNetworkPairingCard, {
+			props: { data: { code: 'connect-me' } }
+		});
 
-		expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+		expect(container.querySelector('#pairing-raw-code')).not.toBeInTheDocument();
 
-		await fireEvent.click(screen.getByRole('button', { name: /show code|mostrar código/i }));
+		await fireEvent.click(screen.getByRole('button', { name: /show code|ver código/i }));
 
-		expect(screen.getByRole('textbox')).toHaveValue('connect-me');
+		expect(container.querySelector('#pairing-raw-code')).toHaveTextContent('connect-me');
+		expect(
+			screen.getByRole('button', { name: /hide code|ocultar código/i })
+		).toBeInTheDocument();
 	});
 });

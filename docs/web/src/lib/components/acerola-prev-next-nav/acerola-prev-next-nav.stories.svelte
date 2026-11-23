@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { DocEntry } from '$lib/content/docs';
+	import type { DocEntry } from '#lib/content/docs.ts';
 	import AcerolaPrevNextNav from './acerola-prev-next-nav.svelte';
 
 	function doc(slug: string, title: string): DocEntry {
@@ -14,20 +14,23 @@
 	}
 
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaPrevNextNav',
+		title: 'Composites/AcerolaPrevNextNav',
 		component: AcerolaPrevNextNav,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Par de links de navegacao sequencial ao fim de uma pagina de documentacao. Cada lado e omitido quando nao ha vizinho (inicio ou fim da lista de docs).'
+						'Pair of sequential navigation links at the end of a documentation page. Each side is omitted when there is no neighbor (start or end of the docs list).'
 				}
 			}
 		},
 		argTypes: {
-			prev: { description: 'Documento anterior, ou null se for o primeiro.', control: false },
-			next: { description: 'Proximo documento, ou null se for o ultimo.', control: false }
+			prev: {
+				description: 'Previous document, or null if this is the first.',
+				control: false
+			},
+			next: { description: 'Next document, or null if this is the last.', control: false }
 		}
 	});
 </script>
@@ -39,7 +42,11 @@
 		next: doc('architecture', 'Arquitetura')
 	}}
 	parameters={{
-		docs: { description: { story: 'Ambos os vizinhos presentes, caso comum no meio da lista.' } }
+		docs: {
+			description: {
+				story: 'Both neighbors present, the common case in the middle of the list.'
+			}
+		}
 	}}
 />
 
@@ -47,7 +54,7 @@
 	name="First Page"
 	args={{ prev: null, next: doc('architecture', 'Arquitetura') }}
 	parameters={{
-		docs: { description: { story: 'Primeira pagina da lista: sem link "Anterior".' } }
+		docs: { description: { story: 'First page of the list: no "Previous" link.' } }
 	}}
 />
 
@@ -55,6 +62,6 @@
 	name="Last Page"
 	args={{ prev: doc('getting-started', 'Primeiros passos'), next: null }}
 	parameters={{
-		docs: { description: { story: 'Ultima pagina da lista: sem link "Proximo".' } }
+		docs: { description: { story: 'Last page of the list: no "Next" link.' } }
 	}}
 />

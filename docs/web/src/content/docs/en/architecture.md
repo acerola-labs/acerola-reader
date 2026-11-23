@@ -6,8 +6,8 @@ order: 1
 ---
 
 <script>
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import Card from '$lib/mdsvex/card.svelte';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import Card from '#lib/mdsvex/card.svelte';
 </script>
 
 Acerola is a **monorepo**: each platform lives isolated, with its own stack, and none depends directly on another. They all consume the shared libraries in `lib/` via a local path dependency — a change in `lib/p2p/` already reflects directly in every consumer.

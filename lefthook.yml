@@ -1,33 +1,35 @@
-# Lefthook — gerenciador de Git hooks do monorepo acerola-reader.
-# Instalação: cargo install lefthook && lefthook install
+# Lefthook: the Acerola git hooks. Same file in every project.
+# Install once (any of them): mise use -g lefthook · scoop install lefthook · winget install evilmartians.lefthook
+# (written in Go: it is not on crates.io, so cargo install does not work)
+# Then, at the repository root: node scripts/git/setup-git.mjs   (writes Git-Flow and runs lefthook install)
 #
-# Convenção de commit: [tag](escopo): descrição
-#
-#   Tags válidas:
-#     feat      nova funcionalidade
-#     fix       correção de bug
-#     docs      documentação
-#     refactor  refatoração sem alterar comportamento
-#     perf      melhoria de desempenho
-#     test      adição ou ajuste de testes
-#     style     formatação, lint visual sem mudança lógica
-#     chore     manutenção (deps, scripts, tarefas internas)
-#     ci        pipelines de CI/CD e workflows
-#     merge     merge de branch
-#
-#   Escopos válidos:
-#     android   acerola/android/
-#     desktop   acerola/desktop/
-#     p2p       lib/p2p/
-#     relay     acerola/relay/
-#     iroh      lib/relay/ (código vendorizado do iroh)
-#     web       docs/web/ (portal web e documentação)
-#     docs      documentação geral e portal docs (usado pelas Actions de deploy)
-#     monorepo  raiz do repo (configs globais, makefile, docs raiz)
+# The admin unlocks their own machine from the branch guard with:  git config project.admin true
 
 commit-msg:
   commands:
-    validate-format:
-      run: |
-        grep -qP '^(\[merge\]: .+|\[(feat|fix|docs|refactor|perf|test|style|chore|ci|merge)\]\((android|desktop|p2p|relay|iroh|web|docs|monorepo)\): .+)' {1} \
-        || (echo "" && echo "❌  Mensagem de commit inválida." && echo "" && echo "    Formato esperado: [tag](escopo): descrição" && echo "    Exemplo:          [fix](desktop): corrige leak de conexão no reader" && echo "" && exit 1)
+    format:
+      run: node scripts/git/commit-msg.mjs "{1}"
+
+pre-commit:
+  commands:
+    branch:
+      run: sh scripts/git/branch-guard.sh commit
+    design:
+      # UI files only; folders and exemptions live in acerola.config.json.
+      glob: '*.{svelte,ts,css,html}'
+      run: node scripts/design/check-design.mjs {staged_files}
+    i18n:
+      # Message files: nested English keys, same keys in every locale.
+      glob: '**/messages/*.json'
+      run: node scripts/i18n/check-i18n.mjs
+
+pre-merge-commit:
+  commands:
+    branch:
+      run: sh scripts/git/branch-guard.sh merge
+
+pre-push:
+  commands:
+    branch:
+      use_stdin: true
+      run: sh scripts/git/branch-guard.sh push

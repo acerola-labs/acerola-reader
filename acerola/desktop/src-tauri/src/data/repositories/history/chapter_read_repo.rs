@@ -19,8 +19,8 @@ impl ChapterReadRepository {
         Self { base: Repository::new(pool.clone()), pool }
     }
 
-    /// Registra um capítulo como lido. Ignora silenciosamente se já existir
-    /// (chave composta `comic_directory_id` + `chapter_archive_id`).
+    /// Marks a chapter as read. Silently ignored if it already exists
+    /// (composite key `comic_directory_id` + `chapter_archive_id`).
     pub async fn insert_or_ignore(&self, chapter_read: &ChapterRead) -> Result<(), DbError> {
         let cols = ChapterRead::columns().join(", ");
         let table = ChapterRead::table_name();
@@ -40,7 +40,7 @@ impl ChapterReadRepository {
         Ok(())
     }
 
-    /// Retorna os IDs dos capítulos lidos de um quadrinho.
+    /// Returns the IDs of a comic's read chapters.
     pub async fn find_ids_by_comic(&self, comic_directory_id: i64) -> Result<Vec<i64>, DbError> {
         let table = ChapterRead::table_name();
 
@@ -55,9 +55,9 @@ impl ChapterReadRepository {
         Ok(rows.into_iter().map(|(id,)| id).collect())
     }
 
-    /// Remove o registro de leitura de um capítulo (marca como não lido). Não usa a
-    /// abstração base (`Repository::delete`, que apaga por `id`): aqui a chave é composta
-    /// por `comic_directory_id` + `chapter_archive_id`, daí o nome mais explícito.
+    /// Removes a chapter's read record (marks it as unread). Does not use the
+    /// base abstraction (`Repository::delete`, which deletes by `id`): here the key is
+    /// `comic_directory_id` + `chapter_archive_id`, hence the more explicit name.
     pub async fn delete_by_comic_and_chapter(
         &self, comic_directory_id: i64, chapter_archive_id: i64,
     ) -> Result<(), DbError> {
@@ -75,8 +75,8 @@ impl ChapterReadRepository {
         Ok(())
     }
 
-    /// Registra múltiplos capítulos como lidos em uma única query. Ignora
-    /// silenciosamente os que já existirem.
+    /// Marks multiple chapters as read in a single query. Silently ignores
+    /// those that already exist.
     pub async fn insert_batch(
         &self, comic_directory_id: i64, chapter_ids: &[i64], created_at: i64,
     ) -> Result<usize, DbError> {
@@ -102,11 +102,11 @@ impl ChapterReadRepository {
         Ok(rows_affected as usize)
     }
 
-    /// Retorna todos os marcadores de "lido" já traduzidos pra chave natural (nome do
-    /// quadrinho + `chapter_sort` do capítulo), usado pelo sync P2P pra montar o manifesto
-    /// local — os IDs autoincrement não são comparáveis entre bases SQLite de devices
-    /// diferentes. Usa `chapter_sort`, não o rótulo (`chapter`): o rótulo não é comparável
-    /// entre devices (cada um nomeia o arquivo como quiser), `chapter_sort` sim.
+    /// Returns every "read" marker already translated to the natural key (comic name +
+    /// chapter `chapter_sort`), used by P2P sync to build the local manifest — autoincrement
+    /// IDs are not comparable across SQLite databases of different devices. Uses
+    /// `chapter_sort`, not the label (`chapter`): the label is not comparable across devices
+    /// (each one names the file however it wants), `chapter_sort` is.
     pub async fn find_all_with_natural_keys(&self) -> Result<Vec<(String, String, i64)>, DbError> {
         let rows = sqlx::query_as::<_, (String, String, i64)>(
             "SELECT c.name, ca.chapter_sort, cr.created_at
@@ -120,10 +120,10 @@ impl ChapterReadRepository {
         Ok(rows)
     }
 
-    /// Mesmo que [`Self::find_all_with_natural_keys`], mas restrito a UM quadrinho e a um
-    /// subconjunto de `chapter_sort` — usado pelo push explícito de capítulo(s)
-    /// selecionado(s) pra um peer (`acerola/sync-history-entry/1`), que não deve vazar
-    /// marcadores de outros capítulos do mesmo quadrinho.
+    /// Same as [`Self::find_all_with_natural_keys`], but restricted to ONE comic and a
+    /// subset of `chapter_sort` — used by the explicit push of selected chapter(s) to a
+    /// peer (`acerola/sync-history-entry/1`), which must not leak markers of other
+    /// chapters of the same comic.
     pub async fn find_natural_keys_for_chapters(
         &self, comic_directory_id: i64, chapter_sorts: &[String],
     ) -> Result<Vec<(String, i64)>, DbError> {
@@ -148,9 +148,9 @@ impl ChapterReadRepository {
         Ok(query.fetch_all(&self.pool).await?)
     }
 
-    /// Remove todos os marcadores de "lido" de um quadrinho inteiro — usado ao excluir o
-    /// quadrinho (o cascade de FK não roda em runtime, ver comentário em
-    /// `VolumeRepository::delete_by_comic`). No-op se não houver nenhum capítulo marcado.
+    /// Removes every "read" marker of a whole comic — used when deleting the comic
+    /// (the FK cascade does not run at runtime, see the comment in
+    /// `VolumeRepository::delete_by_comic`). No-op if no chapter is marked.
     pub async fn delete_by_comic(&self, comic_directory_id: i64) -> Result<u64, DbError> {
         let table = ChapterRead::table_name();
 
@@ -164,7 +164,7 @@ impl ChapterReadRepository {
         Ok(rows_affected)
     }
 
-    /// Remove o registro de leitura de múltiplos capítulos em batch.
+    /// Removes the read record of multiple chapters in batch.
     pub async fn delete_batch(
         &self, comic_directory_id: i64, chapter_ids: &[i64],
     ) -> Result<usize, DbError> {
@@ -198,7 +198,7 @@ mod tests {
         tests::utils::setup_test_db::{insert_comic_directory, setup_test_db_with_comic},
     };
 
-    fn capitulo_lido(comic_directory_id: i64, chapter_archive_id: i64) -> ChapterRead {
+    fn read_chapter(comic_directory_id: i64, chapter_archive_id: i64) -> ChapterRead {
         ChapterRead { comic_directory_id, chapter_archive_id, created_at: 1000 }
     }
 
@@ -217,7 +217,7 @@ mod tests {
             .await
             .unwrap();
 
-        repo.insert_or_ignore(&capitulo_lido(1, 1)).await.unwrap();
+        repo.insert_or_ignore(&read_chapter(1, 1)).await.unwrap();
 
         let ids = repo.find_ids_by_comic(1).await.unwrap();
         assert_eq!(ids.len(), 1);
@@ -233,8 +233,8 @@ mod tests {
             .await
             .unwrap();
 
-        repo.insert_or_ignore(&capitulo_lido(1, 1)).await.unwrap();
-        repo.insert_or_ignore(&capitulo_lido(1, 1)).await.unwrap();
+        repo.insert_or_ignore(&read_chapter(1, 1)).await.unwrap();
+        repo.insert_or_ignore(&read_chapter(1, 1)).await.unwrap();
 
         let ids = repo.find_ids_by_comic(1).await.unwrap();
         assert_eq!(ids.len(), 1);
@@ -247,7 +247,7 @@ mod tests {
         assert!(ids.is_empty());
     }
 
-    async fn inserir_capitulos(pool: &sqlx::SqlitePool, ids: &[i64]) {
+    async fn insert_chapters(pool: &sqlx::SqlitePool, ids: &[i64]) {
         for &id in ids {
             sqlx::query("INSERT INTO chapter_archive (id, chapter, path, chapter_sort, is_special, comic_directory_fk, last_modified) VALUES (?, ?, ?, ?, 0, 1, 0)")
                 .bind(id)
@@ -263,9 +263,9 @@ mod tests {
     #[tokio::test]
     async fn test_delete_removes_read_chapter() {
         let (pool, repo) = setup().await;
-        inserir_capitulos(&pool, &[1]).await;
+        insert_chapters(&pool, &[1]).await;
 
-        repo.insert_or_ignore(&capitulo_lido(1, 1)).await.unwrap();
+        repo.insert_or_ignore(&read_chapter(1, 1)).await.unwrap();
         assert_eq!(repo.find_ids_by_comic(1).await.unwrap().len(), 1);
 
         repo.delete_by_comic_and_chapter(1, 1).await.unwrap();
@@ -281,7 +281,7 @@ mod tests {
     #[tokio::test]
     async fn test_insert_batch_records_multiple() {
         let (pool, repo) = setup().await;
-        inserir_capitulos(&pool, &[1, 2, 3]).await;
+        insert_chapters(&pool, &[1, 2, 3]).await;
 
         let count = repo.insert_batch(1, &[1, 2, 3], 1000).await.unwrap();
         assert_eq!(count, 3);
@@ -293,7 +293,7 @@ mod tests {
     #[tokio::test]
     async fn test_insert_batch_ignores_duplicates() {
         let (pool, repo) = setup().await;
-        inserir_capitulos(&pool, &[1, 2]).await;
+        insert_chapters(&pool, &[1, 2]).await;
 
         repo.insert_batch(1, &[1], 1000).await.unwrap();
         let count = repo.insert_batch(1, &[1, 2], 1000).await.unwrap();
@@ -312,7 +312,7 @@ mod tests {
     #[tokio::test]
     async fn test_delete_batch_removes_multiple() {
         let (pool, repo) = setup().await;
-        inserir_capitulos(&pool, &[1, 2, 3]).await;
+        insert_chapters(&pool, &[1, 2, 3]).await;
         repo.insert_batch(1, &[1, 2, 3], 1000).await.unwrap();
 
         let count = repo.delete_batch(1, &[1, 2]).await.unwrap();
@@ -333,7 +333,7 @@ mod tests {
     async fn test_delete_by_comic_removes_all_markers_for_that_comic_only() {
         let (pool, repo) = setup().await;
         insert_comic_directory(&pool, 2, "Outro", "/outro").await;
-        inserir_capitulos(&pool, &[1, 2]).await;
+        insert_chapters(&pool, &[1, 2]).await;
         sqlx::query("INSERT INTO chapter_archive (id, chapter, path, chapter_sort, is_special, comic_directory_fk, last_modified) VALUES (3, '3', 'path3', '3', 0, 2, 0)")
             .execute(&pool)
             .await
@@ -360,7 +360,7 @@ mod tests {
     async fn test_find_natural_keys_for_chapters_filters_by_comic_and_sort() {
         let (pool, repo) = setup().await;
         insert_comic_directory(&pool, 2, "Outro", "/outro").await;
-        inserir_capitulos(&pool, &[1, 2]).await;
+        insert_chapters(&pool, &[1, 2]).await;
         sqlx::query("INSERT INTO chapter_archive (id, chapter, path, chapter_sort, is_special, comic_directory_fk, last_modified) VALUES (3, '3', 'path3', '3', 0, 2, 0)")
             .execute(&pool)
             .await

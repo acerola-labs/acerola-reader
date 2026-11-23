@@ -2,7 +2,7 @@ use crate::data::repositories::{Bindable, Entity};
 use serde::{Deserialize, Serialize};
 use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico.
+/// Contract with the generic [`crate::data::repositories::Repository`].
 impl Entity for ChapterTemplate {
     fn columns() -> &'static [&'static str] {
         &["id", "label", "pattern", "is_default", "priority"]
@@ -15,7 +15,7 @@ impl Entity for ChapterTemplate {
     }
 }
 
-/// Garante que o código consiga serializar o sql para o objeto
+/// Ensures the code can deserialize the SQL row into the object
 impl Bindable for ChapterTemplate {
     fn bind_insert<'query>(
         &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
@@ -36,11 +36,11 @@ impl Bindable for ChapterTemplate {
             .bind(&self.pattern)
             .bind(self.is_default)
             .bind(self.priority)
-            .bind(self.id) // <- id pro WHERE id = ?
+            .bind(self.id) // <- id for WHERE id = ?
     }
 }
 
-// NOTE: Migration em src-tauri\migrations\archive
+// NOTE: Migration in src-tauri\migrations\archive
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct ChapterTemplate {
     pub id: i64,

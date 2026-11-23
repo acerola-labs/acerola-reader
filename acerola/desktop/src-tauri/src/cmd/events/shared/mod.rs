@@ -11,9 +11,9 @@ pub struct ErrorPayload {
 
 impl From<&ComicError> for ErrorPayload {
     fn from(err: &ComicError) -> Self {
-        // Nome puro do variante (sem os dados de `Debug`), pra bater exato com a chave
-        // usada em `COMIC_ERROR_MESSAGES` (errors.i18n.ts) — `format!("{:?}", err)` incluía
-        // os dados internos (ex.: `InvalidRequest("msg")`), o que nunca batia com a chave.
+        // Bare variant name (without the `Debug` data), to match exactly the key used in
+        // `COMIC_ERROR_MESSAGES` (errors.i18n.ts) — `format!("{:?}", err)` included the
+        // internal data (e.g. `InvalidRequest("msg")`), which never matched the key.
         let error_type = match err {
             ComicError::AlreadyExists => "AlreadyExists",
             ComicError::SyncInProgress => "SyncInProgress",

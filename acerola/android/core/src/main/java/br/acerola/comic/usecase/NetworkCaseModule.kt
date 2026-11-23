@@ -8,8 +8,8 @@ import br.acerola.comic.service.RelaySettings
 import br.acerola.comic.service.network.CoverBrowseProviderImpl
 import br.acerola.comic.service.network.FileSyncProviderImpl
 import br.acerola.comic.service.network.HistorySyncProviderImpl
-import br.acerola.comic.service.network.P2pEventBus
 import br.acerola.comic.service.network.MobileDataSyncGate
+import br.acerola.comic.service.network.P2pEventBus
 import br.acerola.comic.service.network.P2pSyncCoordinator
 import br.acerola.comic.service.network.SecureBlobStoreImpl
 import br.acerola.comic.usecase.network.P2pUseCase
@@ -34,11 +34,11 @@ object NetworkCaseModule {
         historyProvider: HistorySyncProviderImpl,
         fileProvider: FileSyncProviderImpl,
         coverProvider: CoverBrowseProviderImpl,
-        // Não usado no corpo da função — só aqui pra forçar o Dagger a instanciar esse
-        // singleton (e começar a coletar o eventBus) assim que o subsistema P2P nasce, em vez
-        // de nunca ser criado (nada mais injeta um P2pSyncCoordinator diretamente). Ver
-        // KDoc da classe pra entender por que essa coleta não pode depender de nenhuma
-        // ViewModel estar viva.
+        // Not used in the function body — only here to force Dagger to instantiate this
+        // singleton (and start collecting the eventBus) as soon as the P2P subsystem is born, instead
+        // of never being created (nothing else injects a P2pSyncCoordinator directly). See the
+        // class KDoc to understand why this collection cannot depend on any
+        // ViewModel being alive.
         @Suppress("UNUSED_PARAMETER") syncCoordinator: P2pSyncCoordinator,
     ): P2pService {
         // Read once at startup (no runtime hot-swap) — changing the relay requires restarting the app.

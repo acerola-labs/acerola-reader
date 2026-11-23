@@ -101,7 +101,7 @@ class MetadataExporterTest {
             every { mockFolder.findFile(any()) } returns null
 
             every { parserService.serialize(any()) } returns ""
-            // Simula falha ao criar arquivo
+            // Simulates a failure creating the file
             every { mockFolder.createFile(any(), any()) } returns null
 
             val result = service.exportMangaMetadata(comicId, remoteInfo)

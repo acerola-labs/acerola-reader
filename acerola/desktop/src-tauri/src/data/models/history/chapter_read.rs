@@ -3,7 +3,7 @@ use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
 use crate::data::repositories::{Bindable, Entity};
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico.
+/// Contract with the generic [`crate::data::repositories::Repository`].
 impl Entity for ChapterRead {
     fn columns() -> &'static [&'static str] {
         &["comic_directory_id", "chapter_archive_id", "created_at"]
@@ -16,7 +16,7 @@ impl Entity for ChapterRead {
     }
 }
 
-/// Garante que o código consiga serializar o sql para o objeto.
+/// Ensures the code can deserialize the SQL row into the object.
 impl Bindable for ChapterRead {
     fn bind_insert<'query>(
         &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
@@ -27,11 +27,11 @@ impl Bindable for ChapterRead {
     fn bind_update<'query>(
         &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
     ) -> Query<'query, Sqlite, SqliteArguments<'query>> {
-        query.bind(self.created_at).bind(self.chapter_archive_id) // <- id pro WHERE id = ?
+        query.bind(self.created_at).bind(self.chapter_archive_id) // <- id for WHERE id = ?
     }
 }
 
-// NOTE: Migration em src-tauri\migrations\history
+// NOTE: Migration in src-tauri\migrations\history
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct ChapterRead {
     pub comic_directory_id: i64,

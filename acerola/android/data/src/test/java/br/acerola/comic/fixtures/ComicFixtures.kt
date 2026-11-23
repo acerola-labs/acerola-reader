@@ -3,8 +3,8 @@ package br.acerola.comic.fixtures
 import br.acerola.comic.dto.archive.ChapterFileDto
 
 /**
- * Fixtures reutilizáveis para testes de Quadrinhos.
- * Siga o padrão AAA e use descrições em PT-BR nos testes.
+ * Reusable fixtures for comic tests.
+ * Follow the AAA pattern and write test descriptions in English.
  */
 object ComicFixtures {
     fun createChapterFileDto(

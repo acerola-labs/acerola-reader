@@ -1,11 +1,9 @@
 package br.acerola.comic.common.ux.component
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.text.font.FontWeight
 import br.acerola.comic.common.ux.Acerola
 import org.junit.Rule
 import org.junit.Test
@@ -54,16 +52,13 @@ class DialogTest {
                     Acerola.Component.DialogButton(
                         text = "Discard",
                         onClick = {},
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                        fontWeight = FontWeight.Bold,
+                        variant = ButtonVariant.Destructive,
                     )
                 },
                 dismissButtonContent = {
                     Acerola.Component.DialogButton(
                         text = "Cancel",
                         onClick = {},
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
             ) {
@@ -88,7 +83,6 @@ class DialogTest {
                     Acerola.Component.DialogButton(
                         text = "Add",
                         onClick = {},
-                        fontWeight = FontWeight.Bold,
                     )
                 },
                 dismissButtonContent = {

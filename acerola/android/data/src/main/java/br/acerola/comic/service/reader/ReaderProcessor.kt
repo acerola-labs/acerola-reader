@@ -60,14 +60,14 @@ class ReaderProcessor
                                 BitmapFactory.decodeStream(bis, null, options)
                                 bis.reset()
 
-                                // Decode real com otimizações
+                                // Actual decode with optimizations
                                 options.apply {
                                     inJustDecodeBounds = false
                                     inPreferredConfig = Bitmap.Config.RGB_565
                                     inDither = true
                                     inMutable = true
                                     inTempStorage = tempStorage
-                                    // Sample size simples por enquanto (pode ser melhorado se soubermos o screen size)
+                                    // Simple sample size for now (could be improved if we knew the screen size)
                                     inSampleSize = calculateInSampleSize(options, 2000, 2000)
                                 }
 
@@ -104,7 +104,7 @@ class ReaderProcessor
             center: Int,
             total: Int,
         ) {
-            // Prefetch 2 à frente e 2 atrás
+            // Prefetch 2 ahead and 2 behind
             val range = ((center - 2)..(center + 2)).filter { it in 0..<total }
 
             range.forEach { index ->

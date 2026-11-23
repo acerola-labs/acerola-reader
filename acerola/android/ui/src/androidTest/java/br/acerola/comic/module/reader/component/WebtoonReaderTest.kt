@@ -53,7 +53,7 @@ class WebtoonReaderTest {
             click(center)
         }
 
-        // Aguarda a atualização do estado
+        // Waits for the state update
         composeTestRule.waitUntil(timeoutMillis = 3000) { uiToggled }
         assert(uiToggled)
     }

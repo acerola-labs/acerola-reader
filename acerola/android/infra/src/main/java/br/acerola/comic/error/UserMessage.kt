@@ -5,9 +5,9 @@ import br.acerola.comic.type.UiText
 interface UserMessage {
     val uiMessage: UiText
 
-    // Todo tipo de erro (ChapterError, NetworkError, etc.) é UserMessage e é sempre falha —
-    // só Raw precisa poder representar uma mensagem de sucesso, por isso o default aqui
-    // cobre o resto sem exigir que cada sealed interface de erro implemente isso.
+    // Every error type (ChapterError, NetworkError, etc.) is a UserMessage and is always a failure —
+    // only Raw needs to be able to represent a success message, which is why the default here
+    // covers the rest without requiring every error sealed interface to implement it.
     val isSuccess: Boolean get() = false
 
     data class Raw(

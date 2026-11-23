@@ -58,26 +58,26 @@ class HistoryViewModel
         private val _pairedPeers = MutableStateFlow<List<PairedPeer>>(emptyList())
         val pairedPeers: StateFlow<List<PairedPeer>> = _pairedPeers.asStateFlow()
 
-        // Histórico só dispara UMA sessão de sync por vez (um único botão, não um por peer) —
-        // mesma forma simplificada usada por `ComicViewModel._syncingPeerId`, que também não
-        // precisa de granularidade por peer nesse contexto.
-        private val _syncingPeerId = MutableStateFlow<String?>(null)
+        // History only fires ONE sync session at a time (a single button, not one per peer) —
+        // same simplified form used by `ComicViewModel.syncingPeerId`, which also doesn't
+        // need per-peer granularity in that context.
+        private val syncingPeerId = MutableStateFlow<String?>(null)
         val isSyncingWithPeer: StateFlow<Boolean> =
-            _syncingPeerId
+            syncingPeerId
                 .map { it != null }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
         init {
             viewModelScope.launch {
                 p2pEventBus.events.collect { event ->
-                    val pendingPeerId = _syncingPeerId.value ?: return@collect
+                    val pendingPeerId = syncingPeerId.value ?: return@collect
                     when (event) {
                         is P2pEvent.HistorySyncComplete ->
-                            if (event.peerId == pendingPeerId) _syncingPeerId.value = null
+                            if (event.peerId == pendingPeerId) syncingPeerId.value = null
 
                         is P2pEvent.HistorySyncError ->
                             if (event.peerId == pendingPeerId) {
-                                _syncingPeerId.value = null
+                                syncingPeerId.value = null
                                 _uiEvents.send(
                                     UserMessage.Raw(event.error?.uiMessage ?: UiText.DynamicString(event.message)),
                                 )
@@ -89,8 +89,8 @@ class HistoryViewModel
             }
         }
 
-        /** Carrega os peers pareados pro `PeerPickerSheet` — sob demanda (não reativo), mesmo
-         *  padrão de [br.acerola.comic.module.comic.ComicViewModel.loadPairedPeers]. */
+        /** Loads the paired peers for `PeerPickerSheet` — on demand (not reactive), same
+         *  pattern as [br.acerola.comic.module.comic.ComicViewModel.loadPairedPeers]. */
         fun loadPairedPeers() {
             viewModelScope.launch(Dispatchers.IO) {
                 _pairedPeers.value = p2pUseCase.getPairedPeers().map { PairedPeer(peerId = it.id, deviceName = it.deviceName) }
@@ -105,7 +105,7 @@ class HistoryViewModel
                     SyncWithPeerResult.NOT_PAIRED ->
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_sync_comic_peer_not_paired)))
                     SyncWithPeerResult.DECLINED_MOBILE_DATA -> Unit
-                    SyncWithPeerResult.STARTED -> _syncingPeerId.value = peerId
+                    SyncWithPeerResult.STARTED -> syncingPeerId.value = peerId
                 }
             }
         }

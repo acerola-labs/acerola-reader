@@ -13,7 +13,9 @@
 	let { toolbar, viewport, footer, command }: ReaderShellProps = $props();
 </script>
 
-<div class="text-text fixed inset-x-0 top-8 bottom-0 z-50 flex flex-col overflow-hidden bg-base">
+<div
+	class="fixed inset-x-0 top-8 bottom-0 z-50 flex flex-col overflow-hidden bg-background text-foreground"
+>
 	{@render toolbar()}
 	{@render viewport()}
 	{@render footer()}

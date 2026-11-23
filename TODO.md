@@ -431,7 +431,7 @@ Levantado em auditoria de release (11/09/2026), revisado em 18/09/2026.
       `npm run test:wdio` (`package.json`), mas nenhum job de `desktop-tests.yml` chama isso.
       Hoje só roda manualmente, quando alguém lembra.
 - [ ] **Cobertura de e2e (Playwright) e `wdio` nunca chega no Codecov** — os jobs `e2e` de
-      `desktop-tests.yml`/`docs-web-tests.yml` sobem o *relatório* do Playwright
+      `desktop-tests.yml`/`web-tests.yml` sobem o *relatório* do Playwright
       (`playwright-report`) como artifact, mas isso é resultado de teste, não cobertura de
       código — não há instrumentação de coverage nesses runs nem upload pro Codecov. Mesma
       lacuna vale pro `wdio` (que nem roda no CI ainda, ver item acima). `codecov.yml` só tem

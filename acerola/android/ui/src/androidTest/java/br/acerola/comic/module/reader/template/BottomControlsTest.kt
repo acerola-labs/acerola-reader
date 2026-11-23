@@ -18,7 +18,7 @@ class BottomControlsTest {
             AcerolaTheme {
                 Reader.Template.BottomControls(
                     pageCount = 50,
-                    currentPage = 9, // Página 10
+                    currentPage = 9, // Page 10
                     onPrevClick = {},
                     onNextClick = {},
                     onNextChapterClick = {},
@@ -27,7 +27,7 @@ class BottomControlsTest {
             }
         }
 
-        // Verifica se a string "10 / 50" está presente
+        // Checks that the string "10 / 50" is present
         composeTestRule.onNodeWithText("10 / 50").assertIsDisplayed()
     }
 

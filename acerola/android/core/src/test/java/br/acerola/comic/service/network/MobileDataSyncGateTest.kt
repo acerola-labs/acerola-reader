@@ -99,9 +99,9 @@ class MobileDataSyncGateTest {
             launch { gate.ensureAllowed() }
             gate.confirm(remember = true)
 
-            // A persistência roda no `scope` interno do gate (`Dispatchers.Default` real, não
-            // o dispatcher de teste) — timeout em vez de verify direto pra não flakiar numa
-            // corrida entre threads de verdade.
+            // Persistence runs on the gate's internal `scope` (real `Dispatchers.Default`, not
+            // the test dispatcher) — timeout instead of a direct verify to avoid flaking on a
+            // race between real threads.
             io.mockk.coVerify(timeout = 2000) { MobileDataSyncPreference.setAlwaysAllow(context, true) }
         }
 }

@@ -33,11 +33,11 @@ const PROGRESS_EVENT: &str = "sync:files:progress";
 const COMPLETE_EVENT: &str = "sync:files:complete";
 const ERROR_EVENT: &str = "sync:files:error";
 
-/// Lado que INICIA a sessão de sync de arquivos. Sequência (cada passo alterna quem
-/// escreve/lê, nunca os dois escrevendo ao mesmo tempo no stream):
-/// 1. escreve manifesto local → 2. lê manifesto do peer → 3. escreve o que quer → 4. lê o
-///    que o peer quer → 5. lê os arquivos que pediu (o peer escreve primeiro nessa fase) →
-///    6. escreve os arquivos que o peer pediu.
+/// Side that STARTS the file sync session. Sequence (each step alternates who
+/// writes/reads, never both writing to the stream at the same time):
+/// 1. write local manifest → 2. read peer's manifest → 3. write what it wants → 4. read
+///    what the peer wants → 5. read the files it requested (the peer writes first in this phase) →
+///    6. write the files the peer requested.
 pub struct FileSyncOutbound {
     emit: EventEmitter,
     service: FileSyncService,
@@ -56,11 +56,11 @@ impl FileSyncOutbound {
         Self { emit, service, metadata_service, log_repo, guard, transfer }
     }
 
-    /// Ver doc de `receive_files`/`send_files` (`transfer.rs`) — o primeiro `usize` retornado é
-    /// a soma de capítulos/extras que não foram transferidos de verdade nas quatro fases,
-    /// usado por `handle()` pra não reportar a sessão como "completa" quando algo ficou
-    /// faltando. O segundo `usize` é quantos desses capítulos já existiam localmente com um
-    /// checksum diferente do peer — conflito de verdade, não só "eu não tinha ainda" (ver
+    /// See the docs of `receive_files`/`send_files` (`transfer.rs`) — the first returned `usize` is
+    /// the sum of chapters/extras that were not actually transferred across the four phases,
+    /// used by `handle()` to avoid reporting the session as "complete" when something was
+    /// missing. The second `usize` is how many of those chapters already existed locally with a
+    /// checksum different from the peer's — a real conflict, not just "I didn't have it yet" (see
     /// `FileSyncService::diff_wanted`).
     async fn run(
         &self, peer: &PeerIdentity, writer: &mut FramedWriter, reader: &mut FramedReader,
@@ -80,7 +80,7 @@ impl FileSyncOutbound {
 
         let their_wanted: FileWantList = read_json(reader).await?;
 
-        // Fase 1: o peer envia primeiro o que eu pedi (capítulos, depois extras).
+        // Phase 1: the peer first sends what I requested (chapters, then extras).
         let received_skipped = receive_files(
             reader,
             my_wanted.len(),
@@ -105,7 +105,7 @@ impl FileSyncOutbound {
         )
         .await?;
 
-        // Fase 2: eu envio o que o peer pediu (capítulos, depois extras).
+        // Phase 2: I send what the peer requested (chapters, then extras).
         let sent_skipped = send_files(
             writer,
             &their_wanted.wanted,
@@ -180,8 +180,8 @@ impl Handler for FileSyncOutbound {
             Err(error) => {
                 let message = error.to_string();
                 let code = classify_sync_error(&error);
-                // Log técnico sempre em inglês, independente do `code` — é o que vai pro
-                // arquivo de log/suporte; a tradução (`code`) é só pra UI.
+                // Technical log always in English, regardless of `code` — it is what goes to the
+                // log/support file; the translation (`code`) is only for the UI.
                 tracing::warn!(peer = %peer.id, ?code, error = %message, "[FileSync] session failed");
                 (self.emit)(ERROR_EVENT, sync_error_payload(&peer.id, &message, code, None));
                 self.log_repo
@@ -195,8 +195,8 @@ impl Handler for FileSyncOutbound {
     }
 }
 
-/// Lado que RESPONDE à sessão de sync de arquivos — mesma sequência lógica do outbound,
-/// com os papéis de leitura/escrita invertidos em cada passo.
+/// Side that ANSWERS the file sync session — same logical sequence as the outbound,
+/// with the read/write roles inverted at each step.
 pub struct FileSyncInbound {
     emit: EventEmitter,
     service: FileSyncService,
@@ -215,7 +215,7 @@ impl FileSyncInbound {
         Self { emit, service, metadata_service, log_repo, guard, transfer }
     }
 
-    /// Ver doc equivalente em `FileSyncOutbound::run`.
+    /// See the equivalent docs in `FileSyncOutbound::run`.
     async fn run(
         &self, peer: &PeerIdentity, writer: &mut FramedWriter, reader: &mut FramedReader,
     ) -> Result<(usize, usize), P2pError> {
@@ -234,7 +234,7 @@ impl FileSyncInbound {
         )
         .await?;
 
-        // Fase 1: eu envio primeiro o que o peer (outbound) pediu (capítulos, depois extras).
+        // Phase 1: I first send what the peer (outbound) requested (chapters, then extras).
         let sent_skipped = send_files(
             writer,
             &their_wanted.wanted,
@@ -254,7 +254,7 @@ impl FileSyncInbound {
         )
         .await?;
 
-        // Fase 2: eu recebo o que eu pedi (capítulos, depois extras).
+        // Phase 2: I receive what I requested (chapters, then extras).
         let received_skipped = receive_files(
             reader,
             my_wanted.len(),
@@ -334,8 +334,8 @@ impl Handler for FileSyncInbound {
             Err(error) => {
                 let message = error.to_string();
                 let code = classify_sync_error(&error);
-                // Log técnico sempre em inglês, independente do `code` — é o que vai pro
-                // arquivo de log/suporte; a tradução (`code`) é só pra UI.
+                // Technical log always in English, regardless of `code` — it is what goes to the
+                // log/support file; the translation (`code`) is only for the UI.
                 tracing::warn!(peer = %peer.id, ?code, error = %message, "[FileSync] session failed");
                 (self.emit)(ERROR_EVENT, sync_error_payload(&peer.id, &message, code, None));
                 self.log_repo
@@ -383,12 +383,12 @@ mod tests {
         (log_repo, service, metadata_service, temp_dir)
     }
 
-    /// Reproduz a corrida documentada no fix: uma segunda sessão inbound chega pro mesmo
-    /// peer enquanto uma já está em andamento. Sem o guard, `handle()` chamaria
-    /// `self.run()` (que abre o manifesto via `FileSyncService`) mesmo com outra sessão
-    /// ativa. Como a lease já está reservada antes de `handle()` rodar, a asserção de que
-    /// só o evento de "busy" foi emitido — nunca "started" — é a prova de que `run()` (e,
-    /// portanto, o `FileSyncService`) nunca chegou a ser tocado.
+    /// Reproduces the race documented in the fix: a second inbound session arrives for the same
+    /// peer while one is already in progress. Without the guard, `handle()` would call
+    /// `self.run()` (which opens the manifest via `FileSyncService`) even with another session
+    /// active. Since the lease is already reserved before `handle()` runs, the assertion that
+    /// only the "busy" event was emitted — never "started" — is the proof that `run()` (and,
+    /// therefore, `FileSyncService`) was never touched.
     #[tokio::test]
     async fn inbound_rejects_second_session_for_same_peer_without_touching_the_service() {
         let (log_repo, service, metadata_service, _dir) = setup().await;
@@ -396,7 +396,7 @@ mod tests {
         let (emit, events) = mock_emitter();
 
         let peer = PeerIdentity { id: "peer-busy".to_string(), device_id: None };
-        let _held_lease = guard.try_acquire(&peer.id).expect("primeira reserva deveria suceder");
+        let _held_lease = guard.try_acquire(&peer.id).expect("first reservation should succeed");
 
         let inbound =
             FileSyncInbound::new(emit, service, metadata_service, log_repo, guard, test_transfer());
@@ -406,16 +406,16 @@ mod tests {
 
         assert!(result.is_ok());
         let recorded = events.lock().unwrap();
-        assert_eq!(recorded.len(), 1, "esperava só o evento de busy, recebeu: {recorded:?}");
+        assert_eq!(recorded.len(), 1, "expected only the busy event, got: {recorded:?}");
         assert_eq!(recorded[0].0, "sync:files:error");
         assert!(recorded[0].1.contains("already in progress"));
         let payload: serde_json::Value = serde_json::from_str(&recorded[0].1).unwrap();
-        assert_eq!(payload["code"], "busy", "frontend usa esse code pra traduzir a mensagem na UI");
+        assert_eq!(payload["code"], "busy", "frontend uses this code to translate the UI message");
     }
 
-    /// Mesma corrida do teste acima, mas cruzando papéis: a lease foi reservada por uma
-    /// sessão inbound e a segunda tentativa é outbound — prova que o guard é compartilhado
-    /// entre os dois papéis, não só entre sessões do mesmo tipo.
+    /// Same race as the test above, but crossing roles: the lease was reserved by an
+    /// inbound session and the second attempt is outbound — proves the guard is shared
+    /// between both roles, not only between sessions of the same type.
     #[tokio::test]
     async fn outbound_and_inbound_share_the_same_guard_per_peer() {
         let (log_repo, service, metadata_service, _dir) = setup().await;
@@ -423,7 +423,7 @@ mod tests {
         let (emit, events) = mock_emitter();
 
         let peer = PeerIdentity { id: "peer-cross".to_string(), device_id: None };
-        let _held_lease = guard.try_acquire(&peer.id).expect("reserva inicial deveria suceder");
+        let _held_lease = guard.try_acquire(&peer.id).expect("initial reservation should succeed");
 
         let outbound = FileSyncOutbound::new(
             emit,
@@ -444,8 +444,8 @@ mod tests {
         assert_eq!(recorded[0].0, "sync:files:error");
     }
 
-    /// Sem nenhuma lease pré-existente, `handle()` deve seguir normalmente até `run()` —
-    /// confirma que o guard não bloqueia sessões novas depois que a anterior é liberada.
+    /// Without any pre-existing lease, `handle()` must proceed normally up to `run()` —
+    /// confirms the guard does not block new sessions after the previous one is released.
     #[tokio::test]
     async fn inbound_proceeds_to_run_when_no_session_is_active() {
         let (log_repo, service, metadata_service, _dir) = setup().await;
@@ -468,10 +468,10 @@ mod tests {
         format!("{:x}", Sha256::digest(bytes))
     }
 
-    /// Mesmo quadrinho/capítulo nos dois lados, mas com bytes (logo checksum) diferentes — o
-    /// cenário real do bug relatado ("conflito não é detectado nem reportado"). Prova que o
-    /// payload de `sync:files:complete` carrega `conflicts >= 1`, mesmo com o comportamento de
-    /// puxar/sobrescrever a versão do peer inalterado (ver `FileSyncService::diff_wanted`).
+    /// Same comic/chapter on both sides, but with different bytes (hence checksum) — the
+    /// real scenario of the reported bug ("conflict is neither detected nor reported"). Proves the
+    /// `sync:files:complete` payload carries `conflicts >= 1`, with the behavior of
+    /// pulling/overwriting the peer's version unchanged (see `FileSyncService::diff_wanted`).
     #[tokio::test]
     async fn complete_event_payload_carries_a_real_conflict_count() {
         let outbound_pool = crate::tests::utils::setup_test_db::setup_test_db().await;
@@ -494,7 +494,7 @@ mod tests {
         )
         .await;
 
-        // Mesmo rótulo de capítulo ("Cap 1") nos dois lados, conteúdo (e checksum) diferente.
+        // Same chapter label ("Cap 1") on both sides, different content (and checksum).
         let outbound_path = outbound_dir.path().join("Cap 1.cbz");
         let outbound_bytes = b"versao do outbound";
         tokio::fs::write(&outbound_path, outbound_bytes).await.unwrap();
@@ -560,19 +560,19 @@ mod tests {
             outbound.handle(&peer, Box::new(client_send), Box::new(client_recv)),
             inbound.handle(&peer, Box::new(server_send), Box::new(server_recv)),
         );
-        outbound_result.expect("sessão não deveria falhar mesmo havendo conflito");
-        inbound_result.expect("sessão não deveria falhar mesmo havendo conflito");
+        outbound_result.expect("session should not fail even with a conflict");
+        inbound_result.expect("session should not fail even with a conflict");
 
         for (label, events) in [("outbound", &outbound_events), ("inbound", &inbound_events)] {
             let recorded = events.lock().unwrap();
             let complete = recorded
                 .iter()
                 .find(|(name, _)| name == "sync:files:complete")
-                .unwrap_or_else(|| panic!("{label} deveria ter emitido sync:files:complete"));
+                .unwrap_or_else(|| panic!("{label} should have emitted sync:files:complete"));
             let payload: serde_json::Value = serde_json::from_str(&complete.1).unwrap();
             assert_eq!(
                 payload["conflicts"], 1,
-                "{label}: checksum diferente do mesmo capítulo nos dois lados é um conflito real"
+                "{label}: a different checksum for the same chapter on both sides is a real conflict"
             );
         }
     }

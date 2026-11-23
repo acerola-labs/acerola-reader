@@ -2,72 +2,39 @@ package br.acerola.comic.module.comic.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.GroupedHeroButton
-import br.acerola.comic.common.ux.component.HeroButton
-import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.component.Badge
+import br.acerola.comic.common.ux.component.RoundIcon
+import br.acerola.comic.common.ux.component.SettingRow
+import br.acerola.comic.common.ux.component.SyncButton
+import br.acerola.comic.common.ux.component.Tone
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.metadata.comic.ComicMetadataDto
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.pattern.metadata.MetadataSource
 import br.acerola.comic.ui.R
 
-@Composable
-fun Comic.Component.SyncMetadata(
-    remoteInfo: ComicMetadataDto?,
-    externalSyncEnabled: Boolean,
-    onSyncMangadexInfo: () -> Unit,
-    onSyncComicInfo: () -> Unit,
-    onSyncAnilistInfo: () -> Unit,
-    mangadexInfoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-    anilistInfoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-    comicInfoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        if (externalSyncEnabled) {
-            Comic.Component.ExternalMetadataSync(
-                remoteInfo = remoteInfo,
-                onSyncMangadexInfo = onSyncMangadexInfo,
-                onSyncAnilistInfo = onSyncAnilistInfo,
-                mangadexInfoState = mangadexInfoState,
-                anilistInfoState = anilistInfoState,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Comic.Component.ComicInfoSync(
-            remoteInfo = remoteInfo,
-            onSyncComicInfo = onSyncComicInfo,
-            comicInfoState = comicInfoState,
-        )
-    }
-}
-
-// Mangadex+AniList isolados do ComicInfo (que não depende de sync externa) — usados dentro do
-// `content` expansível do ToggleCard de sync externa em ConfigSection.kt, mesmo agrupamento do
-// `AcerolaToggleCard` do desktop (acerola-comic-preferences.svelte).
+/**
+ * MangaDex and AniList rows of the metadata section (shown while external sync is on), the
+ * desktop's rows: logo, title, description and a "Sync" pill; the source that filled this comic
+ * gets a "Current source" badge.
+ */
 @Composable
 fun Comic.Component.ExternalMetadataSync(
     remoteInfo: ComicMetadataDto?,
@@ -78,133 +45,49 @@ fun Comic.Component.ExternalMetadataSync(
     modifier: Modifier = Modifier,
 ) {
     val syncSource = remoteInfo?.syncSource
+    val anyLoading = mangadexInfoState == SyncActionVisualState.LOADING || anilistInfoState == SyncActionVisualState.LOADING
 
-    Column(modifier = modifier) {
-        MangadexSection(
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
+        SourceRow(
+            title = stringResource(id = R.string.title_config_sync_mangadex),
+            description = stringResource(id = R.string.description_config_sync_mangadex),
+            logo = painterResource(id = R.drawable.mangadex_v2),
             isActive = syncSource == MetadataSource.MANGADEX,
-            onSyncInfo = onSyncMangadexInfo,
-            infoState = mangadexInfoState,
+            state = mangadexInfoState,
+            enabled = !anyLoading,
+            onSync = onSyncMangadexInfo,
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AnilistSection(
+        SourceRow(
+            title = stringResource(id = R.string.title_config_sync_anilist),
+            description = stringResource(id = R.string.description_config_sync_anilist),
+            logo = painterResource(id = R.drawable.anilist),
             isActive = syncSource == MetadataSource.ANILIST,
-            onSyncInfo = onSyncAnilistInfo,
-            infoState = anilistInfoState,
+            state = anilistInfoState,
+            enabled = !anyLoading,
+            onSync = onSyncAnilistInfo,
         )
     }
 }
 
+/** ComicInfo.xml row: reads the metadata from the file in the comic's own folder. */
 @Composable
 fun Comic.Component.ComicInfoSync(
     remoteInfo: ComicMetadataDto?,
     onSyncComicInfo: () -> Unit,
     comicInfoState: SyncActionVisualState = SyncActionVisualState.IDLE,
 ) {
-    ComicInfoSection(
-        isActive = remoteInfo?.syncSource == MetadataSource.COMIC_INFO,
-        onSyncInfo = onSyncComicInfo,
-        infoState = comicInfoState,
-    )
-}
-
-@Composable
-private fun MangadexSection(
-    isActive: Boolean,
-    onSyncInfo: () -> Unit,
-    infoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-) {
-    val anyLoading = infoState == SyncActionVisualState.LOADING
-
-    Acerola.Component.GroupedHeroButton(
-        title = stringResource(id = R.string.label_mangadex_group),
-        description =
-            pluralStringResource(
-                id = R.plurals.description_sync_mangadex_remote_info_supporting,
-                count = 1,
-            ),
-        iconBackground = MaterialTheme.colorScheme.tertiary,
-        onClick = if (anyLoading) null else onSyncInfo,
-        action =
-            if (isActive) {
-                {
-                    Icon(
-                        imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            } else {
-                null
-            },
-        icon = {
-            Acerola.Component.SyncActionIcon(
-                state = infoState,
-                defaultBackground = MaterialTheme.colorScheme.tertiary,
-                onDefaultBackground = MaterialTheme.colorScheme.onTertiary,
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.mangadex_v2),
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                )
-            }
-        },
-    )
-}
-
-@Composable
-private fun AnilistSection(
-    isActive: Boolean,
-    onSyncInfo: () -> Unit,
-    infoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-) {
-    SyncItem(
-        title = stringResource(id = R.string.title_sync_anilist_remote_info),
-        subtitle = stringResource(id = R.string.description_sync_anilist_remote_info),
-        iconPainter = painterResource(id = R.drawable.anilist),
-        iconBackground = MaterialTheme.colorScheme.tertiary,
-        iconTint = MaterialTheme.colorScheme.onTertiary,
-        isActive = isActive,
-        state = infoState,
-        onClick = onSyncInfo,
-    )
-}
-
-@Composable
-private fun ComicInfoSection(
-    isActive: Boolean,
-    onSyncInfo: () -> Unit,
-    infoState: SyncActionVisualState = SyncActionVisualState.IDLE,
-) {
-    val anyLoading = infoState == SyncActionVisualState.LOADING
-
-    Acerola.Component.GroupedHeroButton(
+    Acerola.Component.SettingRow(
         title = stringResource(id = R.string.title_sync_comic_info),
         description = stringResource(id = R.string.description_sync_comic_info),
-        onClick = if (anyLoading) null else onSyncInfo,
-        action =
-            if (isActive) {
-                {
-                    Icon(
-                        imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            } else {
-                null
-            },
-        icon = {
-            Acerola.Component.SyncActionIcon(state = infoState) {
-                Icon(
-                    imageVector = Icons.Rounded.Description,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(24.dp),
+        leading = { Acerola.Component.RoundIcon(icon = Icons.Rounded.Description) },
+        content = {
+            ActionLine(isActive = remoteInfo?.syncSource == MetadataSource.COMIC_INFO) {
+                Acerola.Component.SyncButton(
+                    state = comicInfoState,
+                    text = stringResource(id = R.string.action_comic_preferences_read),
+                    loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
+                    onClick = onSyncComicInfo,
+                    enabled = comicInfoState != SyncActionVisualState.LOADING,
                 )
             }
         },
@@ -212,59 +95,45 @@ private fun ComicInfoSection(
 }
 
 @Composable
-private fun SyncItem(
+private fun SourceRow(
     title: String,
-    subtitle: String,
-    iconVector: ImageVector? = null,
-    iconPainter: Painter? = null,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    iconTint: Color = MaterialTheme.colorScheme.onPrimary,
-    isActive: Boolean = false,
-    state: SyncActionVisualState = SyncActionVisualState.IDLE,
-    onClick: () -> Unit,
+    description: String,
+    logo: Painter,
+    isActive: Boolean,
+    state: SyncActionVisualState,
+    enabled: Boolean,
+    onSync: () -> Unit,
 ) {
-    Acerola.Component.HeroButton(
+    Acerola.Component.SettingRow(
         title = title,
-        description = subtitle,
-        iconBackground = iconBackground,
-        onClick = if (state == SyncActionVisualState.LOADING) null else onClick,
-        action =
-            if (isActive) {
-                {
-                    Icon(
-                        imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            } else {
-                null
-            },
-        icon = {
-            Acerola.Component.SyncActionIcon(
-                state = state,
-                defaultBackground = iconBackground,
-                onDefaultBackground = iconTint,
-            ) {
-                when {
-                    iconVector != null ->
-                        Icon(
-                            imageVector = iconVector,
-                            contentDescription = null,
-                            tint = iconTint,
-                            modifier = Modifier.size(24.dp),
-                        )
-                    iconPainter != null ->
-                        Image(
-                            painter = iconPainter,
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp),
-                        )
-                }
+        description = description,
+        leading = { Image(painter = logo, contentDescription = null, modifier = Modifier.size(40.dp)) },
+        content = {
+            ActionLine(isActive = isActive) {
+                Acerola.Component.SyncButton(
+                    state = state,
+                    text = stringResource(id = R.string.action_comic_preferences_sync),
+                    loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
+                    onClick = onSync,
+                    enabled = enabled,
+                )
             }
         },
     )
+}
+
+// The row's action pill, with the "Current source" badge next to it when this source is active.
+@Composable
+private fun ActionLine(
+    isActive: Boolean,
+    action: @Composable () -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+        action()
+        if (isActive) {
+            Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_metadata_source_active), tone = Tone.Success)
+        }
+    }
 }
 
 @Preview(name = "Light", showBackground = true)
@@ -272,11 +141,9 @@ private fun SyncItem(
 @Composable
 private fun SyncMetadataPreview() {
     AcerolaTheme {
-        Comic.Component.SyncMetadata(
+        Comic.Component.ExternalMetadataSync(
             remoteInfo = null,
-            externalSyncEnabled = true,
             onSyncMangadexInfo = {},
-            onSyncComicInfo = {},
             onSyncAnilistInfo = {},
         )
     }

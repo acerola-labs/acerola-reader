@@ -5,10 +5,10 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import { toast } from 'svelte-sonner';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { HOME_COMMANDS } from '$lib/contracts/home/home.commands';
-import { HOME_EVENTS } from '$lib/contracts/home/home.events';
-import type { ComicSummaryPayload } from '$lib/contracts/home/home.payloads';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { HOME_COMMANDS } from '#lib/contracts/home/home.commands.ts';
+import { HOME_EVENTS } from '#lib/contracts/home/home.events.ts';
+import type { ComicSummaryPayload } from '#lib/contracts/home/home.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useComicSummary, _resetComicSummaryState } from './use-comic-summary.svelte';
 

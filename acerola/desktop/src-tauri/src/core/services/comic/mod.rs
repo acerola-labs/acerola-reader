@@ -15,7 +15,7 @@ use crate::{
     infra::error::ComicError,
 };
 
-/// Serviço para operações em massa e individuais de quadrinhos.
+/// Service for bulk and individual comic operations.
 pub struct ComicService {
     repo: ComicRepository,
     chapter_repo: ChapterRepository,
@@ -33,7 +33,7 @@ impl ComicService {
         }
     }
 
-    /// Reescaneia pontualmente um único quadrinho a partir do seu path atual no disco.
+    /// Rescans a single comic on demand from its current path on disk.
     pub async fn rescan_comic(&self, id: i64) -> Result<(), ComicError> {
         let comic = self
             .repo
@@ -46,14 +46,14 @@ impl ComicService {
         scanner.rescan_comic(comic, |_| {}, |_| {}).await
     }
 
-    /// Atualiza o status de visibilidade de um quadrinho específico.
+    /// Updates the visibility status of a specific comic.
     pub async fn update_hidden_status(
         &self, id: i64, hidden: bool,
     ) -> Result<ComicDirectory, ComicError> {
         self.repo.update_hidden_status(id, hidden).await.map_err(ComicError::from)
     }
 
-    /// Atualiza o status de sincronizacao externa de um quadrinho específico.
+    /// Updates the external sync status of a specific comic.
     pub async fn update_external_sync_enabled(
         &self, id: i64, external_sync_enabled: bool,
     ) -> Result<ComicDirectory, ComicError> {
@@ -63,27 +63,27 @@ impl ComicService {
             .map_err(ComicError::from)
     }
 
-    /// Atualiza o status de visibilidade de multiplos quadrinhos em batch.
+    /// Updates the visibility status of multiple comics in batch.
     pub async fn update_hidden_status_batch(
         &self, ids: &[i64], hidden: bool,
     ) -> Result<usize, ComicError> {
         self.repo.update_hidden_status_batch(ids, hidden).await.map_err(ComicError::from)
     }
 
-    /// Deleta múltiplos quadrinhos: a pasta física no disco (recursivamente) e todas as
-    /// linhas relacionadas no banco, incluindo o registro em `comic_directory` em si.
+    /// Deletes multiple comics: the physical folder on disk (recursively) and every
+    /// related row in the database, including the `comic_directory` record itself.
     ///
-    /// A remoção em disco é melhor esforço, por quadrinho — uma pasta já ausente ou
-    /// bloqueada não impede a exclusão dos demais nem do registro no banco (mesma postura
-    /// de `MetadataService::clear_comic_metadata`).
+    /// Removal from disk is best-effort, per comic — an already-missing or locked folder
+    /// does not prevent deleting the others nor the database record (same stance as
+    /// `MetadataService::clear_comic_metadata`).
     ///
-    /// A limpeza das tabelas filhas é manual, na ordem de dependência (filhas antes das
-    /// pais), porque o cascade de FK declarado nas migrations não roda em produção — o pool
-    /// nunca habilita `PRAGMA foreign_keys` (mesmo motivo documentado em
-    /// `VolumeRepository::delete_by_comic`). Sem essa limpeza, as linhas órfãs ficam presas
-    /// ao `id` do quadrinho excluído — e como esse `id` é hash do path
-    /// (`path_hash`), um quadrinho novo criado depois no mesmo caminho herdaria em
-    /// silêncio o lixo (capítulos, histórico, metadata) do quadrinho antigo.
+    /// Child tables are cleaned manually, in dependency order (children before
+    /// parents), because the FK cascade declared in the migrations does not run in production —
+    /// the pool never enables `PRAGMA foreign_keys` (same reason documented in
+    /// `VolumeRepository::delete_by_comic`). Without this cleanup, orphan rows stay tied
+    /// to the deleted comic's `id` — and since that `id` is a path hash
+    /// (`path_hash`), a new comic created later at the same path would silently
+    /// inherit the old comic's garbage (chapters, history, metadata).
     pub async fn delete_batch(&self, ids: &[i64]) -> Result<usize, ComicError> {
         if ids.is_empty() {
             return Ok(0);
@@ -91,7 +91,7 @@ impl ComicService {
 
         let placeholders = ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
 
-        // 1. Coleta os caminhos físicos dos quadrinhos antes de remover os registros do banco.
+        // 1. Collect the comics' physical paths before removing the database records.
         let select_sql = format!("SELECT path FROM comic_directory WHERE id IN ({})", placeholders);
         let mut query = sqlx::query_scalar::<_, String>(&select_sql);
         for &id in ids {
@@ -99,8 +99,8 @@ impl ComicService {
         }
         let paths: Vec<String> = query.fetch_all(&self.pool).await.unwrap_or_default();
 
-        // 2. Executa a limpeza em lote de todas as tabelas filhas e dos registros principais dentro
-        // de uma transação atômica única, eliminando deadlocks e dezenas de transações individuais.
+        // 2. Batch-clean every child table and the main records inside a single atomic
+        // transaction, avoiding deadlocks and dozens of individual transactions.
         let mut tx = self.pool.begin().await?;
 
         let child_delete_queries = [
@@ -130,8 +130,8 @@ impl ComicService {
 
         tx.commit().await?;
 
-        // 3. Desacopla a remoção em disco para threads bloqueantes dedicadas (spawn_blocking),
-        // evitando travar os threads de worker do Tokio ou a thread principal do IPC no Windows.
+        // 3. Offload disk removal to dedicated blocking threads (spawn_blocking),
+        // avoiding stalling Tokio worker threads or the main IPC thread on Windows.
         let mut handles = Vec::with_capacity(paths.len());
         for path_str in paths {
             handles.push(tokio::task::spawn_blocking(move || {
@@ -158,9 +158,9 @@ impl ComicService {
         Ok(rows_affected)
     }
 
-    /// Gera a capa de um quadrinho a partir da primeira página do seu primeiro capítulo
-    /// (considerando a ordem de leitura, inclusive dentro de volumes), substituindo
-    /// qualquer capa já definida.
+    /// Generates a comic's cover from the first page of its first chapter
+    /// (following reading order, including inside volumes), replacing
+    /// any cover already set.
     pub async fn regenerate_cover(&self, id: i64) -> Result<ComicDirectory, ComicError> {
         let comic = self
             .repo
@@ -186,8 +186,8 @@ impl ComicService {
         self.repo.update_cover(id, &cover_path).await.map_err(ComicError::from)
     }
 
-    /// Gera a capa de cada volume do quadrinho a partir da primeira página do seu primeiro
-    /// capítulo, substituindo qualquer capa já definida. Volumes sem capítulos são ignorados.
+    /// Generates the cover of each volume of the comic from the first page of its first
+    /// chapter, replacing any cover already set. Volumes without chapters are skipped.
     pub async fn regenerate_volume_covers(
         &self, id: i64,
     ) -> Result<Vec<VolumeArchive>, ComicError> {
@@ -225,8 +225,8 @@ impl ComicService {
     }
 }
 
-/// Extrai a primeira página do arquivo de capítulo informado (em uma thread bloqueante) e
-/// persiste como `cover.*` dentro de `target_dir`.
+/// Extracts the first page of the given chapter file (on a blocking thread) and
+/// persists it as `cover.*` inside `target_dir`.
 async fn extract_and_persist_cover(
     chapter_file: PathBuf, target_dir: &Path,
 ) -> Result<String, ComicError> {
@@ -246,9 +246,9 @@ mod tests {
         insert_reading_history, setup_test_db,
     };
 
-    /// Prova o próprio motivo desta mudança: excluir um quadrinho tinha que apagar a pasta
-    /// física, não só a linha no banco (era só `DELETE FROM comic_directory`, arquivo em
-    /// disco ficava intocado).
+    /// Proves the very reason for this change: deleting a comic had to delete the physical
+    /// folder, not just the database row (it used to be only `DELETE FROM comic_directory`, the
+    /// file on disk was left untouched).
     #[tokio::test]
     async fn delete_batch_removes_the_physical_folder_from_disk() {
         let pool = setup_test_db().await;
@@ -264,11 +264,11 @@ mod tests {
         let deleted = service.delete_batch(&[1]).await.unwrap();
 
         assert_eq!(deleted, 1);
-        assert!(!comic_dir.exists(), "pasta física deveria ter sido removida");
+        assert!(!comic_dir.exists(), "physical folder should have been removed");
     }
 
-    /// Uma pasta já ausente (usuário apagou manualmente, ou path desatualizado) não pode
-    /// impedir a exclusão do registro no banco — mesma postura best-effort de
+    /// An already-missing folder (user deleted it manually, or outdated path) must not
+    /// prevent deleting the database record — same best-effort stance as
     /// `MetadataService::clear_comic_metadata`.
     #[tokio::test]
     async fn delete_batch_still_removes_db_row_when_folder_is_already_gone() {
@@ -284,10 +284,10 @@ mod tests {
         assert_eq!(row.0, 0);
     }
 
-    /// Regressão do bug de linha órfã: como o cascade de FK não roda em produção, excluir um
-    /// quadrinho sem limpar as tabelas filhas manualmente deixava capítulo/histórico/leitura
-    /// presos ao `id` antigo — e como esse `id` é hash do path, um quadrinho novo criado
-    /// depois no mesmo caminho herdaria esse lixo em silêncio.
+    /// Regression for the orphan row bug: since the FK cascade does not run in production,
+    /// deleting a comic without manually cleaning the child tables left chapter/history/read
+    /// rows tied to the old `id` — and since that `id` is a path hash, a new comic created
+    /// later at the same path would silently inherit that garbage.
     #[tokio::test]
     async fn delete_batch_cleans_up_orphaned_child_rows() {
         let pool = setup_test_db().await;
@@ -311,8 +311,8 @@ mod tests {
         let read: (i64,) =
             sqlx::query_as("SELECT COUNT(*) FROM chapter_read").fetch_one(&pool).await.unwrap();
 
-        assert_eq!(chapters.0, 0, "capítulo órfão não foi limpo");
-        assert_eq!(history.0, 0, "histórico de leitura órfão não foi limpo");
-        assert_eq!(read.0, 0, "marcador de lido órfão não foi limpo");
+        assert_eq!(chapters.0, 0, "orphan chapter was not cleaned up");
+        assert_eq!(history.0, 0, "orphan reading history was not cleaned up");
+        assert_eq!(read.0, 0, "orphan read marker was not cleaned up");
     }
 }

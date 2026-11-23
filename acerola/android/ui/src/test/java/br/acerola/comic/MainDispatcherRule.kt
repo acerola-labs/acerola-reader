@@ -10,7 +10,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /**
- * JUnit Rule que configura o Main dispatcher para testes unitários de coroutines.
+ * JUnit Rule that sets up the Main dispatcher for coroutine unit tests.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(

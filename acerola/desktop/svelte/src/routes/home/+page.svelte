@@ -4,24 +4,25 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import AcerolaEmptyState from '#lib/components/acerola-empty-state/acerola-empty-state.svelte';
 	import AcerolaComicActionDialog from './components/acerola-comic-action-dialog.svelte';
 	import AcerolaFilterPanel, {
 		type BookmarkFilter
 	} from './components/acerola-filter-panel.svelte';
-	import AcerolaPeerPicker from '$lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
-	import AcerolaRemoteLibraryDialog from '$lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
-	import { useBookmarks } from '$lib/hooks/store/use-bookmarks.svelte';
-	import { useComicSelection } from '$lib/hooks/store/use-comic-selection.svelte';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { useRemoteLibrary } from '$lib/hooks/store/use-remote-library.svelte';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import AcerolaPeerPicker from '#lib/components/acerola-peer-picker/acerola-peer-picker.svelte';
+	import AcerolaRemoteLibraryDialog from '#lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
+	import { useBookmarks } from '#lib/hooks/store/use-bookmarks.svelte.ts';
+	import { useComicSelection } from '#lib/hooks/store/use-comic-selection.svelte.ts';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { useRemoteLibrary } from '#lib/hooks/store/use-remote-library.svelte.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 	import MoreVertical from '@lucide/svelte/icons/more-vertical';
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import Check from '@lucide/svelte/icons/check';
@@ -30,23 +31,24 @@
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import SearchX from '@lucide/svelte/icons/search-x';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
-	import { LIBRARY_EVENTS } from '$lib/contracts/library/library.events';
-	import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-	import { useLibraryScanner } from '$lib/hooks/store/use-comic-scanner.svelte';
-	import { useComicSummary } from '$lib/hooks/store/use-comic-summary.svelte';
-	import { useComicContext } from '$lib/state/comic-context.svelte';
-	import { resolveCover } from '$lib/utils/artwork.utils';
+	import { LIBRARY_EVENTS } from '#lib/contracts/library/library.events.ts';
+	import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+	import { useLibraryScanner } from '#lib/hooks/store/use-comic-scanner.svelte.ts';
+	import { useComicSummary } from '#lib/hooks/store/use-comic-summary.svelte.ts';
+	import { useComicContext } from '#lib/state/comic-context.svelte.ts';
+	import { resolveCover } from '#lib/utils/artwork.util.ts';
 	import { listen } from '@tauri-apps/api/event';
 	import { getContext, onDestroy, onMount } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { toast } from 'svelte-sonner';
 	import type {
 		ComicSummaryItemPayload,
 		MetadataSource,
 		SortBy,
 		SortOrder
-	} from '$lib/contracts/home/home.payloads';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+	} from '#lib/contracts/home/home.payloads.ts';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 	const summary = useComicSummary();
 	const activeComic = useComicContext();
@@ -54,11 +56,11 @@
 	const selection = useComicSelection();
 	const folderStore = useSelectFolder();
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. Ver `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` pro porquê: uma
-	// instância só-desta-página, desmontada ao navegar pra outra tela, rejeitava promises de
-	// sync em andamento com "sync cancelled: listener stopped" mesmo o sync de verdade
-	// continuando no backend.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. See `CONTEXT_KEYS.networkSync` / `routes/network/+page.svelte` for why: a
+	// page-only instance, unmounted when navigating to another screen, rejected in-flight sync
+	// promises with "sync cancelled: listener stopped" even though the real sync kept going in
+	// the backend.
 	const sync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 	const remoteLibrary = useRemoteLibrary();
 
@@ -73,10 +75,10 @@
 	let bookmarkFilter = $state<BookmarkFilter>('all');
 	let showPeerPicker = $state(false);
 	let browsingPeerId = $state<string | null>(null);
-	// Evita re-disparar `summary.fetch()`/toast pro mesmo evento — tanto em re-render
-	// quanto ao navegar pra fora e voltar pra Home enquanto uma sessão terminada ainda é a
-	// primeira linha do log (`sync.log[0]`). Sessões já terminadas antes da montagem são
-	// ignoradas de imediato para não exibir toast fantasma na inicialização da página.
+	// Avoids re-firing `summary.fetch()`/toast for the same event — both on re-render and
+	// when navigating away and back to Home while a finished session is still the first log
+	// line (`sync.log[0]`). Sessions already finished before mount are ignored right away so
+	// no ghost toast shows on page startup.
 	let lastHandledSyncKey: string | undefined =
 		sync.log[0] && sync.log[0].status !== 'started'
 			? `${sync.log[0].id}:${sync.log[0].status}`
@@ -101,19 +103,18 @@
 		remoteLibrary.stopListening();
 	});
 
-	// `sync.syncComic`/`sync.syncFiles` só resolvem quando a conexão é aberta, não quando a
-	// sessão termina de fato — o resultado real (e portanto o momento de recarregar a
-	// biblioteca local) chega aqui via `sync.log`, alimentado pelos mesmos eventos
-	// `sync:comic:*`/`sync:files:*` que a tela de Rede escuta. `sync:files:*` (sync em massa —
-	// pode trazer quadrinhos inteiros novos) também precisa recarregar a Home; antes só
-	// `'comic'` disparava esse refresh, deixando a biblioteca desatualizada até o usuário
-	// navegar manualmente pra fora e voltar.
+	// `sync.syncComic`/`sync.syncFiles` only resolve when the connection opens, not when the
+	// session actually ends — the real outcome (and so the moment to reload the local library)
+	// arrives here via `sync.log`, fed by the same `sync:comic:*`/`sync:files:*` events the
+	// Network screen listens to. `sync:files:*` (bulk sync — may bring whole new comics) must
+	// also reload the Home; before, only `'comic'` fired this refresh, leaving the library
+	// stale until the user manually navigated away and back.
 	$effect(() => {
 		const entry = sync.log[0];
-		// `id < 0` marca uma linha carregada do histórico persistido (ver `fromPersisted` em
-		// `use-network-sync.svelte.ts`), não um evento ao vivo desta sessão — sem esse guard, a
-		// linha "complete" mais recente do histórico disparava este toast/refresh assim que a
-		// Home montava, mesmo sem nenhum sync ter de fato acontecido agora.
+		// `id < 0` marks a line loaded from the persisted history (see `fromPersisted` in
+		// `use-network-sync.svelte.ts`), not a live event from this session — without this
+		// guard, the most recent "complete" history line fired this toast/refresh as soon as
+		// the Home mounted, even with no sync actually happening now.
 		if (!entry || entry.id < 0 || (entry.kind !== 'comic' && entry.kind !== 'files')) return;
 
 		const currentKey = `${entry.id}:${entry.status}`;
@@ -121,18 +122,18 @@
 			return;
 		}
 
-		// Um único toast por sessão (kind+peer), criado em 'started' e reaproveitado (mesmo
-		// `id`) em 'complete'/'error' — o svelte-sonner substitui o conteúdo do toast existente
-		// em vez de empilhar um novo, mesmo padrão do `toastAsync` já usado na tela do quadrinho.
+		// A single toast per session (kind+peer), created on 'started' and reused (same `id`)
+		// on 'complete'/'error' — svelte-sonner replaces the existing toast's content instead of
+		// stacking a new one, same pattern as the `toastAsync` already used on the comic screen.
 		const toastId = `sync-${entry.kind}-${entry.peerId}`;
 
 		if (entry.status === 'started') {
 			lastHandledSyncKey = currentKey;
 			const peer = peers.peerLabel(entry.peerId);
 			if (entry.kind === 'comic') {
-				toast.loading(m['pages.network.transfers.comic_started']({ peer }), { id: toastId });
+				toast.loading(m['pages.network.transfers.comicStarted']({ peer }), { id: toastId });
 			} else {
-				toast.loading(m['pages.network.transfers.files_started']({ peer }), { id: toastId });
+				toast.loading(m['pages.network.transfers.filesStarted']({ peer }), { id: toastId });
 			}
 			return;
 		}
@@ -143,9 +144,9 @@
 			const peer = peers.peerLabel(entry.peerId);
 			const opts = { id: toastId, duration: 4000 };
 			if (entry.kind === 'comic') {
-				toast.success(m['pages.network.transfers.comic_complete']({ peer }), opts);
+				toast.success(m['pages.network.transfers.comicComplete']({ peer }), opts);
 			} else {
-				toast.success(m['pages.network.transfers.files_complete']({ peer }), opts);
+				toast.success(m['pages.network.transfers.filesComplete']({ peer }), opts);
 			}
 			summary.fetch();
 			return;
@@ -157,17 +158,17 @@
 			const msg = entry.message;
 			const opts = { id: toastId, duration: 5000 };
 			if (entry.kind === 'comic') {
-				toast.error(m['pages.network.transfers.comic_error']({ msg }), opts);
+				toast.error(m['pages.network.transfers.comicError']({ msg }), opts);
 			} else {
-				toast.error(m['pages.network.transfers.files_error']({ msg }), opts);
+				toast.error(m['pages.network.transfers.filesError']({ msg }), opts);
 			}
-			// `sync:files:error`/`sync:comic:error` também cobre sessão que terminou com
-			// capítulos faltando (`Ok(skipped) => ... Err(...)` em file_handler.rs/
-			// comic_handler.rs) — os capítulos/quadrinhos que JÁ foram recebidos com sucesso
-			// antes do abort já estão persistidos no banco quando esse evento chega, então sem
-			// este fetch a Home continuava mostrando a biblioteca antiga até o usuário navegar
-			// pra fora e voltar (era exatamente o "sincroniza mas não aparece o quadrinho" numa
-			// sessão grande, onde a chance de pelo menos 1 item bater numa corrida é maior).
+			// `sync:files:error`/`sync:comic:error` also covers a session that ended with
+			// missing chapters (`Ok(skipped) => ... Err(...)` in file_handler.rs/
+			// comic_handler.rs) — the chapters/comics ALREADY received successfully before the
+			// abort are persisted in the database by the time this event arrives, so without
+			// this fetch the Home kept showing the old library until the user navigated away
+			// and back (that was exactly the "syncs but the comic doesn't show up" in a large
+			// session, where the chance of at least 1 item hitting a race is higher).
 			summary.fetch();
 			return;
 		}
@@ -183,11 +184,11 @@
 		if (!browsingPeerId) return;
 		const addrs = peers.getKnownAddr(browsingPeerId);
 		if (!addrs) return;
-		// Vem da navegação da biblioteca remota (`RemoteLibrarySheet`-like flow) — o usuário só
-		// pode escolher um quadrinho que ainda não tem, então é sempre pull.
-		sync
-			.syncComic(browsingPeerId, addrs, comicName, 'pull')
-			.catch((err) => toast.error(String(err)));
+		// Comes from remote library browsing (`RemoteLibrarySheet`-like flow) — the user can
+		// only pick a comic they don't have yet, so it is always a pull.
+		sync.syncComic(browsingPeerId, addrs, comicName, 'pull').catch((err) =>
+			toast.error(extractErrorMessage(err))
+		);
 	}
 
 	async function handleHide(ids: (string | number)[]) {
@@ -217,7 +218,7 @@
 		if (validIds.length === 0) return;
 		const count = await summary.clearMetadata(validIds);
 
-		toast.success(m['pages.home.toast.metadata_cleared']({ count }));
+		toast.success(m['pages.home.toast.metadataCleared']({ count }));
 		selection.exitSelectionMode();
 
 		showActionDialog = false;
@@ -301,24 +302,47 @@
 			? (summary.comics?.comics ?? [])
 			: bookmarkFilter === 'none'
 				? (summary.comics?.comics.filter((comic) => comic.bookmark == null) ?? [])
-				: (summary.comics?.comics.filter((comic) => comic.bookmark?.id === bookmarkFilter) ?? [])
+				: (summary.comics?.comics.filter(
+						(comic) => comic.bookmark?.id === bookmarkFilter
+					) ?? [])
 	);
 </script>
 
 {#if summary.loading && (!summary.comics || summary.comics.total === 0)}
-	<div class="flex items-center justify-center p-8 text-muted-foreground">
-		{m['pages.home.loading']()}
+	<!-- Loading: skeleton in the shape of the cover grid. -->
+	<div class="px-8 pt-8 pb-8" role="status" aria-label={m['pages.home.loading']()}>
+		<div class="mb-4 h-10 w-48 animate-pulse rounded-full bg-surface"></div>
+		<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
+			{#each Array.from({ length: 12 }, (_, i) => i) as i (i)}
+				<div class="aspect-2/3 animate-pulse rounded-tile bg-surface"></div>
+			{/each}
+		</div>
+	</div>
+{:else if summary.failed && !summary.comics}
+	<!-- Error: what happened and what to do. -->
+	<div class="p-8">
+		<div class="flex items-center gap-4 rounded-card bg-destructive-soft p-5 text-destructive">
+			<p class="flex-1 text-sm font-semibold">{m['pages.home.error.text']()}</p>
+			<AcerolaButton
+				ui={{ variant: 'secondary', class: 'rounded-full font-black' }}
+				events={{ onClick: () => summary.fetch() }}
+			>
+				{m['pages.home.error.retry']()}
+			</AcerolaButton>
+		</div>
 	</div>
 {:else if summary.comics && (summary.comics.total > 0 || activeFiltersCount > 0)}
 	<div class="px-8 pt-8 pb-8">
 		<div class="mb-4 flex items-center justify-between">
 			{#if selection.isSelectionMode}
 				<div class="flex items-center gap-2">
-					<span class="text-sm font-medium text-muted-foreground">
+					<span
+						class="flex h-11 items-center rounded-full bg-primary-soft px-4 text-sm font-black text-primary tabular-nums"
+					>
 						{m['pages.home.selection.selected']({ count: selection.selectedCount })}
 					</span>
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+						ui={{ variant: 'ghost' }}
 						events={{ onClick: handleSelectAllToggle }}
 					>
 						{selection.selectedCount === visibleComics.length
@@ -327,15 +351,20 @@
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'secondary', size: 'sm', class: 'rounded-lg font-semibold gap-1.5' }}
+						ui={{
+							variant: 'secondary',
+							class: 'gap-1.5'
+						}}
 						events={{ onClick: () => (showActionDialog = true) }}
 					>
 						<SlidersHorizontal size={14} />
-						{m['pages.home.selection.actions_button']({ count: selection.selectedCount })}
+						{m['pages.home.selection.actionsButton']({
+							count: selection.selectedCount
+						})}
 					</AcerolaButton>
 
 					<AcerolaButton
-						ui={{ variant: 'ghost', size: 'sm', class: 'rounded-lg' }}
+						ui={{ variant: 'ghost' }}
 						events={{ onClick: () => selection.exitSelectionMode() }}
 					>
 						{m['pages.home.selection.cancel']()}
@@ -345,11 +374,11 @@
 				<div class="flex items-center gap-2">
 					<!-- Filter & Sort Button -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-xl gap-2' }}
+						ui={{ variant: 'secondary', class: 'gap-2' }}
 						events={{ onClick: () => (showFilterPanel = !showFilterPanel) }}
 					>
 						<SlidersHorizontal size={16} />
-						{m['pages.home.filter_button']()}
+						{m['pages.home.filterButton']()}
 						{#if activeFiltersCount > 0}
 							<span
 								class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground"
@@ -359,25 +388,25 @@
 						{/if}
 					</AcerolaButton>
 
-					<!-- Buscar/sincronizar quadrinhos de outro dispositivo pareado -->
+					<!-- Fetch/sync comics from another paired device -->
 					<AcerolaButton
-						ui={{ variant: 'ghost', class: 'rounded-xl gap-2' }}
+						ui={{ variant: 'secondary', class: 'gap-2' }}
 						events={{ onClick: () => (showPeerPicker = true) }}
 					>
 						<MonitorIcon size={16} />
-						{m['pages.home.browse_remote_button']()}
+						{m['pages.home.browseRemoteButton']()}
 					</AcerolaButton>
 
 					<!-- Active sort indicator -->
 					{#if summary.sortBy !== 'title' || summary.sortOrder !== 'asc'}
 						<span
-							class="rounded-lg bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary"
+							class="flex h-9 items-center rounded-full bg-primary-soft px-3.5 text-xs font-black text-primary"
 						>
 							{summary.sortBy === 'title'
 								? m['pages.home.sort.indicator.title']()
 								: summary.sortBy === 'chapterCount'
-									? m['pages.home.sort.indicator.chapter_count']()
-									: m['pages.home.sort.indicator.last_updated']()}
+									? m['pages.home.sort.indicator.chapterCount']()
+									: m['pages.home.sort.indicator.lastUpdated']()}
 							{summary.sortOrder === 'asc' ? '↑' : '↓'}
 						</span>
 					{/if}
@@ -386,21 +415,14 @@
 		</div>
 
 		{#if visibleComics.length === 0}
-			<div
-				class="flex min-h-[40vh] animate-in flex-col items-center justify-center p-12 text-center duration-300 fade-in-50"
-			>
-				<div
-					class="mb-4 flex size-16 items-center justify-center rounded-2xl bg-surface/60 text-primary shadow-inner"
-				>
-					<SearchX size={32} />
-				</div>
-				<h3 class="text-xl font-bold tracking-tight text-foreground">
-					{m['pages.home.no_results_filtered_title']()}
-				</h3>
-				<p class="mt-1.5 max-w-md text-sm text-muted-foreground">
-					{m['pages.home.no_results_filtered']()}
-				</p>
-			</div>
+			<AcerolaEmptyState
+				data={{
+					title: m['pages.home.noResultsFilteredTitle'](),
+					hint: m['pages.home.noResultsFiltered'](),
+					icon: SearchX
+				}}
+				ui={{ class: 'min-h-[40vh] justify-center' }}
+			/>
 		{/if}
 
 		<div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-6">
@@ -432,7 +454,7 @@
 					{#snippet footer()}
 						<div class="mt-1 flex items-center justify-between">
 							<span
-								class="text-overlay flex items-center gap-1 text-[10px] font-black tracking-wider uppercase"
+								class="flex items-center gap-1 text-[10px] font-black tracking-wider text-muted-foreground uppercase"
 							>
 								<BookOpen size={10} />
 								{comic.metadata.chapterCount}
@@ -443,11 +465,12 @@
 					{#snippet action()}
 						<AcerolaButtonIcon
 							ui={{
-								tone: 'accent',
-								class: 'translate-x-1.5 -mr-1.5'
+								variant: 'ghost',
+								class: 'size-8 translate-x-1.5 -mr-1.5 text-muted-foreground hover:text-foreground'
 							}}
 							events={{
-								onClick: (event) => handleActionClick(event, comic.relations.directoryId)
+								onClick: (event) =>
+									handleActionClick(event, comic.relations.directoryId)
 							}}
 						>
 							<MoreVertical size={16} />
@@ -463,7 +486,7 @@
 					{#snippet overlay()}
 						{#if isSelected}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-xl bg-primary/30"
+								class="absolute inset-0 flex items-center justify-center bg-primary/30"
 							>
 								<div class="rounded-full bg-primary p-2">
 									<Check size={24} class="text-primary-foreground" />
@@ -471,9 +494,9 @@
 							</div>
 						{:else if selection.isSelectionMode}
 							<div
-								class="absolute inset-0 flex items-center justify-center rounded-xl bg-surface/50"
+								class="absolute inset-0 flex items-center justify-center bg-scrim/50"
 							>
-								<div class="rounded-full border-2 border-muted-foreground p-2">
+								<div class="rounded-full bg-on-scrim/20 p-2">
 									<div class="h-6 w-6"></div>
 								</div>
 							</div>
@@ -501,46 +524,36 @@
 		}}
 	/>
 {:else}
-	<div
-		class="flex min-h-[60vh] animate-in flex-col items-center justify-center p-8 text-center duration-300 fade-in-50"
+	<!-- Empty: mascot + title + one phrase + one action (rescan when a folder exists, pick one otherwise). -->
+	<AcerolaEmptyState
+		data={{ title: m['pages.home.noComics'](), hint: m['pages.home.empty.desc']() }}
+		ui={{ class: 'min-h-[60vh] justify-center p-8' }}
 	>
-		<div
-			class="mb-4 flex size-16 items-center justify-center rounded-2xl bg-surface/60 text-primary shadow-inner"
-		>
-			<FolderPlus size={32} />
-		</div>
-		<h3 class="text-xl font-bold tracking-tight text-foreground">
-			{m['pages.home.no_comics']()}
-		</h3>
-		<p class="mt-1.5 max-w-md text-sm text-muted-foreground">
-			{m['pages.home.empty.desc']()}
-		</p>
-		<div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-			<AcerolaButton
-				ui={{
-					variant: 'default',
-					class: 'rounded-xl font-semibold gap-2 shadow-md hover:shadow-lg transition-all'
-				}}
-				events={{ onClick: () => refreshScanner.start() }}
-			>
-				<RefreshCw size={18} class={refreshScanner.scanning ? 'animate-spin' : ''} />
-				{m['pages.home.empty.quick_sync']()}
-			</AcerolaButton>
-
-			<AcerolaButton
-				ui={{ variant: 'outline', class: 'rounded-xl font-medium gap-2' }}
-				events={{
-					onClick: async () => {
-						await folderStore.selectFolder();
-						await summary.fetch();
-					}
-				}}
-			>
-				<FolderPlus size={16} />
-				{m['pages.home.empty.select_folder']()}
-			</AcerolaButton>
-		</div>
-	</div>
+		{#snippet action()}
+			{#if folderStore.folderPath}
+				<AcerolaButton
+					ui={{ variant: 'default', class: 'h-12 rounded-full font-black gap-2' }}
+					events={{ onClick: () => refreshScanner.start() }}
+				>
+					<RefreshCw size={18} class={refreshScanner.scanning ? 'animate-spin' : ''} />
+					{m['pages.home.empty.quickSync']()}
+				</AcerolaButton>
+			{:else}
+				<AcerolaButton
+					ui={{ variant: 'default', class: 'h-12 rounded-full font-black gap-2' }}
+					events={{
+						onClick: async () => {
+							await folderStore.selectFolder();
+							await summary.fetch();
+						}
+					}}
+				>
+					<FolderPlus size={18} />
+					{m['pages.home.empty.selectFolder']()}
+				</AcerolaButton>
+			{/if}
+		{/snippet}
+	</AcerolaEmptyState>
 {/if}
 
 <!-- Filter Panel (slide-in drawer) -->
@@ -560,7 +573,7 @@
 	}}
 />
 
-<!-- Escolher dispositivo pareado pra buscar quadrinhos -->
+<!-- Pick a paired device to fetch comics from -->
 <AcerolaPeerPicker
 	state={{ open: showPeerPicker }}
 	data={{ peers: peers.pairedPeers, nicknameFor: (peerId) => peers.peerNicknames[peerId] }}
@@ -570,7 +583,7 @@
 	}}
 />
 
-<!-- Biblioteca remota do dispositivo escolhido -->
+<!-- Remote library of the chosen device -->
 <AcerolaRemoteLibraryDialog
 	state={{ open: browsingPeerId !== null }}
 	data={{

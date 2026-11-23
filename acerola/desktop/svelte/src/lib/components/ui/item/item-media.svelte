@@ -7,8 +7,7 @@
 			variant: {
 				default: 'bg-transparent',
 				icon: "[&_svg:not([class*='size-'])]:size-4",
-				image:
-					'size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover'
+				image: 'size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover'
 			}
 		},
 		defaultVariants: {
@@ -20,7 +19,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils/cn.utils';
+	import { cn, type WithElementRef } from '#lib/utils/cn.util.ts';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {

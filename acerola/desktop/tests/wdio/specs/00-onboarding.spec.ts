@@ -20,7 +20,7 @@ describe('onboarding and initial tutorial', () => {
 		await browser.execute(() => window.location.reload());
 		await waitForTauriReady();
 
-		// Passo 0: Boas-vindas
+		// Step 0: Welcome
 		await waitForText('Acerola');
 		await waitForText('Bem-vindo ao Acerola, seu leitor de quadrinhos.');
 		await waitForText('Começar');
@@ -34,17 +34,17 @@ describe('onboarding and initial tutorial', () => {
 		await browser.execute(() => window.location.reload());
 		await waitForTauriReady();
 
-		// Avança até o Passo 3 (Configurações)
+		// Advance to Step 3 (Settings)
 		await clickText('Começar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
 		await clickText('Próximo');
-		await waitForText('Formatos Suportados');
+		await waitForText('Formatos suportados');
 
 		await clickText('Próximo');
-		await waitForText('Configuração Inicial');
+		await waitForText('Configuração inicial');
 
-		// Sem pasta de biblioteca em settings.json, o botão "Próximo" deve estar desabilitado
+		// Without a library folder in settings.json, the "Próximo" (Next) button must be disabled
 		const nextBtn = await firstDisplayed(
 			`${exactTextSelector('Próximo')}/ancestor-or-self::button[1]`
 		);
@@ -58,18 +58,18 @@ describe('onboarding and initial tutorial', () => {
 		await browser.execute(() => window.location.reload());
 		await waitForTauriReady();
 
-		// Avança até o Passo 2 (Formatos)
+		// Advance to Step 2 (Formats)
 		await clickText('Começar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
 		await clickText('Próximo');
-		await waitForText('Formatos Suportados');
+		await waitForText('Formatos suportados');
 
-		// Volta para o Passo 1 (Idioma)
+		// Go back to Step 1 (Language)
 		await clickText('Voltar');
-		await waitForText('Selecionar Idioma');
+		await waitForText('Selecionar idioma');
 
-		// Volta para o Passo 0 (Boas-vindas)
+		// Go back to Step 0 (Welcome)
 		await clickText('Voltar');
 		await waitForText('Bem-vindo ao Acerola, seu leitor de quadrinhos.');
 	});

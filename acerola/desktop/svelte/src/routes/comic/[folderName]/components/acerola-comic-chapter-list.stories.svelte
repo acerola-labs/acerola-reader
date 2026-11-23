@@ -3,13 +3,13 @@
 	import AcerolaComicChapterList, { type Chapter } from './acerola-comic-chapter-list.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicChapterList',
+		title: 'Pages/Comic/AcerolaComicChapterList',
 		component: AcerolaComicChapterList,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Lista de capítulos do comic.'
+					component: 'Comic chapter list.'
 				}
 			}
 		}

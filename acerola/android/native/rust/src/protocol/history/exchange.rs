@@ -19,7 +19,7 @@ const ENTRY_READ_TIMEOUT: Duration = Duration::from_secs(15);
 
 pub(super) use crate::protocol::framing::{Recv, Writer};
 
-/// Fina camada sobre `framing::write_json`/`read_json` — ver comentário equivalente em
+/// Thin layer over `framing::write_json`/`read_json` — see the equivalent comment in
 /// `protocol/files/exchange.rs`.
 pub(super) async fn write_manifest(
     send: &mut Writer,
@@ -32,8 +32,8 @@ pub(super) async fn read_manifest(recv: &mut Recv) -> Result<HistoryManifest, P2
     crate::protocol::framing::read_json(recv, MANIFEST_READ_TIMEOUT).await
 }
 
-/// Monta o manifesto local a partir do `provider` (Room, via Kotlin). As duas chamadas FFI
-/// cabem no mesmo `spawn_blocking` — uma única troca de thread por sessão, não duas.
+/// Builds the local manifest from the `provider` (Room, via Kotlin). Both FFI calls
+/// fit in the same `spawn_blocking` — a single thread hop per session, not two.
 pub(super) async fn build_local_manifest(
     provider: &Arc<dyn HistorySyncProvider>,
 ) -> Result<HistoryManifest, P2pError> {
@@ -45,8 +45,8 @@ pub(super) async fn build_local_manifest(
     .await
 }
 
-/// Progresso de leitura do peer que vence o local — last-write-wins por `updated_at`.
-/// Puro, sem FFI: só decide o que deveria ser aplicado, não aplica.
+/// Peer reading progress that beats the local one — last-write-wins by `updated_at`.
+/// Pure, no FFI: only decides what should be applied, does not apply it.
 fn progress_entries_to_apply(
     local: &HistoryManifest,
     peer_progress: Vec<crate::callbacks::FfiReadingProgressEntry>,
@@ -77,8 +77,8 @@ fn progress_entries_to_apply(
         .collect()
 }
 
-/// Capítulos lidos que o peer tem e o local ainda não — união idempotente, sem noção de
-/// "mais recente" (diferente de progresso). Puro, sem FFI.
+/// Read chapters the peer has and the local side does not yet — idempotent union, with no notion
+/// of "most recent" (unlike progress). Pure, no FFI.
 fn chapters_read_entries_to_apply(
     local: &HistoryManifest,
     peer_chapters_read: Vec<crate::callbacks::FfiChapterReadEntry>,
@@ -101,8 +101,8 @@ fn chapters_read_entries_to_apply(
         .collect()
 }
 
-/// Aplica as entradas já decididas via `provider` — única parte que toca FFI, roda inteira
-/// num único `spawn_blocking` (não um por entrada).
+/// Applies the already decided entries via `provider` — the only part that touches FFI, runs
+/// entirely in a single `spawn_blocking` (not one per entry).
 async fn apply_entries(
     provider: &Arc<dyn HistorySyncProvider>,
     progress: Vec<crate::callbacks::FfiReadingProgressEntry>,
@@ -133,10 +133,10 @@ async fn apply_entries(
     .await
 }
 
-/// Calcula o diff do manifesto do peer contra o manifesto local e aplica via `provider`:
-/// last-write-wins (por `updated_at`) pra progresso de leitura, união idempotente pra
-/// capítulos lidos. Cada lado roda essa função com seu próprio manifesto local — não há
-/// mais nenhuma troca de rede depois disso.
+/// Diffs the peer's manifest against the local manifest and applies via `provider`:
+/// last-write-wins (by `updated_at`) for reading progress, idempotent union for
+/// read chapters. Each side runs this function with its own local manifest — there is
+/// no further network exchange after this.
 pub(super) async fn diff_and_apply(
     local: &HistoryManifest,
     peer: HistoryManifest,
@@ -147,11 +147,11 @@ pub(super) async fn diff_and_apply(
     apply_entries(provider, progress, chapters_read).await
 }
 
-/// Executa a troca de manifesto de um lado da conexão e aplica o diff.
+/// Runs the manifest exchange for one side of the connection and applies the diff.
 ///
-/// `outbound_role` decide a ordem de leitura/escrita (regra 4): o lado outbound sempre
-/// escreve primeiro em cada etapa, o inbound sempre lê primeiro — nunca "quem chegar primeiro
-/// escreve". Compartilhada pelos dois handlers já que a única diferença entre eles é essa ordem.
+/// `outbound_role` decides the read/write order (rule 4): the outbound side always
+/// writes first at each step, the inbound always reads first — never "whoever arrives first
+/// writes". Shared by both handlers since the only difference between them is this order.
 pub(super) async fn run_exchange(
     outbound_role: bool,
     peer: &PeerIdentity,
@@ -182,10 +182,10 @@ pub(super) async fn run_exchange(
     Ok(())
 }
 
-/// Monta o manifesto restrito ao(s) `chapter_sorts` selecionado(s) de UM quadrinho — usado
-/// pelo push explícito de capítulo(s) selecionado(s) (`acerola/sync-history-entry/1`). As
-/// duas chamadas FFI (progresso + capítulos lidos) cabem no mesmo `spawn_blocking`, mesmo
-/// raciocínio de `build_local_manifest`.
+/// Builds the manifest restricted to the selected `chapter_sorts` of ONE comic — used
+/// by the explicit push of the selected chapter(s) (`acerola/sync-history-entry/1`). Both
+/// FFI calls (progress + read chapters) fit in the same `spawn_blocking`, same
+/// reasoning as `build_local_manifest`.
 async fn build_manifest_for_chapters(
     provider: &Arc<dyn HistorySyncProvider>,
     comic_name: String,
@@ -200,18 +200,18 @@ async fn build_manifest_for_chapters(
     .await
 }
 
-/// Executa o push unidirecional de um manifesto restrito ao(s) capítulo(s) selecionado(s)
-/// (`acerola/sync-history-entry/1`). Contrato de duas mensagens (padronizado com
-/// `acerola/sync-comic/1`): primeiro um `HistoryEntryRequest` (quadrinho + capítulos escopados,
-/// sempre presente mesmo se o manifesto que vem a seguir estiver vazio), depois o
-/// `HistoryManifest` em si. `outbound_role`: o lado que inicia monta e escreve os dois (escopo
-/// já resolvido do `PendingHistoryEntryScope` por quem chama); o lado que responde lê os dois,
-/// valida se o quadrinho existe localmente ANTES de aplicar qualquer coisa, aplica com a MESMA
-/// lógica de diff/LWW/união idempotente do sync completo (`diff_and_apply`, comparando contra o
-/// manifesto local inteiro — continua correto mesmo o manifesto do peer sendo um subconjunto), e
-/// confirma com um `HistoryEntryAck` carregando o resultado real — nunca um ack vazio que
-/// esconderia um quadrinho ausente como se fosse sucesso. Se `comic_known` vier `false`, o
-/// outbound termina com erro (`PEER_COMIC_NOT_FOUND_REASON`), não sucesso silencioso.
+/// Runs the one-way push of a manifest restricted to the selected chapter(s)
+/// (`acerola/sync-history-entry/1`). Two-message contract (standardized with
+/// `acerola/sync-comic/1`): first a `HistoryEntryRequest` (comic + scoped chapters,
+/// always present even if the manifest that follows is empty), then the
+/// `HistoryManifest` itself. `outbound_role`: the initiating side builds and writes both (scope
+/// already resolved from `PendingHistoryEntryScope` by the caller); the responding side reads both,
+/// validates the comic exists locally BEFORE applying anything, applies with the SAME
+/// diff/LWW/idempotent union logic as the full sync (`diff_and_apply`, comparing against the
+/// whole local manifest — still correct even though the peer's manifest is a subset), and
+/// confirms with a `HistoryEntryAck` carrying the real result — never an empty ack that
+/// would hide a missing comic as success. If `comic_known` comes back `false`, the
+/// outbound ends with an error (`PEER_COMIC_NOT_FOUND_REASON`), not a silent success.
 pub(super) async fn run_entry_exchange(
     outbound_role: bool,
     scope: Option<(String, Vec<String>)>,
@@ -386,8 +386,8 @@ mod tests {
             }
         }
 
-        /// Marca `comic_name` como existente localmente (sem nenhum progresso/marcador) — usado
-        /// pra simular "o quadrinho existe, mas ainda não tem histórico salvo".
+        /// Marks `comic_name` as existing locally (with no progress/marker) — used
+        /// to simulate "the comic exists, but has no saved history yet".
         fn with_known_comic(self, comic_name: &str) -> Self {
             self.known_comics
                 .lock()
@@ -504,9 +504,9 @@ mod tests {
         Arc::new(|_, _| {})
     }
 
-    /// O escopo (`comic_name`) só existe do lado outbound (vem do `PendingHistoryEntryScope`,
-    /// resolvido por quem chama antes de invocar `run_entry_exchange`) — a entrada aplicada do
-    /// lado inbound tem que ser exatamente a do quadrinho escopado, não a biblioteca inteira.
+    /// The scope (`comic_name`) only exists on the outbound side (comes from `PendingHistoryEntryScope`,
+    /// resolved by the caller before invoking `run_entry_exchange`) — the entry applied on the
+    /// inbound side must be exactly the scoped comic's, not the whole library.
     #[tokio::test]
     async fn entry_exchange_pushes_only_the_scoped_comic() {
         let outbound_provider: Arc<dyn HistorySyncProvider> =
@@ -546,15 +546,15 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let applied = inbound_provider.get_reading_progress_for_comic("Berserk".to_string());
         assert_eq!(applied.map(|entry| entry.last_page), Some(7));
     }
 
-    /// O manifesto enviado só carrega os marcadores de "lido" dos capítulos selecionados —
-    /// outros capítulos lidos do MESMO quadrinho não podem vazar.
+    /// The sent manifest only carries the "read" markers of the selected chapters —
+    /// other read chapters of the SAME comic must not leak.
     #[tokio::test]
     async fn entry_exchange_only_sends_read_markers_for_the_selected_chapters() {
         let outbound_provider: Arc<dyn HistorySyncProvider> =
@@ -599,17 +599,17 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let applied = inbound_provider.get_chapters_read();
         assert_eq!(applied.len(), 1);
         assert_eq!(applied[0].chapter_sort, "2");
     }
 
-    /// Núcleo do contrato novo: se o peer não tem o quadrinho, o `HistoryEntryAck` volta com
-    /// `comic_known: false` e o outbound TERMINA COM ERRO — não mais o falso positivo de
-    /// "enviado com sucesso" quando na verdade nada foi aplicado do outro lado.
+    /// Core of the new contract: if the peer does not have the comic, the `HistoryEntryAck` comes
+    /// back with `comic_known: false` and the outbound ENDS WITH AN ERROR — no longer the false
+    /// positive of "sent successfully" when in fact nothing was applied on the other side.
     #[tokio::test]
     async fn entry_exchange_fails_when_peer_does_not_have_the_comic() {
         let outbound_provider: Arc<dyn HistorySyncProvider> =
@@ -620,7 +620,7 @@ mod tests {
                 is_completed: false,
                 updated_at: 5000,
             }));
-        // Inbound "vazio": nenhum quadrinho conhecido.
+        // "Empty" inbound: no known comic.
         let inbound_provider: Arc<dyn HistorySyncProvider> = Arc::new(InMemoryProvider::new());
 
         let (client_io, server_io) = tokio::io::duplex(64 * 1024);
@@ -650,11 +650,11 @@ mod tests {
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
         assert!(outbound_result.is_err());
-        inbound_result.expect("inbound ainda deve completar a sessão (o erro é do outbound)");
+        inbound_result.expect("inbound must still complete the session (the error is the outbound's)");
     }
 
-    /// Sem escopo registrado (`comic_name`/`chapter_sorts: None` do lado outbound), a sessão
-    /// falha rápido em vez de tentar adivinhar o que mandar.
+    /// Without a registered scope (`comic_name`/`chapter_sorts: None` on the outbound side), the
+    /// session fails fast instead of trying to guess what to send.
     #[tokio::test]
     async fn entry_exchange_fails_fast_without_a_scoped_comic() {
         let provider: Arc<dyn HistorySyncProvider> = Arc::new(InMemoryProvider::new());
@@ -677,8 +677,8 @@ mod tests {
         assert!(result.is_err());
     }
 
-    /// Mesma prova que em `protocol/files/exchange.rs`: uma chamada FFI lenta não deve travar
-    /// outra task async concorrente no mesmo runtime.
+    /// Same proof as in `protocol/files/exchange.rs`: a slow FFI call must not block
+    /// another concurrent async task on the same runtime.
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn build_local_manifest_does_not_block_runtime() {
         let provider: Arc<dyn HistorySyncProvider> = Arc::new(SlowProvider { sleep_ms: 150 });
@@ -698,7 +698,7 @@ mod tests {
         assert!(manifest.reading_progress.is_empty());
         assert!(
             ticks.load(Ordering::SeqCst) >= 6,
-            "runtime ficou travado durante get_reading_progress"
+            "runtime was blocked during get_reading_progress"
         );
     }
 }

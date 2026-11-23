@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { toast } from 'svelte-sonner';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/library.events';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/library.events.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useLibraryScanner } from './use-comic-scanner.svelte';
 
@@ -84,10 +84,10 @@ describe('useLibraryScanner', () => {
 
 		await hook.start();
 
-		// Regressão: o toast/notificação de "em andamento" não podia esperar o primeiro
-		// `scan:progress` do backend pra aparecer — dependendo de quanto o scan demora pra
-		// emitir esse evento, o toast surgia num momento sem sentido (às vezes quase junto
-		// com o de conclusão). Precisa aparecer no clique, sem depender de nenhum evento.
+		// Regression: the "in progress" toast/notification could not wait for the backend's
+		// first `scan:progress` to show up — depending on how long the scan takes to emit
+		// that event, the toast appeared at a meaningless moment (sometimes almost together
+		// with the completion one). It must show on click, without depending on any event.
 		expect(hook.scanning).toBe(true);
 		expect(toast.loading).toHaveBeenCalledWith('Scan em andamento...');
 		expect(notificationStore.notifications[0]?.message).toBe('Scan em andamento...');

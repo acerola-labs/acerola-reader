@@ -1,61 +1,21 @@
 package br.acerola.comic.common.ux.theme
 
-import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.theme.color.Alucard
-import br.acerola.comic.common.ux.theme.color.CatppuccinLatte
-import br.acerola.comic.common.ux.theme.color.CatppuccinMocha
-import br.acerola.comic.common.ux.theme.color.Dracula
-import br.acerola.comic.common.ux.theme.color.NordDark
-import br.acerola.comic.common.ux.theme.color.NordLight
-import br.acerola.comic.common.ux.theme.color.TokyoNightDark
-import br.acerola.comic.common.ux.theme.color.TokyoNightDay
-import br.acerola.comic.config.preference.types.AppTheme
 
-// Alguns temas (Nord, Dracula/Alucard, TokyoNight) não definem uma cor de "container" própria
-// (erro/sucesso) na paleta original. Em vez de inventar um hex sem poder validar visualmente,
-// derivamos essas cores a partir do restante da paleta do próprio tema — usado pelos papéis
-// nativos do Material3 (errorContainer/onErrorContainer) e pelo container suave de sucesso
-// (Snackbar de sucesso segue o mesmo tom pastel do Error/Warn, que já usam container nativo),
-// nunca pelos ícones de ação.
-private fun deriveContainer(
-    background: Color,
-    accent: Color,
-): Color = lerp(start = background, stop = accent, fraction = 0.35f)
-
-private fun deriveOnContainer(
-    foreground: Color,
-    accent: Color,
-): Color = lerp(start = foreground, stop = accent, fraction = 0.55f)
-
-// Ícones de ação seguem o mesmo formato do desktop: fundo SÓLIDO na cor semântica/de destaque +
-// ícone numa cor neutra por cima (o fundo "contorna" o ícone, nunca o contrário) — por isso
-// success/accent aqui são a cor cheia da paleta, não um container translúcido. onSuccess/onAccent
-// recebem o `onPrimary` de cada tema (a cor que cada paleta escolheu pra contrastar com uma cor
-// saturada própria), do mesmo jeito que o desktop reaproveita `--primary-foreground` pros tokens
-// `--accent-hero-foreground`/`--destructive-foreground`. Material3 não tem papéis nativos de
-// "sucesso" nem de "accent vibrante", então cada tema expõe os seus via
-// LocalAcerolaExtraColors/AcerolaExtendedTheme. successContainer/onSuccessContainer são a exceção:
-// só o Snackbar de sucesso usa (banner cheio, não ícone-em-quadrado), pra bater com o tom pastel
-// do Error/Warn — por isso ainda dependem de background/foreground em vez do par sólido.
+// Roles Material3 does not have (success, warning, vibrant accent), exposed through
+// AcerolaExtendedTheme. Action icons follow the desktop: SOLID background in the semantic color
+// with a neutral icon on top, so success/accent are the full tone and on* is
+// `--primary-foreground`. The *Container pairs are the soft background + tone text
+// (`--success-soft` + `--success`), the same as errorContainer (`--destructive-soft`).
 data class AcerolaExtraColors(
     val success: Color,
     val onSuccess: Color,
@@ -63,32 +23,28 @@ data class AcerolaExtraColors(
     val onAccent: Color,
     val successContainer: Color,
     val onSuccessContainer: Color,
+    val warning: Color,
+    val warningContainer: Color,
+    val onWarningContainer: Color,
+    // Brand surface levels and text, by the same name the desktop uses (`bg-card`, `bg-surface`,
+    // `bg-input`, `text-muted-foreground`), so a screen reads the same on both sides.
+    val crust: Color,
+    val mantle: Color,
+    val background: Color,
+    val card: Color,
+    val surface: Color,
+    val input: Color,
+    val foreground: Color,
+    val mutedForeground: Color,
+    val primarySoft: Color,
+    val info: Color,
+    val infoSoft: Color,
+    val destructiveSoft: Color,
 )
-
-private fun extraColors(
-    background: Color,
-    foreground: Color,
-    onPrimary: Color,
-    green: Color,
-    accent: Color,
-): AcerolaExtraColors =
-    AcerolaExtraColors(
-        success = green,
-        onSuccess = onPrimary,
-        accent = accent,
-        onAccent = onPrimary,
-        successContainer = deriveContainer(background, green),
-        onSuccessContainer = deriveOnContainer(foreground, green),
-    )
-
-// Usados só quando o tema é o Dynamic Color real do Material You (Android 12+), que não tem um
-// "verde"/"rosa" próprios pra derivar a partir da paleta do usuário.
-private val DynamicSuccessGreen = Color(0xFF2E7D32)
-private val DynamicAccentPink = Color(0xFFE91E63)
 
 private val LocalAcerolaExtraColors =
     staticCompositionLocalOf<AcerolaExtraColors> {
-        error("AcerolaExtraColors não fornecido — use dentro de AcerolaTheme")
+        error("AcerolaExtraColors not provided: use it inside AcerolaTheme")
     }
 
 object AcerolaExtendedTheme {
@@ -96,384 +52,178 @@ object AcerolaExtendedTheme {
         @Composable get() = LocalAcerolaExtraColors.current
 }
 
-private val CatppuccinDarkColorScheme =
+// One theme: only light/dark changes (following the system). Material3 roles take the brand
+// tokens (Color.kt, generated from the acerola-brand tokens.json) with the same role each token
+// has in CSS: background/card/surface for the surface levels, border for dividers, *Soft for
+// containers.
+private val DarkColorScheme =
     darkColorScheme(
-        primary = CatppuccinMocha.Mauve,
-        onPrimary = CatppuccinMocha.Base,
-        primaryContainer = CatppuccinMocha.Surface0,
-        onPrimaryContainer = CatppuccinMocha.Mauve,
-        secondary = CatppuccinMocha.Pink,
-        onSecondary = CatppuccinMocha.Base,
-        secondaryContainer = CatppuccinMocha.Surface0,
-        onSecondaryContainer = CatppuccinMocha.Pink,
-        tertiary = CatppuccinMocha.Sky,
-        onTertiary = CatppuccinMocha.Base,
-        tertiaryContainer = CatppuccinMocha.Surface0,
-        onTertiaryContainer = CatppuccinMocha.Sky,
-        background = CatppuccinMocha.Base,
-        onBackground = CatppuccinMocha.Text,
-        surface = CatppuccinMocha.Base,
-        onSurface = CatppuccinMocha.Text,
-        surfaceVariant = CatppuccinMocha.Surface1,
-        onSurfaceVariant = CatppuccinMocha.Subtext1,
-        surfaceContainerLowest = CatppuccinMocha.Mantle,
-        surfaceContainerLow = CatppuccinMocha.Base,
-        surfaceContainer = CatppuccinMocha.Surface0,
-        surfaceContainerHigh = CatppuccinMocha.Surface1,
-        surfaceContainerHighest = CatppuccinMocha.Surface2,
-        outline = CatppuccinMocha.Overlay0,
-        error = CatppuccinMocha.Red,
-        onError = CatppuccinMocha.Base,
-        errorContainer = CatppuccinMocha.Maroon,
-        onErrorContainer = CatppuccinMocha.Text,
+        primary = AcerolaColors.Dark.Primary,
+        onPrimary = AcerolaColors.Dark.PrimaryForeground,
+        primaryContainer = AcerolaColors.Dark.PrimarySoft,
+        onPrimaryContainer = AcerolaColors.Dark.Primary,
+        secondary = AcerolaColors.Dark.AccentHero,
+        onSecondary = AcerolaColors.Dark.PrimaryForeground,
+        secondaryContainer = AcerolaColors.Dark.Secondary,
+        onSecondaryContainer = AcerolaColors.Dark.AccentHero,
+        tertiary = AcerolaColors.Dark.Chart5,
+        onTertiary = AcerolaColors.Dark.PrimaryForeground,
+        tertiaryContainer = AcerolaColors.Dark.Secondary,
+        onTertiaryContainer = AcerolaColors.Dark.Chart5,
+        background = AcerolaColors.Dark.Background,
+        onBackground = AcerolaColors.Dark.Foreground,
+        surface = AcerolaColors.Dark.Background,
+        onSurface = AcerolaColors.Dark.Foreground,
+        surfaceVariant = AcerolaColors.Dark.Surface,
+        onSurfaceVariant = AcerolaColors.Dark.MutedForeground,
+        surfaceContainerLowest = AcerolaColors.Dark.Crust,
+        surfaceContainerLow = AcerolaColors.Dark.Mantle,
+        surfaceContainer = AcerolaColors.Dark.Card,
+        surfaceContainerHigh = AcerolaColors.Dark.Surface,
+        surfaceContainerHighest = AcerolaColors.Dark.Border,
+        outline = AcerolaColors.Dark.Border,
+        outlineVariant = AcerolaColors.Dark.Border,
+        error = AcerolaColors.Dark.Destructive,
+        onError = AcerolaColors.Dark.PrimaryForeground,
+        errorContainer = AcerolaColors.Dark.DestructiveSoft,
+        onErrorContainer = AcerolaColors.Dark.Destructive,
+        scrim = AcerolaColors.Scrim,
     )
 
-private val CatppuccinDarkExtraColors =
-    extraColors(CatppuccinMocha.Base, CatppuccinMocha.Text, CatppuccinMocha.Base, CatppuccinMocha.Green, CatppuccinMocha.Pink)
+private val DarkExtraColors =
+    AcerolaExtraColors(
+        success = AcerolaColors.Dark.Success,
+        onSuccess = AcerolaColors.Dark.PrimaryForeground,
+        accent = AcerolaColors.Dark.AccentHero,
+        onAccent = AcerolaColors.Dark.PrimaryForeground,
+        successContainer = AcerolaColors.Dark.SuccessSoft,
+        onSuccessContainer = AcerolaColors.Dark.Success,
+        warning = AcerolaColors.Dark.Warning,
+        warningContainer = AcerolaColors.Dark.WarningSoft,
+        onWarningContainer = AcerolaColors.Dark.Warning,
+        crust = AcerolaColors.Dark.Crust,
+        mantle = AcerolaColors.Dark.Mantle,
+        background = AcerolaColors.Dark.Background,
+        card = AcerolaColors.Dark.Card,
+        surface = AcerolaColors.Dark.Surface,
+        input = AcerolaColors.Dark.Input,
+        foreground = AcerolaColors.Dark.Foreground,
+        mutedForeground = AcerolaColors.Dark.MutedForeground,
+        primarySoft = AcerolaColors.Dark.PrimarySoft,
+        info = AcerolaColors.Dark.Info,
+        infoSoft = AcerolaColors.Dark.InfoSoft,
+        destructiveSoft = AcerolaColors.Dark.DestructiveSoft,
+    )
 
-private val CatppuccinLightColorScheme =
+private val LightColorScheme =
     lightColorScheme(
-        primary = CatppuccinLatte.Mauve,
-        onPrimary = CatppuccinLatte.Base,
-        primaryContainer = CatppuccinLatte.Surface0,
-        onPrimaryContainer = CatppuccinLatte.Mauve,
-        secondary = CatppuccinLatte.Pink,
-        onSecondary = CatppuccinLatte.Base,
-        secondaryContainer = CatppuccinLatte.Surface0,
-        onSecondaryContainer = CatppuccinLatte.Pink,
-        tertiary = CatppuccinLatte.Sky,
-        onTertiary = CatppuccinLatte.Base,
-        tertiaryContainer = CatppuccinLatte.Surface0,
-        onTertiaryContainer = CatppuccinLatte.Sky,
-        background = CatppuccinLatte.Base,
-        onBackground = CatppuccinLatte.Text,
-        surface = CatppuccinLatte.Base,
-        onSurface = CatppuccinLatte.Text,
-        surfaceVariant = CatppuccinLatte.Surface1,
-        onSurfaceVariant = CatppuccinLatte.Subtext1,
-        surfaceContainerLowest = CatppuccinLatte.Base,
-        surfaceContainerLow = CatppuccinLatte.Base,
-        surfaceContainer = CatppuccinLatte.Mantle,
-        surfaceContainerHigh = CatppuccinLatte.Crust,
-        surfaceContainerHighest = CatppuccinLatte.Surface0,
-        outline = CatppuccinLatte.Overlay0,
-        error = CatppuccinLatte.Red,
-        onError = CatppuccinLatte.Base,
-        errorContainer = CatppuccinLatte.Maroon,
-        onErrorContainer = CatppuccinLatte.Text,
+        primary = AcerolaColors.Light.Primary,
+        onPrimary = AcerolaColors.Light.PrimaryForeground,
+        primaryContainer = AcerolaColors.Light.PrimarySoft,
+        onPrimaryContainer = AcerolaColors.Light.Primary,
+        secondary = AcerolaColors.Light.AccentHero,
+        onSecondary = AcerolaColors.Light.PrimaryForeground,
+        secondaryContainer = AcerolaColors.Light.Secondary,
+        onSecondaryContainer = AcerolaColors.Light.AccentHero,
+        tertiary = AcerolaColors.Light.Chart5,
+        onTertiary = AcerolaColors.Light.PrimaryForeground,
+        tertiaryContainer = AcerolaColors.Light.Secondary,
+        onTertiaryContainer = AcerolaColors.Light.Chart5,
+        background = AcerolaColors.Light.Background,
+        onBackground = AcerolaColors.Light.Foreground,
+        surface = AcerolaColors.Light.Background,
+        onSurface = AcerolaColors.Light.Foreground,
+        surfaceVariant = AcerolaColors.Light.Surface,
+        onSurfaceVariant = AcerolaColors.Light.MutedForeground,
+        surfaceContainerLowest = AcerolaColors.Light.Crust,
+        surfaceContainerLow = AcerolaColors.Light.Mantle,
+        surfaceContainer = AcerolaColors.Light.Card,
+        surfaceContainerHigh = AcerolaColors.Light.Surface,
+        surfaceContainerHighest = AcerolaColors.Light.Border,
+        outline = AcerolaColors.Light.Border,
+        outlineVariant = AcerolaColors.Light.Border,
+        error = AcerolaColors.Light.Destructive,
+        onError = AcerolaColors.Light.PrimaryForeground,
+        errorContainer = AcerolaColors.Light.DestructiveSoft,
+        onErrorContainer = AcerolaColors.Light.Destructive,
+        scrim = AcerolaColors.Scrim,
     )
 
-private val CatppuccinLightExtraColors =
-    extraColors(CatppuccinLatte.Base, CatppuccinLatte.Text, CatppuccinLatte.Base, CatppuccinLatte.Green, CatppuccinLatte.Pink)
-
-private val NordDarkColorScheme =
-    darkColorScheme(
-        primary = NordDark.Primary,
-        onPrimary = NordDark.Background,
-        primaryContainer = NordDark.Surface,
-        onPrimaryContainer = NordDark.Primary,
-        secondary = NordDark.Secondary,
-        onSecondary = NordDark.Background,
-        secondaryContainer = NordDark.Surface,
-        onSecondaryContainer = NordDark.Secondary,
-        tertiary = NordDark.Tertiary,
-        onTertiary = NordDark.Background,
-        tertiaryContainer = NordDark.Surface,
-        onTertiaryContainer = NordDark.Tertiary,
-        background = NordDark.Background,
-        onBackground = NordDark.Text,
-        surface = NordDark.Background,
-        onSurface = NordDark.Text,
-        surfaceVariant = NordDark.Surface,
-        onSurfaceVariant = NordDark.Subtext,
-        surfaceContainerLowest = NordDark.Background,
-        surfaceContainerLow = NordDark.Background,
-        surfaceContainer = NordDark.Surface,
-        surfaceContainerHigh = NordDark.SurfaceVariant,
-        surfaceContainerHighest = NordDark.Outline,
-        outline = NordDark.Outline,
-        error = NordDark.Error,
-        onError = NordDark.Text,
-        errorContainer = deriveContainer(NordDark.Background, NordDark.Error),
-        onErrorContainer = deriveOnContainer(NordDark.Text, NordDark.Error),
-    )
-
-private val NordDarkExtraColors =
-    extraColors(NordDark.Background, NordDark.Text, NordDark.Background, NordDark.Green, NordDark.Accent)
-
-private val NordLightColorScheme =
-    lightColorScheme(
-        primary = NordLight.Primary,
-        onPrimary = NordLight.Background,
-        primaryContainer = NordLight.Surface,
-        onPrimaryContainer = NordLight.Primary,
-        secondary = NordLight.Secondary,
-        onSecondary = NordLight.Background,
-        secondaryContainer = NordLight.Surface,
-        onSecondaryContainer = NordLight.Secondary,
-        tertiary = NordLight.Tertiary,
-        onTertiary = NordLight.Background,
-        tertiaryContainer = NordLight.Surface,
-        onTertiaryContainer = NordLight.Tertiary,
-        background = NordLight.Background,
-        onBackground = NordLight.Text,
-        surface = NordLight.Background,
-        onSurface = NordLight.Text,
-        surfaceVariant = NordLight.Surface,
-        onSurfaceVariant = NordLight.Subtext,
-        surfaceContainerLowest = NordLight.Background,
-        surfaceContainerLow = NordLight.Background,
-        surfaceContainer = NordLight.Surface,
-        surfaceContainerHigh = NordLight.SurfaceVariant,
-        surfaceContainerHighest = NordLight.Outline,
-        outline = NordLight.Outline,
-        error = NordLight.Error,
-        onError = NordLight.Background,
-        errorContainer = deriveContainer(NordLight.Background, NordLight.Error),
-        onErrorContainer = deriveOnContainer(NordLight.Text, NordLight.Error),
-    )
-
-private val NordLightExtraColors =
-    extraColors(NordLight.Background, NordLight.Text, NordLight.Background, NordLight.Green, NordLight.Accent)
-
-private val DraculaColorScheme =
-    darkColorScheme(
-        primary = Dracula.Purple,
-        onPrimary = Dracula.Background,
-        primaryContainer = Dracula.CurrentLine,
-        onPrimaryContainer = Dracula.Purple,
-        secondary = Dracula.Pink,
-        onSecondary = Dracula.Background,
-        secondaryContainer = Dracula.CurrentLine,
-        onSecondaryContainer = Dracula.Pink,
-        tertiary = Dracula.Cyan,
-        onTertiary = Dracula.Background,
-        tertiaryContainer = Dracula.CurrentLine,
-        onTertiaryContainer = Dracula.Cyan,
-        background = Dracula.Background,
-        onBackground = Dracula.Foreground,
-        surface = Dracula.Background,
-        onSurface = Dracula.Foreground,
-        surfaceVariant = Dracula.CurrentLine,
-        onSurfaceVariant = Dracula.Foreground,
-        surfaceContainerLowest = Dracula.Background,
-        surfaceContainerLow = Dracula.Background,
-        surfaceContainer = Dracula.CurrentLine,
-        surfaceContainerHigh = Dracula.Selection,
-        surfaceContainerHighest = Dracula.Comment,
-        outline = Dracula.Comment,
-        error = Dracula.Red,
-        onError = Dracula.Foreground,
-        errorContainer = deriveContainer(Dracula.Background, Dracula.Red),
-        onErrorContainer = deriveOnContainer(Dracula.Foreground, Dracula.Red),
-    )
-
-private val DraculaExtraColors =
-    extraColors(Dracula.Background, Dracula.Foreground, Dracula.Background, Dracula.Green, Dracula.Pink)
-
-private val AlucardColorScheme =
-    lightColorScheme(
-        primary = Alucard.Purple,
-        onPrimary = Alucard.Background,
-        primaryContainer = Alucard.CurrentLine,
-        onPrimaryContainer = Alucard.Purple,
-        secondary = Alucard.Pink,
-        onSecondary = Alucard.Background,
-        secondaryContainer = Alucard.CurrentLine,
-        onSecondaryContainer = Alucard.Pink,
-        tertiary = Alucard.Cyan,
-        onTertiary = Alucard.Background,
-        tertiaryContainer = Alucard.CurrentLine,
-        onTertiaryContainer = Alucard.Cyan,
-        background = Alucard.Background,
-        onBackground = Alucard.Foreground,
-        surface = Alucard.Background,
-        onSurface = Alucard.Foreground,
-        surfaceVariant = Alucard.CurrentLine,
-        onSurfaceVariant = Alucard.Foreground,
-        surfaceContainerLowest = Alucard.Background,
-        surfaceContainerLow = Alucard.Background,
-        surfaceContainer = Alucard.CurrentLine,
-        surfaceContainerHigh = Alucard.SurfaceHigh,
-        surfaceContainerHighest = Alucard.SurfaceHighest,
-        outline = Alucard.Comment,
-        error = Alucard.Red,
-        onError = Alucard.Foreground,
-        errorContainer = deriveContainer(Alucard.Background, Alucard.Red),
-        onErrorContainer = deriveOnContainer(Alucard.Foreground, Alucard.Red),
-    )
-
-private val AlucardExtraColors =
-    extraColors(Alucard.Background, Alucard.Foreground, Alucard.Background, Alucard.Green, Alucard.Pink)
-
-private val TokyoNightDarkColorScheme =
-    darkColorScheme(
-        primary = TokyoNightDark.Blue,
-        onPrimary = TokyoNightDark.Background,
-        primaryContainer = TokyoNightDark.Surface,
-        onPrimaryContainer = TokyoNightDark.Blue,
-        secondary = TokyoNightDark.Cyan,
-        onSecondary = TokyoNightDark.Background,
-        secondaryContainer = TokyoNightDark.Surface,
-        onSecondaryContainer = TokyoNightDark.Cyan,
-        tertiary = TokyoNightDark.Purple,
-        onTertiary = TokyoNightDark.Background,
-        tertiaryContainer = TokyoNightDark.Surface,
-        onTertiaryContainer = TokyoNightDark.Purple,
-        background = TokyoNightDark.Background,
-        onBackground = TokyoNightDark.Foreground,
-        surface = TokyoNightDark.Background,
-        onSurface = TokyoNightDark.Foreground,
-        surfaceVariant = TokyoNightDark.Surface,
-        onSurfaceVariant = TokyoNightDark.Comment,
-        surfaceContainerLowest = TokyoNightDark.Background,
-        surfaceContainerLow = TokyoNightDark.Background,
-        surfaceContainer = TokyoNightDark.Surface,
-        surfaceContainerHigh = TokyoNightDark.SurfaceHigh,
-        surfaceContainerHighest = TokyoNightDark.SurfaceHighest,
-        outline = TokyoNightDark.Comment,
-        error = TokyoNightDark.Red,
-        onError = TokyoNightDark.Foreground,
-        errorContainer = deriveContainer(TokyoNightDark.Background, TokyoNightDark.Red),
-        onErrorContainer = deriveOnContainer(TokyoNightDark.Foreground, TokyoNightDark.Red),
-    )
-
-private val TokyoNightDarkExtraColors =
-    extraColors(TokyoNightDark.Background, TokyoNightDark.Foreground, TokyoNightDark.Background, TokyoNightDark.Green, TokyoNightDark.Purple)
-
-private val TokyoNightLightColorScheme =
-    lightColorScheme(
-        primary = TokyoNightDay.Blue,
-        onPrimary = TokyoNightDay.Background,
-        primaryContainer = TokyoNightDay.Surface,
-        onPrimaryContainer = TokyoNightDay.Blue,
-        secondary = TokyoNightDay.Cyan,
-        onSecondary = TokyoNightDay.Background,
-        secondaryContainer = TokyoNightDay.Surface,
-        onSecondaryContainer = TokyoNightDay.Cyan,
-        tertiary = TokyoNightDay.Purple,
-        onTertiary = TokyoNightDay.Background,
-        tertiaryContainer = TokyoNightDay.Surface,
-        onTertiaryContainer = TokyoNightDay.Purple,
-        background = TokyoNightDay.Background,
-        onBackground = TokyoNightDay.Foreground,
-        surface = TokyoNightDay.Background,
-        onSurface = TokyoNightDay.Foreground,
-        surfaceVariant = TokyoNightDay.Surface,
-        onSurfaceVariant = TokyoNightDay.Comment,
-        surfaceContainerLowest = TokyoNightDay.Background,
-        surfaceContainerLow = TokyoNightDay.Background,
-        surfaceContainer = TokyoNightDay.Surface,
-        surfaceContainerHigh = TokyoNightDay.SurfaceHigh,
-        surfaceContainerHighest = TokyoNightDay.SurfaceHighest,
-        outline = TokyoNightDay.Comment,
-        error = TokyoNightDay.Red,
-        onError = TokyoNightDay.Background,
-        errorContainer = deriveContainer(TokyoNightDay.Background, TokyoNightDay.Red),
-        onErrorContainer = deriveOnContainer(TokyoNightDay.Foreground, TokyoNightDay.Red),
-    )
-
-private val TokyoNightLightExtraColors =
-    extraColors(TokyoNightDay.Background, TokyoNightDay.Foreground, TokyoNightDay.Background, TokyoNightDay.Green, TokyoNightDay.Purple)
-
-// Escala tipográfica completa do Material3, explícita para toda a hierarquia (antes só
-// bodyLarge era definido e o restante herdava o default do Material3 sem decisão consciente).
-// Ter os 13 estilos aqui, num único lugar, é o que permite trocar fontFamily/pesos do app
-// inteiro futuramente sem caçar overrides espalhados pelos componentes.
-val Typography =
-    Typography(
-        displayLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 57.sp,
-                lineHeight = 64.sp,
-                letterSpacing = (-0.25).sp,
-            ),
-        displayMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 45.sp, lineHeight = 52.sp, letterSpacing = 0.sp),
-        displaySmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 36.sp, lineHeight = 44.sp, letterSpacing = 0.sp),
-        headlineLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 32.sp, lineHeight = 40.sp, letterSpacing = 0.sp),
-        headlineMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 28.sp, lineHeight = 36.sp, letterSpacing = 0.sp),
-        headlineSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 24.sp, lineHeight = 32.sp, letterSpacing = 0.sp),
-        titleLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp),
-        titleMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.15.sp),
-        titleSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
-        bodyLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp,
-            ),
-        bodyMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.25.sp),
-        bodySmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp),
-        labelLarge =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
-        labelMedium =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp),
-        labelSmall =
-            TextStyle(fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp),
+private val LightExtraColors =
+    AcerolaExtraColors(
+        success = AcerolaColors.Light.Success,
+        onSuccess = AcerolaColors.Light.PrimaryForeground,
+        accent = AcerolaColors.Light.AccentHero,
+        onAccent = AcerolaColors.Light.PrimaryForeground,
+        successContainer = AcerolaColors.Light.SuccessSoft,
+        onSuccessContainer = AcerolaColors.Light.Success,
+        warning = AcerolaColors.Light.Warning,
+        warningContainer = AcerolaColors.Light.WarningSoft,
+        onWarningContainer = AcerolaColors.Light.Warning,
+        crust = AcerolaColors.Light.Crust,
+        mantle = AcerolaColors.Light.Mantle,
+        background = AcerolaColors.Light.Background,
+        card = AcerolaColors.Light.Card,
+        surface = AcerolaColors.Light.Surface,
+        input = AcerolaColors.Light.Input,
+        foreground = AcerolaColors.Light.Foreground,
+        mutedForeground = AcerolaColors.Light.MutedForeground,
+        primarySoft = AcerolaColors.Light.PrimarySoft,
+        info = AcerolaColors.Light.Info,
+        infoSoft = AcerolaColors.Light.InfoSoft,
+        destructiveSoft = AcerolaColors.Light.DestructiveSoft,
     )
 
 @Composable
 fun AcerolaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    theme: AppTheme = AppTheme.CATPPUCCIN,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme =
-        when (theme) {
-            AppTheme.DYNAMIC -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val context: Context = LocalContext.current
-                    if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-                } else {
-                    if (darkTheme) CatppuccinDarkColorScheme else CatppuccinLightColorScheme
-                }
-            }
-            AppTheme.NORD -> if (darkTheme) NordDarkColorScheme else NordLightColorScheme
-            AppTheme.DRACULA -> if (darkTheme) DraculaColorScheme else AlucardColorScheme
-            AppTheme.CATPPUCCIN -> if (darkTheme) CatppuccinDarkColorScheme else CatppuccinLightColorScheme
-            AppTheme.TOKYO_NIGHT -> if (darkTheme) TokyoNightDarkColorScheme else TokyoNightLightColorScheme
-        }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val extraColors = if (darkTheme) DarkExtraColors else LightExtraColors
 
-    val extraColors =
-        when (theme) {
-            AppTheme.DYNAMIC -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    extraColors(
-                        colorScheme.background,
-                        colorScheme.onBackground,
-                        colorScheme.onPrimary,
-                        DynamicSuccessGreen,
-                        DynamicAccentPink,
-                    )
-                } else {
-                    if (darkTheme) CatppuccinDarkExtraColors else CatppuccinLightExtraColors
-                }
-            }
-            AppTheme.NORD -> if (darkTheme) NordDarkExtraColors else NordLightExtraColors
-            AppTheme.DRACULA -> if (darkTheme) DraculaExtraColors else AlucardExtraColors
-            AppTheme.CATPPUCCIN -> if (darkTheme) CatppuccinDarkExtraColors else CatppuccinLightExtraColors
-            AppTheme.TOKYO_NIGHT -> if (darkTheme) TokyoNightDarkExtraColors else TokyoNightLightExtraColors
-        }
-
-    CompositionLocalProvider(LocalAcerolaExtraColors provides extraColors) {
+    CompositionLocalProvider(
+        LocalAcerolaExtraColors provides extraColors,
+        LocalAcerolaSurfaceLevel provides AcerolaSurfaceLevel.Background,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
+            shapes = BrandShapes,
             content = content,
         )
     }
+}
+
+// Every Material3 component picks its corner from these, so a stock component already lands on a
+// brand radius: field/menu Inner, card/list row Tile, dialog/large card Card, sheet Sheet.
+private val BrandShapes =
+    Shapes(
+        extraSmall = AcerolaShapes.Inner,
+        small = AcerolaShapes.Inner,
+        medium = AcerolaShapes.Tile,
+        large = AcerolaShapes.Card,
+        extraLarge = AcerolaShapes.Sheet,
+    )
+
+/**
+ * Which brand level a piece of UI sits on, the Compose side of the desktop's
+ * `data-surface="surface"`: a button or field on a `surface` row lifts to `card`, otherwise it
+ * would vanish into the row.
+ */
+enum class AcerolaSurfaceLevel { Background, Card, Surface }
+
+val LocalAcerolaSurfaceLevel = compositionLocalOf { AcerolaSurfaceLevel.Background }
+
+/** Fill for a neutral control (secondary button, field, icon button) on the current level. */
+val AcerolaExtraColors.raised: Color
+    @Composable get() = if (LocalAcerolaSurfaceLevel.current == AcerolaSurfaceLevel.Surface) card else surface
+
+/** Provides [level] to [content], for a container painted with that level's color. */
+@Composable
+fun ProvideSurfaceLevel(
+    level: AcerolaSurfaceLevel,
+    content: @Composable () -> Unit,
+) {
+    CompositionLocalProvider(LocalAcerolaSurfaceLevel provides level, content = content)
 }

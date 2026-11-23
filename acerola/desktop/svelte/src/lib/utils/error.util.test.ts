@@ -1,0 +1,62 @@
+import { describe, expect, it } from 'vitest';
+import { extractErrorMessage } from './error.util';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { m } from '#lib/paraglide/messages.js';
+
+describe('extractErrorMessage', () => {
+	it('returns a fallback message for null', () => {
+		expect(extractErrorMessage(null)).toBe(m['error.unknown.title']());
+	});
+
+	it('returns a fallback message for undefined', () => {
+		expect(extractErrorMessage(undefined)).toBe(m['error.unknown.title']());
+	});
+
+	it('returns a plain string unchanged', () => {
+		expect(extractErrorMessage('plain error text')).toBe('plain error text');
+	});
+
+	it('extracts the message from an Error instance', () => {
+		expect(extractErrorMessage(new Error('boom'))).toBe('boom');
+	});
+
+	it('translates a recognized errorType instead of leaking the raw Rust message', () => {
+		const payload: ErrorPayload = { errorType: 'Io', message: 'disk full' };
+
+		expect(extractErrorMessage(payload)).toBe(m['tauriErrors.comic.ioError.label']());
+	});
+
+	it('falls back to the raw message for an unrecognized errorType', () => {
+		const payload: ErrorPayload = { errorType: 'SomeUnknownRustVariant', message: 'disk full' };
+
+		expect(extractErrorMessage(payload)).toBe('disk full');
+	});
+
+	it('falls back to the raw (blank) message field when errorType is missing', () => {
+		// NOTE: pre-existing behavior — the blank-message guard only skips the FIRST check;
+		// the second check accepts any string type regardless of content, so a whitespace-only
+		// `message` field is returned as-is instead of falling back to String(error).
+		const payload = { message: '   ' };
+
+		expect(extractErrorMessage(payload)).toBe('   ');
+	});
+
+	it('falls back to String(error) for a plain object without a message field', () => {
+		const payload = { errorType: 'IoError' };
+
+		expect(extractErrorMessage(payload)).toBe(String(payload));
+	});
+
+	it('falls back to String(error) when message is present but not a string', () => {
+		// Tells the two type guards (`typeof payload.message === 'string'` in the 1st check
+		// and in the fallback) apart from a version that accepted any value: with `message`
+		// being a number, neither should "leak" the raw value.
+		const payload = { errorType: 'IoError', message: 42 };
+
+		expect(extractErrorMessage(payload)).toBe(String(payload));
+	});
+
+	it('stringifies numbers and other primitives', () => {
+		expect(extractErrorMessage(42)).toBe('42');
+	});
+});

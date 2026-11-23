@@ -2,7 +2,7 @@
 	import { tv, type VariantProps } from 'tailwind-variants';
 
 	export const itemVariants = tv({
-		base: '[a]:hover:bg-muted rounded-lg border text-sm group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors',
+		base: '[a]:hover:bg-surface rounded-tile text-sm group/item focus-visible:ring-ring flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors',
 		variants: {
 			variant: {
 				default: 'border-transparent',
@@ -26,7 +26,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils/cn.utils';
+	import { cn, type WithElementRef } from '#lib/utils/cn.util.ts';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 

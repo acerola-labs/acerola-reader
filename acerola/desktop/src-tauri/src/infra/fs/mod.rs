@@ -2,22 +2,22 @@ use std::{future::Future, path::PathBuf, pin::Pin, sync::Arc};
 
 use tokio::{fs, sync::mpsc};
 
-/// Representa uma entrada de diretório descoberta durante o escaneamento.
+/// Represents a directory entry discovered during scanning.
 ///
-/// Contém o caminho do diretório, a lista de arquivos filtrados e a lista de
-/// subdiretórios imediatos.
+/// Contains the directory path, the list of filtered files and the list of
+/// immediate subdirectories.
 pub struct DirectoryEntry {
     pub directory: PathBuf,
     pub files: Vec<PathBuf>,
     pub subdirs: Vec<PathBuf>,
 }
 
-/// Motor de busca recursivo para arquivos no sistema de arquivos.
+/// Recursive file search engine for the filesystem.
 ///
-/// O `ScannerEngine` percorre árvores de diretórios de forma assíncrona, enviando
-/// notificações de pastas encontradas através de um canal (`mpsc`).
+/// `ScannerEngine` walks directory trees asynchronously, sending
+/// notifications of found folders through a channel (`mpsc`).
 pub struct ScannerEngine {
-    /// Profundidade máxima de recursão permitida. `None` indica profundidade ilimitada.
+    /// Maximum allowed recursion depth. `None` means unlimited depth.
     pub max_depth: Option<usize>,
 }
 
@@ -26,12 +26,12 @@ impl ScannerEngine {
         Self { max_depth: None }
     }
 
-    /// Inicia o escaneamento recursivo a partir de `root`.
+    /// Starts the recursive scan from `root`.
     ///
-    /// # Argumentos
-    /// * `root` - O ponto de partida no sistema de arquivos.
-    /// * `tx` - Canal para envio dos resultados encontrados.
-    /// * `filter` - Função de filtragem para decidir quais arquivos devem ser incluídos no scan.
+    /// # Arguments
+    /// * `root` - The starting point on the filesystem.
+    /// * `tx` - Channel used to send the found results.
+    /// * `filter` - Filter function deciding which files must be included in the scan.
     pub async fn scan<F>(
         &self, root: PathBuf, tx: mpsc::Sender<DirectoryEntry>, filter: F,
     ) -> Result<(), std::io::Error>
@@ -42,7 +42,7 @@ impl ScannerEngine {
         self.walk(root, tx, 0, shared_filter).await.map(|_| ())
     }
 
-    /// Função recursiva interna para caminhar pela árvore de diretórios.
+    /// Internal recursive function that walks the directory tree.
     fn walk<F>(
         &self, path: PathBuf, tx: mpsc::Sender<DirectoryEntry>, depth: usize, filter: Arc<F>,
     ) -> Pin<Box<dyn Future<Output = Result<bool, std::io::Error>> + Send + '_>>

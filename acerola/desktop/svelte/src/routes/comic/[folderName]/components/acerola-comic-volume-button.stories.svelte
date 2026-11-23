@@ -3,14 +3,14 @@
 	import AcerolaComicVolumeButton from './acerola-comic-volume-button.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicVolumeButton',
+		title: 'Pages/Comic/AcerolaComicVolumeButton',
 		component: AcerolaComicVolumeButton,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Botão que representa um volume de quadrinho na lista, com variações de capa, banner e estado expandido.'
+						'Button representing a comic volume in the list, with cover, banner and expanded state variants.'
 				}
 			}
 		},

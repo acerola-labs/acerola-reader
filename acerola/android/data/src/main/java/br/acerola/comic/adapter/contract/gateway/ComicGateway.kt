@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Interface para observação do estado de sincronização.
+ * Interface for observing the sync state.
  */
 interface ComicSyncStatusGateway {
     val progress: StateFlow<Int>
@@ -15,8 +15,8 @@ interface ComicSyncStatusGateway {
 }
 
 /**
- * Interface para sincronização de um único item.
- * Todas as Engines implementam isso - refreshManga é universalmente suportado.
+ * Interface for syncing a single item.
+ * Every Engine implements this - refreshManga is universally supported.
  */
 interface ComicSingleSyncGateway : ComicSyncStatusGateway {
     suspend fun refreshManga(
@@ -26,8 +26,8 @@ interface ComicSingleSyncGateway : ComicSyncStatusGateway {
 }
 
 /**
- * Interface para operações de varredura da biblioteca (Incremental e Completa).
- * Implementada por Directory, MangaDex e AniList.
+ * Interface for library scan operations (Incremental and Full).
+ * Implemented by Directory, MangaDex and AniList.
  */
 interface ComicLibraryScanGateway : ComicSyncStatusGateway {
     suspend fun incrementalScan(baseUri: Uri?): Either<LibrarySyncError, Unit>
@@ -36,23 +36,23 @@ interface ComicLibraryScanGateway : ComicSyncStatusGateway {
 }
 
 /**
- * Interface para reconstrução profunda da biblioteca.
- * Implementada apenas pela ComicDirectoryEngine.
+ * Interface for a deep library rebuild.
+ * Implemented only by ComicDirectoryEngine.
  */
 interface ComicRebuildGateway : ComicSyncStatusGateway {
     suspend fun rebuildLibrary(baseUri: Uri?): Either<LibrarySyncError, Unit>
 }
 
 /**
- * Interface apenas para observação de dados (Read).
+ * Interface only for observing data (Read).
  */
 interface ComicReadOnlyGateway<T> {
     fun observeLibrary(): Flow<List<T>> = kotlinx.coroutines.flow.flowOf(emptyList())
 }
 
 /**
- * Interface agregada para sincronização completa.
- * Engines que suportam todas as operações implementam esta interface.
+ * Aggregate interface for full sync.
+ * Engines that support every operation implement this interface.
  */
 interface ComicSyncGateway :
     ComicSingleSyncGateway,
@@ -60,15 +60,15 @@ interface ComicSyncGateway :
     ComicRebuildGateway
 
 /**
- * Interface completa para Engines que leem e escrevem (Diretórios, MangaDex, AniList).
+ * Full interface for Engines that read and write (Directories, MangaDex, AniList).
  */
 interface ComicGateway<T> :
     ComicReadOnlyGateway<T>,
     ComicSyncGateway
 
 /**
- * Interface para operações de escrita na biblioteca local (ocultar/deletar).
- * Separada de MangaSyncGateway pois não são operações de sincronização.
+ * Interface for write operations on the local library (hide/delete).
+ * Separate from MangaSyncGateway since these are not sync operations.
  */
 interface ComicLibraryWriteGateway {
     suspend fun setMangaHidden(

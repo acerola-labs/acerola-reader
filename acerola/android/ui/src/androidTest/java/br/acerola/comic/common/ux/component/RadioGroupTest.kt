@@ -27,7 +27,7 @@ class RadioGroupTest {
             }
         }
 
-        // Clica na "Option B" (índice 1)
+        // Clicks "Option B" (index 1)
         composeTestRule.onNodeWithText("Option B").performClick()
 
         assert(selectedIndex == 1)

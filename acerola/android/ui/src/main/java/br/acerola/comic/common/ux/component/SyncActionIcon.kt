@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,19 +31,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 
 @Composable
 fun Acerola.Component.SyncActionIcon(
     state: SyncActionVisualState,
     modifier: Modifier = Modifier,
-    containerSize: Dp = SizeTokens.ClickTarget,
-    iconSize: Dp = SizeTokens.IconMedium,
-    defaultBackground: Color = MaterialTheme.colorScheme.primary,
-    onDefaultBackground: Color = MaterialTheme.colorScheme.onPrimary,
-    successBackground: Color = Color(0xFF1B5E20),
+    containerSize: Dp = SizeTokens.ClickTargetSmall,
+    iconSize: Dp = SizeTokens.IconSmall,
+    defaultBackground: Color = AcerolaExtendedTheme.colors.primarySoft,
+    onDefaultBackground: Color = MaterialTheme.colorScheme.primary,
+    successBackground: Color = AcerolaExtendedTheme.colors.successContainer,
     icon: @Composable () -> Unit,
 ) {
     val backgroundColor by animateColorAsState(
@@ -56,7 +58,7 @@ fun Acerola.Component.SyncActionIcon(
     )
 
     Surface(
-        shape = ShapeTokens.Large,
+        shape = AcerolaShapes.Full,
         color = backgroundColor,
         modifier = modifier.size(containerSize),
     ) {
@@ -88,7 +90,7 @@ fun Acerola.Component.SyncActionIcon(
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = AcerolaExtendedTheme.colors.success,
                             modifier = Modifier.size(iconSize),
                         )
                     }
@@ -99,6 +101,30 @@ fun Acerola.Component.SyncActionIcon(
             }
         }
     }
+}
+
+/**
+ * Secondary pill for a sync action in a settings row, the desktop's "Sincronizar" button: a spinner
+ * and [loadingText] while [state] is loading, `success-soft` with a check right after it finishes.
+ */
+@Composable
+fun Acerola.Component.SyncButton(
+    state: SyncActionVisualState,
+    text: String,
+    loadingText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Acerola.Component.Button(
+        text = if (state == SyncActionVisualState.LOADING) loadingText else text,
+        onClick = onClick,
+        modifier = modifier,
+        variant = if (state == SyncActionVisualState.SUCCESS) ButtonVariant.Success else ButtonVariant.Secondary,
+        enabled = enabled,
+        loading = state == SyncActionVisualState.LOADING,
+        icon = if (state == SyncActionVisualState.SUCCESS) Icons.Rounded.Check else Icons.Rounded.Sync,
+    )
 }
 
 @Preview(name = "Light", showBackground = true)

@@ -3,14 +3,14 @@
 	import AcerolaComicMetadataPanel from './acerola-comic-metadata-panel.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicMetadataPanel',
+		title: 'Pages/Comic/AcerolaComicMetadataPanel',
 		component: AcerolaComicMetadataPanel,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Painel lateral de metadados do comic, exibindo capa, título, autor, sinopse e ações.'
+						'Comic metadata side panel, showing cover, title, author, synopsis and actions.'
 				}
 			}
 		}
@@ -21,7 +21,8 @@
 	const title = 'Manga Title';
 	const author = 'Autor Desconhecido';
 	const chaptersCount = 10;
-	const description = 'Uma jornada épica espera por você. Sinopse muito longa para testar o clamp.';
+	const description =
+		'Uma jornada épica espera por você. Sinopse muito longa para testar o clamp.';
 	const cover = 'https://placehold.co/400x600/2a2a35/a6accd?text=Cover';
 	const onBack = () => console.log('Back clicked');
 </script>

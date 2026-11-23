@@ -8,7 +8,7 @@ use crate::{
     infra::error::DbError,
 };
 
-/// Criteria para ordenação da biblioteca na Home.
+/// Sort criteria for the library on the Home screen.
 #[derive(Debug, Clone, Copy, Default)]
 pub enum SortCriteria {
     #[default]
@@ -49,7 +49,7 @@ impl HomeRepository {
         Ok(result)
     }
 
-    /// Busca todos os quadrinhos com ordenação e filtros.
+    /// Fetches every comic with sorting and filters.
     pub async fn find_all_sorted(
         &self, criteria: SortCriteria, show_hidden: bool, metadata_source: Option<String>,
     ) -> Result<Vec<ComicSummaryView>, DbError> {
@@ -187,7 +187,7 @@ mod tests {
         let result =
             repo.find_all_sorted(SortCriteria::ChapterCountAsc, false, None).await.unwrap();
         assert_eq!(result.len(), 3);
-        // Ordenado por contagem: B (2), A (5), C (10)
+        // Sorted by count: B (2), A (5), C (10)
         assert_eq!(result[0].folder_name, "Manga B");
         assert_eq!(result[1].folder_name, "Manga A");
         assert_eq!(result[2].folder_name, "Manga C");
@@ -204,7 +204,7 @@ mod tests {
         let result =
             repo.find_all_sorted(SortCriteria::ChapterCountDesc, false, None).await.unwrap();
         assert_eq!(result.len(), 3);
-        // Ordenado por contagem: C (10), A (5), B (2)
+        // Sorted by count: C (10), A (5), B (2)
         assert_eq!(result[0].folder_name, "Manga C");
         assert_eq!(result[1].folder_name, "Manga A");
         assert_eq!(result[2].folder_name, "Manga B");

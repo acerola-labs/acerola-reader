@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { Input, type InputProps } from '$lib/components/ui/input';
+	import { Input, type InputProps } from '#lib/components/ui/input/index.ts';
 
 	export type AcerolaInputProps = {
 		state?: {
@@ -17,12 +17,14 @@
 			id?: string;
 			name?: string;
 			autocomplete?: InputProps['autocomplete'];
+			/** Accessible name when the field has no visible label (placeholder is not one). */
+			'aria-label'?: string;
 		};
 	};
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { state: control, events, ui }: AcerolaInputProps = $props();
 

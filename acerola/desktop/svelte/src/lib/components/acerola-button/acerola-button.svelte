@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { Button, type ButtonProps } from '$lib/components/ui/button';
+	import { Button, type ButtonProps } from '#lib/components/ui/button/index.ts';
 
 	export type AcerolaButtonProps = {
 		events?: {
@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -31,8 +31,10 @@
 
 <Button
 	class={cn(
-		'font-dm-sans enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
-		ui?.class
+		'font-black enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
+		ui?.class,
+		// Acerola standard: a button is always a pill, whatever the call site passes.
+		'rounded-full'
 	)}
 	onclick={events?.onClick}
 	{...uiProps}

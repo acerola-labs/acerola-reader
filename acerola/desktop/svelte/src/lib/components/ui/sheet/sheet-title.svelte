@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog as SheetPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		ref = $bindable(null),
@@ -12,6 +12,6 @@
 <SheetPrimitive.Title
 	bind:ref
 	data-slot="sheet-title"
-	class={cn('font-medium text-base text-foreground', className)}
+	class={cn('pr-12 text-lg leading-tight font-black tracking-tight text-foreground', className)}
 	{...restProps}
 />

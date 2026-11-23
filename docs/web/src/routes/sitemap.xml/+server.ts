@@ -1,6 +1,6 @@
-import { SITE_URL } from '$lib/constants/site';
-import { FALLBACK_LOCALE, getFlatOrder } from '$lib/content/docs';
-import { locales, localizeHref } from '$lib/paraglide/runtime';
+import { SITE_URL } from '#lib/constants/site.ts';
+import { FALLBACK_LOCALE, getFlatOrder } from '#lib/content/docs.ts';
+import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
@@ -8,8 +8,8 @@ export const GET: RequestHandler = async () => {
 
 	const urls = paths
 		.map((path) => {
-			// x-default aponta pro fallback (pt-br) — mesma regra do <link rel="alternate"> em
-			// +layout.svelte, pra rastreadores que não reconhecem nenhum dos hreflang listados.
+			// x-default points to the fallback (pt-br) — same rule as <link rel="alternate"> in
+			// +layout.svelte, for crawlers that recognize none of the listed hreflangs.
 			const alternates = [
 				...locales.map(
 					(locale) => `
@@ -19,10 +19,10 @@ export const GET: RequestHandler = async () => {
         <xhtml:link rel="alternate" hreflang="x-default" href="${SITE_URL}${localizeHref(path, { locale: FALLBACK_LOCALE })}" />`
 			].join('');
 
-			// Sem <lastmod>: não há por onde saber a data real de modificação de cada doc aqui,
-			// e mandar "hoje" pra toda URL em toda request é pior que omitir — Google trata um
-			// lastmod que nunca bate com a mudança real como sinal não confiável e passa a
-			// ignorá-lo pro site inteiro.
+			// No <lastmod>: there's no way to know each doc's real modification date here, and
+			// sending "today" for every URL on every request is worse than omitting it — Google
+			// treats a lastmod that never matches the real change as an untrustworthy signal and
+			// starts ignoring it for the whole site.
 			return `
     <url>
         <loc>${SITE_URL}${localizeHref(path, { locale: FALLBACK_LOCALE })}</loc>

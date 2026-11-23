@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 import HistoryPage from '../+page.svelte';
 
 vi.mock('$app/navigation', () => ({
@@ -27,13 +27,13 @@ vi.mock('@tauri-apps/api/core', () => ({
 	convertFileSrc: (path: string) => `asset://${path}`
 }));
 
-// HistoryPage chama peers.startListening()/sync.startListening() no onMount, que dependem
-// de `listen()` (Tauri IPC real, indisponível fora de uma webview) — sem mock aqui, a
-// promise rejeitada vaza como unhandled rejection e derruba a suíte mesmo com os asserts
-// passando. O `mockResolvedValue` é reaplicado a cada teste (ver beforeEach) porque
-// `vi.resetAllMocks()` limpa a config do mock — sem reaplicar, `listen()` volta a
-// resolver `undefined`, e `unlisten.push(await listen(...))` empurra `undefined` pro
-// array, quebrando o `unlisten.forEach((fn) => fn())` do stopListening.
+// HistoryPage calls peers.startListening()/sync.startListening() on mount, which depend on
+// `listen()` (real Tauri IPC, unavailable outside a webview) — without a mock here, the
+// rejected promise leaks as an unhandled rejection and brings down the suite even with the
+// asserts passing. The `mockResolvedValue` is reapplied on every test (see beforeEach)
+// because `vi.resetAllMocks()` wipes the mock config — without reapplying, `listen()`
+// resolves `undefined` again, and `unlisten.push(await listen(...))` pushes `undefined` into
+// the array, breaking stopListening's `unlisten.forEach((fn) => fn())`.
 vi.mock('@tauri-apps/api/event', () => ({
 	listen: (...args: unknown[]) => mockListen(...args)
 }));
@@ -42,7 +42,7 @@ vi.mock('@tauri-apps/plugin-log', () => ({
 	error: vi.fn()
 }));
 
-vi.mock('$lib/assets/placeholder/placeholder_manga.svg?component', () => ({
+vi.mock('#lib/assets/placeholder/placeholder_manga.svg?component', () => ({
 	default: () => ''
 }));
 
@@ -79,11 +79,11 @@ const mockHistoryData = [
 	}
 ];
 
-// onMount desta pagina dispara history.fetch() junto com peers.startListening() e
-// sync.startListening(), que chamam invoke() concorrentemente (get_paired_peers,
-// get_sync_history_log, get_network_status). mockResolvedValueOnce só olha a ordem de
-// chamada, não o comando — sob concorrência real qualquer um desses podia "roubar" o
-// valor pensado pra history_get_all. Roteando por nome de comando isso deixa de importar.
+// This page's onMount fires history.fetch() along with peers.startListening() and
+// sync.startListening(), which call invoke() concurrently (get_paired_peers,
+// get_sync_history_log, get_network_status). mockResolvedValueOnce only looks at call
+// order, not the command — under real concurrency any of these could "steal" the value
+// meant for history_get_all. Routing by command name makes that irrelevant.
 function setupInvokeMock(overrides: Record<string, unknown> = {}) {
 	const defaults: Record<string, unknown> = {
 		get_paired_peers: [],
@@ -94,10 +94,10 @@ function setupInvokeMock(overrides: Record<string, unknown> = {}) {
 	);
 }
 
-// `sync` agora vem do contexto compartilhado com `+layout.svelte` (ver
-// `CONTEXT_KEYS.networkSync`), não de uma instância própria da página — sem prover esse
-// contexto aqui, `getContext(...)` devolve `undefined` e o primeiro acesso a `sync.log`
-// (dentro do `$effect` da página) explode.
+// `sync` now comes from the context shared with `+layout.svelte` (see
+// `CONTEXT_KEYS.networkSync`), not from a page-owned instance — without providing that
+// context here, `getContext(...)` returns `undefined` and the first access to `sync.log`
+// (inside the page's `$effect`) blows up.
 function renderHistoryPage(networkSyncOverrides: Record<string, unknown> = {}) {
 	return render(HistoryPage, {
 		context: new Map([
@@ -130,7 +130,7 @@ describe('HistoryPage', () => {
 	});
 
 	it('renders empty state when there is no history', async () => {
-		// Renderiza o empty state quando não houver histórico
+		// Renders the empty state when there is no history
 		setupInvokeMock({ history_get_all: [] });
 		renderHistoryPage();
 
@@ -138,11 +138,11 @@ describe('HistoryPage', () => {
 			expect(mockInvoke).toHaveBeenCalledWith('history_get_all', undefined);
 		});
 
-		expect(screen.getByText(/Nenhum histórico encontrado/i)).toBeInTheDocument();
+		expect(screen.getByText(/Nenhum histórico ainda/i)).toBeInTheDocument();
 	});
 
 	it('renders history items successfully', async () => {
-		// Renderiza os itens de histórico com sucesso
+		// Renders the history items successfully
 		setupInvokeMock({ history_get_all: mockHistoryData });
 		renderHistoryPage();
 
@@ -153,7 +153,7 @@ describe('HistoryPage', () => {
 	});
 
 	it('clears history when clicking the button', async () => {
-		// Limpa o histórico ao clicar no botão de limpar
+		// Clears the history when clicking the clear button
 		const user = userEvent.setup();
 		setupInvokeMock({ history_get_all: mockHistoryData });
 		renderHistoryPage();
@@ -162,12 +162,12 @@ describe('HistoryPage', () => {
 			expect(screen.getByText('Comic 1')).toBeInTheDocument();
 		});
 
-		// bits-ui AlertDialog.Trigger envolve o elemento filho em seu próprio <button>, portanto dois botões
-		// com o mesmo nome acessível são renderizados. Pegamos o gatilho mais externo (índice 0).
+		// bits-ui AlertDialog.Trigger wraps the child element in its own <button>, so two buttons
+		// with the same accessible name are rendered. We take the outermost trigger (index 0).
 		const clearButtons = screen.getAllByRole('button', { name: /Limpar Histórico/i });
 		await user.click(clearButtons[0]);
 
-		// Após abrir o diálogo, clica no botão de ação de confirmação ("Sim, limpar tudo")
+		// After opening the dialog, click the confirm action button ("Sim, limpar tudo")
 		const confirmButton = await screen.findByRole('button', { name: /Sim, limpar tudo/i });
 		await user.click(confirmButton);
 

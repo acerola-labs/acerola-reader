@@ -9,6 +9,8 @@ test.describe('docs sidebar navigation', () => {
 		await sidebar.getByRole('link', { name: 'Primeiros passos' }).click();
 
 		await expect(page).toHaveURL(/\/docs\/getting-started$/);
-		await expect(page.getByRole('heading', { level: 1, name: 'Primeiros passos' })).toBeVisible();
+		await expect(
+			page.getByRole('heading', { level: 1, name: 'Primeiros passos' })
+		).toBeVisible();
 	});
 });

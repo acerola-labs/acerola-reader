@@ -23,7 +23,7 @@ class ComicExternalSyncToggleTest {
             )
         }
 
-        // Clica no switch
+        // Clicks the switch
         composeTestRule
             .onNode(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch))
             .performClick()

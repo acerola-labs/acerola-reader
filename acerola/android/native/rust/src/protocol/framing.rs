@@ -1,13 +1,13 @@
-//! Leitura/escrita de frames length-delimited (JSON) compartilhada por todos os protocolos P2P
-//! (files/sync-comic, history, library-browse, cover-browse). Antes desta consolidação, cada um
-//! reimplementava a MESMA lógica na mão — quatro cópias quase idênticas, cada uma com seu
-//! próprio texto de erro e (sem nenhuma razão documentada) seu próprio valor de timeout — e uma
-//! delas classificava o timeout de leitura como `P2pError::StreamFailed` genérico em vez de
-//! `P2pError::Timeout`, fazendo a sessão inteira falhar sem NENHUMA tentativa de retry, mesmo
-//! quando o problema era um hiccup passageiro (achado ao vivo em produção). Uma única
-//! implementação aqui garante que a classificação certa (`Timeout`, reconhecida por
-//! `classify_sync_error` e retentada inteira por `handle_connect_command` em `acerola-p2p`)
-//! valha pra todo protocolo igual, sem depender de lembrar de replicar o fix em N lugares.
+//! Length-delimited (JSON) frame reading/writing shared by all P2P protocols
+//! (files/sync-comic, history, library-browse, cover-browse). Before this consolidation, each one
+//! reimplemented the SAME logic by hand — four nearly identical copies, each with its
+//! own error text and (for no documented reason) its own timeout value — and one
+//! of them classified the read timeout as a generic `P2pError::StreamFailed` instead of
+//! `P2pError::Timeout`, making the whole session fail with NO retry attempt at all, even
+//! when the problem was a passing hiccup (found live in production). A single
+//! implementation here guarantees that the right classification (`Timeout`, recognized by
+//! `classify_sync_error` and fully retried by `handle_connect_command` in `acerola-p2p`)
+//! applies equally to every protocol, without having to remember to replicate the fix in N places.
 
 use std::time::Duration;
 
@@ -21,14 +21,14 @@ use tokio_util::codec::{FramedRead, FramedWrite, LengthDelimitedCodec};
 pub(crate) type Recv = FramedRead<Box<dyn AsyncRead + Send + Unpin>, LengthDelimitedCodec>;
 pub(crate) type Writer = FramedWrite<Box<dyn AsyncWrite + Send + Unpin>, LengthDelimitedCodec>;
 
-/// Lê um frame cru (bytes), com timeout — cada camada do tipo aninhado que
-/// `tokio::time::timeout(_, recv.next())` devolve (`Result<Option<Result<BytesMut, io::Error>>,
-/// Elapsed>`) vira uma causa DIFERENTE: estourou o tempo, o stream fechou antes de chegar
-/// nada, ou deu erro lendo/decodificando o frame em si. `P2pError::Timeout` (não
-/// `StreamFailed`) de propósito só pro primeiro caso — é a variante que `classify_sync_error`
-/// já reconhece e que `handle_connect_command` (lib/p2p) já trata como transiente o bastante
-/// pra retentar a sessão inteira (novo dial + handler de novo); os outros dois continuam
-/// `StreamFailed`, que hoje não é retentado.
+/// Reads a raw frame (bytes), with timeout — each layer of the nested type that
+/// `tokio::time::timeout(_, recv.next())` returns (`Result<Option<Result<BytesMut, io::Error>>,
+/// Elapsed>`) becomes a DIFFERENT cause: time ran out, the stream closed before anything
+/// arrived, or reading/decoding the frame itself failed. `P2pError::Timeout` (not
+/// `StreamFailed`) on purpose only for the first case — it is the variant `classify_sync_error`
+/// already recognizes and that `handle_connect_command` (lib/p2p) already treats as transient enough
+/// to retry the whole session (new dial + handler again); the other two stay
+/// `StreamFailed`, which is not retried today.
 pub(crate) async fn read_bytes(recv: &mut Recv, timeout: Duration) -> Result<Vec<u8>, P2pError> {
     let frame = tokio::time::timeout(timeout, recv.next())
         .await
@@ -39,7 +39,7 @@ pub(crate) async fn read_bytes(recv: &mut Recv, timeout: Duration) -> Result<Vec
     Ok(frame.to_vec())
 }
 
-/// Lê e decodifica um frame JSON, com timeout — mesma classificação de erro de [`read_bytes`].
+/// Reads and decodes a JSON frame, with timeout — same error classification as [`read_bytes`].
 pub(crate) async fn read_json<T: DeserializeOwned>(
     recv: &mut Recv, timeout: Duration,
 ) -> Result<T, P2pError> {
@@ -48,8 +48,8 @@ pub(crate) async fn read_json<T: DeserializeOwned>(
         .map_err(|err| P2pError::StreamFailed(format!("failed to decode frame: {err}")))
 }
 
-/// Escreve um valor como frame JSON solto (sem tag de enum) — mesmo formato que o Desktop usa
-/// em `infra/sync/framing.rs::write_json`.
+/// Writes a value as a standalone JSON frame (no enum tag) — same format Desktop uses
+/// in `infra/sync/framing.rs::write_json`.
 pub(crate) async fn write_json<T: Serialize>(
     writer: &mut Writer, value: &T,
 ) -> Result<(), P2pError> {
@@ -90,9 +90,9 @@ mod tests {
         assert_eq!(received, Ping { n: 42 });
     }
 
-    /// Regressão central: um timeout de leitura precisa virar `P2pError::Timeout` — não
-    /// `StreamFailed` — pra `handle_connect_command` (lib/p2p) saber que vale a pena retentar a
-    /// sessão inteira.
+    /// Core regression: a read timeout must become `P2pError::Timeout` — not
+    /// `StreamFailed` — so `handle_connect_command` (lib/p2p) knows it is worth retrying the
+    /// whole session.
     #[tokio::test]
     async fn read_json_times_out_as_a_typed_timeout_not_a_generic_stream_failure() {
         let (_writer, mut reader) = framed_pair();
@@ -102,13 +102,13 @@ mod tests {
 
         assert!(
             matches!(result, Err(P2pError::Timeout)),
-            "esperava P2pError::Timeout, recebeu {result:?}"
+            "expected P2pError::Timeout, got {result:?}"
         );
     }
 
-    /// Caminho triste diferente do timeout: o outro lado fechou o stream de propósito (ou
-    /// caiu) ANTES de mandar qualquer frame — isso é `StreamFailed`, não `Timeout`, porque
-    /// retentar imediatamente não muda nada (a conexão já não existe mais).
+    /// Unhappy path different from the timeout: the other side closed the stream on purpose (or
+    /// dropped) BEFORE sending any frame — that is `StreamFailed`, not `Timeout`, because
+    /// retrying immediately changes nothing (the connection no longer exists).
     #[tokio::test]
     async fn read_json_reports_a_clean_stream_close_as_stream_failed_not_timeout() {
         let (writer, mut reader) = framed_pair();
@@ -119,7 +119,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(P2pError::StreamFailed(_))),
-            "esperava StreamFailed (stream fechado), recebeu {result:?}"
+            "expected StreamFailed (stream closed), got {result:?}"
         );
     }
 
@@ -134,7 +134,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(P2pError::StreamFailed(_))),
-            "esperava StreamFailed (JSON malformado), recebeu {result:?}"
+            "expected StreamFailed (malformed JSON), got {result:?}"
         );
     }
 }

@@ -3,7 +3,7 @@ use sqlx::{query::Query, sqlite::SqliteArguments, Sqlite};
 
 use crate::data::repositories::{Bindable, Entity};
 
-/// Contrato com o [`crate::data::repositories::Repository`] genérico.
+/// Contract with the generic [`crate::data::repositories::Repository`].
 impl Entity for ComicDirectory {
     fn columns() -> &'static [&'static str] {
         &[
@@ -26,7 +26,7 @@ impl Entity for ComicDirectory {
     }
 }
 
-/// Garante que o código consiga serializar o sql para o objeto
+/// Ensures the code can deserialize the SQL row into the object
 impl Bindable for ComicDirectory {
     fn bind_insert<'query>(
         &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
@@ -55,13 +55,13 @@ impl Bindable for ComicDirectory {
             .bind(self.archive_template_fk)
             .bind(self.external_sync_enabled)
             .bind(self.hidden)
-            .bind(self.id) // <- id pro WHERE id = ?
+            .bind(self.id) // <- id for WHERE id = ?
     }
 }
 
-/// Diretório de quadrinhos gerenciado pela aplicação.                                                                                                                                                                                                                                      ///
-/// Equivalente a um `@Entity` do JPA — mapeia para a tabela `comic_directory`.
-/// Migration em `src-tauri/migrations/archive`.
+/// Comic directory managed by the application.                                                                                                                                                                                                                                      ///
+/// Equivalent to a JPA `@Entity` — maps to the `comic_directory` table.
+/// Migration in `src-tauri/migrations/archive`.
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct ComicDirectory {
     pub id: i64,

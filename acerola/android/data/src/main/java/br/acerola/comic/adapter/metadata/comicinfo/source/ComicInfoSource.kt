@@ -44,7 +44,7 @@ class ComicInfoSource
                     return@withContext Either.Left(value = NetworkError.NotFound())
                 }
 
-                // 1. Tenta encontrar o ComicInfo.xml direto na raiz da pasta
+                // 1. Tries to find ComicInfo.xml directly at the folder root
                 val directXml = folderDoc.findFile("ComicInfo.xml")
 
                 if (directXml != null && directXml.exists()) {
@@ -60,7 +60,7 @@ class ComicInfoSource
                     }
                 }
 
-                // 2. Se não achou na raiz, procura dentro dos capítulos (cbz/cbr)
+                // 2. If not found at the root, looks inside the chapters (cbz/cbr)
                 val firstChapter =
                     folderDoc.listFiles().firstOrNull {
                         it.isFile && (it.name?.endsWith(suffix = ".cbz") == true || it.name?.endsWith(suffix = ".cbr") == true)
@@ -104,8 +104,8 @@ class ComicInfoSource
             info: ComicMetadataDto,
         ): Either<NetworkError, Unit> =
             withContext(context = Dispatchers.IO) {
-                // NOTE: comic aqui deve ser o URI da pasta pai (root) e info.title o nome da subpasta
-                // Mas por simplicidade, vamos assumir que comic é o URI da pasta do quadrinho
+                // NOTE: comic here should be the parent folder (root) URI and info.title the subfolder name
+                // But for simplicity, we assume comic is the comic folder URI
                 val folderUri = comic.toUri()
                 val folderDoc =
                     DocumentFile.fromTreeUri(context, folderUri)

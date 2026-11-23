@@ -10,8 +10,8 @@ export function _resetChapterSelectionState() {
 }
 
 /**
- * Hook para gerenciar seleção múltipla de capítulos dentro da tela do quadrinho.
- * Permite selecionar um ou vários capítulos para ações em batch (marcar lido/não lido).
+ * Hook to manage multiple chapter selection inside the comic screen.
+ * Allows selecting one or more chapters for batch actions (mark read/unread).
  */
 export function useChapterSelection() {
 	function toggleSelection(id: ChapterId): void {

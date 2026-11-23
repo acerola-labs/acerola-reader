@@ -97,8 +97,8 @@ pub async fn sync_metadata_comic_info(
     Ok(ComicMetadataEvent::from_model(metadata).with_cover(cover).with_banner(banner))
 }
 
-/// Comando Tauri para apagar os metadados sincronizados (+ cover/banner + ComicInfo.xml)
-/// de um único quadrinho, revertendo-o ao estado sem sincronização.
+/// Tauri command that deletes the synced metadata (+ cover/banner + ComicInfo.xml)
+/// of a single comic, reverting it to the unsynced state.
 #[command]
 pub async fn clear_comic_metadata(
     comic_id: String, state: State<'_, MetadataState>,
@@ -110,8 +110,8 @@ pub async fn clear_comic_metadata(
     state.service.clear_comic_metadata(parsed_id).await.map_err(|err| ErrorPayload::from(&err))
 }
 
-/// Comando Tauri para apagar os metadados sincronizados de múltiplos quadrinhos em lote.
-/// Best-effort: quadrinhos que falharem são pulados. Retorna quantos foram limpos.
+/// Tauri command that deletes the synced metadata of multiple comics in batch.
+/// Best-effort: comics that fail are skipped. Returns how many were cleared.
 #[command]
 pub async fn clear_comics_metadata_batch(
     comic_ids: Vec<String>, state: State<'_, MetadataState>,
