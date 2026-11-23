@@ -6,8 +6,8 @@ docs.reader.acerola.app {
         X-Frame-Options "SAMEORIGIN"
     }
 
-    # Swarm service of the hetzner_docs stack, over the edge network.
-    reverse_proxy hetzner_docs_web:3000 {
+    # Swarm service of the hetzner_acerola-reader-docs stack, over the edge network.
+    reverse_proxy hetzner_acerola-reader-docs_web:3000 {
         header_up Host {host}
         header_up X-Real-IP {remote}
         header_up X-Forwarded-For {remote}

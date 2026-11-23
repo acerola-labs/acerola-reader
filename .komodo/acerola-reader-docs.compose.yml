@@ -1,7 +1,7 @@
-# Acerola docs site on the hetzner Swarm (Komodo Stack hetzner_docs, see komodo.toml).
+# Acerola docs site on the hetzner Swarm (Komodo Stack hetzner_acerola-reader-docs, see komodo.toml).
 # APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
-# Caddy (config) reaches the service as hetzner_docs_web:3000 over the edge network; the route
-# is docs.caddy, published by route.sh.
+# Caddy (config) reaches the service as hetzner_acerola-reader-docs_web:3000 over the edge
+# network; the route is acerola-reader-docs.caddy, published by route.sh.
 services:
   web:
     image: ${APP_IMAGE:?}
@@ -45,7 +45,7 @@ services:
         parallelism: 1
         order: start-first
       labels:
-        acerola.app: docs
+        acerola.app: acerola-reader-docs
         acerola.server: hetzner
 
 networks:
