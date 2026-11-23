@@ -17,6 +17,9 @@
 			class?: string;
 			size?: AcerolaCardImageSize;
 			hideTitle?: boolean;
+			// False when a parent already handles the click (e.g. a command item), so the
+			// cover renders without a nested focusable button.
+			interactive?: boolean;
 		};
 	};
 
@@ -53,6 +56,7 @@
 
 	const size = $derived(ui?.size ?? 'md');
 	const hideTitle = $derived(ui?.hideTitle ?? false);
+	const interactive = $derived(ui?.interactive ?? true);
 </script>
 
 <div
@@ -71,10 +75,12 @@
 		class="relative rounded-tile bg-surface shadow-lift transition-shadow duration-300 ease-brand group-hover:shadow-float"
 	>
 		<div class="h-full w-full overflow-hidden rounded-tile">
-			<button
-				type="button"
+			<svelte:element
+				this={interactive ? 'button' : 'div'}
+				type={interactive ? 'button' : undefined}
+				role={interactive ? undefined : 'presentation'}
 				class="relative h-full w-full cursor-pointer text-left"
-				onclick={events?.onClick}
+				onclick={interactive ? events?.onClick : undefined}
 			>
 				{#if data.cover}
 					<img
@@ -115,7 +121,7 @@
 						></div>
 					</div>
 				{/if}
-			</button>
+			</svelte:element>
 		</div>
 	</AspectRatio>
 
