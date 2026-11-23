@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import AcerolaNetworkConnectCard from './acerola-network-connect-card.svelte';
-import { InvalidConnectionCodeError } from '$lib/utils/connection-code.utils';
+import { InvalidConnectionCodeError } from '#lib/utils/connection-code.util.ts';
 
 vi.mock('svelte-sonner', () => ({
 	toast: {
@@ -79,7 +79,9 @@ describe('AcerolaNetworkConnectCard', () => {
 		await fireEvent.input(input, { target: { value: 'some-code' } });
 		await fireEvent.click(screen.getByRole('button', { name: /Connect|Conectar/i }));
 
-		expect(await screen.findByRole('button', { name: /Connect|Conectar/i })).toBeInTheDocument();
+		expect(
+			await screen.findByRole('button', { name: /Connect|Conectar/i })
+		).toBeInTheDocument();
 	});
 
 	it('disables the connect button while connecting is true', () => {

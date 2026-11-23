@@ -22,9 +22,9 @@ async function renderHook() {
 	return hook!;
 }
 
-// Roda antes de qualquer beforeEach/_resetComicSelectionState deste arquivo, então
-// observa o valor inicial de verdade do `$state(false)` do módulo, em vez de um valor
-// forçado por um reset. Mata o mutante que troca o literal inicial pra `true`.
+// Runs before any beforeEach/_resetComicSelectionState in this file, so it observes the
+// module's real initial `$state(false)` value, instead of a value forced by a reset. Kills
+// the mutant that swaps the initial literal for `true`.
 it('isSelectionMode is false on module load, before any reset has run', async () => {
 	const hook = await renderHook();
 

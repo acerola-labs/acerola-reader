@@ -1,9 +1,9 @@
 use super::{ComicError, RpcError};
 
-/// Ponte entre os erros internos deste crate e o `ConnectionError` que
-/// `acerola_p2p::api::protocol::Handler::handle` exige como retorno. Não há um
-/// variant específico pra "erro de protocolo de aplicação" na lib, então usamos
-/// o balde genérico `StreamFailed` — o mesmo que o RPC interno da lib já usa.
+/// Bridge between this crate's internal errors and the `ConnectionError` that
+/// `acerola_p2p::api::protocol::Handler::handle` requires as a return type. There is no
+/// specific variant for an "application protocol error" in the lib, so we use
+/// the generic `StreamFailed` bucket — the same one the lib's internal RPC already uses.
 impl From<RpcError> for acerola_p2p::api::error::P2pError {
     fn from(err: RpcError) -> Self {
         acerola_p2p::api::error::P2pError::StreamFailed(err.to_string())

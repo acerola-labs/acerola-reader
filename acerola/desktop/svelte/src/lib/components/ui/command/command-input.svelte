@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui';
-	import { cn } from '$lib/utils/cn.utils';
-	import * as InputGroup from '$lib/components/ui/input-group/index';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import * as InputGroup from '#lib/components/ui/input-group/index.ts';
 	import SearchIcon from '@lucide/svelte/icons/search';
 
 	let {
@@ -14,7 +14,7 @@
 
 <div data-slot="command-input-wrapper" class="p-1 pb-0">
 	<InputGroup.Root
-		class="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!"
+		class="h-11! rounded-full! bg-input shadow-none! has-[[data-slot=input-group-control]:focus-visible]:ring-0! *:data-[slot=input-group-addon]:pl-4!"
 	>
 		<CommandPrimitive.Input
 			data-slot="command-input"

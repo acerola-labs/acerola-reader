@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 
 /**
- * UseCase responsável pela sincronização e reindexação da biblioteca de quadrinhos.
- * Pode ser injetado com qualificadores para operar em diferentes fontes (Local/Remoto).
+ * UseCase responsible for syncing and reindexing the comic library.
+ * Can be injected with qualifiers to operate on different sources (Local/Remote).
  */
 class SyncLibraryUseCase(
     private val scanGateway: ComicLibraryScanGateway? = null,

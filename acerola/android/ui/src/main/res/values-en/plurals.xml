@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="description_sync_mangadex_remote_info_supporting">
+        <item quantity="one">Fetches the comic metadata by title.</item>
+        <item quantity="other">Fetches the comics metadata by title.</item>
+    </plurals>
+    <plurals name="label_volume_header_chapter_count">
+        <item quantity="one">%1$d chapter</item>
+        <item quantity="other">%1$d chapters</item>
+    </plurals>
+</resources>

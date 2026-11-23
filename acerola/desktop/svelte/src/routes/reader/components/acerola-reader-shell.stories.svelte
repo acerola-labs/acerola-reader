@@ -3,13 +3,13 @@
 	import AcerolaReaderShell from './acerola-reader-shell.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderShell',
+		title: 'Pages/Reader/AcerolaReaderShell',
 		component: AcerolaReaderShell,
 		tags: ['autodocs'],
 		parameters: {
-			// AcerolaReaderShell usa `position: fixed` ancorado à viewport real, o que
-			// escapa do canvas inline da página de docs. Renderizar em um iframe isolado
-			// faz o `fixed` preencher corretamente a área do preview.
+			// AcerolaReaderShell uses `position: fixed` anchored to the real viewport, which
+			// escapes the docs page's inline canvas. Rendering in an isolated iframe makes the
+			// `fixed` fill the preview area correctly.
 			docs: { story: { inline: false, iframeHeight: 500 } }
 		}
 	});
@@ -18,7 +18,7 @@
 <Story name="Default" asChild>
 	<AcerolaReaderShell>
 		{#snippet toolbar()}
-			<div class="border-b border-surface/40 bg-base p-4 font-bold">Toolbar</div>
+			<div class="bg-mantle p-4 font-bold">Toolbar</div>
 		{/snippet}
 
 		{#snippet viewport()}
@@ -26,7 +26,7 @@
 		{/snippet}
 
 		{#snippet footer()}
-			<div class="border-t border-surface/40 bg-base p-4">Footer</div>
+			<div class="bg-mantle p-4">Footer</div>
 		{/snippet}
 	</AcerolaReaderShell>
 </Story>
@@ -34,7 +34,7 @@
 <Story name="With Command" asChild>
 	<AcerolaReaderShell>
 		{#snippet toolbar()}
-			<div class="border-b border-surface/40 bg-base p-4 font-bold">Toolbar</div>
+			<div class="bg-mantle p-4 font-bold">Toolbar</div>
 		{/snippet}
 
 		{#snippet viewport()}
@@ -42,12 +42,12 @@
 		{/snippet}
 
 		{#snippet footer()}
-			<div class="border-t border-surface/40 bg-base p-4">Footer</div>
+			<div class="bg-mantle p-4">Footer</div>
 		{/snippet}
 
 		{#snippet command()}
-			<div class="absolute inset-0 grid place-items-center bg-base/30">
-				<div class="rounded-lg border border-surface/40 bg-base p-6">Command palette</div>
+			<div class="absolute inset-0 grid place-items-center bg-background/30">
+				<div class="rounded-card bg-background p-6">Command palette</div>
 			</div>
 		{/snippet}
 	</AcerolaReaderShell>

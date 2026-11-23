@@ -28,6 +28,6 @@ describe('AcerolaComicHeroBanner', () => {
 			props: { data: { banner: null, rating: null, chapterCount: 10 } }
 		});
 		expect(screen.queryByText('9.8')).not.toBeInTheDocument();
-		expect(screen.getByText('10 Caps')).toBeInTheDocument();
+		expect(screen.getByText('10 caps')).toBeInTheDocument();
 	});
 });

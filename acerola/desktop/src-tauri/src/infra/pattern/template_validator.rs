@@ -236,7 +236,7 @@ mod tests {
 
     #[test]
     fn test_error_extension_before_chapter() {
-        // Só uma extension: ordem é verificada depois da contagem
+        // Only one extension: order is checked after the count
         assert!(matches!(
             validate_chapter_template("{extension}{chapter}.*"),
             Err(PatternError::ExtensionBeforeChapter)

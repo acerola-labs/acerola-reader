@@ -5,33 +5,33 @@ use serde_json::Value;
 use tauri::Manager;
 use tauri_plugin_fs::FsExt;
 
-/// Extrai a propriedade `library_path` do conteúdo JSON das configurações.
+/// Extracts the `library_path` property from the settings JSON content.
 fn extract_library_path(file_content: &str) -> Option<PathBuf> {
     let json_value: Value = serde_json::from_str(file_content).ok()?;
     let path_str = json_value.get("library_path")?.as_str()?;
     Some(PathBuf::from(path_str))
 }
 
-/// Lê `library_path` diretamente de `settings.json`, sem depender do plugin de store
-/// estar inicializado. Usado tanto pelo setup de escopos do FS quanto pelo sync P2P de
-/// arquivos, que precisa saber onde gravar capítulos recebidos de outro device.
+/// Reads `library_path` straight from `settings.json`, without depending on the store plugin
+/// being initialized. Used both by the FS scope setup and by P2P file sync, which needs to
+/// know where to write chapters received from another device.
 pub fn read_library_path(app_data_directory: &std::path::Path) -> Option<PathBuf> {
     let settings_file_path = app_data_directory.join("settings.json");
     let file_content = std::fs::read_to_string(&settings_file_path).ok()?;
     extract_library_path(&file_content)
 }
 
-/// Configuração de relay resolvida a partir de `settings.json`, combinável em múltiplas
-/// fontes simultâneas (ver [`RelaySettings::resolve`]).
+/// Relay configuration resolved from `settings.json`, combinable across multiple
+/// simultaneous sources (see [`RelaySettings::resolve`]).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RelaySettings {
-    /// Usa o relay oficial mantido pelo Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
+    /// Uses the official relay maintained by Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
     pub use_acerola_relay: bool,
-    /// Usa a rede pública padrão de relays do projeto Iroh (n0) — mutuamente exclusiva com
-    /// as demais fontes: `iroh::RelayMode` só permite `Disabled | Default | Custom`, nunca
-    /// uma combinação de `Default` com URLs específicas.
+    /// Uses the Iroh project's (n0) default public relay network — mutually exclusive with
+    /// the other sources: `iroh::RelayMode` only allows `Disabled | Default | Custom`, never
+    /// a combination of `Default` with specific URLs.
     pub use_iroh_public_network: bool,
-    /// Relay(s) próprio(s) do usuário (self-hosted, sem autenticação).
+    /// The user's own relay(s) (self-hosted, no authentication).
     pub custom_relay_urls: Vec<String>,
 }
 
@@ -46,15 +46,15 @@ impl Default for RelaySettings {
 }
 
 impl RelaySettings {
-    /// Resolve as fontes habilitadas para o `RelayModeConfig` concreto consumido pelo
-    /// `IrohTransportBuilder`. Sem nenhuma fonte ativa, cai em `MdnsOnly` — não existe um
-    /// modo "mDNS only" explícito na UI, é só o estado natural de "nada selecionado".
+    /// Resolves the enabled sources into the concrete `RelayModeConfig` consumed by the
+    /// `IrohTransportBuilder`. With no active source it falls back to `MdnsOnly` — there is no
+    /// explicit "mDNS only" mode in the UI, it is just the natural "nothing selected" state.
     ///
-    /// `iroh_services_ticket` vem do cofre criptografado (`SecureP2pStorage`), não de
-    /// `settings.json` — é a conta do PRÓPRIO usuário em `services.iroh.computer`, nunca um
-    /// secret de projeto embutido no build. Se o toggle estiver ligado mas nenhum ticket
-    /// tiver sido colado ainda, essa fonte é ignorada (não há como montar
-    /// `RelayModeConfig::IrohDefault` sem ele) e as demais fontes combinam normalmente.
+    /// `iroh_services_ticket` comes from the encrypted vault (`SecureP2pStorage`), not from
+    /// `settings.json` — it is the user's OWN account on `services.iroh.computer`, never a
+    /// project secret embedded in the build. If the toggle is on but no ticket has been pasted
+    /// yet, that source is ignored (there is no way to build `RelayModeConfig::IrohDefault`
+    /// without it) and the other sources combine normally.
     pub fn resolve(&self, iroh_services_ticket: Option<&str>) -> RelayModeConfig {
         if self.use_iroh_public_network {
             if let Some(ticket) = iroh_services_ticket {
@@ -76,19 +76,19 @@ impl RelaySettings {
     }
 }
 
-/// Lê a configuração de relay combinável de `settings.json` (`relay_use_acerola`,
-/// `relay_use_iroh_public`, `relay_custom_urls`). Ausência total do arquivo/chaves cai no
-/// [`RelaySettings::default`] (relay do Acerola habilitado, sem mais nenhuma fonte). Só é lida
-/// na inicialização: trocar a configuração de relay em runtime não é suportado pela lib, só a
-/// troca de modo local/relay (já exposta via `switch_to_local`/`switch_to_relay`).
+/// Reads the combinable relay configuration from `settings.json` (`relay_use_acerola`,
+/// `relay_use_iroh_public`, `relay_custom_urls`). A missing file/keys falls back to
+/// [`RelaySettings::default`] (Acerola relay enabled, no other source). Only read at startup:
+/// changing the relay configuration at runtime is not supported by the lib, only switching
+/// between local/relay mode (already exposed via `switch_to_local`/`switch_to_relay`).
 ///
-/// Migração: se nenhuma das chaves novas estiver presente mas a chave legada `relay_url` (de
-/// antes desta feature, URL única) estiver, ela é migrada para dentro de `custom_relay_urls` —
-/// sem isso, quem já tinha configurado um relay próprio perderia essa escolha silenciosamente
-/// no primeiro boot após o update. `relay_iroh_urls` (lista separada "Relays Iroh", removida por
-/// ser funcionalmente idêntica a `relay_custom_urls` — as duas viravam o mesmo
-/// `RelayModeConfig::Custom`) é sempre mesclada em `custom_relay_urls` se presente, mesmo
-/// quando as chaves novas já existem.
+/// Migration: if none of the new keys is present but the legacy `relay_url` key (from before
+/// this feature, a single URL) is, it is migrated into `custom_relay_urls` — without this,
+/// anyone who had configured their own relay would silently lose that choice on the first boot
+/// after the update. `relay_iroh_urls` (a separate "Iroh Relays" list, removed for being
+/// functionally identical to `relay_custom_urls` — both became the same
+/// `RelayModeConfig::Custom`) is always merged into `custom_relay_urls` if present, even
+/// when the new keys already exist.
 pub fn read_relay_settings(app_data_directory: &std::path::Path) -> RelaySettings {
     let settings_file_path = app_data_directory.join("settings.json");
     let Ok(file_content) = std::fs::read_to_string(&settings_file_path) else {
@@ -165,11 +165,11 @@ fn read_string_array(json_value: &Value, key: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// Lê o apelido custom do dispositivo local (`device_alias`, estilo LocalSend) de
-/// `settings.json`. Ausente/vazio (caso comum) faz o chamador cair no hostname automático do
-/// `DeviceInfoProvider`. É lido só na inicialização do node P2P — depois disso, um apelido
-/// definido em runtime (`set_local_device_name`) já não passa mais por aqui, só é persistido
-/// nesta chave pelo frontend pra sobreviver ao próximo restart.
+/// Reads the local device's custom alias (`device_alias`, LocalSend style) from
+/// `settings.json`. Missing/empty (the common case) makes the caller fall back to the
+/// `DeviceInfoProvider`'s automatic hostname. Only read when the P2P node starts — after that,
+/// an alias set at runtime (`set_local_device_name`) no longer goes through here, it is only
+/// persisted in this key by the frontend to survive the next restart.
 pub fn read_device_alias_override(app_data_directory: &std::path::Path) -> Option<String> {
     let settings_file_path = app_data_directory.join("settings.json");
     let file_content = std::fs::read_to_string(&settings_file_path).ok()?;
@@ -183,8 +183,8 @@ pub fn read_device_alias_override(app_data_directory: &std::path::Path) -> Optio
     Some(alias)
 }
 
-/// Registra as permissões de acesso ao sistema de arquivos no Tauri usando Early Returns (Guard Clauses)
-/// para manter a complexidade ciclomática mínima e o código linear.
+/// Registers the filesystem access permissions in Tauri using Early Returns (Guard Clauses)
+/// to keep cyclomatic complexity minimal and the code linear.
 pub async fn setup_scopes_from_store<R: tauri::Runtime>(
     app_handle: &tauri::AppHandle<R>, app_data_directory: &std::path::Path,
 ) {
@@ -289,9 +289,9 @@ mod tests {
         );
     }
 
-    /// `relay_iroh_urls` era uma lista separada ("Relays Iroh") funcionalmente idêntica a
-    /// `relay_custom_urls` (as duas viravam o mesmo `RelayModeConfig::Custom`) — removida da
-    /// UI, mas quem já tinha algo salvo ali não pode perder essa URL silenciosamente.
+    /// `relay_iroh_urls` was a separate list ("Iroh Relays") functionally identical to
+    /// `relay_custom_urls` (both became the same `RelayModeConfig::Custom`) — removed from the
+    /// UI, but anyone who already had something saved there must not silently lose that URL.
     #[test]
     fn test_read_relay_settings_merges_legacy_iroh_urls_into_custom_urls() {
         let app_data_directory = tempfile::tempdir().unwrap();
@@ -423,9 +423,9 @@ mod tests {
         );
     }
 
-    /// Toggle ligado mas sem ticket colado ainda (primeiro uso, ou usuário desmarcou depois de
-    /// já ter salvo em `settings.json`) — não há como montar `IrohDefault` sem o ticket, então
-    /// cai pras demais fontes combinadas normalmente, como se o toggle estivesse desligado.
+    /// Toggle on but no ticket pasted yet (first use, or the user unchecked it after having
+    /// saved to `settings.json`) — there is no way to build `IrohDefault` without the ticket, so
+    /// it falls back to the other sources combined normally, as if the toggle were off.
     #[test]
     fn test_relay_settings_resolve_iroh_public_network_without_ticket_falls_back_to_other_sources()
     {

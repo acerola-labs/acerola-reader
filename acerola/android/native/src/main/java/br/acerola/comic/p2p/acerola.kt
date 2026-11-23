@@ -1457,91 +1457,91 @@ private fun uniffiCheckContractApiVersion(lib: UniffiLib) {
 
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: UniffiLib) {
-    if (lib.uniffi_acerola_checksum_method_coverbrowseprovider_get_local_cover() != 12108.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_coverbrowseprovider_get_local_cover() != 62672.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_coverbrowseprovider_save_remote_cover() != 6629.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_coverbrowseprovider_save_remote_cover() != 7023.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_file_manifest() != 15691.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_file_manifest() != 3950.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_library_summary() != 1006.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_library_summary() != 58806.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_open_chapter_for_read() != 47391.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_open_chapter_for_read() != 13242.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_read_chapter_chunk() != 57668.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_read_chapter_chunk() != 52889.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_close_read_handle() != 52478.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_close_read_handle() != 19695.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_begin_chapter_write() != 31873.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_begin_chapter_write() != 16421.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_write_chapter_chunk() != 20134.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_write_chapter_chunk() != 57506.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_finalize_chapter_write() != 57641.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_finalize_chapter_write() != 21837.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_abort_chapter_write() != 38843.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_abort_chapter_write() != 49938.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_extras_manifest() != 59628.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_get_extras_manifest() != 19752.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_open_extra_for_read() != 2082.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_open_extra_for_read() != 14982.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_begin_extra_write() != 37993.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_begin_extra_write() != 46212.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_finalize_extra_write() != 53978.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_finalize_extra_write() != 34712.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_filesyncprovider_abort_extra_write() != 65511.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_filesyncprovider_abort_extra_write() != 41228.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress() != 48845.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress() != 49142.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_chapters_read() != 35899.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_chapters_read() != 48331.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress_for_comic() != 18366.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress_for_comic() != 20292.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress_for_chapters() != 31401.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_reading_progress_for_chapters() != 38346.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_chapters_read_for_chapters() != 41489.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_get_chapters_read_for_chapters() != 8573.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_comic_exists() != 19512.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_comic_exists() != 33290.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_apply_reading_progress() != 35798.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_apply_reading_progress() != 17894.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_historysyncprovider_apply_chapter_read() != 57692.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_historysyncprovider_apply_chapter_read() != 5741.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_acerola_checksum_method_p2pcallback_on_event() != 37231.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_apply_relay_settings() != 31342.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_apply_relay_settings() != 32078.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_browse_cover() != 36121.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_browse_cover() != 14904.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_browse_library() != 61984.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_browse_library() != 39927.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_clear_iroh_services_ticket() != 62374.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_clear_iroh_services_ticket() != 22537.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_acerola_checksum_method_p2pnode_connect() != 27942.toShort()) {
@@ -1562,25 +1562,25 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_acerola_checksum_method_p2pnode_get_mode() != 16134.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_get_paired_peers() != 51722.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_get_paired_peers() != 46314.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_has_iroh_services_ticket() != 2600.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_has_iroh_services_ticket() != 57378.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_notify_network_change() != 973.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_notify_network_change() != 20247.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_remove_paired_peer() != 11699.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_remove_paired_peer() != 3685.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_restart() != 33699.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_restart() != 40842.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_set_iroh_services_ticket() != 21627.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_set_iroh_services_ticket() != 60266.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_set_local_device_name() != 189.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_set_local_device_name() != 19706.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_acerola_checksum_method_p2pnode_shutdown() != 3258.toShort()) {
@@ -1592,19 +1592,19 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_acerola_checksum_method_p2pnode_switch_to_relay() != 54345.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_sync_comic() != 59092.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_sync_comic() != 13801.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_p2pnode_sync_history_entry() != 5508.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_p2pnode_sync_history_entry() != 27600.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_secureblobstore_save_blob() != 37330.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_secureblobstore_save_blob() != 29637.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_secureblobstore_load_blob() != 6864.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_secureblobstore_load_blob() != 51796.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_acerola_checksum_method_secureblobstore_clear_blob() != 57516.toShort()) {
+    if (lib.uniffi_acerola_checksum_method_secureblobstore_clear_blob() != 45100.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_acerola_checksum_constructor_p2pnode_new() != 35773.toShort()) {
@@ -2011,25 +2011,25 @@ private class AndroidSystemCleanable(
     override fun clean() = cleanable.clean()
 }
 /**
- * Fonte/destino da capa (`cover.jpg`) de um quadrinho, usada pelo protocolo
- * `acerola/browse-cover/1`. Separada de `FileSyncProvider` de propósito: capas são pequenas o
- * bastante (thumbnail) pra trafegar como `Vec<u8>` inteiro numa chamada FFI só, sem precisar da
- * máquina de handles opacos que os capítulos (potencialmente centenas de MB) exigem.
+ * Source/destination of a comic's cover (`cover.jpg`), used by the
+ * `acerola/browse-cover/1` protocol. Separate from `FileSyncProvider` on purpose: covers are small
+ * enough (thumbnail) to travel as a whole `Vec<u8>` in a single FFI call, without needing the
+ * opaque handle machinery that chapters (potentially hundreds of MB) require.
  */
 public interface CoverBrowseProvider {
     
     /**
-     * Capa local de `comic_name`, se existir. `bytes: None` cobre tanto "quadrinho não existe"
-     * quanto "existe mas não tem capa salva" — os dois casos resultam na mesma resposta
-     * `not_modified`/ausência pro peer, não há necessidade de distinguir no wire.
+     * Local cover of `comic_name`, if any. `bytes: None` covers both "comic does not exist"
+     * and "exists but has no saved cover" — both cases result in the same
+     * `not_modified`/absent reply to the peer, no need to tell them apart on the wire.
      */
     fun `getLocalCover`(`comicName`: kotlin.String): FfiCoverEntry
     
     /**
-     * Grava a capa recebida de `peer_id` pra `comic_name` num cache local (nunca na árvore do
-     * usuário) e devolve o caminho/URI resultante, pra UI carregar via Coil. Chave de cache
-     * `(peer_id, comic_name, cover_version)` — quem chama decide se já tem essa versão cacheada
-     * antes de disparar a busca, isto aqui só persiste o que já foi baixado.
+     * Writes the cover received from `peer_id` for `comic_name` to a local cache (never in the
+     * user's tree) and returns the resulting path/URI, for the UI to load via Coil. Cache key
+     * `(peer_id, comic_name, cover_version)` — the caller decides whether it already has that version
+     * cached before triggering the fetch, this only persists what was already downloaded.
      */
     fun `saveRemoteCover`(`peerId`: kotlin.String, `comicName`: kotlin.String, `coverVersion`: kotlin.Long, `bytes`: kotlin.ByteArray): kotlin.String
     
@@ -2037,10 +2037,10 @@ public interface CoverBrowseProvider {
 }
 
 /**
- * Fonte/destino da capa (`cover.jpg`) de um quadrinho, usada pelo protocolo
- * `acerola/browse-cover/1`. Separada de `FileSyncProvider` de propósito: capas são pequenas o
- * bastante (thumbnail) pra trafegar como `Vec<u8>` inteiro numa chamada FFI só, sem precisar da
- * máquina de handles opacos que os capítulos (potencialmente centenas de MB) exigem.
+ * Source/destination of a comic's cover (`cover.jpg`), used by the
+ * `acerola/browse-cover/1` protocol. Separate from `FileSyncProvider` on purpose: covers are small
+ * enough (thumbnail) to travel as a whole `Vec<u8>` in a single FFI call, without needing the
+ * opaque handle machinery that chapters (potentially hundreds of MB) require.
  */
 open class CoverBrowseProviderImpl: Disposable, AutoCloseable, CoverBrowseProvider {
 
@@ -2125,9 +2125,9 @@ open class CoverBrowseProviderImpl: Disposable, AutoCloseable, CoverBrowseProvid
 
     
     /**
-     * Capa local de `comic_name`, se existir. `bytes: None` cobre tanto "quadrinho não existe"
-     * quanto "existe mas não tem capa salva" — os dois casos resultam na mesma resposta
-     * `not_modified`/ausência pro peer, não há necessidade de distinguir no wire.
+     * Local cover of `comic_name`, if any. `bytes: None` covers both "comic does not exist"
+     * and "exists but has no saved cover" — both cases result in the same
+     * `not_modified`/absent reply to the peer, no need to tell them apart on the wire.
      */override fun `getLocalCover`(`comicName`: kotlin.String): FfiCoverEntry {
             return FfiConverterTypeFfiCoverEntry.lift(
     callWithPointer {
@@ -2142,10 +2142,10 @@ open class CoverBrowseProviderImpl: Disposable, AutoCloseable, CoverBrowseProvid
 
     
     /**
-     * Grava a capa recebida de `peer_id` pra `comic_name` num cache local (nunca na árvore do
-     * usuário) e devolve o caminho/URI resultante, pra UI carregar via Coil. Chave de cache
-     * `(peer_id, comic_name, cover_version)` — quem chama decide se já tem essa versão cacheada
-     * antes de disparar a busca, isto aqui só persiste o que já foi baixado.
+     * Writes the cover received from `peer_id` for `comic_name` to a local cache (never in the
+     * user's tree) and returns the resulting path/URI, for the UI to load via Coil. Cache key
+     * `(peer_id, comic_name, cover_version)` — the caller decides whether it already has that version
+     * cached before triggering the fetch, this only persists what was already downloaded.
      */override fun `saveRemoteCover`(`peerId`: kotlin.String, `comicName`: kotlin.String, `coverVersion`: kotlin.Long, `bytes`: kotlin.ByteArray): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
@@ -2376,97 +2376,97 @@ public object FfiConverterTypeCoverBrowseProvider: FfiConverter<CoverBrowseProvi
 
 
 /**
- * Fonte/destino dos arquivos de capítulo usada pelo protocolo `acerola/sync-files/1`.
- * Implementada em Kotlin contra SAF/DocumentFile. Baseada em handles opacos (`i64`) porque
- * streams não cruzam a fronteira FFI diretamente — o Kotlin mantém um mapa de handles abertos.
+ * Source/destination of the chapter files used by the `acerola/sync-files/1` protocol.
+ * Implemented in Kotlin against SAF/DocumentFile. Based on opaque handles (`i64`) because
+ * streams do not cross the FFI boundary directly — Kotlin keeps a map of open handles.
  */
 public interface FileSyncProvider {
     
     /**
-     * Todos os capítulos locais com checksum/tamanho, com chave natural `(comic_name, chapter)`.
+     * All local chapters with checksum/size, with natural key `(comic_name, chapter)`.
      */
     fun `getFileManifest`(): List<FfiFileManifestEntry>
     
     /**
-     * Resumo por quadrinho (nome + contagem de capítulos), direto do Room — usado só por
-     * `acerola/browse-library/1`. Existe separado de `get_file_manifest()` de propósito: aquele
-     * método faz um `DocumentFile.exists()` via SAF por capítulo (uma transação binder cada),
-     * que só compensa quando o resultado realmente precisa apontar pra um arquivo (transferência
-     * de verdade). Pra só listar títulos isso é custo puro, e já estourou o timeout do
-     * protocolo numa biblioteca grande/recém-escaneada — ver o comentário em
+     * Per-comic summary (name + chapter count), straight from Room — used only by
+     * `acerola/browse-library/1`. Kept separate from `get_file_manifest()` on purpose: that
+     * method does a `DocumentFile.exists()` via SAF per chapter (one binder transaction each),
+     * which only pays off when the result really needs to point to a file (an actual
+     * transfer). Just to list titles that is pure cost, and it already blew the
+     * protocol timeout on a large/freshly scanned library — see the comment in
      * `FileSyncProviderImpl.getFileManifest()`.
      */
     fun `getLibrarySummary`(): List<FfiComicSummaryEntry>
     
     /**
-     * Abre um capítulo local para leitura em chunks (lado que envia). `-1` se não encontrado.
+     * Opens a local chapter for chunked reading (sending side). `-1` if not found.
      */
     fun `openChapterForRead`(`comicName`: kotlin.String, `chapter`: kotlin.String): kotlin.Long
     
     /**
-     * Lê até `chunk_size` bytes do handle aberto; um `Vec` vazio sinaliza fim de arquivo.
+     * Reads up to `chunk_size` bytes from the open handle; an empty `Vec` signals end of file.
      */
     fun `readChapterChunk`(`handle`: kotlin.Long, `chunkSize`: kotlin.UInt): kotlin.ByteArray
     
     /**
-     * Fecha um handle de leitura aberto por `open_chapter_for_read`.
+     * Closes a read handle opened by `open_chapter_for_read`.
      */
     fun `closeReadHandle`(`handle`: kotlin.Long)
     
     /**
-     * Começa a receber um capítulo (lado que recebe): cria um arquivo temporário em `synced/`.
-     * `file_name` é o nome de arquivo real anunciado pelo peer no header (schema compartilhado
-     * com o Desktop) — usado como nome final em vez do rótulo do capítulo, pra preservar a
-     * extensão original (.cbz/.cbr) do lado que enviou.
+     * Starts receiving a chapter (receiving side): creates a temp file in `synced/`.
+     * `file_name` is the real file name announced by the peer in the header (schema shared
+     * with Desktop) — used as the final name instead of the chapter label, to keep the
+     * original extension (.cbz/.cbr) of the sending side.
      */
     fun `beginChapterWrite`(`comicName`: kotlin.String, `chapter`: kotlin.String, `fileName`: kotlin.String, `expectedChecksum`: kotlin.String, `sizeBytes`: kotlin.ULong): kotlin.Long
     
     /**
-     * Grava um chunk recebido no handle de escrita aberto por `begin_chapter_write`.
+     * Writes a received chunk to the write handle opened by `begin_chapter_write`.
      */
     fun `writeChapterChunk`(`handle`: kotlin.Long, `bytes`: kotlin.ByteArray): kotlin.Boolean
     
     /**
-     * Verifica o checksum do arquivo temporário e o move pro destino final em `synced/`.
+     * Verifies the temp file's checksum and moves it to the final destination in `synced/`.
      */
     fun `finalizeChapterWrite`(`handle`: kotlin.Long): kotlin.Boolean
     
     /**
-     * Aborta uma escrita em andamento (peer desconectou no meio, checksum não bateu, etc).
+     * Aborts an in-progress write (peer disconnected midway, checksum mismatch, etc).
      */
     fun `abortChapterWrite`(`handle`: kotlin.Long)
     
     /**
-     * Itens extra (capa/banner/`ComicInfo.xml`) locais, um `FfiExtraManifestEntry` por item
-     * presente — comics sem nenhum dos três simplesmente não aparecem aqui. Espelha
-     * `FileSyncService::build_manifest`'s extras do Desktop
+     * Local extra items (cover/banner/`ComicInfo.xml`), one `FfiExtraManifestEntry` per present
+     * item — comics with none of the three simply do not appear here. Mirrors Desktop's
+     * `FileSyncService::build_manifest` extras
      * (`infra/sync/messages.rs::FileExtraInfo`).
      */
     fun `getExtrasManifest`(): List<FfiExtraManifestEntry>
     
     /**
-     * Abre um item extra local pra leitura em chunks (lado que envia). `-1` se não encontrado.
-     * `kind` é um dos `EXTRA_KIND_*` (`protocol::files::model`). Reaproveita
-     * `read_chapter_chunk`/`close_read_handle` já existentes pra ler/fechar — o handle é
-     * opaco, agnóstico a chapter vs. extra.
+     * Opens a local extra item for chunked reading (sending side). `-1` if not found.
+     * `kind` is one of `EXTRA_KIND_*` (`protocol::files::model`). Reuses the existing
+     * `read_chapter_chunk`/`close_read_handle` to read/close — the handle is
+     * opaque, agnostic to chapter vs. extra.
      */
     fun `openExtraForRead`(`comicName`: kotlin.String, `kind`: kotlin.String): kotlin.Long
     
     /**
-     * Começa a receber um item extra (lado que recebe). Reaproveita `write_chapter_chunk` já
-     * existente pra gravar os chunks recebidos.
+     * Starts receiving an extra item (receiving side). Reuses the existing `write_chapter_chunk`
+     * to write the received chunks.
      */
     fun `beginExtraWrite`(`comicName`: kotlin.String, `kind`: kotlin.String, `fileName`: kotlin.String, `expectedChecksum`: kotlin.String, `sizeBytes`: kotlin.ULong): kotlin.Long
     
     /**
-     * Verifica o checksum do arquivo temporário e o persiste no destino final: coluna
-     * `cover`/`banner` de `comic_directory` pra esses dois `kind`s, ou `ComicInfo.xml` puro
-     * (mais reprocessamento de metadata) pro terceiro.
+     * Verifies the temp file's checksum and persists it to the final destination: the
+     * `cover`/`banner` column of `comic_directory` for those two `kind`s, or plain `ComicInfo.xml`
+     * (plus metadata reprocessing) for the third.
      */
     fun `finalizeExtraWrite`(`handle`: kotlin.Long): kotlin.Boolean
     
     /**
-     * Aborta uma escrita de extra em andamento.
+     * Aborts an in-progress extra write.
      */
     fun `abortExtraWrite`(`handle`: kotlin.Long)
     
@@ -2474,9 +2474,9 @@ public interface FileSyncProvider {
 }
 
 /**
- * Fonte/destino dos arquivos de capítulo usada pelo protocolo `acerola/sync-files/1`.
- * Implementada em Kotlin contra SAF/DocumentFile. Baseada em handles opacos (`i64`) porque
- * streams não cruzam a fronteira FFI diretamente — o Kotlin mantém um mapa de handles abertos.
+ * Source/destination of the chapter files used by the `acerola/sync-files/1` protocol.
+ * Implemented in Kotlin against SAF/DocumentFile. Based on opaque handles (`i64`) because
+ * streams do not cross the FFI boundary directly — Kotlin keeps a map of open handles.
  */
 open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
@@ -2561,7 +2561,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Todos os capítulos locais com checksum/tamanho, com chave natural `(comic_name, chapter)`.
+     * All local chapters with checksum/size, with natural key `(comic_name, chapter)`.
      */override fun `getFileManifest`(): List<FfiFileManifestEntry> {
             return FfiConverterSequenceTypeFfiFileManifestEntry.lift(
     callWithPointer {
@@ -2576,12 +2576,12 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Resumo por quadrinho (nome + contagem de capítulos), direto do Room — usado só por
-     * `acerola/browse-library/1`. Existe separado de `get_file_manifest()` de propósito: aquele
-     * método faz um `DocumentFile.exists()` via SAF por capítulo (uma transação binder cada),
-     * que só compensa quando o resultado realmente precisa apontar pra um arquivo (transferência
-     * de verdade). Pra só listar títulos isso é custo puro, e já estourou o timeout do
-     * protocolo numa biblioteca grande/recém-escaneada — ver o comentário em
+     * Per-comic summary (name + chapter count), straight from Room — used only by
+     * `acerola/browse-library/1`. Kept separate from `get_file_manifest()` on purpose: that
+     * method does a `DocumentFile.exists()` via SAF per chapter (one binder transaction each),
+     * which only pays off when the result really needs to point to a file (an actual
+     * transfer). Just to list titles that is pure cost, and it already blew the
+     * protocol timeout on a large/freshly scanned library — see the comment in
      * `FileSyncProviderImpl.getFileManifest()`.
      */override fun `getLibrarySummary`(): List<FfiComicSummaryEntry> {
             return FfiConverterSequenceTypeFfiComicSummaryEntry.lift(
@@ -2597,7 +2597,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Abre um capítulo local para leitura em chunks (lado que envia). `-1` se não encontrado.
+     * Opens a local chapter for chunked reading (sending side). `-1` if not found.
      */override fun `openChapterForRead`(`comicName`: kotlin.String, `chapter`: kotlin.String): kotlin.Long {
             return FfiConverterLong.lift(
     callWithPointer {
@@ -2612,7 +2612,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Lê até `chunk_size` bytes do handle aberto; um `Vec` vazio sinaliza fim de arquivo.
+     * Reads up to `chunk_size` bytes from the open handle; an empty `Vec` signals end of file.
      */override fun `readChapterChunk`(`handle`: kotlin.Long, `chunkSize`: kotlin.UInt): kotlin.ByteArray {
             return FfiConverterByteArray.lift(
     callWithPointer {
@@ -2627,7 +2627,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Fecha um handle de leitura aberto por `open_chapter_for_read`.
+     * Closes a read handle opened by `open_chapter_for_read`.
      */override fun `closeReadHandle`(`handle`: kotlin.Long)
         = 
     callWithPointer {
@@ -2641,10 +2641,10 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Começa a receber um capítulo (lado que recebe): cria um arquivo temporário em `synced/`.
-     * `file_name` é o nome de arquivo real anunciado pelo peer no header (schema compartilhado
-     * com o Desktop) — usado como nome final em vez do rótulo do capítulo, pra preservar a
-     * extensão original (.cbz/.cbr) do lado que enviou.
+     * Starts receiving a chapter (receiving side): creates a temp file in `synced/`.
+     * `file_name` is the real file name announced by the peer in the header (schema shared
+     * with Desktop) — used as the final name instead of the chapter label, to keep the
+     * original extension (.cbz/.cbr) of the sending side.
      */override fun `beginChapterWrite`(`comicName`: kotlin.String, `chapter`: kotlin.String, `fileName`: kotlin.String, `expectedChecksum`: kotlin.String, `sizeBytes`: kotlin.ULong): kotlin.Long {
             return FfiConverterLong.lift(
     callWithPointer {
@@ -2659,7 +2659,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Grava um chunk recebido no handle de escrita aberto por `begin_chapter_write`.
+     * Writes a received chunk to the write handle opened by `begin_chapter_write`.
      */override fun `writeChapterChunk`(`handle`: kotlin.Long, `bytes`: kotlin.ByteArray): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -2674,7 +2674,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Verifica o checksum do arquivo temporário e o move pro destino final em `synced/`.
+     * Verifies the temp file's checksum and moves it to the final destination in `synced/`.
      */override fun `finalizeChapterWrite`(`handle`: kotlin.Long): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -2689,7 +2689,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Aborta uma escrita em andamento (peer desconectou no meio, checksum não bateu, etc).
+     * Aborts an in-progress write (peer disconnected midway, checksum mismatch, etc).
      */override fun `abortChapterWrite`(`handle`: kotlin.Long)
         = 
     callWithPointer {
@@ -2703,9 +2703,9 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Itens extra (capa/banner/`ComicInfo.xml`) locais, um `FfiExtraManifestEntry` por item
-     * presente — comics sem nenhum dos três simplesmente não aparecem aqui. Espelha
-     * `FileSyncService::build_manifest`'s extras do Desktop
+     * Local extra items (cover/banner/`ComicInfo.xml`), one `FfiExtraManifestEntry` per present
+     * item — comics with none of the three simply do not appear here. Mirrors Desktop's
+     * `FileSyncService::build_manifest` extras
      * (`infra/sync/messages.rs::FileExtraInfo`).
      */override fun `getExtrasManifest`(): List<FfiExtraManifestEntry> {
             return FfiConverterSequenceTypeFfiExtraManifestEntry.lift(
@@ -2721,10 +2721,10 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Abre um item extra local pra leitura em chunks (lado que envia). `-1` se não encontrado.
-     * `kind` é um dos `EXTRA_KIND_*` (`protocol::files::model`). Reaproveita
-     * `read_chapter_chunk`/`close_read_handle` já existentes pra ler/fechar — o handle é
-     * opaco, agnóstico a chapter vs. extra.
+     * Opens a local extra item for chunked reading (sending side). `-1` if not found.
+     * `kind` is one of `EXTRA_KIND_*` (`protocol::files::model`). Reuses the existing
+     * `read_chapter_chunk`/`close_read_handle` to read/close — the handle is
+     * opaque, agnostic to chapter vs. extra.
      */override fun `openExtraForRead`(`comicName`: kotlin.String, `kind`: kotlin.String): kotlin.Long {
             return FfiConverterLong.lift(
     callWithPointer {
@@ -2739,8 +2739,8 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Começa a receber um item extra (lado que recebe). Reaproveita `write_chapter_chunk` já
-     * existente pra gravar os chunks recebidos.
+     * Starts receiving an extra item (receiving side). Reuses the existing `write_chapter_chunk`
+     * to write the received chunks.
      */override fun `beginExtraWrite`(`comicName`: kotlin.String, `kind`: kotlin.String, `fileName`: kotlin.String, `expectedChecksum`: kotlin.String, `sizeBytes`: kotlin.ULong): kotlin.Long {
             return FfiConverterLong.lift(
     callWithPointer {
@@ -2755,9 +2755,9 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Verifica o checksum do arquivo temporário e o persiste no destino final: coluna
-     * `cover`/`banner` de `comic_directory` pra esses dois `kind`s, ou `ComicInfo.xml` puro
-     * (mais reprocessamento de metadata) pro terceiro.
+     * Verifies the temp file's checksum and persists it to the final destination: the
+     * `cover`/`banner` column of `comic_directory` for those two `kind`s, or plain `ComicInfo.xml`
+     * (plus metadata reprocessing) for the third.
      */override fun `finalizeExtraWrite`(`handle`: kotlin.Long): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -2772,7 +2772,7 @@ open class FileSyncProviderImpl: Disposable, AutoCloseable, FileSyncProvider {
 
     
     /**
-     * Aborta uma escrita de extra em andamento.
+     * Aborts an in-progress extra write.
      */override fun `abortExtraWrite`(`handle`: kotlin.Long)
         = 
     callWithPointer {
@@ -3133,62 +3133,62 @@ public object FfiConverterTypeFileSyncProvider: FfiConverter<FileSyncProvider, P
 
 
 /**
- * Fonte/destino dos dados de histórico de leitura (`reading_history` + `chapter_read`) usada
- * pelo protocolo `acerola/sync-history/1`. Implementada em Kotlin contra o Room.
+ * Source/destination of the reading history data (`reading_history` + `chapter_read`) used
+ * by the `acerola/sync-history/1` protocol. Implemented in Kotlin against Room.
  */
 public interface HistorySyncProvider {
     
     /**
-     * Todas as linhas locais de progresso de leitura, com chave natural (nome do quadrinho).
+     * All local reading progress rows, with natural key (comic name).
      */
     fun `getReadingProgress`(): List<FfiReadingProgressEntry>
     
     /**
-     * Todas as linhas locais de capítulos marcados como lidos, com chave natural.
+     * All local rows of chapters marked as read, with natural key.
      */
     fun `getChaptersRead`(): List<FfiChapterReadEntry>
     
     /**
-     * Progresso de leitura de UM único quadrinho (`comic_name`) — usado pelo push individual
-     * (`acerola/sync-history-entry/1`), que existe pra não precisar de `get_reading_progress()`
-     * (biblioteca inteira) só pra levar o progresso de um quadrinho que acabou de mudar. `None`
-     * quando o quadrinho não existe localmente ou nunca teve progresso salvo.
+     * Reading progress of ONE single comic (`comic_name`) — used by the individual push
+     * (`acerola/sync-history-entry/1`), which exists to avoid needing `get_reading_progress()`
+     * (whole library) just to carry the progress of a comic that just changed. `None`
+     * when the comic does not exist locally or never had saved progress.
      */
     fun `getReadingProgressForComic`(`comicName`: kotlin.String): FfiReadingProgressEntry?
     
     /**
-     * Progresso de leitura de UM quadrinho, só devolvido se o capítulo atual (o de
-     * `reading_history`) estiver entre os `chapter_sorts` selecionados — usado junto com
-     * `get_chapters_read_for_chapters` pelo push explícito de capítulo(s) selecionado(s)
-     * (`acerola/sync-history-entry/1`), que não pode vazar o resto da biblioteca. Vazio (não
-     * `None`) pra manter o mesmo formato de retorno de `get_reading_progress`.
+     * Reading progress of ONE comic, only returned if the current chapter (the one in
+     * `reading_history`) is among the selected `chapter_sorts` — used together with
+     * `get_chapters_read_for_chapters` by the explicit push of the selected chapter(s)
+     * (`acerola/sync-history-entry/1`), which must not leak the rest of the library. Empty (not
+     * `None`) to keep the same return shape as `get_reading_progress`.
      */
     fun `getReadingProgressForChapters`(`comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>): List<FfiReadingProgressEntry>
     
     /**
-     * Marcadores de "lido" restritos ao(s) `chapter_sorts` selecionado(s) de UM quadrinho —
-     * mesmo raciocínio de `get_reading_progress_for_chapters`, nunca vaza o resto da
-     * biblioteca.
+     * "Read" markers restricted to the selected `chapter_sorts` of ONE comic —
+     * same reasoning as `get_reading_progress_for_chapters`, never leaks the rest of the
+     * library.
      */
     fun `getChaptersReadForChapters`(`comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>): List<FfiChapterReadEntry>
     
     /**
-     * Verifica só a existência do quadrinho (sem tocar em progresso/lido) — usado pelo
-     * contrato de `acerola/sync-history-entry/1` pra validar ANTES de responder "aplicado com
-     * sucesso": sem isso, um manifesto vazio (nenhum capítulo selecionado tinha progresso/
-     * marcador) não dava nenhum sinal de erro mesmo quando o peer nunca teve esse quadrinho.
+     * Only checks whether the comic exists (without touching progress/read) — used by the
+     * `acerola/sync-history-entry/1` contract to validate BEFORE replying "applied
+     * successfully": without this, an empty manifest (no selected chapter had progress/
+     * marker) gave no error signal even when the peer never had that comic.
      */
     fun `comicExists`(`comicName`: kotlin.String): kotlin.Boolean
     
     /**
-     * Aplica uma linha de progresso recebida do peer (Rust já decidiu que ela vence via LWW).
-     * Retorna `false` se o quadrinho referenciado não existir localmente (entrada ignorada).
+     * Applies a progress row received from the peer (Rust already decided it wins via LWW).
+     * Returns `false` if the referenced comic does not exist locally (entry ignored).
      */
     fun `applyReadingProgress`(`entry`: FfiReadingProgressEntry): kotlin.Boolean
     
     /**
-     * Aplica uma linha de "capítulo lido" recebida do peer (união idempotente).
-     * Retorna `false` se o quadrinho referenciado não existir localmente (entrada ignorada).
+     * Applies a "chapter read" row received from the peer (idempotent union).
+     * Returns `false` if the referenced comic does not exist locally (entry ignored).
      */
     fun `applyChapterRead`(`entry`: FfiChapterReadEntry): kotlin.Boolean
     
@@ -3196,8 +3196,8 @@ public interface HistorySyncProvider {
 }
 
 /**
- * Fonte/destino dos dados de histórico de leitura (`reading_history` + `chapter_read`) usada
- * pelo protocolo `acerola/sync-history/1`. Implementada em Kotlin contra o Room.
+ * Source/destination of the reading history data (`reading_history` + `chapter_read`) used
+ * by the `acerola/sync-history/1` protocol. Implemented in Kotlin against Room.
  */
 open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvider {
 
@@ -3282,7 +3282,7 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Todas as linhas locais de progresso de leitura, com chave natural (nome do quadrinho).
+     * All local reading progress rows, with natural key (comic name).
      */override fun `getReadingProgress`(): List<FfiReadingProgressEntry> {
             return FfiConverterSequenceTypeFfiReadingProgressEntry.lift(
     callWithPointer {
@@ -3297,7 +3297,7 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Todas as linhas locais de capítulos marcados como lidos, com chave natural.
+     * All local rows of chapters marked as read, with natural key.
      */override fun `getChaptersRead`(): List<FfiChapterReadEntry> {
             return FfiConverterSequenceTypeFfiChapterReadEntry.lift(
     callWithPointer {
@@ -3312,10 +3312,10 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Progresso de leitura de UM único quadrinho (`comic_name`) — usado pelo push individual
-     * (`acerola/sync-history-entry/1`), que existe pra não precisar de `get_reading_progress()`
-     * (biblioteca inteira) só pra levar o progresso de um quadrinho que acabou de mudar. `None`
-     * quando o quadrinho não existe localmente ou nunca teve progresso salvo.
+     * Reading progress of ONE single comic (`comic_name`) — used by the individual push
+     * (`acerola/sync-history-entry/1`), which exists to avoid needing `get_reading_progress()`
+     * (whole library) just to carry the progress of a comic that just changed. `None`
+     * when the comic does not exist locally or never had saved progress.
      */override fun `getReadingProgressForComic`(`comicName`: kotlin.String): FfiReadingProgressEntry? {
             return FfiConverterOptionalTypeFfiReadingProgressEntry.lift(
     callWithPointer {
@@ -3330,11 +3330,11 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Progresso de leitura de UM quadrinho, só devolvido se o capítulo atual (o de
-     * `reading_history`) estiver entre os `chapter_sorts` selecionados — usado junto com
-     * `get_chapters_read_for_chapters` pelo push explícito de capítulo(s) selecionado(s)
-     * (`acerola/sync-history-entry/1`), que não pode vazar o resto da biblioteca. Vazio (não
-     * `None`) pra manter o mesmo formato de retorno de `get_reading_progress`.
+     * Reading progress of ONE comic, only returned if the current chapter (the one in
+     * `reading_history`) is among the selected `chapter_sorts` — used together with
+     * `get_chapters_read_for_chapters` by the explicit push of the selected chapter(s)
+     * (`acerola/sync-history-entry/1`), which must not leak the rest of the library. Empty (not
+     * `None`) to keep the same return shape as `get_reading_progress`.
      */override fun `getReadingProgressForChapters`(`comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>): List<FfiReadingProgressEntry> {
             return FfiConverterSequenceTypeFfiReadingProgressEntry.lift(
     callWithPointer {
@@ -3349,9 +3349,9 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Marcadores de "lido" restritos ao(s) `chapter_sorts` selecionado(s) de UM quadrinho —
-     * mesmo raciocínio de `get_reading_progress_for_chapters`, nunca vaza o resto da
-     * biblioteca.
+     * "Read" markers restricted to the selected `chapter_sorts` of ONE comic —
+     * same reasoning as `get_reading_progress_for_chapters`, never leaks the rest of the
+     * library.
      */override fun `getChaptersReadForChapters`(`comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>): List<FfiChapterReadEntry> {
             return FfiConverterSequenceTypeFfiChapterReadEntry.lift(
     callWithPointer {
@@ -3366,10 +3366,10 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Verifica só a existência do quadrinho (sem tocar em progresso/lido) — usado pelo
-     * contrato de `acerola/sync-history-entry/1` pra validar ANTES de responder "aplicado com
-     * sucesso": sem isso, um manifesto vazio (nenhum capítulo selecionado tinha progresso/
-     * marcador) não dava nenhum sinal de erro mesmo quando o peer nunca teve esse quadrinho.
+     * Only checks whether the comic exists (without touching progress/read) — used by the
+     * `acerola/sync-history-entry/1` contract to validate BEFORE replying "applied
+     * successfully": without this, an empty manifest (no selected chapter had progress/
+     * marker) gave no error signal even when the peer never had that comic.
      */override fun `comicExists`(`comicName`: kotlin.String): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -3384,8 +3384,8 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Aplica uma linha de progresso recebida do peer (Rust já decidiu que ela vence via LWW).
-     * Retorna `false` se o quadrinho referenciado não existir localmente (entrada ignorada).
+     * Applies a progress row received from the peer (Rust already decided it wins via LWW).
+     * Returns `false` if the referenced comic does not exist locally (entry ignored).
      */override fun `applyReadingProgress`(`entry`: FfiReadingProgressEntry): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -3400,8 +3400,8 @@ open class HistorySyncProviderImpl: Disposable, AutoCloseable, HistorySyncProvid
 
     
     /**
-     * Aplica uma linha de "capítulo lido" recebida do peer (união idempotente).
-     * Retorna `false` se o quadrinho referenciado não existir localmente (entrada ignorada).
+     * Applies a "chapter read" row received from the peer (idempotent union).
+     * Returns `false` if the referenced comic does not exist locally (entry ignored).
      */override fun `applyChapterRead`(`entry`: FfiChapterReadEntry): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -3948,32 +3948,32 @@ public object FfiConverterTypeP2PCallback: FfiConverter<P2pCallback, Pointer> {
 public interface P2pNodeInterface {
     
     /**
-     * Relê a config de relay combinável (vinda do Kotlin, `RelayPreference`) + o ticket do
-     * cofre, resolve e aplica ao node JÁ VIVO (`AcerolaP2p::apply_relay_mode`) — sem precisar
-     * reiniciar o app. Chamado pelo Kotlin depois de QUALQUER mudança nas fontes de relay
-     * (toggle do Acerola/Iroh, add/remove de URL própria, salvar/remover ticket). Espelha
-     * `NetworkServiceApi::apply_relay_settings` do Desktop.
+     * Re-reads the combinable relay config (coming from Kotlin, `RelayPreference`) + the vault
+     * ticket, resolves and applies it to the ALREADY LIVE node (`AcerolaP2p::apply_relay_mode`) — without
+     * restarting the app. Called by Kotlin after ANY change in the relay sources
+     * (Acerola/Iroh toggle, add/remove of a custom URL, save/remove ticket). Mirrors
+     * Desktop's `NetworkServiceApi::apply_relay_settings`.
      */
     fun `applyRelaySettings`(`relaySettings`: FfiRelaySettings)
     
     /**
-     * Busca a capa (thumbnail) de `comic_name` na biblioteca de `peer_addr` — `known_version`
-     * é a versão já cacheada localmente (`(peer_id, comic_name, cover_version)`), `None` se
-     * nunca buscou essa capa antes. Mesmo padrão fire-and-forget de `sync_comic`: grava o
-     * escopo pendente antes de conectar, resultado chega via
-     * `browse:cover:result`/`browse:cover:error` (ver `protocol::cover_browse`).
+     * Fetches the cover (thumbnail) of `comic_name` from `peer_addr`'s library — `known_version`
+     * is the version already cached locally (`(peer_id, comic_name, cover_version)`), `None` if
+     * this cover was never fetched before. Same fire-and-forget pattern as `sync_comic`: stores the
+     * pending scope before connecting, the result arrives via
+     * `browse:cover:result`/`browse:cover:error` (see `protocol::cover_browse`).
      */
     fun `browseCover`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `knownVersion`: kotlin.Long?)
     
     /**
-     * Pede a lista de quadrinhos (nome + contagem de capítulos) da biblioteca de `peer_addr`,
-     * sem sincronizar nada — fire-and-forget como `connect()`; o resultado chega depois via
-     * `browse:library:result`/`browse:library:error` (ver `protocol::library_browse`).
+     * Requests the list of comics (name + chapter count) from `peer_addr`'s library,
+     * without syncing anything — fire-and-forget like `connect()`; the result arrives later via
+     * `browse:library:result`/`browse:library:error` (see `protocol::library_browse`).
      */
     fun `browseLibrary`(`peerAddr`: FfiPeerAddr)
     
     /**
-     * Remove o ticket salvo — usado quando o usuário desliga a fonte ou substitui por um novo.
+     * Removes the saved ticket — used when the user turns the source off or replaces it with a new one.
      */
     fun `clearIrohServicesTicket`()
     
@@ -3990,65 +3990,65 @@ public interface P2pNodeInterface {
     fun `getMode`(): FfiNetworkMode
     
     /**
-     * Devolve todos os peers já pareados (TOFU) em algum momento, com o último endereço
-     * conhecido — persistem entre reinícios do app e independem de conexão ativa no momento,
-     * já que a conexão de handshake em si dura só alguns segundos (troca PING/PONG/DeviceInfo
-     * e fecha). É essa lista, não `get_connected_peers*`, que deve alimentar "dispositivos
-     * pareados" na UI.
+     * Returns every peer ever paired (TOFU), with the last known
+     * address — they persist across app restarts and do not depend on a currently active connection,
+     * since the handshake connection itself lasts only a few seconds (exchanges PING/PONG/DeviceInfo
+     * and closes). It is this list, not `get_connected_peers*`, that should feed "paired
+     * devices" in the UI.
      */
     fun `getPairedPeers`(): List<FfiPairedPeer>
     
     /**
-     * `true` se o usuário já colou e salvou um ticket da própria conta em
-     * `services.iroh.computer` — nunca devolve o valor em si (é uma credencial real).
+     * `true` if the user already pasted and saved a ticket of their own account on
+     * `services.iroh.computer` — never returns the value itself (it is a real credential).
      */
     fun `hasIrohServicesTicket`(): kotlin.Boolean
     
     /**
-     * Repassa ao transporte um aviso de que a rede do SO pode ter mudado (troca de Wi-Fi/dados
-     * móveis, saída de Doze, etc). Existe porque o Android não expõe monitoramento de interface
-     * de rede para código nativo — só para Java/Kotlin via `ConnectivityManager.NetworkCallback`
-     * — então sem essa ponte o transporte QUIC nunca fica sabendo que o caminho de rede mudou e
-     * mantém reaproveitando conexões silenciosamente mortas até o app ser reiniciado. O Kotlin
-     * deve chamar isto a cada `onAvailable`/`onLost`/`onCapabilitiesChanged` do
-     * `NetworkCallback` (ver `P2pService`).
+     * Forwards to the transport a notice that the OS network may have changed (Wi-Fi/mobile data
+     * switch, leaving Doze, etc). Exists because Android does not expose network interface
+     * monitoring to native code — only to Java/Kotlin via `ConnectivityManager.NetworkCallback`
+     * — so without this bridge the QUIC transport never learns the network path changed and
+     * keeps reusing silently dead connections until the app is restarted. Kotlin
+     * must call this on every `onAvailable`/`onLost`/`onCapabilitiesChanged` of the
+     * `NetworkCallback` (see `P2pService`).
      */
     fun `notifyNetworkChange`()
     
     /**
-     * Desempareia um peer: some da confiança (`trust_store`) e do cache de endereços
-     * conhecidos (`storage`, a mesma fonte de `get_paired_peers`). Não derruba uma conexão
-     * ativa nem bloqueia o peer — se ele tentar se conectar de novo depois, passa pelo mesmo
-     * fluxo TOFU de um dispositivo nunca visto (ver `trust_store::SecureTrustedStore::remove`).
+     * Unpairs a peer: removes it from trust (`trust_store`) and from the known address
+     * cache (`storage`, the same source as `get_paired_peers`). Does not drop an active
+     * connection nor block the peer — if it tries to connect again later, it goes through the same
+     * TOFU flow as a never-seen device (see `trust_store::SecureTrustedStore::remove`).
      */
     fun `removePairedPeer`(`id`: kotlin.String)
     
     /**
-     * Reinicia o node por completo: desliga a instância atual e sobe uma nova com a mesma
-     * identidade/storage/handlers (reaproveitados via `context`), resolvendo `relay_settings`
-     * fresco — o Kotlin relê a config combinável do DataStore (`RelayPreference`) antes de
-     * chamar, mesmo padrão de `apply_relay_settings`. Estilo LocalSend: chamado tanto depois de
-     * qualquer troca de fonte de relay quanto pelo botão manual "Reiniciar" na tela de Rede.
-     * Espelha `NetworkServiceApi::restart` do Desktop (`core/services/network/mod.rs`). Mesmo
-     * risco de boot: se o rebuild falhar (`P2pNodeContext::build` dá `.expect(...)`), a chamada
-     * entra em pânico ao invés de devolver um erro tratável — igual `P2PNode::new` hoje.
+     * Fully restarts the node: shuts down the current instance and brings up a new one with the same
+     * identity/storage/handlers (reused via `context`), resolving a fresh `relay_settings`
+     * — Kotlin re-reads the combinable config from DataStore (`RelayPreference`) before
+     * calling, same pattern as `apply_relay_settings`. LocalSend style: called both after
+     * any relay source change and by the manual "Restart" button on the Network screen.
+     * Mirrors Desktop's `NetworkServiceApi::restart` (`core/services/network/mod.rs`). Same
+     * boot risk: if the rebuild fails (`P2pNodeContext::build` calls `.expect(...)`), the call
+     * panics instead of returning a handleable error — same as `P2PNode::new` today.
      */
     fun `restart`(`relaySettings`: FfiRelaySettings)
     
     /**
-     * Valida o formato antes de persistir. Só tem efeito no próximo início do app — a lib não
-     * suporta trocar relay em runtime.
+     * Validates the format before persisting. Only takes effect on the next app start — the lib
+     * does not support switching relay at runtime.
      */
     fun `setIrohServicesTicket`(`ticket`: kotlin.String)
     
     /**
-     * Sobrescreve o nome exibido deste dispositivo (apelido custom estilo LocalSend, em vez do
-     * `Build.MODEL` padrão) — vale a partir do próximo handshake, sem precisar reiniciar o
-     * app, já que `AcerolaP2p::set_local_device_name` escreve no mesmo `DeviceInfo`
-     * compartilhado lido pelos handlers de handshake a cada troca de identidade (ver
-     * `lib/p2p/src/api/acerola_p2p.rs`). Persistência entre reinícios é responsabilidade do
-     * lado Kotlin (DataStore), que relê o apelido salvo pra passar como `device_name` no
-     * próximo `P2PNode::new`.
+     * Overrides this device's display name (LocalSend-style custom nickname, instead of the
+     * default `Build.MODEL`) — applies from the next handshake on, without restarting the
+     * app, since `AcerolaP2p::set_local_device_name` writes to the same shared `DeviceInfo`
+     * read by the handshake handlers on every identity exchange (see
+     * `lib/p2p/src/api/acerola_p2p.rs`). Persistence across restarts is the responsibility of the
+     * Kotlin side (DataStore), which re-reads the saved nickname to pass as `device_name` to the
+     * next `P2PNode::new`.
      */
     fun `setLocalDeviceName`(`name`: kotlin.String)
     
@@ -4059,26 +4059,26 @@ public interface P2pNodeInterface {
     fun `switchToRelay`()
     
     /**
-     * Sincroniza um único quadrinho (`comic_name`) com `peer_addr`, na `direction` explícita
-     * escolhida pelo usuário (`Push` = mandar pro peer; `Pull` = puxar dele) — ver
-     * `protocol::files::model::SyncDirection`. Grava `(comic_name, direction, chapters)` no
-     * registro pendente ANTES de conectar — é a única forma dessa escolha (que só existe aqui,
-     * do lado que chamou) chegar até `ComicSyncOutbound::handle`, já que `connect()` não carrega
-     * payload (ver `protocol::files::COMIC_SYNC_ALPN`).
+     * Syncs a single comic (`comic_name`) with `peer_addr`, in the explicit `direction`
+     * chosen by the user (`Push` = send to the peer; `Pull` = pull from it) — see
+     * `protocol::files::model::SyncDirection`. Stores `(comic_name, direction, chapters)` in the
+     * pending registry BEFORE connecting — the only way for this choice (which only exists here,
+     * on the calling side) to reach `ComicSyncOutbound::handle`, since `connect()` carries no
+     * payload (see `protocol::files::COMIC_SYNC_ALPN`).
      *
-     * `chapters` (rótulos de capítulo, mesma chave de `FileChapterInfo.chapter` — vazio =
-     * quadrinho inteiro) escopa a sessão a um subconjunto de capítulos, usado pelo botão
-     * "Enviar" da seleção múltipla/menu de três pontinhos: o Kotlin resolve os
-     * `chapterSort`s selecionados pros rótulos correspondentes antes de chamar este método
-     * (ver `ComicViewModel`), já que o manifesto trocado no wire usa rótulo, não `chapter_sort`.
+     * `chapters` (chapter labels, same key as `FileChapterInfo.chapter` — empty =
+     * whole comic) scopes the session to a subset of chapters, used by the
+     * "Send" button of the multi-selection/three-dot menu: Kotlin resolves the selected
+     * `chapterSort`s to the matching labels before calling this method
+     * (see `ComicViewModel`), since the manifest exchanged on the wire uses labels, not `chapter_sort`.
      */
     fun `syncComic`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `direction`: FfiSyncDirection, `chapters`: List<kotlin.String>)
     
     /**
-     * Empurra o progresso + marcadores de "lido" do(s) capítulo(s) selecionado(s)
-     * (`chapter_sorts`) de UM único quadrinho (`comic_name`) pra `peer_addr` — mais leve que
-     * uma sessão completa de `acerola/sync-history/1` (biblioteca inteira nos dois sentidos).
-     * Mesma técnica de `sync_comic`: grava o escopo pendente ANTES de conectar.
+     * Pushes the progress + "read" markers of the selected chapter(s)
+     * (`chapter_sorts`) of ONE single comic (`comic_name`) to `peer_addr` — lighter than
+     * a full `acerola/sync-history/1` session (whole library in both directions).
+     * Same technique as `sync_comic`: stores the pending scope BEFORE connecting.
      */
     fun `syncHistoryEntry`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>)
     
@@ -4175,11 +4175,11 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Relê a config de relay combinável (vinda do Kotlin, `RelayPreference`) + o ticket do
-     * cofre, resolve e aplica ao node JÁ VIVO (`AcerolaP2p::apply_relay_mode`) — sem precisar
-     * reiniciar o app. Chamado pelo Kotlin depois de QUALQUER mudança nas fontes de relay
-     * (toggle do Acerola/Iroh, add/remove de URL própria, salvar/remover ticket). Espelha
-     * `NetworkServiceApi::apply_relay_settings` do Desktop.
+     * Re-reads the combinable relay config (coming from Kotlin, `RelayPreference`) + the vault
+     * ticket, resolves and applies it to the ALREADY LIVE node (`AcerolaP2p::apply_relay_mode`) — without
+     * restarting the app. Called by Kotlin after ANY change in the relay sources
+     * (Acerola/Iroh toggle, add/remove of a custom URL, save/remove ticket). Mirrors
+     * Desktop's `NetworkServiceApi::apply_relay_settings`.
      */
     @Throws(RelayTicketException::class)override fun `applyRelaySettings`(`relaySettings`: FfiRelaySettings)
         = 
@@ -4194,11 +4194,11 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Busca a capa (thumbnail) de `comic_name` na biblioteca de `peer_addr` — `known_version`
-     * é a versão já cacheada localmente (`(peer_id, comic_name, cover_version)`), `None` se
-     * nunca buscou essa capa antes. Mesmo padrão fire-and-forget de `sync_comic`: grava o
-     * escopo pendente antes de conectar, resultado chega via
-     * `browse:cover:result`/`browse:cover:error` (ver `protocol::cover_browse`).
+     * Fetches the cover (thumbnail) of `comic_name` from `peer_addr`'s library — `known_version`
+     * is the version already cached locally (`(peer_id, comic_name, cover_version)`), `None` if
+     * this cover was never fetched before. Same fire-and-forget pattern as `sync_comic`: stores the
+     * pending scope before connecting, the result arrives via
+     * `browse:cover:result`/`browse:cover:error` (see `protocol::cover_browse`).
      */override fun `browseCover`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `knownVersion`: kotlin.Long?)
         = 
     callWithPointer {
@@ -4212,9 +4212,9 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Pede a lista de quadrinhos (nome + contagem de capítulos) da biblioteca de `peer_addr`,
-     * sem sincronizar nada — fire-and-forget como `connect()`; o resultado chega depois via
-     * `browse:library:result`/`browse:library:error` (ver `protocol::library_browse`).
+     * Requests the list of comics (name + chapter count) from `peer_addr`'s library,
+     * without syncing anything — fire-and-forget like `connect()`; the result arrives later via
+     * `browse:library:result`/`browse:library:error` (see `protocol::library_browse`).
      */override fun `browseLibrary`(`peerAddr`: FfiPeerAddr)
         = 
     callWithPointer {
@@ -4228,7 +4228,7 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Remove o ticket salvo — usado quando o usuário desliga a fonte ou substitui por um novo.
+     * Removes the saved ticket — used when the user turns the source off or replaces it with a new one.
      */override fun `clearIrohServicesTicket`()
         = 
     callWithPointer {
@@ -4313,11 +4313,11 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Devolve todos os peers já pareados (TOFU) em algum momento, com o último endereço
-     * conhecido — persistem entre reinícios do app e independem de conexão ativa no momento,
-     * já que a conexão de handshake em si dura só alguns segundos (troca PING/PONG/DeviceInfo
-     * e fecha). É essa lista, não `get_connected_peers*`, que deve alimentar "dispositivos
-     * pareados" na UI.
+     * Returns every peer ever paired (TOFU), with the last known
+     * address — they persist across app restarts and do not depend on a currently active connection,
+     * since the handshake connection itself lasts only a few seconds (exchanges PING/PONG/DeviceInfo
+     * and closes). It is this list, not `get_connected_peers*`, that should feed "paired
+     * devices" in the UI.
      */override fun `getPairedPeers`(): List<FfiPairedPeer> {
             return FfiConverterSequenceTypeFfiPairedPeer.lift(
     callWithPointer {
@@ -4332,8 +4332,8 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * `true` se o usuário já colou e salvou um ticket da própria conta em
-     * `services.iroh.computer` — nunca devolve o valor em si (é uma credencial real).
+     * `true` if the user already pasted and saved a ticket of their own account on
+     * `services.iroh.computer` — never returns the value itself (it is a real credential).
      */override fun `hasIrohServicesTicket`(): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithPointer {
@@ -4348,13 +4348,13 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Repassa ao transporte um aviso de que a rede do SO pode ter mudado (troca de Wi-Fi/dados
-     * móveis, saída de Doze, etc). Existe porque o Android não expõe monitoramento de interface
-     * de rede para código nativo — só para Java/Kotlin via `ConnectivityManager.NetworkCallback`
-     * — então sem essa ponte o transporte QUIC nunca fica sabendo que o caminho de rede mudou e
-     * mantém reaproveitando conexões silenciosamente mortas até o app ser reiniciado. O Kotlin
-     * deve chamar isto a cada `onAvailable`/`onLost`/`onCapabilitiesChanged` do
-     * `NetworkCallback` (ver `P2pService`).
+     * Forwards to the transport a notice that the OS network may have changed (Wi-Fi/mobile data
+     * switch, leaving Doze, etc). Exists because Android does not expose network interface
+     * monitoring to native code — only to Java/Kotlin via `ConnectivityManager.NetworkCallback`
+     * — so without this bridge the QUIC transport never learns the network path changed and
+     * keeps reusing silently dead connections until the app is restarted. Kotlin
+     * must call this on every `onAvailable`/`onLost`/`onCapabilitiesChanged` of the
+     * `NetworkCallback` (see `P2pService`).
      */override fun `notifyNetworkChange`()
         = 
     callWithPointer {
@@ -4368,10 +4368,10 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Desempareia um peer: some da confiança (`trust_store`) e do cache de endereços
-     * conhecidos (`storage`, a mesma fonte de `get_paired_peers`). Não derruba uma conexão
-     * ativa nem bloqueia o peer — se ele tentar se conectar de novo depois, passa pelo mesmo
-     * fluxo TOFU de um dispositivo nunca visto (ver `trust_store::SecureTrustedStore::remove`).
+     * Unpairs a peer: removes it from trust (`trust_store`) and from the known address
+     * cache (`storage`, the same source as `get_paired_peers`). Does not drop an active
+     * connection nor block the peer — if it tries to connect again later, it goes through the same
+     * TOFU flow as a never-seen device (see `trust_store::SecureTrustedStore::remove`).
      */override fun `removePairedPeer`(`id`: kotlin.String)
         = 
     callWithPointer {
@@ -4385,14 +4385,14 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Reinicia o node por completo: desliga a instância atual e sobe uma nova com a mesma
-     * identidade/storage/handlers (reaproveitados via `context`), resolvendo `relay_settings`
-     * fresco — o Kotlin relê a config combinável do DataStore (`RelayPreference`) antes de
-     * chamar, mesmo padrão de `apply_relay_settings`. Estilo LocalSend: chamado tanto depois de
-     * qualquer troca de fonte de relay quanto pelo botão manual "Reiniciar" na tela de Rede.
-     * Espelha `NetworkServiceApi::restart` do Desktop (`core/services/network/mod.rs`). Mesmo
-     * risco de boot: se o rebuild falhar (`P2pNodeContext::build` dá `.expect(...)`), a chamada
-     * entra em pânico ao invés de devolver um erro tratável — igual `P2PNode::new` hoje.
+     * Fully restarts the node: shuts down the current instance and brings up a new one with the same
+     * identity/storage/handlers (reused via `context`), resolving a fresh `relay_settings`
+     * — Kotlin re-reads the combinable config from DataStore (`RelayPreference`) before
+     * calling, same pattern as `apply_relay_settings`. LocalSend style: called both after
+     * any relay source change and by the manual "Restart" button on the Network screen.
+     * Mirrors Desktop's `NetworkServiceApi::restart` (`core/services/network/mod.rs`). Same
+     * boot risk: if the rebuild fails (`P2pNodeContext::build` calls `.expect(...)`), the call
+     * panics instead of returning a handleable error — same as `P2PNode::new` today.
      */override fun `restart`(`relaySettings`: FfiRelaySettings)
         = 
     callWithPointer {
@@ -4406,8 +4406,8 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Valida o formato antes de persistir. Só tem efeito no próximo início do app — a lib não
-     * suporta trocar relay em runtime.
+     * Validates the format before persisting. Only takes effect on the next app start — the lib
+     * does not support switching relay at runtime.
      */
     @Throws(RelayTicketException::class)override fun `setIrohServicesTicket`(`ticket`: kotlin.String)
         = 
@@ -4422,13 +4422,13 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Sobrescreve o nome exibido deste dispositivo (apelido custom estilo LocalSend, em vez do
-     * `Build.MODEL` padrão) — vale a partir do próximo handshake, sem precisar reiniciar o
-     * app, já que `AcerolaP2p::set_local_device_name` escreve no mesmo `DeviceInfo`
-     * compartilhado lido pelos handlers de handshake a cada troca de identidade (ver
-     * `lib/p2p/src/api/acerola_p2p.rs`). Persistência entre reinícios é responsabilidade do
-     * lado Kotlin (DataStore), que relê o apelido salvo pra passar como `device_name` no
-     * próximo `P2PNode::new`.
+     * Overrides this device's display name (LocalSend-style custom nickname, instead of the
+     * default `Build.MODEL`) — applies from the next handshake on, without restarting the
+     * app, since `AcerolaP2p::set_local_device_name` writes to the same shared `DeviceInfo`
+     * read by the handshake handlers on every identity exchange (see
+     * `lib/p2p/src/api/acerola_p2p.rs`). Persistence across restarts is the responsibility of the
+     * Kotlin side (DataStore), which re-reads the saved nickname to pass as `device_name` to the
+     * next `P2PNode::new`.
      */override fun `setLocalDeviceName`(`name`: kotlin.String)
         = 
     callWithPointer {
@@ -4475,18 +4475,18 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Sincroniza um único quadrinho (`comic_name`) com `peer_addr`, na `direction` explícita
-     * escolhida pelo usuário (`Push` = mandar pro peer; `Pull` = puxar dele) — ver
-     * `protocol::files::model::SyncDirection`. Grava `(comic_name, direction, chapters)` no
-     * registro pendente ANTES de conectar — é a única forma dessa escolha (que só existe aqui,
-     * do lado que chamou) chegar até `ComicSyncOutbound::handle`, já que `connect()` não carrega
-     * payload (ver `protocol::files::COMIC_SYNC_ALPN`).
+     * Syncs a single comic (`comic_name`) with `peer_addr`, in the explicit `direction`
+     * chosen by the user (`Push` = send to the peer; `Pull` = pull from it) — see
+     * `protocol::files::model::SyncDirection`. Stores `(comic_name, direction, chapters)` in the
+     * pending registry BEFORE connecting — the only way for this choice (which only exists here,
+     * on the calling side) to reach `ComicSyncOutbound::handle`, since `connect()` carries no
+     * payload (see `protocol::files::COMIC_SYNC_ALPN`).
      *
-     * `chapters` (rótulos de capítulo, mesma chave de `FileChapterInfo.chapter` — vazio =
-     * quadrinho inteiro) escopa a sessão a um subconjunto de capítulos, usado pelo botão
-     * "Enviar" da seleção múltipla/menu de três pontinhos: o Kotlin resolve os
-     * `chapterSort`s selecionados pros rótulos correspondentes antes de chamar este método
-     * (ver `ComicViewModel`), já que o manifesto trocado no wire usa rótulo, não `chapter_sort`.
+     * `chapters` (chapter labels, same key as `FileChapterInfo.chapter` — empty =
+     * whole comic) scopes the session to a subset of chapters, used by the
+     * "Send" button of the multi-selection/three-dot menu: Kotlin resolves the selected
+     * `chapterSort`s to the matching labels before calling this method
+     * (see `ComicViewModel`), since the manifest exchanged on the wire uses labels, not `chapter_sort`.
      */override fun `syncComic`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `direction`: FfiSyncDirection, `chapters`: List<kotlin.String>)
         = 
     callWithPointer {
@@ -4500,10 +4500,10 @@ open class P2pNode: Disposable, AutoCloseable, P2pNodeInterface {
 
     
     /**
-     * Empurra o progresso + marcadores de "lido" do(s) capítulo(s) selecionado(s)
-     * (`chapter_sorts`) de UM único quadrinho (`comic_name`) pra `peer_addr` — mais leve que
-     * uma sessão completa de `acerola/sync-history/1` (biblioteca inteira nos dois sentidos).
-     * Mesma técnica de `sync_comic`: grava o escopo pendente ANTES de conectar.
+     * Pushes the progress + "read" markers of the selected chapter(s)
+     * (`chapter_sorts`) of ONE single comic (`comic_name`) to `peer_addr` — lighter than
+     * a full `acerola/sync-history/1` session (whole library in both directions).
+     * Same technique as `sync_comic`: stores the pending scope BEFORE connecting.
      */override fun `syncHistoryEntry`(`peerAddr`: FfiPeerAddr, `comicName`: kotlin.String, `chapterSorts`: List<kotlin.String>)
         = 
     callWithPointer {
@@ -4651,33 +4651,33 @@ public object FfiConverterTypeP2PNode: FfiConverter<P2pNode, Pointer> {
 
 
 /**
- * Armazenamento criptografado (Android Keystore, via `EncryptedSharedPreferences`) usado por
- * `SecureP2pStorage`/`SecureTrustedStore` (ver `storage.rs`/`trust_store.rs`) pra persistir
- * identidade do nó, cache de peers e lista de confiança TOFU sem tocar texto puro em disco.
- * Chave/valor puros — todo o layout (quais chaves existem, formato JSON de cada uma) é
- * decidido do lado Rust, o Kotlin só faz o armazenamento opaco.
+ * Encrypted storage (Android Keystore, via `EncryptedSharedPreferences`) used by
+ * `SecureP2pStorage`/`SecureTrustedStore` (see `storage.rs`/`trust_store.rs`) to persist
+ * the node identity, peer cache and TOFU trust list without touching plain text on disk.
+ * Plain key/value — the whole layout (which keys exist, JSON format of each) is
+ * decided on the Rust side, Kotlin only does opaque storage.
  */
 public interface SecureBlobStore {
     
     /**
-     * `Err` só em falha real de backend (ex.: `EncryptedSharedPreferences`/Keystore
-     * indisponível ou corrompido) — nunca usado pra "chave não existe ainda", que não é
-     * um erro. Distinguir os dois importa: se `load_identity` tratasse falha real como
-     * "identidade nunca existiu", o node mintaria uma identidade nova silenciosamente e
-     * quebraria todo o pareamento já feito sem avisar ninguém.
+     * `Err` only on a real backend failure (e.g. `EncryptedSharedPreferences`/Keystore
+     * unavailable or corrupted) — never used for "key does not exist yet", which is not
+     * an error. Telling them apart matters: if `load_identity` treated a real failure as
+     * "identity never existed", the node would silently mint a new identity and
+     * break all existing pairing without telling anyone.
      */
     fun `saveBlob`(`key`: kotlin.String, `value`: kotlin.ByteArray)
     
     /**
-     * `Ok(None)` se a chave nunca foi salva (estado normal). `Err` só em falha real de
-     * backend — ver `save_blob`.
+     * `Ok(None)` if the key was never saved (normal state). `Err` only on a real
+     * backend failure — see `save_blob`.
      */
     fun `loadBlob`(`key`: kotlin.String): kotlin.ByteArray?
     
     /**
-     * Remove uma chave — idempotente (chave inexistente não é erro). Usado hoje só pelo
-     * ticket da Iroh Services (ver `storage.rs::clear_iroh_services_ticket`), quando o
-     * usuário desliga a fonte ou substitui por um novo.
+     * Removes a key — idempotent (a missing key is not an error). Used today only by the
+     * Iroh Services ticket (see `storage.rs::clear_iroh_services_ticket`), when the
+     * user turns the source off or replaces it with a new one.
      */
     fun `clearBlob`(`key`: kotlin.String)
     
@@ -4685,11 +4685,11 @@ public interface SecureBlobStore {
 }
 
 /**
- * Armazenamento criptografado (Android Keystore, via `EncryptedSharedPreferences`) usado por
- * `SecureP2pStorage`/`SecureTrustedStore` (ver `storage.rs`/`trust_store.rs`) pra persistir
- * identidade do nó, cache de peers e lista de confiança TOFU sem tocar texto puro em disco.
- * Chave/valor puros — todo o layout (quais chaves existem, formato JSON de cada uma) é
- * decidido do lado Rust, o Kotlin só faz o armazenamento opaco.
+ * Encrypted storage (Android Keystore, via `EncryptedSharedPreferences`) used by
+ * `SecureP2pStorage`/`SecureTrustedStore` (see `storage.rs`/`trust_store.rs`) to persist
+ * the node identity, peer cache and TOFU trust list without touching plain text on disk.
+ * Plain key/value — the whole layout (which keys exist, JSON format of each) is
+ * decided on the Rust side, Kotlin only does opaque storage.
  */
 open class SecureBlobStoreImpl: Disposable, AutoCloseable, SecureBlobStore {
 
@@ -4774,11 +4774,11 @@ open class SecureBlobStoreImpl: Disposable, AutoCloseable, SecureBlobStore {
 
     
     /**
-     * `Err` só em falha real de backend (ex.: `EncryptedSharedPreferences`/Keystore
-     * indisponível ou corrompido) — nunca usado pra "chave não existe ainda", que não é
-     * um erro. Distinguir os dois importa: se `load_identity` tratasse falha real como
-     * "identidade nunca existiu", o node mintaria uma identidade nova silenciosamente e
-     * quebraria todo o pareamento já feito sem avisar ninguém.
+     * `Err` only on a real backend failure (e.g. `EncryptedSharedPreferences`/Keystore
+     * unavailable or corrupted) — never used for "key does not exist yet", which is not
+     * an error. Telling them apart matters: if `load_identity` treated a real failure as
+     * "identity never existed", the node would silently mint a new identity and
+     * break all existing pairing without telling anyone.
      */
     @Throws(SecureBlobStoreException::class)override fun `saveBlob`(`key`: kotlin.String, `value`: kotlin.ByteArray)
         = 
@@ -4793,8 +4793,8 @@ open class SecureBlobStoreImpl: Disposable, AutoCloseable, SecureBlobStore {
 
     
     /**
-     * `Ok(None)` se a chave nunca foi salva (estado normal). `Err` só em falha real de
-     * backend — ver `save_blob`.
+     * `Ok(None)` if the key was never saved (normal state). `Err` only on a real
+     * backend failure — see `save_blob`.
      */
     @Throws(SecureBlobStoreException::class)override fun `loadBlob`(`key`: kotlin.String): kotlin.ByteArray? {
             return FfiConverterOptionalByteArray.lift(
@@ -4810,9 +4810,9 @@ open class SecureBlobStoreImpl: Disposable, AutoCloseable, SecureBlobStore {
 
     
     /**
-     * Remove uma chave — idempotente (chave inexistente não é erro). Usado hoje só pelo
-     * ticket da Iroh Services (ver `storage.rs::clear_iroh_services_ticket`), quando o
-     * usuário desliga a fonte ou substitui por um novo.
+     * Removes a key — idempotent (a missing key is not an error). Used today only by the
+     * Iroh Services ticket (see `storage.rs::clear_iroh_services_ticket`), when the
+     * user turns the source off or replaces it with a new one.
      */
     @Throws(SecureBlobStoreException::class)override fun `clearBlob`(`key`: kotlin.String)
         = 
@@ -4980,9 +4980,9 @@ data class FfiComicSummaryEntry (
     var `comicName`: kotlin.String, 
     var `chapterCount`: kotlin.UInt, 
     /**
-     * Reaproveita `ComicDirectory.lastModified`/`comic_directory.last_modified` — sem hash
-     * novo. O peer compara contra a versão já cacheada localmente pra decidir se precisa
-     * buscar uma capa nova via `acerola/browse-cover/1`.
+     * Reuses `ComicDirectory.lastModified`/`comic_directory.last_modified` — no new
+     * hash. The peer compares it against the version already cached locally to decide whether it
+     * needs to fetch a new cover via `acerola/browse-cover/1`.
      */
     var `coverVersion`: kotlin.Long
 ) {
@@ -5088,7 +5088,7 @@ public object FfiConverterTypeFfiCoverEntry: FfiConverterRustBuffer<FfiCoverEntr
 data class FfiExtraManifestEntry (
     var `comicName`: kotlin.String, 
     /**
-     * Um dos `EXTRA_KIND_*` (`protocol::files::model`).
+     * One of `EXTRA_KIND_*` (`protocol::files::model`).
      */
     var `kind`: kotlin.String, 
     var `fileName`: kotlin.String, 
@@ -5136,8 +5136,8 @@ data class FfiFileManifestEntry (
     var `comicName`: kotlin.String, 
     var `chapter`: kotlin.String, 
     /**
-     * Nome de arquivo real (com extensão), lido do `DocumentFile` no Kotlin — necessário
-     * pra falar o mesmo schema de wire que o Desktop usa em `FileHeader`/`FileChapterInfo`.
+     * Real file name (with extension), read from the `DocumentFile` in Kotlin — needed
+     * to speak the same wire schema Desktop uses in `FileHeader`/`FileChapterInfo`.
      */
     var `fileName`: kotlin.String, 
     var `checksum`: kotlin.String, 
@@ -5181,20 +5181,20 @@ public object FfiConverterTypeFfiFileManifestEntry: FfiConverterRustBuffer<FfiFi
 
 
 /**
- * Item de `get_paired_peers` — igual a `FfiPeerAddr`, mas com `device_name` a mais. Tipo
- * separado (em vez de acrescentar o campo em `FfiPeerAddr`) pra não forçar todo call site
- * que constrói um `FfiPeerAddr` pra discar (`connect`/`sync_comic`/`browse_library`/
- * `browse_cover`) a passar um `device_name` que não faz sentido nesses casos.
+ * Item of `get_paired_peers` — same as `FfiPeerAddr`, plus `device_name`. A separate
+ * type (instead of adding the field to `FfiPeerAddr`) so every call site that builds an
+ * `FfiPeerAddr` to dial (`connect`/`sync_comic`/`browse_library`/`browse_cover`) is not
+ * forced to pass a `device_name` that makes no sense in those cases.
  */
 data class FfiPairedPeer (
     var `id`: kotlin.String, 
     var `deviceId`: kotlin.String?, 
     var `addrs`: kotlin.ByteArray, 
     /**
-     * Vem de `AcerolaP2p::known_peers()` (persiste entre reinícios e sobrevive ao handshake
-     * fechar), não de `connected_peers_with_info()` (só tem dado pros poucos segundos em que
-     * a conexão de handshake está de fato aberta) — era essa a troca errada que deixava
-     * `device_name` quase sempre `None` na UI, caindo no fallback pro peer id cru.
+     * Comes from `AcerolaP2p::known_peers()` (persists across restarts and survives the handshake
+     * closing), not from `connected_peers_with_info()` (only has data for the few seconds in which
+     * the handshake connection is actually open) — that wrong source was what left
+     * `device_name` almost always `None` in the UI, falling back to the raw peer id.
      */
     var `deviceName`: kotlin.String?
 ) {
@@ -5313,25 +5313,25 @@ public object FfiConverterTypeFfiReadingProgressEntry: FfiConverterRustBuffer<Ff
 
 
 /**
- * Configuração de relay combinável exposta pra fronteira FFI (Kotlin) — espelha
- * `RelaySettings`/`RelaySettings::resolve` do Desktop (`bios/scopes.rs`). A diferença é só de
- * onde as fontes vêm: no Desktop é lido de `settings.json` pelo próprio Rust, no Android é lido
- * do DataStore pelo Kotlin (`RelayPreference`) e passado inteiro aqui na construção do
- * `P2PNode` — a lógica de combinar as fontes num `RelayModeConfig` é a mesma nos dois apps.
+ * Combinable relay configuration exposed to the FFI boundary (Kotlin) — mirrors Desktop's
+ * `RelaySettings`/`RelaySettings::resolve` (`bios/scopes.rs`). The only difference is
+ * where the sources come from: on Desktop Rust itself reads them from `settings.json`, on Android
+ * Kotlin reads them from DataStore (`RelayPreference`) and passes them whole here when building the
+ * `P2PNode` — the logic combining the sources into a `RelayModeConfig` is the same in both apps.
  */
 data class FfiRelaySettings (
     /**
-     * Usa o relay oficial mantido pelo Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
+     * Uses the official relay maintained by Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
      */
     var `useAcerolaRelay`: kotlin.Boolean, 
     /**
-     * Usa a rede pública padrão de relays do projeto Iroh (n0) — mutuamente exclusiva com as
-     * demais fontes: `iroh::RelayMode` só permite `Disabled | Default | Custom`, nunca uma
-     * combinação de `Default` com URLs específicas.
+     * Uses the Iroh project's (n0) default public relay network — mutually exclusive with the
+     * other sources: `iroh::RelayMode` only allows `Disabled | Default | Custom`, never a
+     * combination of `Default` with specific URLs.
      */
     var `useIrohPublicNetwork`: kotlin.Boolean, 
     /**
-     * Relay(s) próprio(s) do usuário (self-hosted, sem autenticação).
+     * The user's own relay(s) (self-hosted, no authentication).
      */
     var `customRelayUrls`: List<kotlin.String>
 ) {
@@ -5397,10 +5397,10 @@ public object FfiConverterTypeFfiNetworkMode: FfiConverterRustBuffer<FfiNetworkM
 
 
 /**
- * Direção explícita de um `P2PNode::sync_comic`, exposta pra fronteira FFI (Kotlin) — mesmo
- * padrão de `FfiNetworkMode`/`NetworkMode` em `lib/mode.rs`. `SyncDirection` (o tipo interno do
- * protocolo, em `protocol::files::model`) não é exportável via UniFFI diretamente porque vive
- * num módulo `pub(crate)`, então esse enum espelhado é o que o Kotlin realmente vê.
+ * Explicit direction of a `P2PNode::sync_comic`, exposed to the FFI boundary (Kotlin) — same
+ * pattern as `FfiNetworkMode`/`NetworkMode` in `lib/mode.rs`. `SyncDirection` (the protocol's
+ * internal type, in `protocol::files::model`) cannot be exported via UniFFI directly because it lives
+ * in a `pub(crate)` module, so this mirrored enum is what Kotlin actually sees.
  */
 
 enum class FfiSyncDirection {
@@ -5435,8 +5435,8 @@ public object FfiConverterTypeFfiSyncDirection: FfiConverterRustBuffer<FfiSyncDi
 
 
 /**
- * Erro exposto pra fronteira FFI (Kotlin) quando o usuário cola um ticket malformado —
- * validado antes de persistir, em vez de só falhar silenciosamente no próximo boot.
+ * Error exposed to the FFI boundary (Kotlin) when the user pastes a malformed ticket —
+ * validated before persisting, instead of just silently failing on the next boot.
  */
 sealed class RelayTicketException: kotlin.Exception() {
     

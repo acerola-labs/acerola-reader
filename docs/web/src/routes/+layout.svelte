@@ -1,13 +1,13 @@
 <script lang="ts">
 	import '$theme/layout.css';
-	import AcerolaMobileNav from '$lib/components/acerola-mobile-nav/acerola-mobile-nav.svelte';
-	import AcerolaScrollProgress from '$lib/components/acerola-scroll-progress/acerola-scroll-progress.svelte';
-	import AcerolaSearchDialog from '$lib/components/acerola-search-dialog/acerola-search-dialog.svelte';
-	import AcerolaTopNav from '$lib/components/acerola-top-nav/acerola-top-nav.svelte';
-	import { GITHUB_URL, OG_IMAGE_URL, SITE_URL } from '$lib/constants/site';
-	import { getSidebar } from '$lib/content/docs';
-	import { m } from '$lib/paraglide/messages';
-	import { getLocale, localizeHref, locales } from '$lib/paraglide/runtime';
+	import AcerolaMobileNav from '#lib/components/acerola-mobile-nav/acerola-mobile-nav.svelte';
+	import AcerolaScrollProgress from '#lib/components/acerola-scroll-progress/acerola-scroll-progress.svelte';
+	import AcerolaSearchDialog from '#lib/components/acerola-search-dialog/acerola-search-dialog.svelte';
+	import AcerolaTopNav from '#lib/components/acerola-top-nav/acerola-top-nav.svelte';
+	import { GITHUB_URL, OG_IMAGE_URL, SITE_URL } from '#lib/constants/site.ts';
+	import { getSidebar } from '#lib/content/docs.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { getLocale, localizeHref, locales } from '#lib/paraglide/runtime.js';
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
@@ -75,12 +75,17 @@
 	<meta name="keywords" content={m['site.keywords']()} />
 	<meta name="author" content="Vinícius GPL" />
 	<meta name="robots" content="index, follow" />
-	<meta name="theme-color" content="#1e1e2e" />
+	<!-- The meta takes a literal color: it is the dark --background token. -->
+	<meta name="theme-color" content="#11111a" /><!-- design-allow: literal -->
 
 	<!-- Canonical & Multilingual Alternate Links -->
 	<link rel="canonical" href={page.url.href} />
 	{#each locales as loc (loc)}
-		<link rel="alternate" hreflang={loc} href={localizeHref(page.url.pathname, { locale: loc })} />
+		<link
+			rel="alternate"
+			hreflang={loc}
+			href={localizeHref(page.url.pathname, { locale: loc })}
+		/>
 	{/each}
 	<link
 		rel="alternate"
@@ -99,25 +104,30 @@
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content={m['site.og.image_alt']()} />
+	<meta property="og:image:alt" content={m['site.og.imageAlt']()} />
 
 	<!-- Twitter Card Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={m['site.og.title']()} />
 	<meta name="twitter:description" content={m['site.og.description']()} />
 	<meta name="twitter:image" content={OG_IMAGE_URL} />
-	<meta name="twitter:image:alt" content={m['site.og.image_alt']()} />
+	<meta name="twitter:image:alt" content={m['site.og.imageAlt']()} />
 
 	<!-- JSON-LD Structured Data for Google & AI Engines. -->
 	{@html jsonLdScript}
 </svelte:head>
 
-<AcerolaScrollProgress />
-<AcerolaTopNav
-	onOpenSearch={() => (searchOpen = true)}
-	onOpenMobileNav={() => (mobileNavOpen = true)}
-/>
-<AcerolaSearchDialog bind:open={searchOpen} />
-<AcerolaMobileNav bind:open={mobileNavOpen} {groups} {activeSlug} />
+{#if page.error}
+	<!-- Acerola standard: only the error on screen, no navigation; its two actions are the way out. -->
+	{@render children()}
+{:else}
+	<AcerolaScrollProgress />
+	<AcerolaTopNav
+		onOpenSearch={() => (searchOpen = true)}
+		onOpenMobileNav={() => (mobileNavOpen = true)}
+	/>
+	<AcerolaSearchDialog bind:open={searchOpen} />
+	<AcerolaMobileNav bind:open={mobileNavOpen} {groups} {activeSlug} />
 
-{@render children()}
+	{@render children()}
+{/if}

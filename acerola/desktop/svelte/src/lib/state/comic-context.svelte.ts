@@ -1,5 +1,5 @@
-import type { ComicSummaryItemPayload } from '$lib/contracts/home/home.payloads';
-import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+import type { ComicSummaryItemPayload } from '#lib/contracts/home/home.payloads.ts';
+import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 import { getContext, setContext } from 'svelte';
 
 export class ActiveComicState {

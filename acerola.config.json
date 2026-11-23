@@ -1,0 +1,28 @@
+{
+	"project": "acerola-reader",
+	"description": "Leitor de quadrinhos e mangás local-first: Android, desktop (Tauri) e sincronização P2P entre seus dispositivos.",
+	"commit": {
+		"scopes": {
+			"android": "acerola/android/",
+			"desktop": "acerola/desktop/",
+			"relay": "acerola/relay/",
+			"p2p": "lib/p2p/",
+			"iroh": "lib/relay/ (código vendorizado do iroh)",
+			"web": "docs/web/ (portal web e documentação)",
+			"docs": "docs/ e os .md da raiz",
+			"monorepo": "scripts/, lefthook.yml, makefile.toml e os arquivos de configuração da raiz",
+			"ci": ".github/",
+			"claude": ".claude/ e CLAUDE.md",
+			"deps": "atualização de dependência"
+		}
+	},
+	"design": {
+		"scan": ["docs/web/src", "acerola/desktop/svelte/src"],
+		"extensions": [".svelte", ".ts", ".css", ".html"],
+		"exempt": ["/theme/", "/lib/components/ui/", "/lib/paraglide/", "\\.test\\.ts$", "\\.d\\.ts$"]
+	},
+	"i18n": {
+		"messages": ["docs/web/messages", "acerola/desktop/svelte/messages"],
+		"baseLocale": "pt-br"
+	}
+}

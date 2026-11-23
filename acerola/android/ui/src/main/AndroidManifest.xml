@@ -25,6 +25,16 @@
             android:exported="false"
             android:label="@string/label_transfer_log_activity"
             android:theme="@style/Theme.Acerola" />
+
+        <!-- The one error screen (acerola-design 6.1), in its own process so it opens even when
+             the main process crashed. -->
+        <activity
+            android:name="br.acerola.comic.common.activity.ErrorActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/error_eyebrow_generic"
+            android:process=":error"
+            android:theme="@style/Theme.Acerola" />
     </application>
 
 </manifest>

@@ -6,7 +6,7 @@ import br.acerola.comic.error.message.LibrarySyncError
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * UseCase para forçar o reescaneamento de capítulos de um quadrinho específico.
+ * UseCase to force a chapter rescan of a specific comic.
  */
 class RescanComicChaptersUseCase(
     private val chapterRepository: ChapterSyncGateway,

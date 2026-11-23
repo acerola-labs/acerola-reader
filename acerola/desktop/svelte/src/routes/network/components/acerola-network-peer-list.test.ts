@@ -42,7 +42,9 @@ describe('AcerolaNetworkPeerList', () => {
 			}
 		});
 
-		expect(screen.getByText(/No paired devices|Nenhum dispositivo pareado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/No paired devices|Nenhum dispositivo pareado/i)
+		).toBeInTheDocument();
 	});
 
 	it('renders a peer using its device name, falling back to a short id when absent', () => {
@@ -125,7 +127,9 @@ describe('AcerolaNetworkPeerList', () => {
 			}
 		});
 
-		expect(screen.getByText(/Offline|desconectado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/isn't reachable right now|não está acessível agora/i)
+		).toBeInTheDocument();
 	});
 
 	it('disables the sync-all button when the peer has no known address', () => {

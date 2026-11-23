@@ -10,8 +10,8 @@ data class SyncUiState(
     val pairingCode: String? = null,
     val mode: NetworkMode = NetworkMode.LOCAL,
     val relaySettings: RelaySettingsUiState = RelaySettingsUiState(),
-    /** `true` logo após `SyncAction.SetIrohServicesTicket` falhar (formato inválido) — a
-     *  própria [RelaySettingsUiState.hasIrohServicesTicket] não muda nesse caso. */
+    /** `true` right after `SyncAction.SetIrohServicesTicket` fails (invalid format) —
+     *  [RelaySettingsUiState.hasIrohServicesTicket] itself doesn't change in that case. */
     val irohServicesTicketError: Boolean = false,
     val pairedPeers: List<PairedPeer> = emptyList(),
     val pendingConnect: PendingConnect? = null,
@@ -20,10 +20,10 @@ data class SyncUiState(
     val trustedPeerDialogPeerId: String? = null,
     val transferLog: List<TransferLogEntry> = emptyList(),
     /**
-     * `kind` -> id da linha de [transferLog] atualmente em andamento pra esse protocolo
-     * (spinner girando). Permite [TransferLogEntry] transicionar no lugar (started -> progress
-     * -> complete/error) em vez de empilhar uma linha nova por evento, o que deixava a linha
-     * "started" presa pra sempre como se ainda estivesse rodando.
+     * `kind` -> id of the [transferLog] row currently in progress for that protocol
+     * (spinning spinner). Lets [TransferLogEntry] transition in place (started -> progress
+     * -> complete/error) instead of stacking a new row per event, which left the
+     * "started" row stuck forever as if it were still running.
      */
     val inFlightLogEntryByKind: Map<String, Long> = emptyMap(),
     /**
@@ -49,37 +49,37 @@ data class SyncUiState(
     /** Distinguishes "still waiting for [P2pEvent.LibraryBrowseResult]" from "peer really has
      *  an empty library" — [remoteLibrary] alone can't tell those apart once it's empty. */
     val remoteLibraryLoaded: Boolean = false,
-    /** Cru — usado só como fallback/argumento de template quando [browseLibraryErrorType] é
-     *  `null` (ver `RemoteLibrarySheet`, mesmo padrão de `TransferLogEntry`/`SyncResult`). */
+    /** Raw — only used as a fallback/template argument when [browseLibraryErrorType] is
+     *  `null` (see `RemoteLibrarySheet`, same pattern as `TransferLogEntry`/`SyncResult`). */
     val browseLibraryError: String? = null,
-    /** Causa reconhecida (`SyncProtocolError`), quando houver. */
+    /** Recognized cause (`SyncProtocolError`), when there is one. */
     val browseLibraryErrorType: SyncProtocolError? = null,
-    /** `"$peerId:$comicName"` -> caminho local (`file://...`) da capa já baixada via
-     *  `acerola/browse-cover/1`, pronto pro Coil carregar. Cache em memória — nunca rebaixa a
-     *  mesma versão duas vezes dentro da mesma sessão do app (ver
+    /** `"$peerId:$comicName"` -> local path (`file://...`) of the cover already downloaded via
+     *  `acerola/browse-cover/1`, ready for Coil to load. In-memory cache — never downloads the
+     *  same version twice within the same app session (see
      *  [br.acerola.comic.module.main.sync.SyncViewModel]). */
     val remoteCoverPaths: Map<String, String> = emptyMap(),
 )
 
 /**
- * Configuração de relay combinável exibida/editada no [br.acerola.comic.module.main.sync.RelaySettingsCard]
- * — espelha `RelayPreference.RelaySettings` (a fonte persistida), com nome próprio aqui pro
- * mesmo motivo de [PairedPeer]/[SyncResult]: `SyncUiState` não deve carregar tipos de outra
- * camada por conveniência, mesmo shape só reaproveitado de propósito.
+ * Combinable relay configuration shown/edited in [br.acerola.comic.module.main.sync.RelaySettingsCard]
+ * — mirrors `RelayPreference.RelaySettings` (the persisted source), with its own name here for the
+ * same reason as [PairedPeer]/[SyncResult]: `SyncUiState` shouldn't carry another layer's types
+ * for convenience, the same shape is just reused on purpose.
  */
 data class RelaySettingsUiState(
     val useAcerolaRelay: Boolean = true,
     val useIrohPublicNetwork: Boolean = false,
     val customRelayUrls: List<String> = emptyList(),
-    /** Só indica SE um ticket da conta do usuário em `services.iroh.computer` já foi colado e
-     *  salvo — o valor em si nunca é exposto na UI (é uma credencial real, guardada no cofre
-     *  criptografado do node, não no DataStore junto das demais preferências de relay). */
+    /** Only indicates WHETHER a ticket for the user's `services.iroh.computer` account was already
+     *  pasted and saved — the value itself is never exposed in the UI (it's a real credential, kept
+     *  in the node's encrypted vault, not in DataStore alongside the other relay preferences). */
     val hasIrohServicesTicket: Boolean = false,
-    /** `true` enquanto `SyncAction.RestartP2p` está em andamento — desabilita o botão
-     *  "Reiniciar" pra evitar disparar dois restarts simultâneos (o segundo desligaria um node
-     *  que o primeiro acabou de subir). */
+    /** `true` while `SyncAction.RestartP2p` is in progress — disables the "Restart"
+     *  button to avoid firing two simultaneous restarts (the second would shut down a node
+     *  the first one just started). */
     val restarting: Boolean = false,
-    /** `true` logo após um `RestartP2p` falhar — mensagem inline no card, mesmo padrão de
+    /** `true` right after a `RestartP2p` fails — inline message on the card, same pattern as
      *  [SyncUiState.irohServicesTicketError]. */
     val restartError: Boolean = false,
 )
@@ -87,10 +87,10 @@ data class RelaySettingsUiState(
 data class SyncResult(
     val kind: String,
     val state: LogState,
-    /** Cru/em inglês — nunca mostrado direto, só embutido num template pt-BR já traduzido
-     *  (ver `SyncScreen::PeerRow`). Preferir [errorType] quando presente: é a causa reconhecida
-     *  (`SyncProtocolError`), com uma mensagem própria e mais específica que o template
-     *  genérico de fallback. */
+    /** Raw/in English — never shown directly, only embedded in an already translated template
+     *  (see `SyncScreen::PeerRow`). Prefer [errorType] when present: it's the recognized cause
+     *  (`SyncProtocolError`), with its own message, more specific than the generic fallback
+     *  template. */
     val message: String?,
     val timestamp: Long,
     val errorType: SyncProtocolError? = null,
@@ -99,8 +99,8 @@ data class SyncResult(
 data class PairedPeer(
     val peerId: String,
     val deviceName: String?,
-    /** Apelido local (definido pelo usuário neste dispositivo, ver `PeerNicknamePreference`) —
-     *  tem prioridade sobre [deviceName] na exibição, sem nunca sobrescrevê-lo. */
+    /** Local nickname (set by the user on this device, see `PeerNicknamePreference`) —
+     *  takes priority over [deviceName] for display, without ever overwriting it. */
     val nickname: String? = null,
 )
 

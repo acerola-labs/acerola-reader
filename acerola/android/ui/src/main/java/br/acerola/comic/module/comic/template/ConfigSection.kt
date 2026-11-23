@@ -1,49 +1,37 @@
 package br.acerola.comic.module.comic.template
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Collections
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.rounded.LayersClear
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.AccordionCard
+import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.ButtonVariant
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
-import br.acerola.comic.common.ux.component.HeroButton
+import br.acerola.comic.common.ux.component.SettingRow
+import br.acerola.comic.common.ux.component.SettingSection
+import br.acerola.comic.common.ux.component.Tone
 import br.acerola.comic.config.preference.types.VolumeViewType
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.module.comic.component.ComicCategorySelector
 import br.acerola.comic.module.comic.component.ComicExternalSyncToggle
 import br.acerola.comic.module.comic.component.ComicInfoSync
+import br.acerola.comic.module.comic.component.CoverActions
 import br.acerola.comic.module.comic.component.ExternalMetadataSync
+import br.acerola.comic.module.comic.component.FileSyncActions
 import br.acerola.comic.module.comic.component.PaginationPreference
-import br.acerola.comic.module.comic.component.SyncMangaArchive
 import br.acerola.comic.module.comic.component.SyncWithPeerAction
 import br.acerola.comic.module.comic.component.VolumeStylePreference
 import br.acerola.comic.module.comic.state.ComicAction
@@ -55,13 +43,13 @@ import br.acerola.comic.module.main.sync.state.PairedPeer
 import br.acerola.comic.service.SyncDirection
 import br.acerola.comic.ui.R
 
-private val categoryModifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+private val sectionModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 
-// Mesmas 3 categorias do desktop (Leitura/Sincronização/Avançado, ver
-// acerola-comic-preferences.svelte): Sincronização é a única flat (sempre aberta, é a parte
-// mais usada — metadados, arquivos e dispositivos pareados); Leitura e Avançado colapsam.
-// `expandedCategories`/`onToggleCategory` vêm do `ComicScreen` porque este arquivo não é
-// `@Composable` (só monta `scope.item {}`), então não pode ter seu próprio `remember`.
+// Same layout as the desktop's comic preferences (acerola-comic-preferences.svelte): one brand
+// section per subject, all open — reading, metadata, files, devices, cover and the danger zone.
+// `expandedCategories`/`onToggleCategory` stay in the signature for `ComicScreen`, which still
+// owns that state, but every section is open now.
+@Suppress("UNUSED_PARAMETER")
 fun Comic.Template.configSection(
     scope: LazyListScope,
     uiState: ComicUiState,
@@ -74,18 +62,21 @@ fun Comic.Template.configSection(
     onAction: (ComicAction) -> Unit,
     onSyncAction: (ComicSyncAction) -> Unit,
 ) {
-    scope.item { Spacer(modifier = Modifier.height(16.dp)) }
+    val fileActions =
+        listOf(
+            ComicSyncAction.SyncChaptersLocal,
+            ComicSyncAction.RescanComic,
+            ComicSyncAction.ExtractFirstPageAsCover,
+            ComicSyncAction.ExtractVolumeCovers,
+        )
 
-    // NOTE: Leitura
+    scope.item { Spacer(modifier = Modifier.height(8.dp)) }
+
     scope.item {
-        Acerola.Component.AccordionCard(
+        Acerola.Component.SettingSection(
             title = stringResource(id = R.string.title_comic_preferences_reading),
-            description = stringResource(id = R.string.description_comic_preferences_reading),
-            icon = Icons.Default.Settings,
-            accentColor = MaterialTheme.colorScheme.primary,
-            expanded = "reading" in expandedCategories,
-            onToggleExpanded = { onToggleCategory("reading") },
-            modifier = categoryModifier,
+            lead = stringResource(id = R.string.description_comic_preferences_reading),
+            modifier = sectionModifier,
         ) {
             if (uiState.hasVolumeStructure) {
                 Comic.Component.VolumeStylePreference(
@@ -93,12 +84,10 @@ fun Comic.Template.configSection(
                     onSelect = { mode -> onAction(ComicAction.UpdateVolumeView(mode)) },
                 )
             }
-
             Comic.Component.PaginationPreference(
                 selected = uiState.selectedChapterPerPage,
                 onSelect = { onAction(ComicAction.UpdatePageSize(it)) },
             )
-
             Comic.Component.ComicCategorySelector(
                 selectedCategory = uiState.comic.category,
                 allCategories = uiState.allCategories,
@@ -107,25 +96,18 @@ fun Comic.Template.configSection(
         }
     }
 
-    // NOTE: Sincronização — fica sempre aberta (flat): metadados, arquivos e dispositivos
-    // pareados são a parte mais usada dessa tela, não vale esconder atrás de um clique.
     scope.item {
-        Acerola.Component.AccordionCard(
-            title = stringResource(id = R.string.title_comic_preferences_sync),
-            description = stringResource(id = R.string.description_comic_preferences_sync),
-            icon = Icons.Default.Sync,
-            accentColor = MaterialTheme.colorScheme.secondary,
-            expanded = true,
-            onToggleExpanded = {},
-            collapsible = false,
-            modifier = categoryModifier,
+        Acerola.Component.SettingSection(
+            title = stringResource(id = R.string.title_config_metadata),
+            lead = stringResource(id = R.string.description_comic_preferences_metadata),
+            modifier = sectionModifier,
         ) {
-            SectionLabel(icon = Icons.Default.Public, text = stringResource(id = R.string.label_comic_preferences_section_metadata))
-
+            val externalSyncEnabled = uiState.comic.directory.externalSyncEnabled
             Comic.Component.ComicExternalSyncToggle(
-                enabled = uiState.comic.directory.externalSyncEnabled,
+                enabled = externalSyncEnabled,
                 onToggle = { onAction(ComicAction.ToggleExternalSync(it)) },
-            ) {
+            )
+            if (externalSyncEnabled) {
                 Comic.Component.ExternalMetadataSync(
                     remoteInfo = uiState.comic.remoteInfo,
                     onSyncMangadexInfo = { onSyncAction(ComicSyncAction.SyncMangadexInfo) },
@@ -134,36 +116,40 @@ fun Comic.Template.configSection(
                     anilistInfoState = getSyncActionVisualState(ComicSyncAction.SyncAnilistInfo),
                 )
             }
-
             Comic.Component.ComicInfoSync(
                 remoteInfo = uiState.comic.remoteInfo,
                 onSyncComicInfo = { onSyncAction(ComicSyncAction.SyncComicInfo) },
                 comicInfoState = getSyncActionVisualState(ComicSyncAction.SyncComicInfo),
             )
+        }
+    }
 
-            SectionLabel(icon = Icons.Default.Folder, text = stringResource(id = R.string.label_comic_preferences_section_files))
-
-            Comic.Component.SyncMangaArchive(
+    scope.item {
+        val anyFileActionLoading = fileActions.any { getSyncActionVisualState(it) == SyncActionVisualState.LOADING }
+        Acerola.Component.SettingSection(
+            title = stringResource(id = R.string.title_comic_preferences_files),
+            lead = stringResource(id = R.string.description_comic_preferences_files),
+            modifier = sectionModifier,
+        ) {
+            Comic.Component.FileSyncActions(
                 onSyncChapters = { onSyncAction(ComicSyncAction.SyncChaptersLocal) },
                 onRescanCover = { onSyncAction(ComicSyncAction.RescanComic) },
-                onExtractFirstPageAsCover = { onSyncAction(ComicSyncAction.ExtractFirstPageAsCover) },
-                onExtractVolumeCovers =
-                    if (uiState.volumeViewMode == VolumeViewType.COVER_VOLUME) {
-                        { onSyncAction(ComicSyncAction.ExtractVolumeCovers) }
-                    } else {
-                        null
-                    },
                 syncChaptersState = getSyncActionVisualState(ComicSyncAction.SyncChaptersLocal),
                 rescanCoverState = getSyncActionVisualState(ComicSyncAction.RescanComic),
-                extractFirstPageState = getSyncActionVisualState(ComicSyncAction.ExtractFirstPageAsCover),
-                extractVolumeCoversState = getSyncActionVisualState(ComicSyncAction.ExtractVolumeCovers),
+                enabled = !anyFileActionLoading,
             )
+        }
+    }
 
-            SectionLabel(icon = Icons.Default.PhoneAndroid, text = stringResource(id = R.string.label_comic_preferences_section_devices))
+    scope.item {
+        var showPeerPicker by remember { mutableStateOf(false) }
+        var pendingDirection by remember { mutableStateOf(SyncDirection.PUSH) }
 
-            var showPeerPicker by remember { mutableStateOf(false) }
-            var pendingDirection by remember { mutableStateOf(SyncDirection.PUSH) }
-
+        Acerola.Component.SettingSection(
+            title = stringResource(id = R.string.title_comic_preferences_devices),
+            lead = stringResource(id = R.string.description_comic_preferences_devices),
+            modifier = sectionModifier,
+        ) {
             Comic.Component.SyncWithPeerAction(
                 state = syncWithPeerState,
                 onPush = {
@@ -177,103 +163,90 @@ fun Comic.Template.configSection(
                     showPeerPicker = true
                 },
             )
+        }
 
-            if (showPeerPicker) {
-                Main.Common.Component.PeerPickerSheet(
-                    peers = pairedPeers,
-                    onSelect = { peerId ->
-                        showPeerPicker = false
-                        onSyncAction(ComicSyncAction.SyncWithPeer(peerId, pendingDirection))
-                    },
-                    onDismiss = { showPeerPicker = false },
-                )
-            }
+        if (showPeerPicker) {
+            Main.Common.Component.PeerPickerSheet(
+                peers = pairedPeers,
+                onSelect = { peerId ->
+                    showPeerPicker = false
+                    onSyncAction(ComicSyncAction.SyncWithPeer(peerId, pendingDirection))
+                },
+                onDismiss = { showPeerPicker = false },
+            )
         }
     }
 
-    // NOTE: Avançado
     scope.item {
-        Acerola.Component.AccordionCard(
-            title = stringResource(id = R.string.title_comic_preferences_advanced),
-            description = stringResource(id = R.string.description_comic_preferences_advanced),
-            icon = Icons.Default.Collections,
-            accentColor = MaterialTheme.colorScheme.tertiary,
-            expanded = "advanced" in expandedCategories,
-            onToggleExpanded = { onToggleCategory("advanced") },
-            modifier = categoryModifier,
+        val anyFileActionLoading = fileActions.any { getSyncActionVisualState(it) == SyncActionVisualState.LOADING }
+        Acerola.Component.SettingSection(
+            title = stringResource(id = R.string.title_comic_preferences_cover),
+            lead = stringResource(id = R.string.description_comic_preferences_cover),
+            modifier = sectionModifier,
         ) {
-            SectionLabel(
-                icon = Icons.Rounded.LayersClear,
-                text = stringResource(id = R.string.label_comic_preferences_section_danger_zone),
+            Comic.Component.CoverActions(
+                onExtractFirstPageAsCover = { onSyncAction(ComicSyncAction.ExtractFirstPageAsCover) },
+                onExtractVolumeCovers =
+                    if (uiState.volumeViewMode == VolumeViewType.COVER_VOLUME) {
+                        { onSyncAction(ComicSyncAction.ExtractVolumeCovers) }
+                    } else {
+                        null
+                    },
+                extractFirstPageState = getSyncActionVisualState(ComicSyncAction.ExtractFirstPageAsCover),
+                extractVolumeCoversState = getSyncActionVisualState(ComicSyncAction.ExtractVolumeCovers),
+                enabled = !anyFileActionLoading,
             )
+        }
+    }
 
-            var showClearMetadataDialog by remember { mutableStateOf(false) }
+    scope.item {
+        var showClearMetadataDialog by remember { mutableStateOf(false) }
 
-            Acerola.Component.HeroButton(
+        Acerola.Component.SettingSection(
+            title = stringResource(id = R.string.title_comic_preferences_danger),
+            lead = stringResource(id = R.string.description_comic_preferences_danger),
+            modifier = sectionModifier,
+        ) {
+            Acerola.Component.SettingRow(
                 title = stringResource(id = R.string.action_clear_metadata),
                 description = stringResource(id = R.string.description_clear_metadata),
                 icon = Icons.Rounded.LayersClear,
-                iconTint = MaterialTheme.colorScheme.onError,
-                iconBackground = MaterialTheme.colorScheme.error,
-                onClick = { showClearMetadataDialog = true },
+                tone = Tone.Destructive,
+                content = {
+                    Acerola.Component.Button(
+                        text = stringResource(id = R.string.action_comic_preferences_clear),
+                        onClick = { showClearMetadataDialog = true },
+                        variant = ButtonVariant.Destructive,
+                    )
+                },
             )
+        }
 
-            if (showClearMetadataDialog) {
-                Acerola.Component.Dialog(
-                    show = true,
-                    onDismiss = { showClearMetadataDialog = false },
-                    title = stringResource(id = R.string.dialog_clear_metadata_title),
-                    confirmButtonContent = {
-                        Acerola.Component.DialogButton(
-                            text = stringResource(id = R.string.action_clear_metadata),
-                            onClick = {
-                                showClearMetadataDialog = false
-                                onAction(ComicAction.ClearMetadata)
-                            },
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    },
-                    dismissButtonContent = {
-                        Acerola.Component.DialogButton(
-                            text = stringResource(id = R.string.action_cancel),
-                            onClick = { showClearMetadataDialog = false },
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
-                    content = { Text(text = stringResource(id = R.string.dialog_clear_metadata_message)) },
-                )
-            }
+        if (showClearMetadataDialog) {
+            Acerola.Component.Dialog(
+                show = true,
+                onDismiss = { showClearMetadataDialog = false },
+                title = stringResource(id = R.string.dialog_clear_metadata_title),
+                confirmButtonContent = {
+                    Acerola.Component.DialogButton(
+                        text = stringResource(id = R.string.action_comic_preferences_clear),
+                        onClick = {
+                            showClearMetadataDialog = false
+                            onAction(ComicAction.ClearMetadata)
+                        },
+                        variant = ButtonVariant.Destructive,
+                    )
+                },
+                dismissButtonContent = {
+                    Acerola.Component.DialogButton(
+                        text = stringResource(id = R.string.action_cancel),
+                        onClick = { showClearMetadataDialog = false },
+                    )
+                },
+                content = { Text(text = stringResource(id = R.string.dialog_clear_metadata_message)) },
+            )
         }
     }
 
     scope.item { Spacer(modifier = Modifier.height(32.dp)) }
-}
-
-// Rótulo de subgrupo dentro de uma categoria flat (ícone 16dp + texto uppercase) — mesmo
-// padrão visual das `<section>` do desktop dentro de "Sincronização"/"Avançado".
-@Composable
-private fun SectionLabel(
-    icon: ImageVector,
-    text: String,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp),
-        )
-        Text(
-            text = text.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            letterSpacing = 1.sp,
-        )
-    }
 }

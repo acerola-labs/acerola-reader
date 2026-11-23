@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/svelte';
 import { afterEach, vi } from 'vitest';
 
-// Mock para resolver problemas do jsdom e pointer events do bits-ui (shadcn-svelte)
+// Mock to work around jsdom and bits-ui (shadcn-svelte) pointer event issues
 if (typeof window !== 'undefined') {
 	window.HTMLElement.prototype.hasPointerCapture = vi.fn();
 	window.HTMLElement.prototype.releasePointerCapture = vi.fn();
@@ -19,10 +19,10 @@ if (typeof window !== 'undefined') {
 			oncancel: null
 		}));
 	}
-	// @ts-ignore: Mock simples pra resolver hasPointerCapture em testes
+	// @ts-ignore: Simple mock to work around hasPointerCapture in tests
 	window.PointerEvent = class PointerEvent extends Event {};
 
-	// Mock localStorage — use-theme.svelte.ts lê/escreve tema e modo aqui diretamente
+	// Mock localStorage — use-theme.svelte.ts reads/writes theme and mode here directly
 	const localStorageStore = new Map<string, string>();
 	Object.defineProperty(window, 'localStorage', {
 		value: {
@@ -36,7 +36,7 @@ if (typeof window !== 'undefined') {
 		writable: true
 	});
 
-	// Mock matchMedia — use-theme.svelte.ts usa pra resolver o modo 'system'
+	// Mock matchMedia — use-theme.svelte.ts uses it to resolve the 'system' mode
 	Object.defineProperty(window, 'matchMedia', {
 		writable: true,
 		value: vi.fn().mockImplementation((query) => ({

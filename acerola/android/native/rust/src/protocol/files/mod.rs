@@ -24,23 +24,23 @@ pub(crate) use transfer::{BlobChapterTransfer, ChapterTransfer};
 
 pub(crate) const FILE_SYNC_ALPN: &[u8] = b"acerola/sync-files/1";
 
-/// ALPN do protocolo `acerola/sync-comic/1` — mesma máquina de estados do `sync-files`
-/// (manifesto -> want-list -> transferência), mas filtrada a um único quadrinho por uma fase 0
-/// extra (`ComicSyncScope`, ver `exchange::run_exchange_scoped`). ALPN dedicado (em vez de
-/// reaproveitar `FILE_SYNC_ALPN`) porque o outro lado precisa rotear pro handler certo antes de
-/// saber que a sessão é escopada — a única forma de expressar isso sem tocar a lib de
-/// transporte (`acerola-p2p`, que roteia por ALPN exato e não carrega payload em `connect()`).
+/// ALPN of the `acerola/sync-comic/1` protocol — same state machine as `sync-files`
+/// (manifest -> want-list -> transfer), but filtered to a single comic by an extra phase 0
+/// (`ComicSyncScope`, see `exchange::run_exchange_scoped`). A dedicated ALPN (instead of
+/// reusing `FILE_SYNC_ALPN`) because the other side must route to the right handler before
+/// knowing the session is scoped — the only way to express that without touching the
+/// transport lib (`acerola-p2p`, which routes by exact ALPN and carries no payload in `connect()`).
 pub(crate) const COMIC_SYNC_ALPN: &[u8] = b"acerola/sync-comic/1";
 
-/// `peer_id -> (comic_name, direction, chapters)` escolhidos pelo usuário na chamada FFI
-/// `P2PNode::sync_comic`, lidos e removidos por `ComicSyncOutbound::handle` assim que a sessão
-/// outbound começa. Único jeito de levar essa escolha (que só existe do lado Kotlin) até o
-/// `Handler` que a lib de transporte invoca sem contexto por chamada — ver comentário em
-/// `COMIC_SYNC_ALPN`. `chapters` (rótulos, vazio = quadrinho inteiro) escopa a sessão a um
-/// subconjunto de capítulos — mesma ideia do Desktop (`PendingComicSyncRegistry`).
+/// `peer_id -> (comic_name, direction, chapters)` chosen by the user in the
+/// `P2PNode::sync_comic` FFI call, read and removed by `ComicSyncOutbound::handle` as soon as the
+/// outbound session starts. The only way to carry that choice (which only exists on the Kotlin side)
+/// to the `Handler` the transport lib invokes without per-call context — see the comment on
+/// `COMIC_SYNC_ALPN`. `chapters` (labels, empty = whole comic) scopes the session to a
+/// subset of chapters — same idea as Desktop (`PendingComicSyncRegistry`).
 pub(crate) type PendingComicScope = Arc<Mutex<HashMap<String, (String, SyncDirection, Vec<String>)>>>;
 
-/// Papel outbound do protocolo `acerola/sync-files/1` — este lado iniciou a conexão.
+/// Outbound role of the `acerola/sync-files/1` protocol — this side started the connection.
 pub(crate) struct FileSyncOutbound {
     emit: EventEmitter,
     provider: Arc<dyn FileSyncProvider>,
@@ -86,7 +86,7 @@ impl Handler for FileSyncOutbound {
     }
 }
 
-/// Papel inbound do protocolo `acerola/sync-files/1` — o peer iniciou a conexão.
+/// Inbound role of the `acerola/sync-files/1` protocol — the peer started the connection.
 pub(crate) struct FileSyncInbound {
     emit: EventEmitter,
     provider: Arc<dyn FileSyncProvider>,
@@ -152,10 +152,10 @@ async fn run_and_report(
                 "sync-files session already in progress for peer {}",
                 peer.id
             );
-            // Melhor esforço: avisa o outro lado do stream que a rejeição foi por ocupação, não
-            // por falha de conexão. Se essa escrita falhar (peer já caiu, stream já fechado),
-            // ignora — a sessão já foi rejeitada localmente de qualquer forma, o erro abaixo é
-            // retornado igual.
+            // Best effort: tells the other side of the stream the rejection was due to being busy,
+            // not a connection failure. If this write fails (peer already gone, stream already closed),
+            // ignore it — the session was already rejected locally anyway, the error below is
+            // returned all the same.
             let _ = exchange::write_session_busy(send, &reason).await;
             Err(P2pError::StreamFailed(reason))
         }
@@ -169,8 +169,8 @@ async fn run_and_report(
         Err(err) => {
             let reason = err.to_string();
             let code = classify_sync_error(&err);
-            // Log técnico sempre em inglês, independente do `code` — é o que vai pro log/
-            // suporte; a tradução (`code`) é só pra UI.
+            // Technical log always in English, regardless of `code` — it is what goes to logs/
+            // support; the translation (`code`) is only for the UI.
             tracing::warn!(peer = %peer.id, ?code, error = %reason, "[FileSync] session failed");
             emit(
                 "sync:files:chapter_failed",
@@ -188,10 +188,10 @@ async fn run_and_report(
     }
 }
 
-/// Papel outbound do protocolo `acerola/sync-comic/1` — este lado discou. Recupera (e remove)
-/// o `comic_name` que o usuário escolheu, gravado em `pending_scope` por `P2PNode::sync_comic`
-/// logo antes de chamar `connect()` — é a única forma de essa escolha, que só existe do lado
-/// Kotlin, chegar até aqui (ver `COMIC_SYNC_ALPN`).
+/// Outbound role of the `acerola/sync-comic/1` protocol — this side dialed. Retrieves (and removes)
+/// the `comic_name` the user chose, stored in `pending_scope` by `P2PNode::sync_comic`
+/// right before calling `connect()` — the only way for that choice, which only exists on the
+/// Kotlin side, to get here (see `COMIC_SYNC_ALPN`).
 pub(crate) struct ComicSyncOutbound {
     emit: EventEmitter,
     provider: Arc<dyn FileSyncProvider>,
@@ -246,9 +246,9 @@ impl Handler for ComicSyncOutbound {
     }
 }
 
-/// Papel inbound do protocolo `acerola/sync-comic/1` — o peer discou pedindo (ou oferecendo) um
-/// quadrinho específico. O `comic_name` chega pelo wire (fase 0, `ComicSyncScope`), não é
-/// conhecido localmente antes da sessão começar — por isso não precisa de `pending_scope`.
+/// Inbound role of the `acerola/sync-comic/1` protocol — the peer dialed requesting (or offering) a
+/// specific comic. The `comic_name` arrives over the wire (phase 0, `ComicSyncScope`), it is not
+/// known locally before the session starts — that is why it needs no `pending_scope`.
 pub(crate) struct ComicSyncInbound {
     emit: EventEmitter,
     provider: Arc<dyn FileSyncProvider>,
@@ -295,13 +295,13 @@ impl Handler for ComicSyncInbound {
     }
 }
 
-/// Mesma orquestração de `run_and_report` (guard -> exchange -> emitir complete/failed), só que
-/// pro exchange escopado a um quadrinho (`exchange::run_exchange_scoped`). `session_guard` é a
-/// MESMA instância compartilhada com `acerola/sync-files/1` (ver `api.rs::P2PNode::new`) — um
-/// sync completo e um sync de um quadrinho só para o mesmo peer nunca rodam ao mesmo tempo,
-/// exatamente pelo mesmo motivo (dobrar a varredura de biblioteca/I-O) que já vale entre duas
-/// sessões `sync-files`. Por isso os eventos emitidos são os MESMOS `sync:files:*` de sempre —
-/// nunca há ambiguidade sobre qual sessão está ativa pra um peer.
+/// Same orchestration as `run_and_report` (guard -> exchange -> emit complete/failed), but
+/// for the exchange scoped to one comic (`exchange::run_exchange_scoped`). `session_guard` is the
+/// SAME instance shared with `acerola/sync-files/1` (see `api.rs::P2PNode::new`) — a
+/// full sync and a single-comic sync for the same peer never run at the same time,
+/// for exactly the same reason (doubling the library scan/I-O) that already applies between two
+/// `sync-files` sessions. That is why the emitted events are the SAME usual `sync:files:*` —
+/// there is never ambiguity about which session is active for a peer.
 #[allow(clippy::too_many_arguments)]
 async fn run_and_report_scoped(
     outbound_role: bool,
@@ -346,8 +346,8 @@ async fn run_and_report_scoped(
         Err(err) => {
             let reason = err.to_string();
             let code = classify_sync_error(&err);
-            // Log técnico sempre em inglês, independente do `code` — é o que vai pro log/
-            // suporte; a tradução (`code`) é só pra UI.
+            // Technical log always in English, regardless of `code` — it is what goes to logs/
+            // support; the translation (`code`) is only for the UI.
             tracing::warn!(peer = %peer.id, ?code, error = %reason, "[FileSync] session failed");
             emit(
                 "sync:files:chapter_failed",
@@ -448,10 +448,10 @@ mod concurrency_tests {
         fn abort_extra_write(&self, _handle: i64) {}
     }
 
-    /// Prova o fio completo: com o lease da primeira sessão ainda em mãos, uma segunda
-    /// tentativa pro MESMO peer é rejeitada sem nunca tocar o provider (nenhuma varredura de
-    /// biblioteca disparada), e emite o evento já existente `sync:files:chapter_failed` — sem
-    /// inventar um evento novo fora do padrão.
+    /// Proves the full wiring: with the first session's lease still held, a second
+    /// attempt for the SAME peer is rejected without ever touching the provider (no library
+    /// scan triggered), and emits the existing `sync:files:chapter_failed` event — without
+    /// inventing a new, non-standard event.
     #[tokio::test]
     async fn second_concurrent_session_for_same_peer_is_rejected_and_emits_chapter_failed() {
         let session_guard = Arc::new(FileSyncSessionGuard::default());
@@ -470,7 +470,7 @@ mod concurrency_tests {
             events_clone.lock().unwrap().push((event.to_string(), data));
         });
 
-        // Primeira sessão adquire o lease e "fica em andamento" (mantido vivo manualmente).
+        // First session acquires the lease and "stays in progress" (kept alive manually).
         let lease = session_guard.try_acquire(&peer.id);
         assert!(lease.is_some());
 
@@ -492,7 +492,7 @@ mod concurrency_tests {
         assert_eq!(
             manifest_calls.load(Ordering::SeqCst),
             0,
-            "provider não deveria ser tocado na sessão rejeitada"
+            "provider should not be touched in the rejected session"
         );
 
         let recorded = events.lock().unwrap();
@@ -502,19 +502,19 @@ mod concurrency_tests {
         let parsed: serde_json::Value = serde_json::from_str(payload).unwrap();
         assert_eq!(
             parsed["code"], "busy",
-            "lado Kotlin usa esse code pra traduzir a mensagem na UI"
+            "Kotlin side uses this code to translate the message in the UI"
         );
         drop(recorded);
 
-        drop(lease); // libera a primeira sessão
+        drop(lease); // releases the first session
         assert!(session_guard.try_acquire(&peer.id).is_some());
     }
 
-    /// Antes deste fix, o lado rejeitado não escrevia nada no stream — quem esperava do outro
-    /// lado só via o stream fechar sem contexto (`StreamFailed("stream closed")`), igual a uma
-    /// conexão que caiu de verdade. Agora a rejeição escreve `SessionBusy` no stream antes de
-    /// devolver o erro local, então quem lê consegue distinguir "peer ocupado" de "conexão
-    /// realmente caiu" pela mensagem de erro.
+    /// Before this fix, the rejected side wrote nothing to the stream — whoever was waiting on the
+    /// other side only saw the stream close with no context (`StreamFailed("stream closed")`), just
+    /// like a connection that really dropped. Now the rejection writes `SessionBusy` to the stream
+    /// before returning the local error, so the reader can tell "peer busy" from "connection
+    /// really dropped" by the error message.
     #[tokio::test]
     async fn peer_reading_rejected_stream_sees_busy_error_not_generic_stream_failed() {
         let session_guard = Arc::new(FileSyncSessionGuard::default());
@@ -528,17 +528,17 @@ mod concurrency_tests {
         };
         let emit: EventEmitter = Arc::new(|_event, _data| {});
 
-        // Sessão já em andamento localmente (simula a stream #1 aceita na race do fix 1).
+        // Session already in progress locally (simulates stream #1 accepted in the fix 1 race).
         let lease = session_guard.try_acquire(&peer.id);
         assert!(lease.is_some());
 
-        // Dois pipes unidirecionais (não um `duplex` bidirecional só) de propósito: um
-        // `SendStream`/`RecvStream` do iroh são objetos independentes — fechar um lado da
-        // leitura de um não derruba a escrita do outro. Um `duplex` bidirecional único acopla
-        // as duas direções por trás de um `Arc` compartilhado, então dropar o lado do
-        // rejeitador (que acontece assim que `run_and_report` retorna, ainda dentro do mesmo
-        // `join!`) derrubaria também a escrita do lado do dialer antes dele conseguir mandar o
-        // manifesto — um artefato do mock, não um comportamento real do transporte.
+        // Two unidirectional pipes (not a single bidirectional `duplex`) on purpose: iroh's
+        // `SendStream`/`RecvStream` are independent objects — closing the read side of one
+        // does not take down the other's write. A single bidirectional `duplex` couples
+        // both directions behind a shared `Arc`, so dropping the rejecter's side
+        // (which happens as soon as `run_and_report` returns, still inside the same
+        // `join!`) would also take down the dialer's write before it could send the
+        // manifest — a mock artifact, not real transport behavior.
         let (dialer_to_server, server_reads_dialer) = tokio::io::duplex(4096);
         let (server_to_dialer, dialer_reads_server) = tokio::io::duplex(4096);
         let (_unused_read, client_send) = tokio::io::split(dialer_to_server);
@@ -549,7 +549,7 @@ mod concurrency_tests {
         let dialer_transfer = test_transfer();
         let rejecter_transfer = test_transfer();
 
-        // Lado que discou (outbound) esperando o manifesto normalmente.
+        // Dialing side (outbound) waiting for the manifest normally.
         let dialer = exchange::run_exchange(
             true,
             &peer,
@@ -560,7 +560,7 @@ mod concurrency_tests {
             Box::new(client_recv) as Box<dyn AsyncRead + Send + Unpin>,
         );
 
-        // Lado que já está ocupado (simula a stream #2 duplicada, rejeitada pelo guard).
+        // Side that is already busy (simulates the duplicated stream #2, rejected by the guard).
         let rejecter = run_and_report(
             false,
             &peer,
@@ -574,21 +574,21 @@ mod concurrency_tests {
 
         let (dialer_result, rejecter_result) = tokio::join!(dialer, rejecter);
 
-        let dialer_error = dialer_result.expect_err("dialer deveria falhar, peer estava ocupado");
+        let dialer_error = dialer_result.expect_err("dialer should fail, peer was busy");
         assert!(
             dialer_error.to_string().contains("peer busy"),
-            "esperava erro tipado de peer ocupado, recebeu: {dialer_error}"
+            "expected a typed peer busy error, got: {dialer_error}"
         );
 
-        let rejecter_error = rejecter_result.expect_err("rejeição local também deve retornar erro");
+        let rejecter_error = rejecter_result.expect_err("local rejection must also return an error");
         assert!(rejecter_error.to_string().contains("already in progress"));
     }
 
-    /// `acerola/sync-comic/1` compartilha a MESMA instância de `FileSyncSessionGuard` com
-    /// `acerola/sync-files/1` (ver `api.rs::P2PNode::new`) — uma sessão de sync completo já em
-    /// andamento pro peer deve rejeitar uma tentativa de sync de um quadrinho só, mesmo que os
-    /// ALPNs sejam diferentes. Sem isso, os dois protocolos rodariam ao mesmo tempo pro mesmo
-    /// peer e dobrariam a varredura de biblioteca via `run_blocking`.
+    /// `acerola/sync-comic/1` shares the SAME `FileSyncSessionGuard` instance with
+    /// `acerola/sync-files/1` (see `api.rs::P2PNode::new`) — a full sync session already
+    /// in progress for the peer must reject a single-comic sync attempt, even though the
+    /// ALPNs differ. Without this, both protocols would run at the same time for the same
+    /// peer and double the library scan via `run_blocking`.
     #[tokio::test]
     async fn comic_sync_session_is_rejected_while_a_full_sync_files_session_is_active_for_the_same_peer(
     ) {
@@ -603,7 +603,7 @@ mod concurrency_tests {
         };
         let emit: EventEmitter = Arc::new(|_event, _data| {});
 
-        // Simula uma sessão `sync-files` completa já em andamento pro peer.
+        // Simulates a full `sync-files` session already in progress for the peer.
         let lease = session_guard.try_acquire(&peer.id);
         assert!(lease.is_some());
 
@@ -624,17 +624,17 @@ mod concurrency_tests {
 
         assert!(
             result.is_err(),
-            "sync-comic deveria ser rejeitado com sync-files ativo pro mesmo peer"
+            "sync-comic should be rejected while sync-files is active for the same peer"
         );
         assert_eq!(
             manifest_calls.load(Ordering::SeqCst),
             0,
-            "provider não deveria ser tocado na sessão rejeitada"
+            "provider should not be touched in the rejected session"
         );
     }
 
-    /// Simétrico ao teste acima: uma sessão `sync-comic` já em andamento também rejeita uma
-    /// tentativa de `sync-files` completo pro mesmo peer, pelo mesmo guard compartilhado.
+    /// Symmetric to the test above: a `sync-comic` session already in progress also rejects a
+    /// full `sync-files` attempt for the same peer, through the same shared guard.
     #[tokio::test]
     async fn full_sync_files_session_is_rejected_while_a_comic_sync_session_is_active_for_the_same_peer(
     ) {
@@ -649,7 +649,7 @@ mod concurrency_tests {
         };
         let emit: EventEmitter = Arc::new(|_event, _data| {});
 
-        // Simula uma sessão `sync-comic` já em andamento pro peer.
+        // Simulates a `sync-comic` session already in progress for the peer.
         let lease = session_guard.try_acquire(&peer.id);
         assert!(lease.is_some());
 
@@ -669,12 +669,12 @@ mod concurrency_tests {
 
         assert!(
             result.is_err(),
-            "sync-files deveria ser rejeitado com sync-comic ativo pro mesmo peer"
+            "sync-files should be rejected while sync-comic is active for the same peer"
         );
         assert_eq!(
             manifest_calls.load(Ordering::SeqCst),
             0,
-            "provider não deveria ser tocado na sessão rejeitada"
+            "provider should not be touched in the rejected session"
         );
     }
 }

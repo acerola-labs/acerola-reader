@@ -1,4 +1,4 @@
-import { IsMobile } from '$lib/hooks/ui/is-mobile.svelte';
+import { IsMobile } from '#lib/hooks/ui/is-mobile.svelte.ts';
 import { getContext, setContext } from 'svelte';
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
@@ -53,7 +53,9 @@ class SidebarState {
 	};
 
 	toggle = () => {
-		return this.#isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
+		return this.#isMobile.current
+			? (this.openMobile = !this.openMobile)
+			: this.setOpen(!this.open);
 	};
 }
 

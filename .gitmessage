@@ -1,37 +1,33 @@
-# Formato: [tag](escopo): descrição curta (máx. 72 chars)
-# Exemplo:  [fix](desktop): corrige leak de conexão no reader
-# |<---  72 chars  --------------------------------------------------->|
+[tipo](local): Mensagem
 
-
-# ── Corpo (opcional) ─────────────────────────────────────────────────
-# Explique O QUÊ e POR QUÊ, não o como.
-# Máx. 72 chars por linha.
-
-
-# ── Rodapé (opcional) ────────────────────────────────────────────────
-# Refs: #<número-da-issue>
-# BREAKING CHANGE: <descrição se houver quebra de API/comportamento>
-
-# ─────────────────────────────────────────────────────────────────────
-# TAGS:
-#   feat      → nova funcionalidade
-#   fix       → correção de bug
-#   docs      → documentação
-#   refactor  → refatoração sem alterar comportamento
-#   perf      → melhoria de desempenho
-#   test      → adição ou ajuste de testes
-#   style     → formatação, lint visual sem mudança lógica
-#   chore     → manutenção (deps, scripts, tarefas internas)
-#   ci        → pipelines de CI/CD e workflows
-#   merge     → merge de branch
+# ─────────────────────────────────────────────────────────────────────────────
+# FORMATO OBRIGATÓRIO (igual em todo projeto Acerola):  [tipo](local): Mensagem
 #
-# ESCOPOS:
-#   android   → acerola/android/
-#   desktop   → acerola/desktop/
-#   p2p       → lib/p2p/
-#   relay     → acerola/relay/
-#   iroh      → lib/relay/ (código vendorizado do iroh)
-#   web       → docs/web/ (portal web e documentação)
-#   docs      → documentação geral e portal docs (usado pelas Actions de deploy)
-#   monorepo  → raiz do repo (configs globais, makefile, docs raiz)
-# ─────────────────────────────────────────────────────────────────────
+#   [feat](site): Hero em Titan One com fitas animadas
+#   [fix](kit): Hook de design ignora arquivos gerados
+#   [chore](deps): Sobe o SvelteKit para a 3.1
+#
+# TIPO
+#   feat      funcionalidade nova
+#   fix       correção de defeito
+#   refactor  muda a forma, não o comportamento
+#   test      só teste
+#   docs      só documentação
+#   style     só formatação, sem efeito em runtime
+#   perf      ganho de desempenho
+#   build     build, dependências, empacotamento
+#   ci        pipeline
+#   chore     manutenção que não cabe acima
+#   merge     fechamento de uma branch (todo merge precisa de -m)
+#
+# LOCAL
+#   Os locais deste projeto estão em acerola.config.json (commit.locais).
+#
+# MENSAGEM
+#   Em português. Primeira letra maiúscula. Sem ponto final. Até 100 caracteres.
+#   Diga o que a mudança FAZ, não onde você mexeu.
+#
+# CORPO (opcional): o porquê. RODAPÉ (opcional): Refs: #123 · BREAKING CHANGE: …
+#
+# Tocou dois locais? São dois commits. Nunca [feat](site,kit).
+# ─────────────────────────────────────────────────────────────────────────────

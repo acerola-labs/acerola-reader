@@ -1,22 +1,22 @@
 package br.acerola.comic.usecase.network
 
 /**
- * Resultado de [SyncComicWithPeerUseCase]/[SyncHistoryEntryWithPeerUseCase]/
- * [SyncHistoryWithPeerUseCase] — três estados em vez de um `Boolean` porque o chamador precisa
- * distinguir "não fez nada porque deu erro" (mostra um snackbar) de "não fez nada porque o
- * usuário recusou no diálogo de dados móveis" (não é erro nenhum, não mostra nada extra — o
- * próprio diálogo já comunicou a escolha).
+ * Result of [SyncComicWithPeerUseCase]/[SyncHistoryEntryWithPeerUseCase]/
+ * [SyncHistoryWithPeerUseCase] — three states instead of a `Boolean` because the caller must
+ * tell "did nothing because of an error" (shows a snackbar) from "did nothing because the
+ * user declined the mobile data dialog" (not an error at all, shows nothing extra — the
+ * dialog itself already communicated the choice).
  */
 enum class SyncWithPeerResult {
-    /** `peerId` não está mais pareado — nada foi disparado. */
+    /** `peerId` is no longer paired — nothing was triggered. */
     NOT_PAIRED,
 
-    /** Usuário recusou usar dados móveis no diálogo (ver `MobileDataSyncGate`) — nada foi
-     *  disparado, e quem chamou não deve marcar nenhum estado de "sincronizando" nem mostrar
-     *  erro. */
+    /** User declined using mobile data in the dialog (see `MobileDataSyncGate`) — nothing was
+     *  triggered, and the caller must not set any "syncing" state nor show
+     *  an error. */
     DECLINED_MOBILE_DATA,
 
-    /** Sessão disparada de verdade — quem chamou pode marcar o spinner de "sincronizando" e
-     *  esperar o [br.acerola.comic.service.network.P2pEvent] correspondente. */
+    /** Session actually triggered — the caller may set the "syncing" spinner and
+     *  wait for the matching [br.acerola.comic.service.network.P2pEvent]. */
     STARTED,
 }

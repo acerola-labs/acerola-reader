@@ -5,8 +5,6 @@ import br.acerola.comic.MainDispatcherRule
 import br.acerola.comic.config.preference.DeviceAliasPreference
 import br.acerola.comic.config.preference.PeerNicknamePreference
 import br.acerola.comic.config.preference.RelayPreference
-import br.acerola.comic.module.main.sync.state.ConnectError
-import br.acerola.comic.module.main.sync.state.PendingConnect
 import br.acerola.comic.module.main.sync.state.SyncAction
 import br.acerola.comic.module.main.sync.state.SyncUiState
 import br.acerola.comic.service.NetworkMode
@@ -31,16 +29,16 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 /**
- * Cobre a reação do [SyncViewModel] a um `P2pUseCase.connect` recusado pelo
- * `MobileDataSyncGate` (usuário cancelou o diálogo global de dados móveis) — sem isso, o
- * spinner de "sincronizando"/"conectando" ficava preso esperando um evento que nunca chega
- * (60s de timeout pra `syncingKeys`, ou o `CONNECT_TIMEOUT_MS` de 15s pro pareamento, ambos
- * substituídos por uma reação imediata ao `false` retornado). O gate em si já é coberto por
- * `P2pUseCaseTest`/`MobileDataSyncGateTest` (módulo `core`) — aqui só a reação da UI.
+ * Covers how [SyncViewModel] reacts to a `P2pUseCase.connect` declined by the
+ * `MobileDataSyncGate` (user cancelled the global mobile data dialog) — without this, the
+ * "syncing"/"connecting" spinner stayed stuck waiting for an event that never arrives
+ * (60s timeout for `syncingKeys`, or the 15s `CONNECT_TIMEOUT_MS` for pairing, both
+ * replaced by an immediate reaction to the returned `false`). The gate itself is already covered by
+ * `P2pUseCaseTest`/`MobileDataSyncGateTest` (`core` module) — here only the UI reaction.
  *
- * Roda sob Robolectric (mesmo motivo de [br.acerola.comic.module.comic.ComicViewModelTest]):
- * `refreshLocalInfo()` do `init` chama `PairingCode.encode`, que usa `android.util.Base64` de
- * verdade.
+ * Runs under Robolectric (same reason as [br.acerola.comic.module.comic.ComicViewModelTest]):
+ * `refreshLocalInfo()` in `init` calls `PairingCode.encode`, which uses the real
+ * `android.util.Base64`.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -81,10 +79,10 @@ class SyncViewModelTest {
 
     private fun createViewModel() = SyncViewModel(p2pUseCase, p2pEventBus, syncHistoryLogUseCase, context)
 
-    /** `Thread.sleep` de verdade (não `delay()` — o trabalho que se está esperando roda em
-     *  `Dispatchers.IO` real, uma thread pool própria, não afetada pelo tempo virtual do
-     *  `TestDispatcher` deste teste) — só existe pra dar tempo do `viewModelScope.launch
-     *  (Dispatchers.IO)` correspondente terminar antes da asserção. */
+    /** A real `Thread.sleep` (not `delay()` — the work being awaited runs on the real
+     *  `Dispatchers.IO`, its own thread pool, unaffected by this test's `TestDispatcher`
+     *  virtual time) — it only exists to give the matching `viewModelScope.launch
+     *  (Dispatchers.IO)` time to finish before the assertion. */
     private fun awaitState(
         viewModel: SyncViewModel,
         timeoutMs: Long = 2000,
@@ -107,11 +105,11 @@ class SyncViewModelTest {
 
             viewModel.onAction(SyncAction.SyncHistory(peerId = "peer-1"))
 
-            // Sem checar "contém a key logo após onAction": isso corre contra o próprio
-            // `viewModelScope.launch(Dispatchers.IO)` que decide remover a key — em CI (mais
-            // lento/contendido), esse IO pode terminar antes da asserção rodar, fazendo o
-            // teste falhar por um motivo que não é bug nenhum (o spinner só desligou rápido
-            // demais pra essa checagem ver). O que importa de verdade é o estado final.
+            // No "contains the key right after onAction" check: that races against the very
+            // `viewModelScope.launch(Dispatchers.IO)` that decides to remove the key — in CI (slower/
+            // more contended), that IO may finish before the assertion runs, making the
+            // test fail for a reason that isn't a bug at all (the spinner just turned off too fast
+            // for this check to see). What really matters is the final state.
             val finalState = awaitState(viewModel) { it.syncingKeys.isEmpty() }
             assertThat(finalState.syncingKeys).isEmpty()
         }
@@ -141,11 +139,12 @@ class SyncViewModelTest {
 
             val finalState = awaitState(viewModel) { !it.connecting }
             assertThat(finalState.connecting).isFalse()
-            // Recusar dados móveis não é uma falha de conexão — mostrar `CONNECTION_FAILED`
-            // aqui seria enganoso (o próprio diálogo global já comunicou a escolha).
+            // Declining mobile data isn't a connection failure — showing `CONNECTION_FAILED`
+            // here would be misleading (the global dialog itself already communicated the choice).
             assertThat(finalState.connectError).isNull()
         }
 
     private fun encodePairingCode(peerId: String) =
-        br.acerola.comic.util.p2p.PairingCode.encode(id = peerId, deviceId = null, addrs = byteArrayOf())
+        br.acerola.comic.util.p2p.PairingCode
+            .encode(id = peerId, deviceId = null, addrs = byteArrayOf())
 }

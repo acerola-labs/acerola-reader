@@ -15,7 +15,7 @@ import type {
 	PairedPeerPayload,
 	RelayInfo
 } from '../../src/lib/contracts/network/network.payloads';
-import type { LocalPeerAddr } from '../../src/lib/utils/connection-code.utils';
+import type { LocalPeerAddr } from '../../src/lib/utils/connection-code.util';
 
 export const e2eComic: ComicSummaryItem = {
 	relations: { directoryId: 'dir-1', metadataId: null },

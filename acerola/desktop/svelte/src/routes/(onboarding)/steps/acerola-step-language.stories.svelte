@@ -4,12 +4,12 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaStepLanguage,
-		title: 'Páginas/Onboarding/AcerolaStepLanguage',
+		title: 'Pages/Onboarding/AcerolaStepLanguage',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Passo de onboarding para selecionar o idioma preferido da aplicação.'
+					component: 'Onboarding step to select the application preferred language.'
 				}
 			}
 		}

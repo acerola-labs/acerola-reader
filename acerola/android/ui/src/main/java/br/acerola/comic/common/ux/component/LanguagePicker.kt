@@ -1,18 +1,12 @@
 package br.acerola.comic.common.ux.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,35 +40,24 @@ fun Acerola.Component.LanguagePicker(
             onDismissRequest = { showSheet = false },
             isScrollable = false,
         ) {
-            Text(
-                text = stringResource(id = R.string.title_settings_metadata_language),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            Acerola.Component.SheetHeader(title = stringResource(id = R.string.title_settings_metadata_language))
 
             LazyColumn(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .heightIn(max = maxHeight)
-                        .padding(bottom = 32.dp),
+                        .heightIn(max = maxHeight),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 items(LanguageMapper.getAllCodes()) { code ->
-                    ListItem(
-                        headlineContent = { Text(stringResource(id = LanguageMapper.getLabelRes(code))) },
-                        leadingContent = {
-                            RadioButton(
-                                selected = code == selectedLanguage,
-                                onClick = null,
-                            )
+                    Acerola.Component.OptionRow(
+                        label = stringResource(id = LanguageMapper.getLabelRes(code)),
+                        selected = code == selectedLanguage,
+                        onClick = {
+                            onLanguageSelected(code)
+                            showSheet = false
                         },
-                        modifier =
-                            Modifier.clickable {
-                                onLanguageSelected(code)
-                                showSheet = false
-                            },
                     )
                 }
             }
@@ -90,7 +73,7 @@ private fun LanguagePickerPreview() {
         Acerola.Component.LanguagePicker(
             selectedLanguage = "pt-BR",
             onLanguageSelected = {},
-            trigger = { onClick -> Button(onClick = onClick) { Text("Language") } },
+            trigger = { onClick -> Acerola.Component.Button(text = "Language", onClick = onClick) },
         )
     }
 }

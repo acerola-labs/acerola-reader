@@ -21,21 +21,21 @@ describe('PDF to CBZ E2E', () => {
 
 		await waitForAppReady();
 		await navigateTo('/home');
-		// Aguarda o onMount registrar o listener scan:complete
+		// Wait for onMount to register the scan:complete listener
 		await browser.pause(500);
 
-		// Dispara a conversao e scan
+		// Trigger the conversion and scan
 		await invokeTauriCommand('refresh_library', { path: pdfFolder });
 
-		// Espera o card 'pdf' aparecer — confirma que a conversao PDF→CBZ terminou
+		// Wait for the 'pdf' card to appear — confirms the PDF→CBZ conversion finished
 		await firstDisplayed('//main//h3[normalize-space()="pdf"]', 60_000);
 
-		// Obtem o directoryId do comic para o estado do reader
+		// Get the comic's directoryId for the reader state
 		const comic = await invokeTauriCommand<any>('get_comic_by_folder_name', {
 			folderName: 'pdf'
 		});
 
-		// Navega direto para o reader com o capitulo convertido
+		// Navigate straight to the reader with the converted chapter
 		await navigateToWithState('/reader', {
 			chapter: {
 				id: 'pdf-witchcraft-ch1',
@@ -61,7 +61,7 @@ describe('PDF to CBZ E2E', () => {
 
 		await waitForText('witchcraft', 10_000);
 
-		// Confirma que a página 1 abriu
+		// Confirm page 1 opened
 		const image = await firstDisplayed('img[alt="Página 1"], img[alt="Page 1"]', 20_000);
 		const src = await image.getAttribute('src');
 		expect(src).toMatch(/^blob:|asset:\/\/|tauri:\/\//i);

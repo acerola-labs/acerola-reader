@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('$lib/paraglide/server', () => ({
+vi.mock('#lib/paraglide/server.js', () => ({
 	paraglideMiddleware: (
 		request: Request,
 		callback: (arg: { request: Request; locale: string }) => unknown
 	) => callback({ request, locale: 'en' })
 }));
 
-vi.mock('$lib/paraglide/runtime', () => ({
+vi.mock('#lib/paraglide/runtime.js', () => ({
 	getTextDirection: (locale: string) => (locale === 'ar' ? 'rtl' : 'ltr')
 }));
 
@@ -31,7 +31,9 @@ describe('handle (paraglide middleware)', () => {
 			typeof handle
 		>[0]['event'];
 
-		const response = await handle({ event, resolve } as unknown as Parameters<typeof handle>[0]);
+		const response = await handle({ event, resolve } as unknown as Parameters<
+			typeof handle
+		>[0]);
 		const html = await (response as Response).text();
 
 		expect(html).toBe('<html lang="en" dir="ltr"></html>');

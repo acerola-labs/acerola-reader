@@ -3,7 +3,7 @@
 	import AcerolaReaderToolbar from './acerola-reader-toolbar.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderToolbar',
+		title: 'Pages/Reader/AcerolaReaderToolbar',
 		component: AcerolaReaderToolbar,
 		tags: ['autodocs'],
 		argTypes: {

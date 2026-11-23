@@ -23,25 +23,23 @@
 </script>
 
 <script lang="ts">
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCardImage from '$lib/components/acerola-card/acerola-card-image.svelte';
-	import AcerolaBookmarkRibbon from '$lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
-	import PlaceholderManga from '$lib/assets/placeholder/placeholder_manga.svg?component';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import Play from '@lucide/svelte/icons/play';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events, state }: ComicMetadataPanelProps = $props();
 </script>
 
-<div
-	class="relative z-10 hidden h-full w-100 shrink-0 flex-col border-r border-surface/30 bg-mantle/60 backdrop-blur-3xl select-none lg:flex"
->
+<div class="relative z-10 hidden h-full w-100 shrink-0 flex-col bg-mantle select-none lg:flex">
 	<div class="flex h-full flex-col p-10">
 		<AcerolaButtonIcon
 			events={{ onClick: events.onBack }}
-			ui={{ tone: 'accent', class: 'group mb-10 shadow-lg' }}
+			ui={{ tone: 'accent', class: 'group mb-10' }}
 		>
 			<ArrowLeft size={24} />
 		</AcerolaButtonIcon>
@@ -85,26 +83,28 @@
 
 				<div class="flex flex-wrap justify-center gap-2">
 					<span
-						class="text-text rounded-lg border border-surface/30 bg-surface/80 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase shadow-sm"
+						class="rounded-full bg-surface px-4 py-1.5 text-[11px] font-bold text-foreground"
 						>{data.status}</span
 					>
 					<span
-						class="text-text rounded-lg border border-surface/30 bg-surface/80 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase shadow-sm"
+						class="rounded-full bg-surface px-4 py-1.5 text-[11px] font-bold text-foreground"
 						>{data.source}</span
 					>
 				</div>
 			</div>
 
-			<div class="w-full space-y-3 rounded-3xl border border-surface/30 bg-base/30 p-6 text-left">
+			<div class="w-full space-y-3 rounded-tile bg-surface p-5 text-left">
 				<div class="flex items-center justify-between">
-					<h3 class="text-overlay text-[10px] font-black tracking-widest uppercase">
+					<h3 class="text-sm font-black tracking-tight text-foreground">
 						{m['pages.comic.metadata.synopsis']()}
 					</h3>
-					<span class="text-[9px] font-black tracking-widest text-primary/60 uppercase"
-						>{m['pages.comic.metadata.chapters.count']({ count: data.chaptersCount })}</span
+					<span class="text-xs font-semibold text-muted-foreground tabular-nums"
+						>{m['pages.comic.metadata.chapters.count']({
+							count: data.chaptersCount
+						})}</span
 					>
 				</div>
-				<p class="text-subtext line-clamp-6 text-xs leading-relaxed font-medium">
+				<p class="line-clamp-6 text-sm leading-relaxed text-muted-foreground">
 					{data.description}
 				</p>
 			</div>
@@ -113,16 +113,15 @@
 				<AcerolaButton
 					events={{ onClick: events.onReadNow }}
 					ui={{
-						class: 'flex w-full items-center justify-center gap-3 rounded-3xl py-8 font-black',
+						size: 'lg',
+						class: 'flex w-full items-center justify-center gap-3',
 						disabled: state?.isLoading
 					}}
 				>
-					<Play size={24} fill="currentColor" />
+					<Play size={20} fill="currentColor" />
 					{state?.isResuming
-						? m['pages.history.resume']
-							? m['pages.history.resume']()
-							: 'Continue Reading'
-						: m['pages.comic.metadata.read_now']()}
+						? m['pages.history.resume']()
+						: m['pages.comic.metadata.readNow']()}
 				</AcerolaButton>
 			</div>
 		</div>

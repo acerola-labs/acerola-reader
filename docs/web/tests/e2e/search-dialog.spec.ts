@@ -8,22 +8,22 @@ test.describe('search dialog', () => {
 
 		await page.keyboard.press('Control+k');
 		const dialog = page.getByRole('dialog');
-		// A home roda o fundo WebGL (faulty-terminal.svelte) desde o goto acima; sob o GPU
-		// virtual do Chromium headless no CI, com carga variável de runner compartilhado,
-		// isso pode passar dos 10s antes do dialog abrir — margem generosa pra não flakar.
+		// The home page runs the WebGL background (faulty-terminal.svelte) since the goto above;
+		// under headless Chromium's virtual GPU in CI, with variable shared-runner load, this
+		// can exceed 10s before the dialog opens — generous margin to avoid flakiness.
 		await expect(dialog).toBeVisible({ timeout: 20_000 });
 
 		await dialog.getByPlaceholder('Digite para pesquisar...').fill('monorepo');
 
-		// A primeira consulta carrega o WASM/índice do Pagefind sob demanda — mais lenta que
-		// o timeout padrão de 5s, então essa asserção específica ganha mais margem.
+		// The first query loads the Pagefind WASM/index on demand — slower than the default
+		// 5s timeout, so this specific assertion gets more margin.
 		const result = dialog.locator('a[href*="/docs/architecture"]');
 		await expect(result).toBeVisible({ timeout: 20_000 });
 		await expect(result).toContainText('Arquitetura');
 
-		// O Pagefind indexa o build estático e devolve a URL do arquivo real
-		// (ex.: "/docs/architecture.html"), mas as rotas do SvelteKit servem sem
-		// extensão — um href com ".html" aqui é 404 em produção.
+		// Pagefind indexes the static build and returns the real file URL
+		// (e.g. "/docs/architecture.html"), but SvelteKit routes are served without an
+		// extension — an href with ".html" here is a 404 in production.
 		await expect(result).not.toHaveAttribute('href', /\.html$/);
 	});
 });

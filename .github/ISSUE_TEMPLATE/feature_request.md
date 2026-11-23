@@ -1,31 +1,21 @@
 ---
-name: "✨ Feature / melhoria"
-about: Sugira uma nova funcionalidade ou melhoria para o Acerola
-title: "[feat](plataforma): "
-labels: enhancement
-assignees: ""
+name: "✨ Funcionalidade"
+about: Proponha algo novo
+title: '[feat](local): '
+labels: feature
+assignees: ''
 ---
 
-## Plataforma afetada
+## Problema
 
-<!-- Marque uma ou mais -->
+<!-- O que hoje é difícil ou impossível. -->
 
-- [ ] Android
-- [ ] Desktop
-- [ ] P2P (`lib/p2p`)
-- [ ] Relay
-- [ ] Docs (`docs/web`)
-- [ ] Monorepo / outro
+## Proposta
 
-## Problema / motivação
+<!-- O que passa a existir. Se for tela, um rascunho ajuda. -->
 
-<!-- Que necessidade real motiva isso? Evite pular direto pra solução — descreva o problema
-     primeiro, mesmo que a solução já pareça óbvia pra você. -->
+## Fora do escopo
 
-## Solução proposta
+## Como saber que ficou pronto
 
-## Alternativas consideradas
-
-<!-- Outras formas de resolver o mesmo problema que você já pensou e descartou, e por quê. -->
-
-## Contexto adicional
+- [ ]

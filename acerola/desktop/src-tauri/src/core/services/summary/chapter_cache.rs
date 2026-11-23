@@ -7,11 +7,11 @@ use lru::LruCache;
 
 use crate::cmd::events::summary::ChapterDto;
 
-/// Mesma origem de dado (SQLite) muda de custo dependendo do padrão de acesso:
-/// reabrir um volume/ordenação/busca já visto não precisa rodar a query de
-/// novo. Espelha o `LruCache` do leitor (`core/services/reader/mod.rs`), só
-/// que aqui a "página cara" é o resultado de uma query em vez de bytes
-/// decodificados de um arquivo.
+/// The same data source (SQLite) changes cost depending on the access pattern:
+/// reopening an already-seen volume/sort/search does not need to run the query
+/// again. Mirrors the reader's `LruCache` (`core/services/reader/mod.rs`), except
+/// that here the "expensive page" is a query result instead of bytes
+/// decoded from a file.
 const CHAPTER_CACHE_CAPACITY: usize = 32;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -20,11 +20,11 @@ pub struct ChapterCacheKey {
     pub volume_id: Option<i64>,
     pub sort_by: String,
     pub search_query: Option<String>,
-    // INFO: use-reader-navigation.svelte.ts busca um capítulo específico por
-    // posição via page=índice/page_size=1 (mesma comic_directory_fk/volume_id/
-    // sort_by/search_query de uma busca "tudo de uma vez"). Sem page/page_size
-    // na chave, essa chamada colidiria com o cache de outra paginação e
-    // devolveria o capítulo errado.
+    // INFO: use-reader-navigation.svelte.ts fetches a specific chapter by
+    // position via page=index/page_size=1 (same comic_directory_fk/volume_id/
+    // sort_by/search_query as an "everything at once" fetch). Without page/page_size
+    // in the key, that call would collide with another pagination's cache and
+    // return the wrong chapter.
     pub page: i32,
     pub page_size: i32,
 }
@@ -53,10 +53,10 @@ impl ChapterCacheService {
         cache.put(key, value);
     }
 
-    /// Chamado após rescan/deep rescan — as únicas operações que realmente
-    /// mudam quais capítulos/volumes existem no disco. Sync de metadata
-    /// (título, descrição, capa) não invalida, porque não muda identidade
-    /// de capítulo.
+    /// Called after rescan/deep rescan — the only operations that actually
+    /// change which chapters/volumes exist on disk. Metadata sync
+    /// (title, description, cover) does not invalidate, because it does not change
+    /// chapter identity.
     pub fn invalidate_comic(&self, comic_directory_fk: i64) {
         let mut cache = self.cache.lock().unwrap();
 

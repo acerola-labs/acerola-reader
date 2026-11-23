@@ -3,20 +3,20 @@
 	import AcerolaMicrosoftStoreButton from './acerola-microsoft-store-button.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaMicrosoftStoreButton',
+		title: 'Primitives/AcerolaMicrosoftStoreButton',
 		component: AcerolaMicrosoftStoreButton,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Badge de download pra Microsoft Store — sempre um chip escuro fixo (independe do tema claro/escuro do site), com o logo oficial da loja e uma legenda curta acima do nome da loja, igual às convenções usuais de badge de app store.'
+						'Microsoft Store download badge — always a fixed dark chip (independent of the site’s light/dark theme), with the store’s official logo and a short caption above the store name, following the usual app store badge conventions.'
 				}
 			}
 		},
 		argTypes: {
 			label: {
-				description: 'Legenda pequena acima de "Microsoft Store".',
+				description: 'Small caption above "Microsoft Store".',
 				control: 'text'
 			}
 		}

@@ -7,14 +7,14 @@
 	import AcerolaCardImage from './acerola-card-image.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaCardImage',
+		title: 'Primitives/AcerolaCardImage',
 		component: AcerolaCardImage,
 		tags: ['autodocs'],
 
 		parameters: {
 			docs: {
 				description: {
-					component: 'Card de quadrinho com imagem de capa.'
+					component: 'Comic card with a cover image.'
 				}
 			}
 		}
@@ -22,7 +22,7 @@
 </script>
 
 <Story
-	name="Sem capa"
+	name="Without cover"
 	args={{
 		data: {
 			title: 'Berserk'
@@ -30,7 +30,7 @@
 	}}
 />
 
-<Story name="Com progresso" asChild>
+<Story name="With progress" asChild>
 	<AcerolaCardImage
 		data={{
 			title: 'Berserk',
@@ -40,7 +40,7 @@
 	>
 		{#snippet floatingBadge()}
 			<div
-				class="absolute -top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-md"
+				class="absolute -top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground shadow-lift"
 			>
 				N
 			</div>
@@ -49,7 +49,7 @@
 </Story>
 
 <Story
-	name="Com descrição no overlay"
+	name="With description in the overlay"
 	args={{
 		data: {
 			title: 'Berserk',
@@ -58,7 +58,7 @@
 	}}
 />
 
-<Story name="Com footer e action" asChild>
+<Story name="With footer and action" asChild>
 	<AcerolaCardImage
 		data={{
 			title: 'Berserk'
@@ -74,14 +74,17 @@
 		{/snippet}
 
 		{#snippet action()}
-			<button type="button" class="p-1 text-muted-foreground transition-colors hover:text-primary">
+			<button
+				type="button"
+				class="p-1 text-muted-foreground transition-colors hover:text-primary"
+			>
 				<MoreVerticalIcon size={16} />
 			</button>
 		{/snippet}
 	</AcerolaCardImage>
 </Story>
 
-<Story name="Com overlay customizado" asChild>
+<Story name="With custom overlay" asChild>
 	<AcerolaCardImage
 		data={{
 			title: 'Vagabond'
@@ -90,7 +93,7 @@
 		{#snippet overlay()}
 			<button
 				type="button"
-				class="w-full rounded-2xl bg-primary py-2 text-xs font-black text-primary-foreground"
+				class="w-full rounded-inner bg-primary py-2 text-xs font-black text-primary-foreground"
 			>
 				LER
 			</button>

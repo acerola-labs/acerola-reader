@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import type { ReaderCachedPagePayload } from '$lib/contracts/reader/reader.payloads';
+	import type { ReaderCachedPagePayload } from '#lib/contracts/reader/reader.payloads.ts';
 	import type { Action } from 'svelte/action';
 	import type { ReaderMode } from '../hooks/use-reader-zoom.svelte';
 
@@ -27,13 +27,13 @@
 </script>
 
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
 	import { fade } from 'svelte/transition';
-	import { PREFETCH_RADIUS } from '$lib/hooks/store/use-reader.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
+	import { PREFETCH_RADIUS } from '#lib/hooks/store/use-reader.svelte.ts';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
 
 	let { data, services, events }: ReaderPagesProps = $props();
 
@@ -42,14 +42,17 @@
 	const trackPageImage = $derived(services.trackPageImage ?? noopImageTracker);
 
 	/**
-	 * Todas as `pageCount` seções montam de uma vez (sem virtualização), então
-	 * sem esse raio essa action dispararia loadPage para o capítulo inteiro
-	 * assim que o leitor abre. O IntersectionObserver em +page.svelte já cobre
-	 * o carregamento conforme o usuário rola — isso aqui é só o fallback pro
-	 * primeiro paint ao redor da página atual.
+	 * All `pageCount` sections mount at once (no virtualization), so without this
+	 * radius the action would fire loadPage for the whole chapter as soon as the
+	 * reader opens. The IntersectionObserver in +page.svelte already covers loading
+	 * as the user scrolls — this is only the fallback for the first paint around
+	 * the current page.
 	 */
 	function loadIfMissing(node: HTMLElement, pageIndex: number) {
-		if (!services.pageAt(pageIndex) && Math.abs(pageIndex - data.currentPage) <= PREFETCH_RADIUS) {
+		if (
+			!services.pageAt(pageIndex) &&
+			Math.abs(pageIndex - data.currentPage) <= PREFETCH_RADIUS
+		) {
 			void services.loadPage?.(pageIndex, false);
 		}
 		return {
@@ -59,39 +62,48 @@
 </script>
 
 {#if !data.chapterAvailable}
-	<div class="text-overlay flex h-full items-center justify-center text-sm font-black uppercase">
-		{m['pages.reader.fallback.chapter_unavailable']()}
+	<div
+		class="flex h-full items-center justify-center text-base font-black tracking-tight text-muted-foreground"
+	>
+		{m['pages.reader.fallback.chapterUnavailable']()}
 	</div>
 {:else if data.openFailed}
-	<div class="flex h-full flex-col items-center justify-center gap-4 px-8 text-center">
-		<AlertTriangle size={40} class="text-destructive" />
-		<div class="space-y-1.5">
-			<p class="text-sm font-black tracking-widest text-foreground uppercase">
-				{m['pages.reader.fallback.open_failed.title']()}
-			</p>
-			<p class="text-overlay max-w-sm text-xs">
-				{m['pages.reader.fallback.open_failed.desc']()}
-			</p>
+	<!-- Error: destructive-soft notice with what happened and what to do. -->
+	<div class="flex h-full items-center justify-center px-8">
+		<div
+			class="flex max-w-md flex-col items-center gap-4 rounded-card bg-destructive-soft p-6 text-center text-destructive"
+		>
+			<AlertTriangle size={32} />
+			<div class="space-y-1.5">
+				<p class="text-base font-black tracking-tight">
+					{m['pages.reader.fallback.openFailed.title']()}
+				</p>
+				<p class="text-sm">
+					{m['pages.reader.fallback.openFailed.desc']()}
+				</p>
+			</div>
+			{#if events?.onRetry}
+				<AcerolaButton
+					ui={{ variant: 'contrast', class: 'gap-2' }}
+					events={{ onClick: events.onRetry }}
+				>
+					<RefreshCw size={16} />
+					{m['pages.reader.fallback.retry']()}
+				</AcerolaButton>
+			{/if}
 		</div>
-		{#if events?.onRetry}
-			<AcerolaButton
-				ui={{ variant: 'secondary', class: 'rounded-xl gap-2' }}
-				events={{ onClick: events.onRetry }}
-			>
-				<RefreshCw size={16} />
-				{m['pages.reader.fallback.retry']()}
-			</AcerolaButton>
-		{/if}
 	</div>
 {:else if data.pageCount === 0}
-	<div class="flex h-full items-center justify-center">
-		<RefreshCw size={40} class="animate-spin text-primary" />
+	<!-- Loading: skeleton in the shape of a page, never a loose spinner. -->
+	<div class="flex h-full items-center justify-center p-6" aria-hidden="true">
+		<div class="aspect-2/3 h-full max-h-[70vh] animate-pulse rounded-tile bg-surface"></div>
 	</div>
 {:else}
 	<div
 		class={cn(
 			data.mode === 'horizontal' && 'flex h-full w-max',
-			data.mode === 'webtoon' && 'mx-auto flex w-full max-w-3xl flex-col items-center gap-0 py-2',
+			data.mode === 'webtoon' &&
+				'mx-auto flex w-full max-w-3xl flex-col items-center gap-0 py-2',
 			data.mode === 'vertical' && 'mx-auto flex h-full w-full max-w-6xl flex-col items-center'
 		)}
 	>
@@ -113,18 +125,20 @@
 					<div
 						class={cn(
 							data.mode === 'webtoon' && 'mx-auto flex w-full justify-center',
-							data.mode !== 'webtoon' && 'flex h-full w-full items-center justify-center'
+							data.mode !== 'webtoon' &&
+								'flex h-full w-full items-center justify-center'
 						)}
 					>
 						<img
 							use:trackPageImage={pageIndex}
 							in:fade={{ duration: 120 }}
 							src={pageItem.url}
-							alt={m['pages.reader.pages.image_alt']({ page: pageIndex + 1 })}
+							alt={m['pages.reader.pages.imageAlt']({ page: pageIndex + 1 })}
 							class={cn(
-								'bg-base object-contain',
+								'bg-background object-contain',
 								data.mode === 'webtoon' && 'w-full',
-								data.mode !== 'webtoon' && 'max-h-full max-w-full shadow-2xl shadow-base/40'
+								data.mode !== 'webtoon' &&
+									'shadow-base/40 max-h-full max-w-full shadow-float'
 							)}
 							loading={Math.abs(pageIndex - data.currentPage) <= 2 ? 'eager' : 'lazy'}
 							draggable="false"
@@ -135,13 +149,12 @@
 						use:loadIfMissing={pageIndex}
 						class={cn(
 							data.mode !== 'webtoon' &&
-								'flex h-full w-full max-w-4xl items-center justify-center border border-surface/40 bg-base/50',
+								'h-full w-full max-w-4xl animate-pulse rounded-tile bg-surface',
 							data.mode === 'webtoon' &&
-								'flex min-h-[64vh] w-full items-center justify-center border-y border-surface/40 bg-base/50'
+								'min-h-[64vh] w-full animate-pulse bg-surface'
 						)}
-					>
-						<RefreshCw size={32} class="animate-spin text-primary" />
-					</div>
+						aria-hidden="true"
+					></div>
 				{/if}
 			</section>
 		{/each}

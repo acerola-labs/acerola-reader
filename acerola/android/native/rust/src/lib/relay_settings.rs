@@ -1,24 +1,24 @@
 use acerola_p2p::api::transport::{RelayModeConfig, ACEROLA_DEFAULT_RELAY_URL};
 
-/// Configuração de relay combinável exposta pra fronteira FFI (Kotlin) — espelha
-/// `RelaySettings`/`RelaySettings::resolve` do Desktop (`bios/scopes.rs`). A diferença é só de
-/// onde as fontes vêm: no Desktop é lido de `settings.json` pelo próprio Rust, no Android é lido
-/// do DataStore pelo Kotlin (`RelayPreference`) e passado inteiro aqui na construção do
-/// `P2PNode` — a lógica de combinar as fontes num `RelayModeConfig` é a mesma nos dois apps.
+/// Combinable relay configuration exposed to the FFI boundary (Kotlin) — mirrors Desktop's
+/// `RelaySettings`/`RelaySettings::resolve` (`bios/scopes.rs`). The only difference is
+/// where the sources come from: on Desktop Rust itself reads them from `settings.json`, on Android
+/// Kotlin reads them from DataStore (`RelayPreference`) and passes them whole here when building the
+/// `P2PNode` — the logic combining the sources into a `RelayModeConfig` is the same in both apps.
 #[derive(uniffi::Record, Clone, Debug, PartialEq, Eq)]
 pub struct FfiRelaySettings {
-    /// Usa o relay oficial mantido pelo Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
+    /// Uses the official relay maintained by Acerola (`ACEROLA_DEFAULT_RELAY_URL`).
     pub use_acerola_relay: bool,
-    /// Usa a rede pública padrão de relays do projeto Iroh (n0) — mutuamente exclusiva com as
-    /// demais fontes: `iroh::RelayMode` só permite `Disabled | Default | Custom`, nunca uma
-    /// combinação de `Default` com URLs específicas.
+    /// Uses the Iroh project's (n0) default public relay network — mutually exclusive with the
+    /// other sources: `iroh::RelayMode` only allows `Disabled | Default | Custom`, never a
+    /// combination of `Default` with specific URLs.
     pub use_iroh_public_network: bool,
-    /// Relay(s) próprio(s) do usuário (self-hosted, sem autenticação).
+    /// The user's own relay(s) (self-hosted, no authentication).
     pub custom_relay_urls: Vec<String>,
 }
 
-/// Erro exposto pra fronteira FFI (Kotlin) quando o usuário cola um ticket malformado —
-/// validado antes de persistir, em vez de só falhar silenciosamente no próximo boot.
+/// Error exposed to the FFI boundary (Kotlin) when the user pastes a malformed ticket —
+/// validated before persisting, instead of just silently failing on the next boot.
 #[derive(uniffi::Error, thiserror::Error, Debug)]
 pub enum RelayTicketError {
     #[error("invalid Iroh Services ticket: {reason}")]
@@ -26,14 +26,14 @@ pub enum RelayTicketError {
 }
 
 impl FfiRelaySettings {
-    /// Resolve as fontes habilitadas para o `RelayModeConfig` concreto consumido pelo
-    /// `IrohTransportBuilder`. Sem nenhuma fonte ativa, cai em `MdnsOnly` — não existe um modo
-    /// "mDNS only" explícito na UI, é só o estado natural de "nada selecionado".
+    /// Resolves the enabled sources into the concrete `RelayModeConfig` consumed by
+    /// `IrohTransportBuilder`. With no active source, falls back to `MdnsOnly` — there is no explicit
+    /// "mDNS only" mode in the UI, it is just the natural "nothing selected" state.
     ///
-    /// `iroh_services_ticket` vem do cofre criptografado (`SecureP2pStorage`), não do
-    /// DataStore — é a conta do PRÓPRIO usuário em `services.iroh.computer`, uma credencial
-    /// real, não uma preferência qualquer. Se o toggle estiver ligado mas nenhum ticket tiver
-    /// sido colado ainda, essa fonte é ignorada e as demais combinam normalmente.
+    /// `iroh_services_ticket` comes from the encrypted vault (`SecureP2pStorage`), not from
+    /// DataStore — it is the user's OWN account on `services.iroh.computer`, a real
+    /// credential, not just any preference. If the toggle is on but no ticket has
+    /// been pasted yet, that source is ignored and the others combine normally.
     pub(crate) fn resolve(&self, iroh_services_ticket: Option<&str>) -> RelayModeConfig {
         if self.use_iroh_public_network {
             if let Some(ticket) = iroh_services_ticket {

@@ -5,11 +5,11 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { replaceState } from '$app/navigation';
 import { page } from '$app/state';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-import { SESSION_KEYS } from '$lib/constants/session-keys';
-import type { ChapterFilePayload } from '$lib/contracts/library/chapter.payloads';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+import { SESSION_KEYS } from '#lib/constants/session-keys.ts';
+import type { ChapterFilePayload } from '#lib/contracts/library/chapter.payloads.ts';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 import ReaderNavigationHarness from '../../../../tests/harness/hooks/reader-navigation-store.svelte';
 import { useReaderNavigation, type ReaderNavigationState } from './use-reader-navigation.svelte';
 
@@ -74,11 +74,11 @@ function setupListeners() {
 	return { callbacks, unlisteners };
 }
 
-// jsdom implementa `Storage` com um Proxy interno, então `vi.spyOn(sessionStorage, ...)`
-// não intercepta as chamadas (a call fica invisível pro spy). Trocamos o global inteiro
-// por um mock em memória — mesmo padrão já usado pro `localStorage` em tests/setup.ts —
-// pra conseguir contar chamadas de verdade e distinguir a escrita de `resolveInitialState`
-// da escrita duplicada do `$effect` (linhas 48-55), que sempre re-persiste o mesmo pageState.
+// jsdom implements `Storage` with an internal Proxy, so `vi.spyOn(sessionStorage, ...)`
+// doesn't intercept the calls (the call is invisible to the spy). We swap the whole global
+// for an in-memory mock — same pattern already used for `localStorage` in tests/setup.ts —
+// to really count calls and tell `resolveInitialState`'s write apart from the duplicate
+// write of the `$effect` (lines 48-55), which always re-persists the same pageState.
 const originalSessionStorageDescriptor = Object.getOwnPropertyDescriptor(window, 'sessionStorage');
 
 function installSessionStorageMock() {
@@ -178,8 +178,8 @@ describe('useReaderNavigation', () => {
 			comicDirectoryId: 'dir-2b'
 		};
 		sessionStorage.setItem(SESSION_KEYS.readerState, JSON.stringify(saved));
-		// Tem chaves (length > 0) mas nenhuma delas é `chapter` — não pode ser tratado como
-		// estado válido só por não estar vazio.
+		// Has keys (length > 0) but none of them is `chapter` — must not be treated as valid
+		// state just because it isn't empty.
 		page.state = { chapterScope: 'all' };
 		setupListeners();
 
@@ -189,13 +189,13 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('does not read sessionStorage or persist anything when resolving initial state outside a browser environment', async () => {
-		// `browser` é mockado como `true` globalmente (tests/setup.ts), então pra exercitar o
-		// branch `!browser` precisamos de uma cópia fresca do módulo com `$app/environment`
-		// remockado. `vi.resetModules()` também reseta o `svelte` interno — por isso chamamos o
-		// hook FORA de um componente, sem `render()`: `$effect`/`onMount` exigem um contexto de
-		// componente e lançam `effect_orphan` de propósito, mas isso só acontece DEPOIS de
-		// `resolveInitialState()` já ter rodado de forma síncrona, então o efeito colateral dela
-		// (ou a ausência dele) já é observável antes do throw.
+		// `browser` is mocked as `true` globally (tests/setup.ts), so to exercise the
+		// `!browser` branch we need a fresh copy of the module with `$app/environment`
+		// re-mocked. `vi.resetModules()` also resets the internal `svelte` — that's why we call
+		// the hook OUTSIDE a component, without `render()`: `$effect`/`onMount` require a
+		// component context and throw `effect_orphan` on purpose, but that only happens AFTER
+		// `resolveInitialState()` has already run synchronously, so its side effect (or lack of
+		// it) is already observable before the throw.
 		vi.resetModules();
 		vi.doMock('$app/environment', () => ({
 			browser: false,
@@ -218,14 +218,13 @@ describe('useReaderNavigation', () => {
 		}
 	});
 
-	// `resolveInitialState()` (linhas 30-44) e o `$effect` de sincronização (linhas 48-55) checam
-	// exatamente a mesma condição sobre o mesmo `page.state` — e o `render()` do
-	// @testing-library/svelte roda `flushSync()` internamente, então os dois já rodaram por
-	// completo antes do `render()` retornar. Isso significa que, quando `page.state` tem um
-	// `chapter`, o `$effect` sempre "conserta" o `state` resultante pro mesmo valor
-	// independentemente do que `resolveInitialState()` computou sozinho — o único jeito de
-	// distinguir um mutante isolado de UM dos dois é contar quantas vezes `sessionStorage.setItem`
-	// foi chamado no total (cada um escreve o seu próprio `setItem`, de forma redundante).
+	// `resolveInitialState()` (lines 30-44) and the sync `$effect` (lines 48-55) check exactly
+	// the same condition on the same `page.state` — and @testing-library/svelte's `render()`
+	// runs `flushSync()` internally, so both have fully run before `render()` returns. That
+	// means that, when `page.state` has a `chapter`, the `$effect` always "fixes" the resulting
+	// `state` to the same value regardless of what `resolveInitialState()` computed alone — the
+	// only way to tell an isolated mutant of ONE of the two apart is to count how many times
+	// `sessionStorage.setItem` was called in total (each writes its own `setItem`, redundantly).
 	it('persists page.state exactly twice on mount — once from resolveInitialState, once from the sync effect', async () => {
 		page.state = {
 			chapter: readerChapter({ id: 'own-chapter' }),
@@ -239,9 +238,9 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('does not persist via resolveInitialState or the sync effect when the chapter is only inherited (not an own key) on page.state', async () => {
-		// `Object.keys(pageState).length > 0` só conta propriedades PRÓPRIAS — um `chapter`
-		// herdado do protótipo deixa `Object.keys(...).length` em 0 mesmo com `pageState.chapter`
-		// acessível, isolando o boundary do `.length > 0` do boundary da presença do `chapter`.
+		// `Object.keys(pageState).length > 0` only counts OWN properties — a `chapter` inherited
+		// from the prototype leaves `Object.keys(...).length` at 0 even with `pageState.chapter`
+		// accessible, isolating the `.length > 0` boundary from the `chapter` presence boundary.
 		const chapterProto = { chapter: readerChapter({ id: 'inherited-chapter' }) };
 		page.state = Object.create(chapterProto) as ReaderNavigationState;
 		setupListeners();
@@ -270,8 +269,8 @@ describe('useReaderNavigation', () => {
 		page.state = {
 			chapter: readerChapter(),
 			comicDirectoryId: 'dir-clamp-typeof',
-			// `as unknown as number` simula um valor inválido em runtime — o guard de tipo
-			// (`typeof value === 'number'`) é o que barra isso, não o `Number.isFinite`.
+			// `as unknown as number` simulates an invalid runtime value — the type guard
+			// (`typeof value === 'number'`) is what blocks it, not `Number.isFinite`.
 			chapterIndex: 'not-a-number' as unknown as number,
 			totalChapters: 'not-a-number' as unknown as number
 		};
@@ -284,8 +283,8 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('rejects a non-finite numeric chapterIndex (NaN) even though typeof is "number"', async () => {
-		// Distingue o `&&` de um `||` mutante: com `||`, `typeof value === 'number'` (true) já
-		// bastaria pra devolver `Math.max(0, NaN)` em vez de `undefined`.
+		// Tells the `&&` apart from a mutant `||`: with `||`, `typeof value === 'number'` (true)
+		// would be enough to return `Math.max(0, NaN)` instead of `undefined`.
 		page.state = {
 			chapter: readerChapter(),
 			comicDirectoryId: 'dir-clamp-nan-index',
@@ -438,14 +437,17 @@ describe('useReaderNavigation', () => {
 			expect.objectContaining({ comicDirectoryFk: 'dir-6' })
 		);
 
-		// `pendingAction` é privado — a única forma de observar se o `catch` realmente o
-		// resetou pra `null` (em vez de deixá-lo travado em `'load'`) é ver como um evento de
-		// `comicChapters` SUBSEQUENTE se comporta: se `pendingAction` ainda fosse `'load'`, esse
-		// evento cairia (incorretamente) no branch de "load pendente" e atualizaria
-		// chapterIndex/totalChapters a partir da lista recebida.
+		// `pendingAction` is private — the only way to observe whether the `catch` really reset
+		// it to `null` (instead of leaving it stuck on `'load'`) is to see how a SUBSEQUENT
+		// `comicChapters` event behaves: if `pendingAction` were still `'load'`, that event
+		// would (wrongly) fall into the "pending load" branch and update
+		// chapterIndex/totalChapters from the received list.
 		callbacks.get(LIBRARY_EVENTS.comicChapters)?.({
 			payload: {
-				archive: { items: [chapterFile({ id: 'ch-0' }), chapterFile({ id: 'ch-1' })], total: 2 }
+				archive: {
+					items: [chapterFile({ id: 'ch-0' }), chapterFile({ id: 'ch-1' })],
+					total: 2
+				}
 			}
 		});
 		await tick();
@@ -485,7 +487,10 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('does not update chapterIndex/totalChapters or persist anything when the pending chapter id is not found in the loaded items', async () => {
-		page.state = { chapter: readerChapter({ id: 'ch-missing' }), comicDirectoryId: 'dir-notfound' };
+		page.state = {
+			chapter: readerChapter({ id: 'ch-missing' }),
+			comicDirectoryId: 'dir-notfound'
+		};
 		const { callbacks } = setupListeners();
 		const hook = await renderHook();
 
@@ -515,8 +520,8 @@ describe('useReaderNavigation', () => {
 
 		const loadPromise = hook.loadContext();
 
-		// Simula o chapter sumindo do estado ANTES do evento `comicChapters` chegar — sem o
-		// optional chaining (`state.chapter?.id`), `state.chapter.id` explodiria aqui.
+		// Simulates the chapter vanishing from state BEFORE the `comicChapters` event arrives —
+		// without the optional chaining (`state.chapter?.id`), `state.chapter.id` would blow up here.
 		(hook.state as ReaderNavigationState).chapter = undefined;
 
 		expect(() =>
@@ -533,8 +538,8 @@ describe('useReaderNavigation', () => {
 		await loadPromise;
 		await tick();
 
-		// Sem `chapter`, nenhum item bate o id (`undefined !== 'ch-1'/'ch-2'`) — idx fica -1 e
-		// nada é persistido.
+		// Without `chapter`, no item matches the id (`undefined !== 'ch-1'/'ch-2'`) — idx stays -1
+		// and nothing is persisted.
 		expect(hook.chapterIndex).toBeUndefined();
 	});
 
@@ -560,10 +565,10 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('ignores a comicChapters event when there is no pending load or navigate action at all', async () => {
-		// Estado ocioso: `pendingAction`/`pendingTargetIndex` continuam nos seus defaults
-		// (`null`/`null`) porque `loadContext`/`goToNextChapter`/`goToPreviousChapter` nunca
-		// foram chamados. Sem o `&&` correto em `pendingAction === 'navigate' && pendingTargetIndex
-		// !== null`, um evento espúrio processaria a navegação mesmo sem nada pendente.
+		// Idle state: `pendingAction`/`pendingTargetIndex` stay at their defaults (`null`/`null`)
+		// because `loadContext`/`goToNextChapter`/`goToPreviousChapter` were never called.
+		// Without the correct `&&` in `pendingAction === 'navigate' && pendingTargetIndex
+		// !== null`, a spurious event would process the navigation even with nothing pending.
 		page.state = {
 			chapter: readerChapter({ id: 'ch-1' }),
 			comicDirectoryId: 'dir-idle',
@@ -584,12 +589,12 @@ describe('useReaderNavigation', () => {
 	});
 
 	it('does not act on a stale pendingTargetIndex left over after a load overwrote a pending navigate', async () => {
-		// `loadContext()` só sobrescreve `pendingAction` pra `'load'` — nunca zera
-		// `pendingTargetIndex`. Se um `navigate` for iniciado e, antes do evento chegar, um
-		// `loadContext()` for disparado por cima, o primeiro evento de `comicChapters` cai no
-		// branch de `'load'` (que zera só `pendingAction`), deixando `pendingTargetIndex` órfão
-		// (não-nulo) com `pendingAction` já `null`. Um SEGUNDO evento, nesse estado, expõe
-		// mutantes que trocam o `&&` por `||` ou forçam o operando esquerdo pra `true`.
+		// `loadContext()` only overwrites `pendingAction` to `'load'` — it never clears
+		// `pendingTargetIndex`. If a `navigate` starts and, before the event arrives, a
+		// `loadContext()` is fired on top, the first `comicChapters` event falls into the
+		// `'load'` branch (which only clears `pendingAction`), leaving `pendingTargetIndex`
+		// orphaned (non-null) with `pendingAction` already `null`. A SECOND event, in that state,
+		// exposes mutants that swap `&&` for `||` or force the left operand to `true`.
 		page.state = {
 			chapter: readerChapter({ id: 'ch-1' }),
 			comicDirectoryId: 'dir-stale-target',
@@ -625,9 +630,9 @@ describe('useReaderNavigation', () => {
 		const { unlisteners } = setupListeners();
 
 		const result = render(ReaderNavigationHarness, { props: { onReady: () => {} } });
-		// `setupListeners()` faz DOIS `await listen(...)` sequenciais (chapters, depois error) —
-		// cada um precisa da sua própria volta de microtask pra `unlistenChapters`/`unlistenError`
-		// serem de fato atribuídos antes do unmount.
+		// `setupListeners()` does TWO sequential `await listen(...)` (chapters, then error) —
+		// each needs its own microtask turn for `unlistenChapters`/`unlistenError` to actually
+		// be assigned before the unmount.
 		await tick();
 		await Promise.resolve();
 		await Promise.resolve();
@@ -645,7 +650,7 @@ describe('useReaderNavigation', () => {
 			chapter: readerChapter(),
 			chapterIndex: 0,
 			totalChapters: 3
-			// sem comicDirectoryId
+			// no comicDirectoryId
 		};
 		setupListeners();
 		const hook = await renderHook();
@@ -725,7 +730,7 @@ describe('useReaderNavigation', () => {
 			chapter: readerChapter(),
 			chapterIndex: 1,
 			totalChapters: 3
-			// sem comicDirectoryId
+			// no comicDirectoryId
 		};
 		setupListeners();
 		const hook = await renderHook();
@@ -811,10 +816,10 @@ describe('useReaderNavigation', () => {
 							id: 'ch-2',
 							name: 'Chapter 2',
 							path: '/comics/ch-2.cbz'
-							// chapterSort, volumeId, volumeName, isSpecial, lastModified: ausentes
+							// chapterSort, volumeId, volumeName, isSpecial, lastModified: missing
 						}
 					]
-					// sem `total` -> deve cair pro length de items
+					// no `total` -> must fall back to items length
 				}
 			}
 		});
@@ -846,7 +851,7 @@ describe('useReaderNavigation', () => {
 						chapterFile({ id: 'ch-2' }),
 						chapterFile({ id: 'ch-3' })
 					]
-					// sem `total`
+					// no `total`
 				}
 			}
 		});
@@ -868,8 +873,8 @@ describe('useReaderNavigation', () => {
 
 		const result = render(ReaderNavigationHarness, { props: { onReady: () => {} } });
 
-		// Desmonta ANTES do `await listen(...)` resolver — `unlistenChapters`/`unlistenError`
-		// ainda são `undefined` nesse ponto.
+		// Unmount BEFORE `await listen(...)` resolves — `unlistenChapters`/`unlistenError`
+		// are still `undefined` at that point.
 		expect(() => result.unmount()).not.toThrow();
 
 		resolveListen(vi.fn());

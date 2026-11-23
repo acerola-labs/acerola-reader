@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,8 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.ui.R
 
@@ -43,7 +48,7 @@ import br.acerola.comic.ui.R
 fun Acerola.Component.AdaptiveSheet(
     onDismissRequest: () -> Unit,
     isScrollable: Boolean = true,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    containerColor: Color = AcerolaExtendedTheme.colors.card,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -76,9 +81,9 @@ fun Acerola.Component.AdaptiveSheet(
                 contentColor = contentColor,
                 shape =
                     if (isLandscape) {
-                        ShapeTokens.Large.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
+                        AcerolaShapes.Sheet.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
                     } else {
-                        ShapeTokens.Large.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
+                        AcerolaShapes.Sheet.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
                     },
             ) {
                 Column(
@@ -88,7 +93,7 @@ fun Acerola.Component.AdaptiveSheet(
                             .then(if (!isLandscape) Modifier.heightIn(max = configuration.screenHeightDp.dp) else Modifier)
                             .then(scrollModifier),
                 ) {
-                    content()
+                    ProvideSurfaceLevel(AcerolaSurfaceLevel.Card) { content() }
                 }
             }
         }
@@ -115,7 +120,7 @@ fun Acerola.Component.AdaptiveSheet(
                             .align(Alignment.CenterEnd),
                     color = containerColor,
                     contentColor = contentColor,
-                    shape = ShapeTokens.Large.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                    shape = AcerolaShapes.Sheet.copy(topEnd = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
                 ) {
                     Column(
                         modifier =
@@ -123,7 +128,7 @@ fun Acerola.Component.AdaptiveSheet(
                                 .fillMaxSize()
                                 .then(scrollModifier),
                     ) {
-                        content()
+                        ProvideSurfaceLevel(AcerolaSurfaceLevel.Card) { content() }
                     }
                 }
             }
@@ -132,8 +137,11 @@ fun Acerola.Component.AdaptiveSheet(
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            shape = AcerolaShapes.Sheet.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
             containerColor = containerColor,
             contentColor = contentColor,
+            scrimColor = AcerolaColors.Scrim.copy(alpha = 0.5f),
+            dragHandle = { BottomSheetDefaults.DragHandle(color = AcerolaExtendedTheme.colors.mutedForeground.copy(alpha = 0.4f)) },
         ) {
             Column(
                 modifier =
@@ -142,7 +150,7 @@ fun Acerola.Component.AdaptiveSheet(
                         .heightIn(max = configuration.screenHeightDp.dp)
                         .then(scrollModifier),
             ) {
-                content()
+                ProvideSurfaceLevel(AcerolaSurfaceLevel.Card) { content() }
             }
         }
     }

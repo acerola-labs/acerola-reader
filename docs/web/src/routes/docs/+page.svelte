@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getSidebar } from '$lib/content/docs';
-	import { m } from '$lib/paraglide/messages';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+	import { getSidebar } from '#lib/content/docs.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 
 	const groups = $derived(getSidebar(getLocale()));
 </script>
@@ -20,9 +20,11 @@
 				{#each group.docs as doc (doc.slug)}
 					<a
 						href={localizeHref(`/docs/${doc.slug}`)}
-						class="rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+						class="rounded-inner border border-border bg-card p-5 transition-colors hover:bg-accent"
 					>
-						<span class="block font-heading text-lg font-semibold">{doc.frontmatter.title}</span>
+						<span class="block font-heading text-lg font-semibold"
+							>{doc.frontmatter.title}</span
+						>
 						{#if doc.frontmatter.description}
 							<span class="mt-1 block text-sm text-muted-foreground"
 								>{doc.frontmatter.description}</span

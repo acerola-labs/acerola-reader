@@ -28,8 +28,8 @@ impl HistoryService {
         }
     }
 
-    /// Atualiza o progresso de leitura de um quadrinho. Se `is_completed`,
-    /// registra também o capítulo como lido na tabela `chapter_read`.
+    /// Updates a comic's reading progress. If `is_completed`, also
+    /// records the chapter as read in the `chapter_read` table.
     pub async fn update_progress(
         &self, comic_directory_id: i64, chapter_archive_id: i64, last_page: i64, is_completed: bool,
     ) -> Result<ReadingHistory, DbError> {
@@ -54,35 +54,35 @@ impl HistoryService {
         Ok(result)
     }
 
-    /// Retorna o payload enriquecido de leitura de um quadrinho.
+    /// Returns a comic's enriched reading payload.
     pub async fn find_by_comic(
         &self, comic_directory_id: i64,
     ) -> Result<Option<ReadingHistoryPayload>, DbError> {
         self.reading_repo.find_payload_by_comic_id(comic_directory_id).await
     }
 
-    /// Retorna todo o histórico enriquecido, ordenado pelo mais recente.
+    /// Returns the whole enriched history, most recent first.
     pub async fn find_all(&self) -> Result<Vec<ReadingHistoryPayload>, DbError> {
         self.reading_repo.find_all_payload_ordered().await
     }
 
-    /// Apaga todo o histórico de leitura.
+    /// Deletes the whole reading history.
     pub async fn clear(&self) -> Result<(), DbError> {
         self.reading_repo.delete_all().await
     }
 
-    /// Retorna os IDs dos capítulos lidos de um quadrinho.
+    /// Returns the IDs of a comic's read chapters.
     pub async fn find_read_chapters(&self, comic_directory_id: i64) -> Result<Vec<i64>, DbError> {
         self.chapter_repo.find_ids_by_comic(comic_directory_id).await
     }
 
-    /// Marca um capítulo como lido explicitamente — grava tanto em `chapter_read` (checkmark
-    /// na lista de capítulos) quanto em `reading_history` (mesma tabela que `update_progress`
-    /// usa), senão o quadrinho nunca aparece/atualiza na página de Histórico até o usuário
-    /// abrir o leitor de verdade. `last_page` preserva o valor já salvo se a entrada existente
-    /// já for desse mesmo capítulo (progresso real de leitura não regride); cai pra `0` quando
-    /// não há entrada prévia ou ela aponta pra outro capítulo — marcar como lido pela lista não
-    /// tem uma página real associada.
+    /// Explicitly marks a chapter as read — writes both to `chapter_read` (checkmark in the
+    /// chapter list) and to `reading_history` (the same table `update_progress` uses),
+    /// otherwise the comic never shows up/updates on the History page until the user actually
+    /// opens the reader. `last_page` keeps the already-saved value if the existing entry is
+    /// already for this same chapter (real reading progress does not regress); falls back to `0`
+    /// when there is no previous entry or it points to another chapter — marking as read from the
+    /// list has no real page associated.
     pub async fn mark_chapter_read(
         &self, comic_directory_id: i64, chapter_archive_id: i64,
     ) -> Result<(), DbError> {
@@ -112,18 +112,18 @@ impl HistoryService {
         Ok(())
     }
 
-    /// Desmarca um capítulo como lido.
+    /// Unmarks a chapter as read.
     pub async fn unmark_chapter_read(
         &self, comic_directory_id: i64, chapter_archive_id: i64,
     ) -> Result<(), DbError> {
         self.chapter_repo.delete_by_comic_and_chapter(comic_directory_id, chapter_archive_id).await
     }
 
-    /// Marca múltiplos capítulos como lidos em batch — mesmo cuidado de [`Self::mark_chapter_read`]
-    /// com `reading_history`, senão o quadrinho nunca aparece/atualiza na página de Histórico.
-    /// Como um batch pode marcar vários capítulos de uma vez sem uma noção clara de "qual é o
-    /// atual", usa o último item de `chapter_ids` (ordem decidida por quem chama, ex: seleção
-    /// múltipla na tela) como o capítulo que passa a representar o progresso desse quadrinho.
+    /// Marks multiple chapters as read in batch — same care as [`Self::mark_chapter_read`]
+    /// with `reading_history`, otherwise the comic never shows up/updates on the History page.
+    /// Since a batch can mark several chapters at once without a clear notion of "which one is
+    /// the current", it uses the last item of `chapter_ids` (order decided by the caller, e.g.
+    /// multi-selection on screen) as the chapter that now represents this comic's progress.
     pub async fn mark_chapters_read_batch(
         &self, comic_directory_id: i64, chapter_ids: &[i64],
     ) -> Result<usize, DbError> {
@@ -153,7 +153,7 @@ impl HistoryService {
         Ok(marked)
     }
 
-    /// Desmarca múltiplos capítulos como lidos em batch.
+    /// Unmarks multiple chapters as read in batch.
     pub async fn unmark_chapters_read_batch(
         &self, comic_directory_id: i64, chapter_ids: &[i64],
     ) -> Result<usize, DbError> {
@@ -199,9 +199,9 @@ mod tests {
         assert!(service.find_read_chapters(1).await.unwrap().is_empty());
     }
 
-    /// Regressão: marcar um capítulo como lido pela lista (sem passar pelo leitor) tinha que
-    /// atualizar `reading_history` também, senão o quadrinho nunca aparecia/atualizava na
-    /// página de Histórico.
+    /// Regression: marking a chapter as read from the list (without going through the reader)
+    /// had to update `reading_history` too, otherwise the comic never showed up/updated on the
+    /// History page.
     #[tokio::test]
     async fn mark_chapter_read_also_updates_reading_history() {
         let (pool, service) = setup().await;
@@ -215,9 +215,9 @@ mod tests {
         assert_eq!(history.last_page, 0);
     }
 
-    /// Se o capítulo marcado como lido já é o mesmo que `reading_history` aponta (usuário
-    /// estava lendo de verdade e chegou até a página 42 antes de marcar manualmente), o
-    /// progresso real não pode regredir pra página 0.
+    /// If the chapter marked as read is already the one `reading_history` points to (the user
+    /// was actually reading and reached page 42 before marking it manually), the real
+    /// progress must not regress to page 0.
     #[tokio::test]
     async fn mark_chapter_read_preserves_last_page_of_the_same_chapter() {
         let (pool, service) = setup().await;
@@ -231,9 +231,9 @@ mod tests {
         assert!(history.is_completed);
     }
 
-    /// Mesma regressão de [`mark_chapter_read_also_updates_reading_history`], pro caminho de
-    /// marcar vários capítulos de uma vez — usa o último id da lista como o capítulo que passa
-    /// a representar o progresso do quadrinho.
+    /// Same regression as [`mark_chapter_read_also_updates_reading_history`], for the path of
+    /// marking several chapters at once — uses the last id of the list as the chapter that now
+    /// represents the comic's progress.
     #[tokio::test]
     async fn mark_chapters_read_batch_also_updates_reading_history() {
         let (pool, service) = setup().await;

@@ -82,17 +82,18 @@ class SyncViewModel
 
         private val nextLogId = AtomicLong(0)
 
-        /** Último snapshot de [PeerNicknamePreference.nicknamesFlow] — lido por
-         *  [refreshLocalInfo] pra não apagar os apelidos já aplicados enquanto reconstrói
-         *  [SyncUiState.pairedPeers] do zero a partir do lado nativo (que não sabe nada sobre
-         *  apelidos locais). */
+        /** Latest snapshot of [PeerNicknamePreference.nicknamesFlow] — read by
+         *  [refreshLocalInfo] so it doesn't wipe the already-applied nicknames while rebuilding
+         *  [SyncUiState.pairedPeers] from scratch from the native side (which knows nothing about
+         *  local nicknames). */
         @Volatile
         private var currentNicknames: Map<String, String> = emptyMap()
 
-        /** `"$peerId:$comicName"` -> última versão de capa confirmada (cacheada ou já sabida
-         *  como atual) — usado como `known_version` em `browseCover`, pra nunca rebaixar a mesma
-         *  versão duas vezes na mesma sessão do app. Fora do `SyncUiState` de propósito: não
-         *  precisa disparar recomposição sozinho, só [SyncUiState.remoteCoverPaths] importa pra UI. */
+        /** `"$peerId:$comicName"` -> latest confirmed cover version (cached or already known
+         *  to be current) — used as `known_version` in `browseCover`, so the same version is never
+         *  downloaded twice in the same app session. Kept out of `SyncUiState` on purpose: it
+         *  doesn't need to trigger recomposition on its own, only [SyncUiState.remoteCoverPaths]
+         *  matters to the UI. */
         private val knownCoverVersions = ConcurrentHashMap<String, Long>()
 
         init {
@@ -101,10 +102,10 @@ class SyncViewModel
 
             viewModelScope.launch {
                 RelayPreference.relaySettingsFlow(context).collect { settings ->
-                    // `.copy(...)` em cima do `relaySettings` atual, não um `RelaySettingsUiState`
-                    // novo do zero — `hasIrohServicesTicket` vem de outra fonte (o cofre nativo
-                    // do node, ver abaixo), não do DataStore, e não pode ser resetado a cada
-                    // emissão deste Flow.
+                    // `.copy(...)` on top of the current `relaySettings`, not a brand-new
+                    // `RelaySettingsUiState` — `hasIrohServicesTicket` comes from another source (the
+                    // node's native vault, see below), not from DataStore, and must not be reset on
+                    // every emission of this Flow.
                     _uiState.update {
                         it.copy(
                             relaySettings =
@@ -116,10 +117,10 @@ class SyncViewModel
                         )
                     }
 
-                    // Aplica ao node JÁ VIVO — sem isso, mudar qualquer fonte de relay na tela
-                    // só tinha efeito no PRÓXIMO boot do app. Redundante (mas inofensivo, é um
-                    // diff que vira no-op) na primeira emissão deste Flow, que só repete a
-                    // config com a qual o node já foi construído.
+                    // Applies to the ALREADY RUNNING node — without this, changing any relay source
+                    // on screen only took effect on the NEXT app boot. Redundant (but harmless, the
+                    // diff becomes a no-op) on the first emission of this Flow, which just repeats
+                    // the config the node was already built with.
                     withContext(Dispatchers.IO) { applyCurrentRelaySettingsLive() }
                 }
             }
@@ -131,19 +132,19 @@ class SyncViewModel
                 }
             }
 
-            // Apelido salvo já foi lido pra construir o node (`NetworkCaseModule`) — essa
-            // segunda leitura é só pra refletir o mesmo valor aqui na UI, já que o node não
-            // devolve o `DeviceInfo` que recebeu no boot. Depois disso, `localDeviceName` só
-            // muda via `renameDevice` — nunca por `refreshLocalInfo`, que rodaria por cima do
-            // que acabou de ser renomeado a cada evento de rede.
+            // The saved alias was already read to build the node (`NetworkCaseModule`) — this
+            // second read only mirrors the same value here in the UI, since the node doesn't
+            // return the `DeviceInfo` it got at boot. After that, `localDeviceName` only
+            // changes via `renameDevice` — never via `refreshLocalInfo`, which would overwrite
+            // what was just renamed on every network event.
             viewModelScope.launch {
                 val alias = DeviceAliasPreference.deviceAliasFlow(context).first()
                 _uiState.update { it.copy(localDeviceName = alias ?: Build.MODEL) }
             }
 
-            // Apelidos locais por peer — reaplica em cima de `pairedPeers` a cada mudança
-            // (renomear ou desparear), sem precisar de um novo `refreshLocalInfo()` (que bate
-            // no lado nativo via JNI) só pra isso.
+            // Local nicknames per peer — reapplied on top of `pairedPeers` on every change
+            // (rename or unpair), without needing a new `refreshLocalInfo()` (which hits
+            // the native side via JNI) just for that.
             viewModelScope.launch {
                 PeerNicknamePreference.nicknamesFlow(context).collect { nicknames ->
                     currentNicknames = nicknames
@@ -155,26 +156,26 @@ class SyncViewModel
                 }
             }
 
-            // Só pro estado de UI DESTA tela (log em memória, spinner dos botões) — a
-            // persistência/notificação/foreground service de uma sessão P2P saíram daqui pra
-            // `P2pSyncCoordinator` (singleton application-scoped, ver KDoc lá): como esta
-            // ViewModel é destruída ao sair da tela (`hiltViewModel()` escopada à
-            // `NavBackStackEntry`), ela não é o lugar certo pra um resultado que precisa
-            // sobreviver à navegação.
+            // Only for THIS screen's UI state (in-memory log, button spinners) — persistence/
+            // notification/foreground service of a P2P session moved from here to
+            // `P2pSyncCoordinator` (application-scoped singleton, see KDoc there): since this
+            // ViewModel is destroyed when leaving the screen (`hiltViewModel()` scoped to the
+            // `NavBackStackEntry`), it isn't the right place for a result that needs to
+            // survive navigation.
             viewModelScope.launch {
                 p2pEventBus.events.collect(::handleEvent)
             }
         }
 
         /**
-         * Carrega as sessões persistidas (mais recentes primeiro) na primeira abertura da tela —
-         * só pra alimentar o resumo mostrado no hero button de [ActivityLogCard]; a lista
-         * completa mora numa tela própria
+         * Loads the persisted sessions (most recent first) when the screen first opens —
+         * only to feed the summary shown in [ActivityLogCard]'s hero button; the full list
+         * lives on its own screen
          * ([br.acerola.comic.module.main.transferlog.TransferLogActivity]/
-         * [br.acerola.comic.module.main.transferlog.TransferLogViewModel], que
-         * busca por conta própria). Só substitui a parte do log que veio de lá (`id < 0`) —
-         * preserva qualquer entrada AO VIVO ainda em `id >= 0` (sessão `started`/`progress`
-         * desta execução do app). Negative IDs so they never collide with the live IDs
+         * [br.acerola.comic.module.main.transferlog.TransferLogViewModel], which
+         * fetches on its own). Only replaces the part of the log that came from there (`id < 0`) —
+         * keeps any LIVE entry still at `id >= 0` (`started`/`progress` session
+         * of this app run). Negative IDs so they never collide with the live IDs
          * generated by [nextLogId] (which only grows from 0).
          */
         private suspend fun loadPersistedLog() {
@@ -204,14 +205,13 @@ class SyncViewModel
             }
         }
 
-
-        /** Grava o resultado terminal de uma sessão só no estado de UI DESTA tela — atualiza
-         *  "última sync" apenas em caso de sucesso, mas [SyncUiState.lastSyncResultByPeer]
-         *  sempre, pra [SyncScreen] mostrar uma falha inline na linha do peer sem precisar
-         *  vasculhar o log agregado. Persistir em disco agora é trabalho do
-         *  [P2pSyncCoordinator] (sobrevive a esta ViewModel ser destruída), não desta função —
-         *  gravar aqui também duplicaria a linha em [SyncHistoryLogUseCase] sempre que os dois
-         *  estiverem vivos ao mesmo tempo. */
+        /** Records a session's terminal result only in THIS screen's UI state — updates
+         *  "last sync" only on success, but [SyncUiState.lastSyncResultByPeer]
+         *  always, so [SyncScreen] can show a failure inline on the peer's row without
+         *  digging through the aggregated log. Persisting to disk is now the job of
+         *  [P2pSyncCoordinator] (survives this ViewModel being destroyed), not this function —
+         *  writing here too would duplicate the row in [SyncHistoryLogUseCase] whenever both
+         *  are alive at the same time. */
         private fun recordSyncResult(
             peerId: String,
             kind: String,
@@ -287,8 +287,8 @@ class SyncViewModel
             }
         }
 
-        /** Valida o formato no lado nativo antes de persistir — `p2pUseCase.setIrohServicesTicket`
-         *  lança `IllegalArgumentException` se malformado, virando `irohServicesTicketError`. */
+        /** Validates the format on the native side before persisting — `p2pUseCase.setIrohServicesTicket`
+         *  throws `IllegalArgumentException` if malformed, which becomes `irohServicesTicketError`. */
         private fun setIrohServicesTicket(ticket: String) {
             viewModelScope.launch(Dispatchers.IO) {
                 try {
@@ -317,11 +317,11 @@ class SyncViewModel
             }
         }
 
-        /** Reaplica `relaySettings` (estado atual da UI) ao node já vivo — chamado depois de
-         *  salvar/remover o ticket, já que isso muda o resultado de `resolve()` (ex: liga/desliga
-         *  a fonte "rede pública Iroh") sem que `RelayPreference.relaySettingsFlow` tenha emitido
-         *  nada novo (o ticket não vive no DataStore). Já deve rodar em `Dispatchers.IO` (chamada
-         *  bloqueante do lado Rust). */
+        /** Reapplies `relaySettings` (current UI state) to the already running node — called after
+         *  saving/removing the ticket, since that changes the result of `resolve()` (e.g. turns the
+         *  "Iroh public network" source on/off) without `RelayPreference.relaySettingsFlow` having
+         *  emitted anything new (the ticket doesn't live in DataStore). Must already run on
+         *  `Dispatchers.IO` (blocking call on the Rust side). */
         private suspend fun applyCurrentRelaySettingsLive() {
             val relaySettings = _uiState.value.relaySettings
             runCatching {
@@ -341,10 +341,10 @@ class SyncViewModel
             }
         }
 
-        /** Botão manual "Reiniciar" — desliga o node P2P atual e sobe um novo do zero (mesma
-         *  identidade/storage/peers pareados, ver `P2PNode::restart` no Rust). Passa a config de
-         *  relay ATUAL da UI (mesma fonte de [applyCurrentRelaySettingsLive]), já que o node novo
-         *  precisa resolver o modo de relay do zero, sem um `Endpoint` anterior pra herdar de. */
+        /** Manual "Restart" button — shuts down the current P2P node and starts a new one from scratch
+         *  (same identity/storage/paired peers, see `P2PNode::restart` in Rust). Passes the CURRENT
+         *  relay config from the UI (same source as [applyCurrentRelaySettingsLive]), since the new
+         *  node must resolve the relay mode from scratch, with no previous `Endpoint` to inherit from. */
         private fun restartP2p() {
             if (_uiState.value.relaySettings.restarting) return
             _uiState.update { it.copy(relaySettings = it.relaySettings.copy(restarting = true, restartError = false)) }
@@ -381,10 +381,10 @@ class SyncViewModel
             }
         }
 
-        /** Dispara `acerola/browse-cover/1` em paralelo pra cada quadrinho da lista — streams são
-         *  baratas numa conexão já pooled por `(peer, alpn)` (ver `acerola-p2p`), então não há
-         *  necessidade de serializar. `known_version` vem do cache em memória
-         *  ([knownCoverVersions]); ausente = primeira vez que essa capa é vista nesta sessão. */
+        /** Fires `acerola/browse-cover/1` in parallel for each comic in the list — streams are
+         *  cheap on a connection already pooled by `(peer, alpn)` (see `acerola-p2p`), so there's
+         *  no need to serialize. `known_version` comes from the in-memory cache
+         *  ([knownCoverVersions]); absent = first time this cover is seen in this session. */
         private fun fetchCoversFor(
             peerId: String,
             comics: List<ComicSummary>,
@@ -399,8 +399,8 @@ class SyncViewModel
             }
         }
 
-        /** Só lista os quadrinhos do peer (nome + contagem) — não sincroniza nada. Resultado
-         *  chega via [P2pEvent.LibraryBrowseResult]/[P2pEvent.LibraryBrowseError]. */
+        /** Only lists the peer's comics (name + count) — doesn't sync anything. The result
+         *  arrives via [P2pEvent.LibraryBrowseResult]/[P2pEvent.LibraryBrowseError]. */
         private fun browseLibrary(peerId: String) {
             _uiState.update {
                 it.copy(
@@ -422,10 +422,10 @@ class SyncViewModel
             }
         }
 
-        /** Sincroniza um único quadrinho (`acerola/sync-comic/1`) — reaproveita a MESMA
-         *  bookkeeping ([SYNC_KIND_FILES]/`syncingKeys`/[TransferLogEntry]) do botão
-         *  "Sincronizar arquivos", já que ambos emitem os mesmos eventos `sync:files:*`
-         *  (ver `protocol::files::run_and_report_scoped` do lado Rust). */
+        /** Syncs a single comic (`acerola/sync-comic/1`) — reuses the SAME
+         *  bookkeeping ([SYNC_KIND_FILES]/`syncingKeys`/[TransferLogEntry]) as the
+         *  "Sync files" button, since both emit the same `sync:files:*` events
+         *  (see `protocol::files::run_and_report_scoped` on the Rust side). */
         private fun syncComic(
             peerId: String,
             comicName: String,
@@ -453,26 +453,26 @@ class SyncViewModel
                     _uiState.update { it.copy(syncingKeys = it.syncingKeys - key) }
                     return@launch
                 }
-                // Vem da navegação da biblioteca remota (`RemoteLibrarySheet`) — o usuário só
-                // pode escolher um quadrinho que ainda não tem, então é sempre pull.
+                // Comes from browsing the remote library (`RemoteLibrarySheet`) — the user can
+                // only pick a comic they don't have yet, so it's always a pull.
                 val started = p2pUseCase.syncComic(addr, comicName, SyncDirection.PULL)
-                // Usuário recusou dados móveis (ver `MobileDataSyncGate`) — sem isso o spinner
-                // ficava preso até o timeout de 60s esperando um evento que nunca chega.
+                // User declined mobile data (see `MobileDataSyncGate`) — without this the spinner
+                // stayed stuck until the 60s timeout waiting for an event that never arrives.
                 if (!started) {
                     _uiState.update { it.copy(syncingKeys = it.syncingKeys - key) }
                 }
             }
         }
 
-        /** Desempareia um peer — some da confiança e do cache nativo, e limpa todo estado
-         *  local ligado a ele (senão o peer some da lista mas deixa lixo em
+        /** Unpairs a peer — removes it from trust and the native cache, and clears all local
+         *  state tied to it (otherwise the peer disappears from the list but leaves garbage in
          *  [SyncUiState.lastSyncedByPeer]/[SyncUiState.lastSyncResultByPeer]/[SyncUiState.syncingKeys]). */
         private fun removePeer(peerId: String) {
             viewModelScope.launch(Dispatchers.IO) {
                 p2pUseCase.removePairedPeer(peerId)
-                // Limpa também o apelido local — sem isso, reparear o mesmo `peerId` de volta
-                // faria o apelido antigo "ressuscitar" (mesmo cuidado do lado Desktop com
-                // `SecureP2pStorage::remove_peer` pro `device_info` persistido).
+                // Also clears the local nickname — without this, re-pairing the same `peerId`
+                // would "resurrect" the old nickname (same care as the Desktop side with
+                // `SecureP2pStorage::remove_peer` for the persisted `device_info`).
                 PeerNicknamePreference.setNickname(context, peerId, null)
                 _uiState.update {
                     it.copy(
@@ -486,9 +486,9 @@ class SyncViewModel
             }
         }
 
-        /** Define (ou limpa, com string vazia) o apelido local de um peer — persiste via
-         *  DataStore; [SyncUiState.pairedPeers] é atualizado pelo coletor de
-         *  [PeerNicknamePreference.nicknamesFlow] no `init`, não aqui (única fonte de verdade). */
+        /** Sets (or clears, with an empty string) a peer's local nickname — persisted via
+         *  DataStore; [SyncUiState.pairedPeers] is updated by the collector of
+         *  [PeerNicknamePreference.nicknamesFlow] in `init`, not here (single source of truth). */
         private fun renamePeer(
             peerId: String,
             nickname: String,
@@ -557,19 +557,19 @@ class SyncViewModel
                         p2pUseCase.connect(peerAddress, HANDSHAKE_ALPN.toByteArray())
                     }
 
-                // Usuário recusou dados móveis (ver `MobileDataSyncGate`) — nada foi disparado,
-                // e isso não é uma falha de conexão (mostrar `CONNECTION_FAILED` aqui seria
-                // enganoso). Cancela a espera pelo handshake em vez de deixá-la estourar os 15s
-                // de `CONNECT_TIMEOUT_MS` à toa.
+                // User declined mobile data (see `MobileDataSyncGate`) — nothing was fired,
+                // and this isn't a connection failure (showing `CONNECTION_FAILED` here would be
+                // misleading). Cancels the wait for the handshake instead of letting it run out the
+                // 15s of `CONNECT_TIMEOUT_MS` for nothing.
                 if (!started) {
                     handshakeCompleted.cancel()
                     _uiState.update { it.copy(connecting = false) }
                     return@launch
                 }
 
-                // `p2pUseCase.connect` é fire-and-forget sobre a FFI (sem retorno síncrono de
-                // sucesso/erro) — o evento de handshake é o sinal mais preciso que temos hoje de
-                // que isso realmente funcionou. Sem ele dentro do timeout, tratamos como falha.
+                // `p2pUseCase.connect` is fire-and-forget over the FFI (no synchronous
+                // success/error return) — the handshake event is the most precise signal we have
+                // today that it actually worked. Without it within the timeout, we treat it as a failure.
                 val succeeded = handshakeCompleted.await() ?: false
 
                 _uiState.update {
@@ -604,8 +604,8 @@ class SyncViewModel
                     return@launch
                 }
                 val started = p2pUseCase.connect(addr, alpn.toByteArray())
-                // Usuário recusou dados móveis (ver `MobileDataSyncGate`) — sem isso o spinner
-                // ficava preso até o timeout de 60s esperando um evento que nunca chega.
+                // User declined mobile data (see `MobileDataSyncGate`) — without this the spinner
+                // stayed stuck until the 60s timeout waiting for an event that never arrives.
                 if (!started) {
                     _uiState.update { it.copy(syncingKeys = it.syncingKeys - key) }
                 }
@@ -621,12 +621,12 @@ class SyncViewModel
         }
 
         /**
-         * [refreshLocalInfo] faz 5 chamadas síncronas bloqueantes pro Rust (`runtime.block_on`
-         * do lado nativo — ver comentário lá) — disparar isso incondicionalmente pra TODO
-         * evento (inclusive `network:latency`, que chega periodicamente e cai em
-         * `P2pEvent.Unknown`) competia pelo mesmo runtime Tokio compartilhado que uma sessão de
-         * sync-files ativa precisa pra progredir. Só chamamos explicitamente nos eventos que de
-         * fato mudam o que essa função busca (peer pareado/conectado, sessão terminada).
+         * [refreshLocalInfo] makes 5 blocking synchronous calls into Rust (`runtime.block_on`
+         * on the native side — see the comment there) — firing it unconditionally for EVERY
+         * event (including `network:latency`, which arrives periodically and falls into
+         * `P2pEvent.Unknown`) competed for the same shared Tokio runtime that an active
+         * sync-files session needs to make progress. We only call it explicitly on events that
+         * actually change what this function fetches (peer paired/connected, session finished).
          */
         private suspend fun handleEvent(event: P2pEvent) {
             when (event) {
@@ -668,11 +668,11 @@ class SyncViewModel
                     // that case actually ends the session.
                     if (event.comicName.isEmpty() && event.chapter.isEmpty()) {
                         clearSyncing(event.peerId, SYNC_KIND_FILES)
-                        // `event.error` já vem classificado como `SyncProtocolError` (ADT) por
-                        // `P2pEventBus` — o ViewModel só propaga o valor tipado, sem `when` em
-                        // cima de um `code` cru nem `Context` pra resolver texto nenhum.
-                        // `event.reason` continua cru/em inglês, só pro histórico persistido
-                        // (`syncHistoryLogUseCase.record`, dentro de `recordSyncResult`).
+                        // `event.error` already comes classified as `SyncProtocolError` (ADT) by
+                        // `P2pEventBus` — the ViewModel just propagates the typed value, with no `when`
+                        // over a raw `code` nor a `Context` to resolve any text.
+                        // `event.reason` stays raw/in English, only for the persisted history
+                        // (`syncHistoryLogUseCase.record`, inside `recordSyncResult`).
                         recordSyncResult(event.peerId, SYNC_KIND_FILES, "error", event.reason, event.error)
                         refreshLocalInfo()
                     }
@@ -684,13 +684,13 @@ class SyncViewModel
                         chapter = event.chapter,
                     )
                 }
-                // Contraparte de FileSyncChapterFailed pra itens extra (capa/banner/
-                // ComicInfo.xml) — reaproveita o mesmo status "chapterFailed" (nunca participa
-                // da transição started/progress/complete, ver isSessionStatus) pra cair na
-                // mesma entrada permanente no log, com `chapter` carregando o `kind` do extra
-                // (não existe um campo dedicado em TransferLogEntry, e não vale a pena um só
-                // pra isso). Antes desta mudança, sync:files:extra_failed caía como
-                // P2pEvent.Unknown e essas falhas eram completamente invisíveis.
+                // Counterpart of FileSyncChapterFailed for extra items (cover/banner/
+                // ComicInfo.xml) — reuses the same "chapterFailed" status (never part of the
+                // started/progress/complete transition, see isSessionStatus) to land in the
+                // same permanent log entry, with `chapter` carrying the extra's `kind`
+                // (there's no dedicated field in TransferLogEntry, and one isn't worth it just
+                // for this). Before this change, sync:files:extra_failed fell into
+                // P2pEvent.Unknown and these failures were completely invisible.
                 is P2pEvent.FileSyncExtraFailed ->
                     pushLog(
                         SYNC_KIND_FILES,
@@ -699,9 +699,9 @@ class SyncViewModel
                         comicName = event.comicName,
                         chapter = event.kind,
                     )
-                // Espelha FileSyncChapterComplete (também não logado individualmente) — o
-                // sucesso de cada item já fica implícito quando a sessão termina em
-                // FileSyncComplete; só a FALHA de um item precisa de uma linha própria.
+                // Mirrors FileSyncChapterComplete (also not logged individually) — each
+                // item's success is already implied when the session ends in
+                // FileSyncComplete; only an item's FAILURE needs its own row.
                 is P2pEvent.FileSyncExtraComplete -> Unit
                 is P2pEvent.FileSyncComplete -> {
                     clearSyncing(event.peerId, SYNC_KIND_FILES)
@@ -730,7 +730,7 @@ class SyncViewModel
                         _uiState.update { it.copy(remoteCoverPaths = it.remoteCoverPaths + (key to path)) }
                     }
                 }
-                is P2pEvent.CoverBrowseError -> Unit // best-effort — a lista continua sem thumb pra esse item
+                is P2pEvent.CoverBrowseError -> Unit // best-effort — the list just stays without a thumb for this item
 
                 else -> Unit
             }
@@ -765,7 +765,7 @@ class SyncViewModel
             }
         }
 
-        /** Atualiza a linha em andamento pro `kind` no lugar, em vez de empilhar uma nova. */
+        /** Updates the in-progress row for `kind` in place, instead of stacking a new one. */
         private fun updateInFlightLog(
             current: SyncUiState,
             kind: String,
@@ -782,8 +782,8 @@ class SyncViewModel
             return current.copy(transferLog = updatedLog, inFlightLogEntryByKind = inFlight)
         }
 
-        /** Empilha uma linha nova — só chega aqui quando não há sessão em andamento pra `kind`
-         *  (primeiro evento) ou o status não participa da transição (`"chapterFailed"`). */
+        /** Stacks a new row — only reached when there's no in-progress session for `kind`
+         *  (first event) or the status isn't part of the transition (`"chapterFailed"`). */
         private fun appendNewLog(
             current: SyncUiState,
             kind: String,
@@ -812,13 +812,13 @@ class SyncViewModel
         }
 
         /**
-         * Uma sessão de sync tem UMA linha no log, que transiciona de estado (started ->
-         * progress -> complete/error) em vez de empilhar uma linha nova por evento — sem isso,
-         * "started" ficava pra sempre como uma linha separada com spinner girando ao lado da
-         * linha "complete" que já resolveu a mesma sessão. `"chapterFailed"` (falha de UM
-         * capítulo, não da sessão inteira — ver comentário em `handleEvent`) fica de fora dessa
-         * transição de propósito: cada capítulo que falha é seu próprio evento permanente, sem
-         * interromper a linha de progresso agregada da sessão.
+         * A sync session has ONE row in the log, which transitions state (started ->
+         * progress -> complete/error) instead of stacking a new row per event — without this,
+         * "started" stayed forever as a separate row with a spinning spinner next to the
+         * "complete" row that had already resolved the same session. `"chapterFailed"` (failure
+         * of ONE chapter, not the whole session — see the comment in `handleEvent`) is left out
+         * of this transition on purpose: each failing chapter is its own permanent event, without
+         * interrupting the session's aggregated progress row.
          */
         private fun pushLog(
             kind: String,
@@ -845,11 +845,11 @@ class SyncViewModel
             withContext(Dispatchers.IO) {
                 val localAddress = p2pUseCase.getLocalAddress()
                 val pairingCode = PairingCode.encode(localAddress.id, localAddress.deviceId, localAddress.addrs)
-                // Nome do dispositivo vem de getPairedPeers() (que já resolve via
-                // known_peers() do lado nativo, persistente) -- getConnectedPeersWithInfo()
-                // só serve mais pra saber QUEM está conectado agora (connectedPeerIds), não
-                // pra nome: aquela lista só tem dado durante os poucos segundos em que a
-                // conexão de handshake está de fato aberta.
+                // Device name comes from getPairedPeers() (which already resolves via the
+                // persistent known_peers() on the native side) -- getConnectedPeersWithInfo()
+                // is now only used to know WHO is connected right now (connectedPeerIds), not
+                // for the name: that list only has data during the few seconds the
+                // handshake connection is actually open.
                 val connectedPeers = p2pUseCase.getConnectedPeersWithInfo()
                 val paired =
                     p2pUseCase.getPairedPeers().map {

@@ -3,7 +3,7 @@
 	import AcerolaReaderFooter from './acerola-reader-footer.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderFooter',
+		title: 'Pages/Reader/AcerolaReaderFooter',
 		component: AcerolaReaderFooter,
 		tags: ['autodocs'],
 		argTypes: {

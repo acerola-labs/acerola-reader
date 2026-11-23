@@ -18,7 +18,7 @@ class SyncMangadexDataTest {
                 onRescan = {},
             )
         }
-        // No SyncMangadexData.kt o texto é "Sincronizar metadados"
+        // In SyncMangadexData.kt the text is "Sincronizar metadados"
         composeTestRule.onNodeWithText("Sincronizar metadados", substring = true).assertIsDisplayed()
     }
 }

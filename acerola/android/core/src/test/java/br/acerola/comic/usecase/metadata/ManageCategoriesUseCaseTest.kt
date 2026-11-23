@@ -27,7 +27,7 @@ class ManageCategoriesUseCaseTest {
         useCase = ManageCategoriesUseCase(categoryService = categoryManager)
     }
 
-    // getAllCategories — observa lista
+    // getAllCategories — observes the list
     @Test
     fun `getAllCategories should return manager flow exactly once`() =
         runTest {
@@ -40,7 +40,7 @@ class ManageCategoriesUseCaseTest {
             coVerify(exactly = 1) { categoryManager.getAllCategories() }
         }
 
-    // createCategory — delega ao manager
+    // createCategory — delegates to the manager
     @Test
     fun `createCategory should call manager exactly once`() =
         runTest {
@@ -51,7 +51,7 @@ class ManageCategoriesUseCaseTest {
             coVerify(exactly = 1) { categoryManager.createCategory("Favoritos", 0xFF0000) }
         }
 
-    // deleteCategory — delega ao manager
+    // deleteCategory — delegates to the manager
     @Test
     fun `deleteCategory should call manager exactly once`() =
         runTest {
@@ -62,7 +62,7 @@ class ManageCategoriesUseCaseTest {
             coVerify(exactly = 1) { categoryManager.deleteCategory(7L) }
         }
 
-    // updateComicCategory — associa categoria a comic
+    // updateComicCategory — assigns a category to a comic
     @Test
     fun `updateComicCategory should call manager exactly once`() =
         runTest {
@@ -73,7 +73,7 @@ class ManageCategoriesUseCaseTest {
             coVerify(exactly = 1) { categoryManager.updateComicCategory(10L, 3L) }
         }
 
-    // updateComicCategory — desassocia quando categoryId é null
+    // updateComicCategory — unassigns when categoryId is null
     @Test
     fun `updateComicCategory with null categoryId should call manager with null`() =
         runTest {

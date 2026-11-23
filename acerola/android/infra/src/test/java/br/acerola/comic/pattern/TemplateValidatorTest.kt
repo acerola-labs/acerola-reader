@@ -47,7 +47,7 @@ class TemplateValidatorTest {
 
     @Test
     fun `should fail if there is chapter in volume mode`() {
-        // Agora chapter no modo volume deve falhar pois volume é o obrigatório
+        // Now chapter in volume mode must fail because volume is the required one
         val input = "Vol. {chapter} - {extension}"
         val result = TemplateValidator.validateCustomTemplate(input, SortType.VOLUME)
 

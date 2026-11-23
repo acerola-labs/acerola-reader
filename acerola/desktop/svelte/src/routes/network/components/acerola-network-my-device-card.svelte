@@ -13,25 +13,26 @@
 
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { shortId } from '$lib/utils/connection-code.utils';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { shortId } from '#lib/utils/connection-code.util.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import AcerolaSettingRow from '#lib/components/acerola-setting-row/acerola-setting-row.svelte';
+	import AcerolaSettingSection from '#lib/components/acerola-setting-section/acerola-setting-section.svelte';
 
 	let { data, events }: NetworkMyDeviceCardProps = $props();
 
-	// No teardown da story (Storybook + vitest browser mode), o efeito reativo deste
-	// template roda mais uma vez com `data` já undefined antes do componente ser
-	// destruído de fato — sem o fallback aqui isso vaza como unhandled error e derruba
-	// a suíte mesmo com todos os asserts passando.
+	// On story teardown (Storybook + vitest browser mode), this template's reactive effect
+	// runs once more with `data` already undefined before the component is actually
+	// destroyed — without the fallback here this leaks as an unhandled error and brings
+	// down the suite even with every assert passing.
 	let safeData = $derived(
 		data ?? {
 			deviceName: undefined,
@@ -40,8 +41,8 @@
 		}
 	);
 
-	// Feedback visual do botão de copiar — além do toast, o próprio ícone vira um check
-	// por um instante, pra quem não pegar o toast a tempo perceber que a cópia aconteceu.
+	// Copy button visual feedback — besides the toast, the icon itself turns into a check
+	// for a moment, so anyone who misses the toast still notices the copy happened.
 	let idJustCopied = $state(false);
 
 	async function copyLocalId() {
@@ -52,8 +53,8 @@
 		setTimeout(() => (idJustCopied = false), 2000);
 	}
 
-	// Apelido custom estilo LocalSend — edição inline em vez de um dialog separado, já que é
-	// um campo único e a tela de Rede já é o lugar natural pra mexer nisso.
+	// LocalSend-style custom nickname — inline editing instead of a separate dialog, since it
+	// is a single field and the Network screen is already the natural place to change it.
 	let editingName = $state(false);
 	let nameDraft = $state('');
 	let savingName = $state(false);
@@ -74,99 +75,102 @@
 		savingName = true;
 		try {
 			await events.onRenameDevice(trimmed);
-			toast.success(m['pages.network.my_device.rename.success']());
+			toast.success(m['pages.network.myDevice.rename.success']());
 			editingName = false;
 		} catch (err) {
-			toast.error(m['pages.network.my_device.rename.error']({ msg: String(err) }));
+			toast.error(
+				m['pages.network.myDevice.rename.error']({ msg: extractErrorMessage(err) })
+			);
 		} finally {
 			savingName = false;
 		}
 	}
 </script>
 
-<section class="space-y-4">
-	<div
-		class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
-	>
-		<Share2Icon size={16} />
-		{m['pages.network.my_device.title']()}
-	</div>
-
+<AcerolaSettingSection
+	data={{
+		id: 'this-device',
+		title: m['pages.network.myDevice.title'](),
+		lead:
+			safeData.mode === 'relay'
+				? m['pages.network.myDevice.modeRelay']()
+				: m['pages.network.myDevice.modeLocal']()
+	}}
+>
 	{#if editingName}
-		<div class="flex items-center gap-3 rounded-3xl border border-border bg-card p-6">
+		<form
+			class="flex items-center gap-2 rounded-tile bg-surface p-4"
+			onsubmit={(event) => {
+				event.preventDefault();
+				confirmEditingName();
+			}}
+		>
 			<AcerolaInput
 				state={{ value: nameDraft }}
 				events={{ onValueChange: (value) => (nameDraft = value) }}
 				ui={{
-					placeholder: m['pages.network.my_device.rename.placeholder'](),
-					class: 'flex-1',
+					placeholder: m['pages.network.myDevice.rename.placeholder'](),
+					'aria-label': m['pages.network.myDevice.rename.placeholder'](),
+					class: 'flex-1 bg-card',
 					disabled: savingName
 				}}
 			/>
 			<AcerolaButton
-				events={{ onClick: confirmEditingName }}
-				ui={{ size: 'sm', disabled: !nameDraft.trim() || savingName }}
+				ui={{
+					variant: 'contrast',
+					type: 'submit',
+					disabled: !nameDraft.trim() || savingName
+				}}
 			>
-				<CheckIcon size={14} />
-				{m['pages.network.my_device.rename.save']()}
+				<CheckIcon size={16} />
+				{m['pages.network.myDevice.rename.save']()}
 			</AcerolaButton>
 			<AcerolaButtonIcon
 				events={{ onClick: cancelEditingName }}
 				ui={{
-					variant: 'ghost',
-					tone: 'muted',
+					variant: 'secondary',
 					disabled: savingName,
-					title: m['pages.network.my_device.rename.cancel'](),
-					'aria-label': m['pages.network.my_device.rename.cancel']()
+					title: m['pages.network.myDevice.rename.cancel'](),
+					'aria-label': m['pages.network.myDevice.rename.cancel']()
 				}}
 			>
 				<XIcon size={16} />
 			</AcerolaButtonIcon>
-		</div>
+		</form>
 	{:else}
-		<AcerolaHeroButton
+		<AcerolaSettingRow
 			data={{
-				title: safeData.deviceName ?? '...',
-				description: safeData.localId ? shortId(safeData.localId) : '...'
+				title: safeData.deviceName ?? '…',
+				description: safeData.localId ? shortId(safeData.localId) : '…'
 			}}
-			ui={{ iconClass: 'bg-accent-hero text-accent-hero-foreground' }}
 		>
-			{#snippet icon()}
-				<MonitorIcon size={22} />
-			{/snippet}
-
-			{#snippet action()}
+			{#snippet icon()}<MonitorIcon size={18} />{/snippet}
+			{#snippet control()}
 				{#if events?.onRenameDevice}
 					<AcerolaButtonIcon
 						events={{ onClick: startEditingName }}
 						ui={{
-							variant: 'outline',
-							tone: 'accent',
-							title: m['pages.network.my_device.rename.action'](),
-							'aria-label': m['pages.network.my_device.rename.action']()
+							variant: 'secondary',
+							class: 'bg-card',
+							title: m['pages.network.myDevice.rename.action'](),
+							'aria-label': m['pages.network.myDevice.rename.action']()
 						}}
 					>
-						<PencilIcon size={14} />
+						<PencilIcon size={16} />
 					</AcerolaButtonIcon>
 				{/if}
 				<AcerolaButton
 					events={{ onClick: copyLocalId }}
-					ui={{ variant: 'outline', size: 'sm', class: 'gap-2', disabled: !safeData.localId }}
+					ui={{ variant: 'secondary', class: 'bg-card', disabled: !safeData.localId }}
 				>
 					{#if idJustCopied}
-						<CheckIcon size={14} class="text-chart-3" />
+						<CheckIcon size={16} class="text-success" />
 					{:else}
-						<CopyIcon size={14} />
+						<CopyIcon size={16} />
 					{/if}
-					{m['pages.network.my_device.copy_id']()}
+					{m['pages.network.myDevice.copyId']()}
 				</AcerolaButton>
 			{/snippet}
-		</AcerolaHeroButton>
+		</AcerolaSettingRow>
 	{/if}
-
-	<p class="px-2 text-xs text-muted-foreground">
-		{safeData.mode === 'relay'
-			? m['pages.network.my_device.mode_relay']()
-			: m['pages.network.my_device.mode_local']()}
-	</p>
-</section>
+</AcerolaSettingSection>

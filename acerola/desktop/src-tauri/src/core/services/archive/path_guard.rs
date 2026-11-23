@@ -6,13 +6,13 @@ use std::{
 
 use crate::infra::error::PathError;
 
-/// Gera um ID numérico determinístico de 64 bits a partir de um caminho de arquivo.
+/// Generates a deterministic 64-bit numeric ID from a file path.
 ///
-/// ### Racional de Design
-/// O Acerola Desktop utiliza hashing de caminho em vez de IDs auto-incrementais do banco por três motivos:
-/// 1. **Determinismo:** O ID de um quadrinho ou capítulo permanece o mesmo entre scans, mesmo se o banco for deletado.
-/// 2. **Performance de Busca:** O SQLite realiza buscas por índices `INTEGER PRIMARY KEY` de forma muito mais rápida do que comparando strings de caminhos longos.
-/// 3. **Desacoplamento e Paralelismo:** O scanner pode gerar IDs para entidades filhas (volumes/capítulos) sem precisar esperar a inserção do pai no banco para obter o ID gerado pelo SQLite.
+/// ### Design Rationale
+/// Acerola Desktop uses path hashing instead of database auto-increment IDs for three reasons:
+/// 1. **Determinism:** A comic's or chapter's ID stays the same across scans, even if the database is deleted.
+/// 2. **Lookup Performance:** SQLite looks up `INTEGER PRIMARY KEY` indexes much faster than comparing long path strings.
+/// 3. **Decoupling and Parallelism:** The scanner can generate IDs for child entities (volumes/chapters) without waiting for the parent to be inserted in the database to get the SQLite-generated ID.
 pub fn path_hash(path: &Path) -> i64 {
     let mut hasher = DefaultHasher::new();
     path.hash(&mut hasher);
@@ -121,8 +121,8 @@ mod tests {
         let guard = PathGuard::new(root.path().to_path_buf());
         let file = root.path().join("arquivo.cbz");
         fs::write(&file, b"").unwrap();
-        let result =
-            guard.execute(&file, |_| -> Result<(), String> { Err("falha simulada".to_string()) });
+        let result = guard
+            .execute(&file, |_| -> Result<(), String> { Err("simulated failure".to_string()) });
         assert!(matches!(result, Err(PathError::ActionFailed(_))));
     }
 }

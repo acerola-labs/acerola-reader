@@ -6,7 +6,7 @@ import br.acerola.comic.dto.archive.ComicDirectoryDto
 import br.acerola.comic.dto.history.ReadingHistoryDto
 
 /**
- * Fixtures reutilizáveis para testes de Quadrinhos na camada de apresentação.
+ * Reusable fixtures for Comic tests in the presentation layer.
  */
 object MangaFixtures {
     fun createChapterArchivePageDto(

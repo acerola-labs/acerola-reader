@@ -1,17 +1,17 @@
 package br.acerola.comic.module.main.common.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,14 +25,8 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.LayersClear
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -49,19 +42,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionListItem
 import br.acerola.comic.common.ux.component.AdaptiveSheet
+import br.acerola.comic.common.ux.component.Badge
+import br.acerola.comic.common.ux.component.ButtonVariant
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
+import br.acerola.comic.common.ux.component.OptionRow
+import br.acerola.comic.common.ux.component.SheetHeader
+import br.acerola.comic.common.ux.component.Tone
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
-import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
 import br.acerola.comic.dto.archive.ComicDirectoryDto
@@ -102,8 +98,14 @@ fun Main.Common.Component.ComicActionsSheet(
 
     val metaLine =
         listOfNotNull(
-            comic.remoteInfo?.authors?.name?.takeIf { it.isNotBlank() },
-            comic.remoteInfo?.year?.takeIf { it > 0 }?.toString(),
+            comic.remoteInfo
+                ?.authors
+                ?.name
+                ?.takeIf { it.isNotBlank() },
+            comic.remoteInfo
+                ?.year
+                ?.takeIf { it > 0 }
+                ?.toString(),
             comic.remoteInfo?.status?.takeIf { it.isNotBlank() }?.let {
                 stringResource(id = ComicStatus.fromRawValue(it).stringRes)
             },
@@ -117,8 +119,9 @@ fun Main.Common.Component.ComicActionsSheet(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Large),
+                    .padding(horizontal = SpacingTokens.Huge, vertical = SpacingTokens.Small),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
         ) {
             AsyncImage(
                 model =
@@ -134,159 +137,93 @@ fun Main.Common.Component.ComicActionsSheet(
                     Modifier
                         .width(56.dp)
                         .height(84.dp)
-                        .clip(ShapeTokens.Small),
+                        .clip(AcerolaShapes.Inner)
+                        .background(AcerolaExtendedTheme.colors.surface),
             )
 
-            Spacer(modifier = Modifier.width(SpacingTokens.Large))
-
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AcerolaExtendedTheme.colors.foreground,
                     maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                if (currentCategoryName != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Rounded.Bookmark,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(SizeTokens.IconExtraSmall),
-                        )
-                        Spacer(modifier = Modifier.width(SpacingTokens.ExtraSmall))
-                        Text(
-                            text = currentCategoryName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
                 if (metaLine.isNotBlank()) {
                     Text(
                         text = metaLine,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = AcerolaExtendedTheme.colors.mutedForeground,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                if (genres.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(SpacingTokens.ExtraSmall))
+                if (currentCategoryName != null || genres.isNotEmpty()) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall),
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                     ) {
-                        genres.forEach { genre ->
-                            Surface(
-                                shape = ShapeTokens.Full,
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                            ) {
-                                Text(
-                                    text = genre.name,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier =
-                                        Modifier.padding(
-                                            horizontal = SpacingTokens.Medium,
-                                            vertical = SpacingTokens.ExtraSmall,
-                                        ),
-                                )
-                            }
+                        if (currentCategoryName != null) {
+                            Acerola.Component.Badge(text = currentCategoryName, tone = Tone.Primary)
                         }
+                        genres.forEach { genre -> Acerola.Component.Badge(text = genre.name) }
                     }
                 }
             }
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-
+        // Same menu as the desktop's comic action dialog: plain rows on the sheet, the risky
+        // ones in `destructive`.
         Column(
-            modifier = Modifier.padding(SpacingTokens.Large),
-            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+            modifier = Modifier.padding(horizontal = SpacingTokens.Medium, vertical = SpacingTokens.Medium),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall),
         ) {
-            Surface(
-                shape = ShapeTokens.Large,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ) {
-                val accent = AcerolaExtendedTheme.colors.accent
-                val onAccent = AcerolaExtendedTheme.colors.onAccent
-
-                Column {
-                    Acerola.Component.ActionListItem(
-                        icon = if (comic.category != null) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
-                        title = stringResource(id = R.string.action_bookmark),
-                        subtitle = currentCategoryName ?: stringResource(id = R.string.label_no_bookmark),
-                        onClick = { showCategorySheet = true },
-                        tint = onAccent,
-                        iconBackground = accent,
-                    )
-
-                    Acerola.Component.ActionListItem(
-                        icon = if (comic.directory.hidden) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
-                        title =
-                            stringResource(
-                                id = if (comic.directory.hidden) R.string.action_unhide else R.string.action_hide,
-                            ),
-                        subtitle =
-                            stringResource(
-                                id = if (comic.directory.hidden) R.string.description_unhide else R.string.description_hide,
-                            ),
-                        onClick = { showHideDialog = true },
-                        tint = onAccent,
-                        iconBackground = accent,
-                    )
-
-                    Acerola.Component.ActionListItem(
-                        icon = Icons.Rounded.CloudUpload,
-                        title = stringResource(id = R.string.action_sync_comic_push),
-                        subtitle = stringResource(id = R.string.description_sync_comic_with_peer),
-                        onClick = {
-                            onLoadPairedPeers()
-                            pendingDirection = SyncDirection.PUSH
-                            showPeerPicker = true
-                        },
-                        tint = onAccent,
-                        iconBackground = accent,
-                    )
-
-                    Acerola.Component.ActionListItem(
-                        icon = Icons.Rounded.CloudDownload,
-                        title = stringResource(id = R.string.action_sync_comic_pull),
-                        subtitle = stringResource(id = R.string.description_sync_comic_with_peer),
-                        onClick = {
-                            onLoadPairedPeers()
-                            pendingDirection = SyncDirection.PULL
-                            showPeerPicker = true
-                        },
-                        tint = onAccent,
-                        iconBackground = accent,
-                    )
-
-                    Acerola.Component.ActionListItem(
-                        icon = Icons.Rounded.LayersClear,
-                        title = stringResource(id = R.string.action_clear_metadata),
-                        subtitle = stringResource(id = R.string.description_clear_metadata),
-                        onClick = { showClearMetadataDialog = true },
-                        tint = MaterialTheme.colorScheme.error,
-                        isLast = true,
-                    )
-                }
-            }
-
-            Surface(
-                shape = ShapeTokens.Large,
-                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f),
-            ) {
-                Acerola.Component.ActionListItem(
-                    icon = Icons.Rounded.Delete,
-                    title = stringResource(id = R.string.action_delete),
-                    subtitle = stringResource(id = R.string.description_delete),
-                    onClick = { showDeleteDialog = true },
-                    tint = MaterialTheme.colorScheme.error,
-                    isLast = true,
-                )
-            }
+            Acerola.Component.ActionListItem(
+                icon = if (comic.category != null) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
+                title = stringResource(id = R.string.action_bookmark),
+                subtitle = currentCategoryName ?: stringResource(id = R.string.label_no_bookmark),
+                onClick = { showCategorySheet = true },
+            )
+            Acerola.Component.ActionListItem(
+                icon = if (comic.directory.hidden) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
+                title = stringResource(id = if (comic.directory.hidden) R.string.action_unhide else R.string.action_hide),
+                subtitle = stringResource(id = if (comic.directory.hidden) R.string.description_unhide else R.string.description_hide),
+                onClick = { showHideDialog = true },
+            )
+            Acerola.Component.ActionListItem(
+                icon = Icons.Rounded.CloudUpload,
+                title = stringResource(id = R.string.action_sync_comic_push_title),
+                subtitle = stringResource(id = R.string.description_sync_comic_with_peer),
+                onClick = {
+                    onLoadPairedPeers()
+                    pendingDirection = SyncDirection.PUSH
+                    showPeerPicker = true
+                },
+            )
+            Acerola.Component.ActionListItem(
+                icon = Icons.Rounded.CloudDownload,
+                title = stringResource(id = R.string.action_sync_comic_pull_title),
+                subtitle = stringResource(id = R.string.description_sync_comic_with_peer),
+                onClick = {
+                    onLoadPairedPeers()
+                    pendingDirection = SyncDirection.PULL
+                    showPeerPicker = true
+                },
+            )
+            Acerola.Component.ActionListItem(
+                icon = Icons.Rounded.LayersClear,
+                title = stringResource(id = R.string.action_clear_metadata),
+                subtitle = stringResource(id = R.string.description_clear_metadata),
+                onClick = { showClearMetadataDialog = true },
+                tone = Tone.Destructive,
+            )
+            Acerola.Component.ActionListItem(
+                icon = Icons.Rounded.Delete,
+                title = stringResource(id = R.string.action_delete),
+                subtitle = stringResource(id = R.string.description_delete),
+                onClick = { showDeleteDialog = true },
+                tone = Tone.Destructive,
+            )
         }
 
         Spacer(modifier = Modifier.navigationBarsPadding())
@@ -324,16 +261,12 @@ fun Main.Common.Component.ComicActionsSheet(
                         onHide()
                         onDismiss()
                     },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold,
                 )
             },
             dismissButtonContent = {
                 Acerola.Component.DialogButton(
                     text = stringResource(id = R.string.action_cancel),
                     onClick = { showHideDialog = false },
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             content = {
@@ -360,16 +293,13 @@ fun Main.Common.Component.ComicActionsSheet(
                         showDeleteDialog = false
                         onDismiss()
                     },
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
-                    fontWeight = FontWeight.Bold,
+                    variant = ButtonVariant.Destructive,
                 )
             },
             dismissButtonContent = {
                 Acerola.Component.DialogButton(
                     text = stringResource(id = R.string.action_cancel),
                     onClick = { showDeleteDialog = false },
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             content = { Text(text = stringResource(id = R.string.dialog_delete_message)) },
@@ -383,22 +313,19 @@ fun Main.Common.Component.ComicActionsSheet(
             title = stringResource(id = R.string.dialog_clear_metadata_title),
             confirmButtonContent = {
                 Acerola.Component.DialogButton(
-                    text = stringResource(id = R.string.action_clear_metadata),
+                    text = stringResource(id = R.string.action_comic_preferences_clear),
                     onClick = {
                         onClearMetadata()
                         showClearMetadataDialog = false
                         onDismiss()
                     },
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
-                    fontWeight = FontWeight.Bold,
+                    variant = ButtonVariant.Destructive,
                 )
             },
             dismissButtonContent = {
                 Acerola.Component.DialogButton(
                     text = stringResource(id = R.string.action_cancel),
                     onClick = { showClearMetadataDialog = false },
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             content = { Text(text = stringResource(id = R.string.dialog_clear_metadata_message)) },
@@ -429,48 +356,27 @@ fun Main.Common.Component.ComicCategorySheet(
         onDismissRequest = onDismiss,
         isScrollable = false,
     ) {
-        Text(
-            text = stringResource(id = R.string.action_bookmark),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Medium),
-        )
+        Acerola.Component.SheetHeader(title = stringResource(id = R.string.title_comic_category))
 
-        HorizontalDivider()
-
-        LazyColumn {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall),
+        ) {
             item {
-                ListItem(
-                    leadingContent = {
-                        RadioButton(
-                            selected = selectedCategoryId == null,
-                            onClick = { onSelect(null) },
-                        )
-                    },
-                    headlineContent = { Text(text = stringResource(id = R.string.action_remove_bookmark)) },
-                    modifier = Modifier.clickable { onSelect(null) },
+                Acerola.Component.OptionRow(
+                    label = stringResource(id = R.string.label_category_none_selected),
+                    selected = selectedCategoryId == null,
+                    onClick = { onSelect(null) },
+                    icon = Icons.Rounded.BookmarkBorder,
                 )
             }
 
             items(items = categories) { category ->
-                ListItem(
-                    leadingContent = {
-                        RadioButton(
-                            selected = selectedCategoryId == category.id,
-                            onClick = { onSelect(category.id) },
-                        )
-                    },
-                    headlineContent = { Text(text = category.name) },
-                    trailingContent = {
-                        Spacer(
-                            modifier =
-                                Modifier
-                                    .size(SizeTokens.IconSmall)
-                                    .drawBehind {
-                                        drawCircle(color = Color(category.color))
-                                    },
-                        )
-                    },
-                    modifier = Modifier.clickable { onSelect(category.id) },
+                CategoryOption(
+                    name = category.name,
+                    color = Color(category.color),
+                    selected = selectedCategoryId == category.id,
+                    onClick = { onSelect(category.id) },
                 )
             }
         }
@@ -492,28 +398,18 @@ fun Main.Common.Component.BatchComicCategorySheet(
         onDismissRequest = onDismiss,
         isScrollable = false,
     ) {
-        Text(
-            text = stringResource(id = R.string.action_bookmark),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Medium),
-        )
+        Acerola.Component.SheetHeader(title = stringResource(id = R.string.title_comic_category))
 
-        HorizontalDivider()
-
-        LazyColumn {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.ExtraSmall),
+        ) {
             item {
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Rounded.BookmarkBorder,
-                            contentDescription = null,
-                        )
-                    },
-                    headlineContent = { Text(text = stringResource(id = R.string.action_remove_bookmark)) },
-                    modifier =
-                        Modifier.clickable {
-                            onRemoveCategory()
-                        },
+                Acerola.Component.OptionRow(
+                    label = stringResource(id = R.string.action_remove_bookmark),
+                    selected = false,
+                    onClick = onRemoveCategory,
+                    icon = Icons.Rounded.BookmarkBorder,
                 )
             }
 
@@ -533,56 +429,45 @@ fun Main.Common.Component.BatchComicCategorySheet(
                         ToggleableState.Off -> stringResource(id = R.string.description_batch_category_none)
                     }
 
-                ListItem(
-                    leadingContent = {
-                        TriStateCheckbox(
-                            state = state,
-                            onClick = {
-                                if (state == ToggleableState.On) {
-                                    onRemoveCategory()
-                                } else {
-                                    onSelectCategory(category.id)
-                                }
-                            },
-                        )
-                    },
-                    headlineContent = { Text(text = category.name) },
-                    supportingContent = {
-                        if (state == ToggleableState.Indeterminate) {
-                            Text(
-                                text = stringResource(id = R.string.description_batch_category_mixed),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                CategoryOption(
+                    name = category.name,
+                    color = Color(category.color),
+                    selected = state == ToggleableState.On,
+                    description = if (state == ToggleableState.Indeterminate) stateDescription else null,
+                    modifier = Modifier.semantics { this.stateDescription = stateDescription },
+                    onClick = {
+                        if (state == ToggleableState.On) {
+                            onRemoveCategory()
+                        } else {
+                            onSelectCategory(category.id)
                         }
                     },
-                    trailingContent = {
-                        Spacer(
-                            modifier =
-                                Modifier
-                                    .size(SizeTokens.IconSmall)
-                                    .drawBehind {
-                                        drawCircle(color = Color(category.color))
-                                    },
-                        )
-                    },
-                    modifier =
-                        Modifier
-                            .semantics {
-                                this.stateDescription = stateDescription
-                            }.clickable {
-                                if (state == ToggleableState.On) {
-                                    onRemoveCategory()
-                                } else {
-                                    onSelectCategory(category.id)
-                                }
-                            },
                 )
             }
         }
 
         Spacer(modifier = Modifier.navigationBarsPadding())
     }
+}
+
+// A bookmark choice: the brand option row with the bookmark's own color as a dot in front.
+@Composable
+private fun CategoryOption(
+    name: String,
+    color: Color,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+) {
+    Acerola.Component.OptionRow(
+        label = name,
+        selected = selected,
+        onClick = onClick,
+        description = description,
+        dotColor = color,
+        modifier = modifier,
+    )
 }
 
 @Preview(name = "Light", showBackground = true)

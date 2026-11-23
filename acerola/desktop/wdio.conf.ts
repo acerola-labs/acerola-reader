@@ -62,7 +62,7 @@ export const config: Options.Testrunner & Capabilities.WithRequestedTestrunnerCa
 		const binaryPath = appPath;
 
 		if (!existsSync(binaryPath)) {
-			throw new Error(`Binário não encontrado em: ${binaryPath}\nRode: cargo tauri build`);
+			throw new Error(`Binary not found at: ${binaryPath}\nRun: cargo tauri build`);
 		}
 
 		appDataDir = mkdtempSync(path.join(os.tmpdir(), 'acerola-wdio-appdata-'));

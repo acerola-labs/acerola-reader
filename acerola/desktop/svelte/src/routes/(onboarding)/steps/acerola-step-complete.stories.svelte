@@ -4,12 +4,12 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaStepComplete,
-		title: 'Páginas/Onboarding/AcerolaStepComplete',
+		title: 'Pages/Onboarding/AcerolaStepComplete',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Último passo do onboarding: confirmação de conclusão.'
+					component: 'Last onboarding step: completion confirmation.'
 				}
 			}
 		}

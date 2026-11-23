@@ -3,10 +3,10 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_KEYS } from '$lib/constants/store-plugin';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/library.commands';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import type { RelayInfo } from '$lib/contracts/network/network.payloads';
+import { STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import type { RelayInfo } from '#lib/contracts/network/network.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useComicInfoPreference } from './use-comic-info.svelte';
 import { useVolumeViewMode } from './use-volume-view-mode.svelte';
@@ -338,7 +338,9 @@ describe('useRelaySettings', () => {
 
 	it('ignores blank or duplicate custom relay urls', async () => {
 		const store = mockStore();
-		invokeMock.mockResolvedValue(relayInfo({ customRelayUrls: ['https://relay-a.test.local'] }));
+		invokeMock.mockResolvedValue(
+			relayInfo({ customRelayUrls: ['https://relay-a.test.local'] })
+		);
 		const hook = await renderHook(useRelaySettings);
 		await hook.loadRelayInfo();
 
@@ -351,7 +353,9 @@ describe('useRelaySettings', () => {
 	it('removes a custom relay url', async () => {
 		const store = mockStore();
 		invokeMock.mockResolvedValue(
-			relayInfo({ customRelayUrls: ['https://relay-a.test.local', 'https://relay-b.test.local'] })
+			relayInfo({
+				customRelayUrls: ['https://relay-a.test.local', 'https://relay-b.test.local']
+			})
 		);
 		const hook = await renderHook(useRelaySettings);
 		await hook.loadRelayInfo();

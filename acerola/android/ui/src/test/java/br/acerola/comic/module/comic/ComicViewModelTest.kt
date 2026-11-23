@@ -225,12 +225,12 @@ class ComicViewModelTest {
             val cap2 = ChapterFileDto(id = 2L, name = "Cap 2", path = "", chapterSort = "2", lastModified = 500L)
 
             viewModel.init(1L, null)
-            // Fornecendo dados ordenados como o banco faria
+            // Providing sorted data as the database would
             localChaptersFlow.value = ChapterPageDto(listOf(cap1, cap2), emptyList(), 20, 0, 2)
             viewModel.updateChapterSort(ChapterSortPreferenceData(ChapterSortType.NUMBER, SortDirection.ASCENDING))
 
             viewModel.chapters.test {
-                // O estado inicial pode ser nulo
+                // The initial state may be null
                 var item = awaitItem()
                 while (item == null || item.archive.items.isEmpty()) {
                     item = awaitItem()
@@ -245,14 +245,14 @@ class ComicViewModelTest {
     fun `should sort decimal chapters correctly - 0_01 before 0_02, 0_10 after 0_09`() =
         runTest {
             // Bug: "0.1".toDouble() == "0.10".toDouble() == 0.1
-            // causava Ch.0.10 aparecer logo após Ch.0.01, antes de Ch.0.02
+            // made Ch.0.10 show up right after Ch.0.01, before Ch.0.02
             val ch001 = ChapterFileDto(id = 1L, name = "Ch. 0.01", path = "", chapterSort = "0.1")
             val ch002 = ChapterFileDto(id = 2L, name = "Ch. 0.02", path = "", chapterSort = "0.2")
             val ch009 = ChapterFileDto(id = 9L, name = "Ch. 0.09", path = "", chapterSort = "0.9")
             val ch010 = ChapterFileDto(id = 10L, name = "Ch. 0.10", path = "", chapterSort = "0.10")
             val ch011 = ChapterFileDto(id = 11L, name = "Ch. 0.11", path = "", chapterSort = "0.11")
 
-            // Fornecendo dados ordenados
+            // Providing sorted data
             localChaptersFlow.value =
                 ChapterPageDto(
                     listOf(ch001, ch002, ch009, ch010, ch011),
@@ -275,9 +275,9 @@ class ComicViewModelTest {
     @Test
     fun `should sort integer chapters correctly - 1 2 9 10 11 100`() =
         runTest {
-            // Bug: "10".toDouble()=10.0 e "100".toDouble()=100.0 parecem ok,
-            // mas "10" < "11" < "100" ficaria errado com sort textual.
-            // Verifica que o sort numérico inteiro funciona.
+            // Bug: "10".toDouble()=10.0 and "100".toDouble()=100.0 look fine,
+            // but "10" < "11" < "100" would be wrong with a text sort.
+            // Checks that the integer numeric sort works.
             val ch1 = ChapterFileDto(id = 1L, name = "Ch. 1", path = "", chapterSort = "1")
             val ch2 = ChapterFileDto(id = 2L, name = "Ch. 2", path = "", chapterSort = "2")
             val ch9 = ChapterFileDto(id = 9L, name = "Ch. 9", path = "", chapterSort = "9")
@@ -285,7 +285,7 @@ class ComicViewModelTest {
             val ch11 = ChapterFileDto(id = 11L, name = "Ch. 11", path = "", chapterSort = "11")
             val ch100 = ChapterFileDto(id = 100L, name = "Ch. 100", path = "", chapterSort = "100")
 
-            // Fornecendo dados ordenados
+            // Providing sorted data
             localChaptersFlow.value =
                 ChapterPageDto(
                     listOf(ch1, ch2, ch9, ch10, ch11, ch100),
@@ -315,7 +315,7 @@ class ComicViewModelTest {
             val ch2 = ChapterFileDto(id = 5L, name = "Ch. 2", path = "", chapterSort = "2")
             val ch10 = ChapterFileDto(id = 6L, name = "Ch. 10", path = "", chapterSort = "10")
 
-            // Fornecendo dados ordenados
+            // Providing sorted data
             localChaptersFlow.value =
                 ChapterPageDto(
                     listOf(ch001, ch010, ch1, ch1dot5, ch2, ch10),
@@ -342,7 +342,7 @@ class ComicViewModelTest {
             val ch002 = ChapterFileDto(id = 2L, name = "Ch. 0.02", path = "", chapterSort = "0.2")
             val ch010 = ChapterFileDto(id = 3L, name = "Ch. 0.10", path = "", chapterSort = "0.10")
 
-            // Fornecendo dados em ordem ASCENDENTE do banco. O ViewModel irá invertê-los.
+            // Providing data in ASCENDING order from the database. The ViewModel will reverse it.
             localChaptersFlow.value =
                 ChapterPageDto(
                     listOf(ch001, ch002, ch010),
@@ -478,9 +478,9 @@ class ComicViewModelTest {
                     ChapterFileDto(id = n.toLong(), name = "Ch. $n", path = "", chapterSort = n.toString())
                 }
 
-            // Lista completa vinda do banco (sem paginação)
+            // Full list coming from the database (no pagination)
             allChaptersFlow.value = ChapterPageDto(fullChapters, emptyList(), 20, 0, 5)
-            // Apenas os 2 primeiros capítulos foram carregados na página atual (scroll infinito)
+            // Only the first 2 chapters were loaded on the current page (infinite scroll)
             localChaptersFlow.value = ChapterPageDto(fullChapters.take(2), emptyList(), 2, 0, 5)
 
             viewModel.allChapters.test {
@@ -518,19 +518,19 @@ class ComicViewModelTest {
 
             coEvery { syncComicWithPeerUseCase(any(), any(), any(), any()) } returns SyncWithPeerResult.STARTED
 
-            // Seleciona só "Cap 1" (chapterSort "1") — "Cap 2" fica de fora.
+            // Selects only "Cap 1" (chapterSort "1") — "Cap 2" is left out.
             viewModel.toggleChapterSelection("1")
             viewModel.sendSelectedChaptersToPeer("peer-1")
 
-            // Escopa por RÓTULO ("Cap 1"), não por chapterSort — é a chave que o protocolo de
-            // arquivos usa (`FileChapterInfo.chapter`), diferente do push de histórico. Roda
-            // dentro de `viewModelScope.launch(Dispatchers.IO)` — timeout em vez de coVerify
-            // direto pra não flakiar numa corrida com a thread de IO real.
+            // Scopes by LABEL ("Cap 1"), not by chapterSort — it's the key the file protocol
+            // uses (`FileChapterInfo.chapter`), unlike the history push. Runs
+            // inside `viewModelScope.launch(Dispatchers.IO)` — timeout instead of a direct coVerify
+            // so it doesn't flake in a race with the real IO thread.
             coVerify(timeout = 2000) {
                 syncComicWithPeerUseCase("peer-1", any(), SyncDirection.PUSH, listOf("Cap 1"))
             }
-            // Não deve mais usar o push de histórico pra este fluxo — ele continua existindo,
-            // só não é mais o que o botão "Enviar" dispara.
+            // Must no longer use the history push for this flow — it still exists,
+            // it's just no longer what the "Send" button fires.
             coVerify(exactly = 0) { syncHistoryEntryWithPeerUseCase(any(), any(), any()) }
         }
 
@@ -553,13 +553,13 @@ class ComicViewModelTest {
 
             viewModel.syncWithPeer("peer-1", SyncDirection.PUSH)
 
-            // Confirma que o `when` já rodou até o fim (a chamada mockada aconteceu) antes de
-            // checar "nada mais aconteceu" — sem isso a asserção abaixo poderia passar só por
-            // ainda não ter dado tempo da coroutine em `Dispatchers.IO` rodar.
+            // Confirms the `when` already ran to completion (the mocked call happened) before
+            // checking "nothing else happened" — without this the assertion below could pass just
+            // because the coroutine on `Dispatchers.IO` hadn't had time to run yet.
             coVerify(timeout = 2000) { syncComicWithPeerUseCase("peer-1", any(), SyncDirection.PUSH, any()) }
 
-            // Recusar dados móveis não é "peer não pareado" — não deve mostrar esse erro nem
-            // deixar o spinner de sincronização ligado esperando um evento que nunca chega.
+            // Declining mobile data isn't "peer not paired" — must not show that error nor
+            // leave the sync spinner on waiting for an event that never arrives.
             assertThat(viewModel.isSyncingWithPeer.value).isFalse()
             viewModel.uiEvents.test {
                 expectNoEvents()

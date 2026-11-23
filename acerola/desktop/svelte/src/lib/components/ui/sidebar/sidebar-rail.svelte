@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils/cn.utils';
+	import { cn, type WithElementRef } from '#lib/utils/cn.util.ts';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useSidebar } from './context.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		ref = $bindable(null),

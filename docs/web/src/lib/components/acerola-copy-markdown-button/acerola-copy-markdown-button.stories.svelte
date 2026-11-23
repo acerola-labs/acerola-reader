@@ -3,27 +3,34 @@
 	import AcerolaCopyMarkdownButton from './acerola-copy-markdown-button.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaCopyMarkdownButton',
+		title: 'Primitives/AcerolaCopyMarkdownButton',
 		component: AcerolaCopyMarkdownButton,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Botão com ícone e rótulo visível que copia o fonte Markdown de uma página de documentação (mais um comentário com a URL) para a área de transferência, para colar em uma IA e pedir um resumo. Mostra feedback de sucesso ou falha por alguns segundos.'
+						'Button with an icon and visible label that copies a documentation page’s Markdown source (plus a comment with the URL) to the clipboard, to paste into an AI and ask for a summary. Shows success or failure feedback for a few seconds.'
 				}
 			}
 		},
 		argTypes: {
-			raw: { description: 'Fonte Markdown completo da página (com frontmatter).', control: 'text' },
-			url: {
-				description: 'URL canônica da página, incluída como comentário antes do Markdown.',
+			raw: {
+				description: 'Full Markdown source of the page (with frontmatter).',
 				control: 'text'
 			},
-			label: { description: 'Texto acessível do botão antes de copiar.', control: 'text' },
-			copiedLabel: { description: 'Texto acessível do botão logo após copiar.', control: 'text' },
+			url: {
+				description:
+					'Canonical URL of the page, included as a comment before the Markdown.',
+				control: 'text'
+			},
+			label: { description: 'Accessible button text before copying.', control: 'text' },
+			copiedLabel: {
+				description: 'Accessible button text right after copying.',
+				control: 'text'
+			},
 			failedLabel: {
-				description: 'Texto acessível do botão quando a cópia falha.',
+				description: 'Accessible button text when copying fails.',
 				control: 'text'
 			}
 		}
@@ -34,12 +41,12 @@
 	name="Default"
 	args={{
 		raw: '---\ntitle: Primeiros passos\nsection: Primeiros passos\n---\n\n# Primeiros passos\n\nConteúdo de exemplo.',
-		url: 'https://docs.acerola.app/docs/getting-started'
+		url: 'https://docs.reader.acerola.app/docs/getting-started'
 	}}
 	parameters={{
 		docs: {
 			description: {
-				story: 'Estado padrão, pronto para copiar o Markdown da página atual.'
+				story: 'Default state, ready to copy the current page’s Markdown.'
 			}
 		}
 	}}
@@ -49,15 +56,14 @@
 	name="CustomLabels"
 	args={{
 		raw: '---\ntitle: Contribuindo\n---\n\n# Contribuindo',
-		url: 'https://docs.acerola.app/docs/contributing-overview',
+		url: 'https://docs.reader.acerola.app/docs/contributing-overview',
 		label: 'Copiar como Markdown',
 		copiedLabel: 'Copiado'
 	}}
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Rótulos acessíveis customizados (por exemplo, para uso fora do contexto i18n padrão).'
+				story: 'Custom accessible labels (for example, for use outside the default i18n context).'
 			}
 		}
 	}}
@@ -67,14 +73,13 @@
 	name="CustomFailedLabel"
 	args={{
 		raw: '# Doc',
-		url: 'https://docs.acerola.app/docs/doc',
+		url: 'https://docs.reader.acerola.app/docs/doc',
 		failedLabel: 'Falha ao copiar'
 	}}
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Rótulo de falha customizado, mostrado quando a área de transferência rejeita a cópia (ex.: contexto não seguro ou permissão negada).'
+				story: 'Custom failure label, shown when the clipboard rejects the copy (e.g. insecure context or permission denied).'
 			}
 		}
 	}}

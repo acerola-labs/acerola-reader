@@ -141,7 +141,7 @@ pub async fn setup_test_db() -> sqlx::SqlitePool {
     pool
 }
 
-/// Pool com seeds de produção aplicados — usado quando o teste depende dos templates padrão.
+/// Pool with production seeds applied — used when the test depends on the default templates.
 pub async fn setup_test_db_with_seeds() -> sqlx::SqlitePool {
     let pool = setup_test_db().await;
 
@@ -153,12 +153,12 @@ pub async fn setup_test_db_with_seeds() -> sqlx::SqlitePool {
     pool
 }
 
-/// Zera o `last_modified` de todos os comics — usado para forçar reprocessamento no incremental.
+/// Resets `last_modified` of every comic — used to force reprocessing in the incremental scan.
 pub async fn reset_comics_last_modified(pool: &sqlx::SqlitePool) {
     sqlx::query("UPDATE comic_directory SET last_modified = 0").execute(pool).await.unwrap();
 }
 
-/// Pool com um comic_directory já inserido — usado por testes de chapter que precisam da FK.
+/// Pool with a comic_directory already inserted — used by chapter tests that need the FK.
 pub async fn setup_test_db_with_comic() -> sqlx::SqlitePool {
     let pool = setup_test_db().await;
 
@@ -173,7 +173,7 @@ pub async fn setup_test_db_with_comic() -> sqlx::SqlitePool {
     pool
 }
 
-/// Insere um comic_directory mínimo (sem capa nem metadados).
+/// Inserts a minimal comic_directory (no cover or metadata).
 pub async fn insert_comic_directory(pool: &sqlx::SqlitePool, id: i64, name: &str, path: &str) {
     sqlx::query(
         "INSERT INTO comic_directory (id, name, path, last_modified, external_sync_enabled, hidden)
@@ -187,7 +187,7 @@ pub async fn insert_comic_directory(pool: &sqlx::SqlitePool, id: i64, name: &str
     .unwrap();
 }
 
-/// Insere um comic_directory com capa e versão de capa — usado pelos testes de browse de capa.
+/// Inserts a comic_directory with cover and cover version — used by the cover browse tests.
 pub async fn insert_comic_directory_with_cover(
     pool: &sqlx::SqlitePool, id: i64, name: &str, path: &str, cover_path: &str, cover_version: i64,
 ) {
@@ -205,7 +205,7 @@ pub async fn insert_comic_directory_with_cover(
     .unwrap();
 }
 
-/// Insere metadados mínimos de um quadrinho, vinculados por `comic_directory_fk`.
+/// Inserts minimal metadata for a comic, linked by `comic_directory_fk`.
 pub async fn insert_comic_metadata(
     pool: &sqlx::SqlitePool, id: i64, comic_directory_fk: i64, title: &str,
 ) {
@@ -220,7 +220,7 @@ pub async fn insert_comic_metadata(
     .unwrap();
 }
 
-/// Insere um capítulo mínimo vinculado a um comic_directory.
+/// Inserts a minimal chapter linked to a comic_directory.
 pub async fn insert_chapter_archive(pool: &sqlx::SqlitePool, id: i64, comic_directory_fk: i64) {
     sqlx::query(
         "INSERT INTO chapter_archive (id, chapter, path, chapter_sort, is_special, comic_directory_fk, last_modified)
@@ -234,7 +234,7 @@ pub async fn insert_chapter_archive(pool: &sqlx::SqlitePool, id: i64, comic_dire
     .unwrap();
 }
 
-/// Insere um capítulo com checksum — usado por testes de sync de arquivos que comparam hash.
+/// Inserts a chapter with a checksum — used by file sync tests that compare hashes.
 pub async fn insert_chapter_archive_with_checksum(
     pool: &sqlx::SqlitePool, id: i64, comic_directory_fk: i64, chapter: &str, path: &str,
     checksum: &str,
@@ -253,7 +253,7 @@ pub async fn insert_chapter_archive_with_checksum(
     .unwrap();
 }
 
-/// Insere o progresso de leitura de um quadrinho — chave única por `comic_directory_id`.
+/// Inserts a comic's reading progress — unique key per `comic_directory_id`.
 pub async fn insert_reading_history(
     pool: &sqlx::SqlitePool, comic_directory_id: i64, chapter_archive_id: i64, last_page: i64,
 ) {
@@ -269,7 +269,7 @@ pub async fn insert_reading_history(
     .unwrap();
 }
 
-/// Marca um capítulo como lido — chave composta `comic_directory_id` + `chapter_archive_id`.
+/// Marks a chapter as read — composite key `comic_directory_id` + `chapter_archive_id`.
 pub async fn insert_chapter_read(
     pool: &sqlx::SqlitePool, comic_directory_id: i64, chapter_archive_id: i64,
 ) {
@@ -283,7 +283,7 @@ pub async fn insert_chapter_read(
     .unwrap();
 }
 
-/// Insere um quadrinho com N capítulos e metadados — usado pelos testes de ordenação/filtro da Home.
+/// Inserts a comic with N chapters and metadata — used by the Home sort/filter tests.
 pub async fn insert_comic_with_chapters(
     pool: &sqlx::SqlitePool, id: i64, name: &str, title: &str, chapter_count: i64,
 ) {
@@ -306,7 +306,7 @@ pub async fn insert_comic_with_chapters(
     }
 }
 
-/// Pool com um comic_directory e volumes já inseridos.
+/// Pool with a comic_directory and volumes already inserted.
 pub async fn setup_test_db_with_volumes() -> sqlx::SqlitePool {
     let pool = setup_test_db_with_comic().await;
 

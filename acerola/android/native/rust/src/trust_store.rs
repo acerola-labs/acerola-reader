@@ -10,14 +10,14 @@ const PEER_TRUSTED_FIRST_TIME_EVENT: &str = "peer:trusted_first_time";
 const TRUSTED_KEY: &str = "trusted";
 const BLOCKED_KEY: &str = "blocked";
 
-/// Implementação de `TrustedPeerStore` que persiste via [`SecureBlobStore`] (Kotlin,
-/// `EncryptedSharedPreferences` protegida pelo Android Keystore) em vez de arquivos texto
-/// (um id por linha) — mantém a confiança TOFU permanente entre reinícios do processo e entre
-/// trocas de modo (local/relay), agora protegida em repouso.
+/// `TrustedPeerStore` implementation that persists via [`SecureBlobStore`] (Kotlin,
+/// `EncryptedSharedPreferences` protected by the Android Keystore) instead of text files
+/// (one id per line) — keeps TOFU trust permanent across process restarts and across
+/// mode switches (local/relay), now protected at rest.
 ///
-/// Ao registrar um peer como confiável pela primeira vez, emite o evento
-/// `peer:trusted_first_time` pelo mesmo canal do `P2PCallback`, já que a lib
-/// (`TofuGuard`) não expõe um hook próprio para esse instante.
+/// When registering a peer as trusted for the first time, emits the
+/// `peer:trusted_first_time` event through the same `P2PCallback` channel, since the lib
+/// (`TofuGuard`) does not expose its own hook for that moment.
 pub(crate) struct SecureTrustedStore {
     store: Arc<dyn SecureBlobStore>,
     trusted: RwLock<HashSet<String>>,
@@ -26,10 +26,10 @@ pub(crate) struct SecureTrustedStore {
 }
 
 impl SecureTrustedStore {
-    /// `legacy_dir`, se fornecido e ainda tiver `trusted.txt`/`blocked.txt` (formato antigo,
-    /// texto puro com um id por linha), tem seu conteúdo migrado pro storage seguro numa única
-    /// vez — sem isso, a lista de confiança TOFU existente seria perdida no primeiro update e
-    /// todo peer já pareado pediria confirmação de novo.
+    /// `legacy_dir`, if given and still holding `trusted.txt`/`blocked.txt` (old format,
+    /// plain text with one id per line), has its content migrated to the secure storage
+    /// once — without this, the existing TOFU trust list would be lost on the first update and
+    /// every already paired peer would ask for confirmation again.
     pub(crate) fn open(
         store: Arc<dyn SecureBlobStore>,
         emit: EventEmitter,
@@ -55,9 +55,9 @@ impl SecureTrustedStore {
         Self::migrate_legacy_file(store, &legacy_dir.join("blocked.txt"), BLOCKED_KEY);
     }
 
-    /// Só migra se o storage seguro confirmar (`Ok(None)`) que a chave está genuinamente
-    /// vazia — em caso de falha real de backend (`Err`), não migra nem apaga o arquivo
-    /// legado, pra não arriscar perder o único dado bom que ainda existe.
+    /// Only migrates if the secure storage confirms (`Ok(None)`) that the key is genuinely
+    /// empty — on a real backend failure (`Err`), it neither migrates nor deletes the legacy
+    /// file, so as not to risk losing the only good data that still exists.
     fn migrate_legacy_file(store: &Arc<dyn SecureBlobStore>, path: &Path, key: &str) {
         match store.load_blob(key.to_string()) {
             Ok(None) => {
@@ -85,7 +85,7 @@ impl SecureTrustedStore {
                 std::fs::remove_file(path).ok();
             }
             Ok(Some(_)) => {
-                // Já migrado numa execução anterior — só limpa o arquivo antigo.
+                // Already migrated in a previous run — just clean up the old file.
                 std::fs::remove_file(path).ok();
             }
             Err(err) => {
@@ -105,11 +105,11 @@ impl SecureTrustedStore {
         }
     }
 
-    /// Remove um peer da lista de confiáveis — usado quando o usuário desempareia um
-    /// dispositivo pela UI. Não mexe em `blocked`, só desfaz a confiança concedida: se esse
-    /// peer tentar se conectar de novo depois, passa pelo mesmo fluxo TOFU de um peer novo
-    /// (ver `TofuGuard::into_validator` na acerola-p2p — reconhece e reconfia
-    /// automaticamente, exatamente como faria com um dispositivo nunca visto).
+    /// Removes a peer from the trusted list — used when the user unpairs a
+    /// device from the UI. Does not touch `blocked`, only undoes the granted trust: if that
+    /// peer tries to connect again later, it goes through the same TOFU flow as a new peer
+    /// (see `TofuGuard::into_validator` in acerola-p2p — it recognizes and re-trusts
+    /// automatically, exactly as it would with a never-seen device).
     pub(crate) async fn remove(&self, id: &str) {
         let mut trusted = self.trusted.write().await;
         trusted.remove(id);

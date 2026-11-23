@@ -12,10 +12,10 @@ import br.acerola.comic.module.main.Main
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Tela cheia de biblioteca remota de UM peer, aberta a partir do FAB da Home — mesmo padrão de
+ * Full-screen remote library of a SINGLE peer, opened from the Home FAB — same pattern as
  * [br.acerola.comic.module.comic.ComicActivity]/[br.acerola.comic.module.reader.ReaderActivity]
- * (Activity própria + dados via Intent extra, não NavArgs, já que o `peerId` é escolhido antes
- * de navegar, via [br.acerola.comic.module.main.common.component.PeerPickerSheet]).
+ * (its own Activity + data via Intent extra, not NavArgs, since the `peerId` is picked before
+ * navigating, via [br.acerola.comic.module.main.common.component.PeerPickerSheet]).
  */
 @AndroidEntryPoint
 class RemoteLibraryActivity(

@@ -8,41 +8,26 @@
 		"og": {
 			"title": "Acerola — Leitor de quadrinhos e mangás local-first",
 			"description": "Leia seus quadrinhos e mangás em qualquer dispositivo. Acerola sincroniza sua biblioteca direto entre seus dispositivos via P2P — sem nuvem, sem conta, sem cadeado.",
-			"image_alt": "Captura de tela da página inicial dos docs do Acerola"
+			"imageAlt": "Captura de tela da página inicial dos docs do Acerola"
 		}
 	},
 	"nav": {
 		"docs": "Docs",
 		"github": "GitHub",
-		"search_placeholder": "Pesquisar na documentação...",
-		"search_shortcut_hint": "Buscar",
-		"menu_toggle": "Alternar menu",
-		"skip_to_content": "Pular para o conteúdo"
+		"searchPlaceholder": "Pesquisar na documentação...",
+		"searchShortcutHint": "Buscar",
+		"menuToggle": "Alternar menu",
+		"skipToContent": "Pular para o conteúdo",
+		"menuTitle": "Menu",
+		"menuDescription": "Navegação da documentação",
+		"home": "Início",
+		"switchLanguage": "Mudar idioma"
 	},
-	"theme_picker": {
+	"themePicker": {
 		"title": "Mudar tema",
 		"light": "Claro",
 		"dark": "Escuro",
 		"system": "Sistema"
-	},
-	"color_picker": {
-		"title": "Mudar paleta de cores",
-		"catppuccin": {
-			"name": "Catppuccin",
-			"desc": "Paleta pastel suave com tons roxos e rosados"
-		},
-		"nord": {
-			"name": "Nord",
-			"desc": "Paleta ártica inspirada no norte escandinavo"
-		},
-		"dracula": {
-			"name": "Dracula",
-			"desc": "Cores vibrantes sobre fundo escuro ou claro"
-		},
-		"tokyo-night": {
-			"name": "Tokyo Night",
-			"desc": "Tema escuro e claro limpo inspirado pelas luzes neon de Tóquio"
-		}
 	},
 	"sidebar": {
 		"toggle": "Alternar barra lateral"
@@ -51,10 +36,10 @@
 		"title": "Pesquisar",
 		"placeholder": "Digite para pesquisar...",
 		"idle": "Digite para buscar em toda a documentação.",
-		"no_results": "Nenhum resultado encontrado.",
+		"noResults": "Nenhum resultado encontrado.",
 		"close": "Fechar",
 		"loading": "Carregando índice de busca...",
-		"unavailable_dev": "Busca disponível só no build de produção (`npm run build`)."
+		"unavailableDev": "Busca disponível só no build de produção (`npm run build`)."
 	},
 	"toc": {
 		"title": "Nesta página"
@@ -67,58 +52,60 @@
 		}
 	},
 	"mermaid": {
-		"zoom_in": "Aumentar zoom",
-		"zoom_out": "Diminuir zoom",
+		"zoomIn": "Aumentar zoom",
+		"zoomOut": "Diminuir zoom",
 		"reset": "Redefinir",
-		"pan_up": "Mover para cima",
-		"pan_down": "Mover para baixo",
-		"pan_left": "Mover para a esquerda",
-		"pan_right": "Mover para a direita"
+		"panUp": "Mover para cima",
+		"panDown": "Mover para baixo",
+		"panLeft": "Mover para a esquerda",
+		"panRight": "Mover para a direita"
 	},
-	"prev_next": {
+	"prevNext": {
 		"previous": "Anterior",
 		"next": "Próximo"
 	},
 	"footer": {
-		"edit_page": "Editar esta página no GitHub",
+		"editPage": "Editar esta página no GitHub",
 		"license": "Código sob a licença MPL-2.0"
 	},
 	"landing": {
-		"hero_kicker": "Leitor local-first de quadrinhos e mangás",
-		"hero_title": "Leia seus quadrinhos e mangás em qualquer dispositivo. Sem conta, sem nuvem.",
-		"hero_subtitle": "Sua biblioteca fica nos seus dispositivos e sincroniza direto entre eles por P2P criptografado — nenhum servidor guarda ou acessa seus dados.",
-		"cta_get_started": "Começar",
-		"cta_github": "Ver no GitHub",
-		"scroll_hint": "Role para explorar",
+		"heroKicker": "Leitor local-first de quadrinhos e mangás",
+		"heroTitle": "Leia seus quadrinhos e mangás em qualquer dispositivo. Sem conta, sem nuvem.",
+		"heroSubtitle": "Sua biblioteca fica nos seus dispositivos e sincroniza direto entre eles por P2P criptografado — nenhum servidor guarda ou acessa seus dados.",
+		"ctaGetStarted": "Começar",
+		"ctaGithub": "Ver no GitHub",
+		"scrollHint": "Role para explorar",
 		"facts": {
-			"no_cloud": "Sem nuvem",
-			"no_account": "Sem conta",
-			"open_source": "Código aberto"
+			"noCloud": "Sem nuvem",
+			"noAccount": "Sem conta",
+			"openSource": "Código aberto"
 		},
 		"features": {
 			"title": "Construído em torno de uma ideia: a biblioteca é sua",
-			"no_cloud": {
+			"noCloud": {
 				"title": "Sem nuvem, sem conta",
 				"desc": "Seus quadrinhos, progresso e metadados ficam nos seus dispositivos. Sem cadastro e sem servidor central."
 			},
-			"p2p_sync": {
+			"p2pSync": {
 				"title": "Sincronização P2P direta",
 				"desc": "Os dispositivos se conectam direto um no outro via iroh/QUIC. Quando a conexão direta não é possível, um relay só ajuda os peers a se encontrarem — ele nunca vê sua biblioteca."
 			},
-			"open_source": {
+			"openSource": {
 				"title": "Código aberto",
 				"desc": "Toda plataforma — Android, desktop e as bibliotecas de sincronização — é MPL-2.0 e está aberta pra qualquer um ler, compilar ou auditar."
-			}
+			},
+			"eyebrow": "Princípios"
 		},
-		"how_it_works": {
+		"howItWorks": {
 			"title": "Da instalação à sincronização, em três passos",
 			"install": "Instale o Acerola nos dispositivos que quer sincronizar — baixe o APK do Android ou compile o app desktop a partir do código.",
 			"pair": "Abra a tela Rede nos dois dispositivos e escaneie o QR code exibido em um usando o outro.",
 			"confirm": "Confirme o pareamento. A partir daí, sua biblioteca e o progresso de leitura sincronizam automaticamente, direto entre os dispositivos.",
-			"note_title": "Sem rede local?",
-			"note_desc": "O Acerola usa um relay (próprio ou hospedado por você) só pra ajudar os peers a se encontrarem — sem abrir portas, e ele nunca toca na sua biblioteca."
+			"noteTitle": "Sem rede local?",
+			"noteDesc": "O Acerola usa um relay (próprio ou hospedado por você) só pra ajudar os peers a se encontrarem — sem abrir portas, e ele nunca toca na sua biblioteca.",
+			"eyebrow": "Como funciona"
 		},
-		"platforms_title": "Um ecossistema, várias plataformas",
+		"platformsTitle": "Um ecossistema, várias plataformas",
 		"platform": {
 			"android": {
 				"title": "Android",
@@ -136,15 +123,104 @@
 				"title": "lib/p2p",
 				"desc": "Biblioteca P2P compartilhada em Rust, sobre iroh/QUIC."
 			},
-			"relay_lib": {
+			"relayLib": {
 				"title": "lib/relay",
 				"desc": "Código do relay iroh vendorizado, base para o serviço de relay."
 			}
-		}
+		},
+		"architecture": {
+			"sectionTitle": "Arquitetura P2P e código aberto",
+			"eyebrow": "Engenharia local-first",
+			"title": "Construído para dar controle total aos seus dados",
+			"desc": "Veja como o Acerola combina Rust, iroh/QUIC e padrões abertos para garantir privacidade e velocidade máxima.",
+			"p2p": {
+				"title": "Protocolo P2P direto",
+				"desc": "Conexão segura direta entre seus dispositivos usando QUIC e iroh. Sem servidores intermediários para ler ou armazenar seus quadrinhos."
+			},
+			"relay": {
+				"title": "Relay self-hosted opcional",
+				"desc": "Hospede seu próprio relay em um servidor VPS com Caddy ou Docker para conectar dispositivos atrás de NAT restritivo."
+			},
+			"metadata": {
+				"title": "Metadados e padrões abertos",
+				"desc": "Compatibilidade integral com ComicInfo.xml e sincronização automática com MangaDex e AniList sem lock-in."
+			},
+			"tabs": {
+				"p2pLabel": "Sincronização P2P",
+				"p2pCommentConnect": "// Conexão direta P2P criptografada com iroh/QUIC",
+				"p2pCommentTransfer": "// Transfere o índice de capítulos e histórico de leitura",
+				"caddyLabel": "Relay Caddy",
+				"caddyComment": "# Proxy reverso Caddy para seu relay Acerola autohospedado"
+			}
+		},
+		"platformsEyebrow": "Plataformas"
+	},
+	"marketingCode": {
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"copyAria": "Copiar código",
+		"copiedAria": "Código copiado"
+	},
+	"copyCard": {
+		"copy": "Copiar",
+		"copied": "Copiado"
 	},
 	"error": {
-		"404_title": "Página não encontrada",
-		"404_desc": "A página que você procura não existe ou foi movida.",
-		"back_home": "Voltar para o início"
+		"eyebrow": "Erro {status}",
+		"eyebrowOffline": "Sem conexão",
+		"sticker": "Ops!",
+		"actions": {
+			"home": "Ir para o início",
+			"back": "Voltar",
+			"retry": "Tentar de novo"
+		},
+		"badRequest": {
+			"title": "Algo no pedido não fechou",
+			"text": "O endereço ou os dados enviados vieram de um jeito que a gente não entende. Confira e tente de novo pelo início."
+		},
+		"unauthorized": {
+			"title": "Entre para continuar",
+			"text": "Esta página é só para quem entrou na conta. Entre e volte aqui."
+		},
+		"forbidden": {
+			"title": "Esta página não é para você",
+			"text": "Sua conta não tem acesso a isto. Se acha que deveria ter, fale com quem cuida do app."
+		},
+		"notFound": {
+			"title": "Página não encontrada",
+			"text": "O endereço pode ter mudado ou nunca ter existido. Volte ao início e siga de lá."
+		},
+		"timeout": {
+			"title": "Demorou demais",
+			"text": "A resposta não chegou a tempo. Tente de novo em instantes."
+		},
+		"tooMany": {
+			"title": "Calma, muitos pedidos",
+			"text": "Foram muitos pedidos em pouco tempo. Espere um minuto e tente de novo."
+		},
+		"server": {
+			"title": "Algo quebrou do nosso lado",
+			"text": "O erro foi nosso, não seu. Tente de novo; se continuar, volte mais tarde."
+		},
+		"unavailable": {
+			"title": "Fora do ar por um momento",
+			"text": "O serviço está em manutenção ou sobrecarregado. Tente de novo em alguns minutos."
+		},
+		"offline": {
+			"title": "Você está sem internet",
+			"text": "Confira o Wi-Fi ou os dados móveis e tente de novo."
+		},
+		"unknown": {
+			"title": "Algo deu errado",
+			"text": "Não sabemos bem o que houve. Tente de novo; se continuar, volte ao início."
+		}
+	},
+	"common": {
+		"copy": "Copiar",
+		"copied": "Copiado"
+	},
+	"code": {
+		"copy": "Copiar código",
+		"tabs": "Arquivos"
 	}
 }

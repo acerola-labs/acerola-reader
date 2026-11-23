@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="description_sync_mangadex_remote_info_supporting">
-        <item quantity="one">Busca metadados do comic por titulo.</item>
-        <item quantity="other">Busca metadados dos comics por titulos.</item>
+        <item quantity="one">Busca os metadados do quadrinho pelo título.</item>
+        <item quantity="other">Busca os metadados dos quadrinhos pelo título.</item>
     </plurals>
 
     <plurals name="label_volume_header_chapter_count">

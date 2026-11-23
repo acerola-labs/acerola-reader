@@ -3,13 +3,13 @@
 	import AcerolaNotification, { notificationStore } from './acerola-notification.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaNotification',
+		title: 'Composites/AcerolaNotification',
 		component: AcerolaNotification,
 		tags: ['autodocs']
 	});
 
-	// Ações no template (ex.: {@const}) não podem mutar $state — mutar aqui,
-	// numa action `use:`, roda após o mount, como um efeito.
+	// Template actions (e.g. {@const}) can't mutate $state — mutating here,
+	// in a `use:` action, runs after mount, like an effect.
 	function seedNotifications(_node: HTMLElement) {
 		notificationStore.notify.success('Scan concluído!');
 		notificationStore.notify.error('Falha ao sincronizar', {
@@ -25,23 +25,23 @@
 		notificationStore.notify.success('Scan concluído!', {
 			description: '42 quadrinhos encontrados',
 			duration: 0,
-			action: { label: 'Ver biblioteca', onClick: () => console.log('navegar') }
+			action: { label: 'Ver biblioteca', onClick: () => console.log('navigate') }
 		});
 	}
 </script>
 
-<Story name="Vazia" asChild>
+<Story name="Empty" asChild>
 	<AcerolaNotification />
 </Story>
 
-<Story name="Com Notificações" asChild>
+<Story name="With Notifications" asChild>
 	{#snippet children()}
 		<div use:seedNotifications class="hidden"></div>
 		<AcerolaNotification />
 	{/snippet}
 </Story>
 
-<Story name="Com Ação" asChild>
+<Story name="With Action" asChild>
 	{#snippet children()}
 		<div use:seedActionNotification class="hidden"></div>
 		<AcerolaNotification />

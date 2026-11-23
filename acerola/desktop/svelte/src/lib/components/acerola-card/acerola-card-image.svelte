@@ -31,8 +31,8 @@
 
 <script lang="ts">
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
-	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
-	import { cn } from '$lib/utils/cn.utils';
+	import { AspectRatio } from '#lib/components/ui/aspect-ratio/index.ts';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let {
 		ui,
@@ -57,7 +57,7 @@
 
 <div
 	class={cn(
-		'group relative transition-transform duration-300 hover:-translate-y-2 hover:scale-[1.02]',
+		'group relative transition-transform duration-300 ease-brand hover:-translate-y-1',
 		sizeClasses[size],
 		ui?.class
 	)}
@@ -68,9 +68,9 @@
 
 	<AspectRatio
 		ratio={2 / 3}
-		class="relative rounded-xl bg-surface shadow-lg transition-shadow duration-300 group-hover:shadow-2xl group-hover:shadow-primary/20"
+		class="relative rounded-tile bg-surface shadow-lift transition-shadow duration-300 ease-brand group-hover:shadow-float"
 	>
-		<div class="h-full w-full overflow-hidden rounded-xl">
+		<div class="h-full w-full overflow-hidden rounded-tile">
 			<button
 				type="button"
 				class="relative h-full w-full cursor-pointer text-left"
@@ -80,7 +80,7 @@
 					<img
 						src={data.cover}
 						alt={data.title}
-						class="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+						class="h-full w-full object-cover object-top transition-transform duration-300 ease-brand group-hover:scale-105"
 					/>
 				{:else if placeholder}
 					{@render placeholder()}
@@ -97,10 +97,10 @@
 
 				{#if data.description}
 					<div
-						class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-crust via-crust/30 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+						class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-scrim/80 via-scrim/30 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 					>
 						<p
-							class="line-clamp-3 translate-y-2 text-xs text-foreground transition-transform duration-300 group-hover:translate-y-0"
+							class="line-clamp-3 translate-y-2 text-xs text-on-scrim transition-transform duration-300 group-hover:translate-y-0"
 						>
 							{data.description}
 						</p>
@@ -123,7 +123,7 @@
 		<div class="mt-3 flex items-start justify-between gap-2 px-1">
 			<div class="min-w-0 flex-1">
 				<h3
-					class="line-clamp-1 text-sm font-bold transition-colors duration-200 group-hover:text-primary"
+					class="line-clamp-1 text-sm font-black tracking-tight transition-colors duration-200 group-hover:text-primary"
 				>
 					{data.title}
 				</h3>

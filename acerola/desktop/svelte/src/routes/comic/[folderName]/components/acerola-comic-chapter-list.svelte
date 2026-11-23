@@ -41,16 +41,16 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import AcerolaHeroButton from '$lib/components/acerola-hero-button/acerola-hero-button.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaPopover from '$lib/components/acerola-popover/acerola-popover.svelte';
+	import AcerolaHeroButton from '#lib/components/acerola-hero-button/acerola-hero-button.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaPopover from '#lib/components/acerola-popover/acerola-popover.svelte';
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import Check from '@lucide/svelte/icons/check';
 	import CheckSquare from '@lucide/svelte/icons/check-square';
 	import MoreVertical from '@lucide/svelte/icons/more-vertical';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { data, events }: ComicChapterListProps = $props();
 
@@ -58,46 +58,43 @@
 	let openingChapterId = $state<string | null>(null);
 
 	/**
-	 * ITEM_HEIGHT (112px): Altura total do slot (item + gap).
-	 * BUTTON_HEIGHT (100px): Altura real do botão para caber Title + Description + Padding.
+	 * ITEM_HEIGHT (80px): Total slot height (item + gap).
+	 * BUTTON_HEIGHT (72px): Real row height (brand list row: p-4 + size-10 icon).
 	 */
-	const ITEM_HEIGHT = 112;
-	const BUTTON_HEIGHT = 100;
+	const ITEM_HEIGHT = 80;
+	const BUTTON_HEIGHT = 72;
 
 	const totalPages = $derived(Math.ceil(data.totalChapters / data.pageSize));
 
-	// Mesma cor de destaque que o círculo/badge do ícone usa pra cada estado — conflito
-	// tem prioridade sobre lido (precisa de resolução do usuário, é mais urgente que um
-	// capítulo já lido).
+	// Same highlight color the icon circle/badge uses for each state — conflict takes
+	// priority over read (it needs the user to resolve it, more urgent than an already read
+	// chapter).
 	function rowClass(chapter: Chapter, isSelected: boolean, isOpening: boolean): string {
 		const base = 'h-full flex-nowrap overflow-hidden';
-		const selectedRing = isSelected
-			? ' ring-2 ring-primary ring-offset-2 ring-offset-background'
-			: '';
+		const selectedRing = isSelected ? ' bg-primary-soft!' : '';
 		const openingState = isOpening ? ' pointer-events-none opacity-70' : '';
 		if (chapter.hasConflict) {
-			return `${base} border-destructive/30 bg-destructive/10 hover:bg-destructive/20${selectedRing}${openingState}`;
+			return `${base} bg-destructive-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
 		if (chapter.isRead) {
-			return `${base} border-primary/30 bg-primary/10 hover:bg-primary/20${selectedRing}${openingState}`;
+			return `${base} bg-primary-soft hover:brightness-110${selectedRing}${openingState}`;
 		}
-		return `${base} border-surface/40 bg-mantle/40 hover:bg-surface/30${selectedRing}${openingState}`;
+		return `${base} bg-surface hover:brightness-110${selectedRing}${openingState}`;
 	}
 
-	// INFO: Reativo de propósito — decide o que fica montado no DOM. Dado de
-	// capítulo fica em cache pra sempre (não evictamos mais), mas manter todo
-	// AcerolaHeroButton já carregado montado pra sempre gera dezenas de
-	// milhares de nós de DOM numa série grande — cada AcerolaHeroButton monta
-	// perto de 40 nós. Renderizar só o que está perto da viewport atual
-	// resolve isso sem causar flicker: como o dado já está em cache, sair e
-	// voltar da janela é instantâneo, sem refetch.
+	// INFO: Reactive on purpose — decides what stays mounted in the DOM. Chapter data
+	// stays cached forever (we no longer evict), but keeping every loaded
+	// AcerolaHeroButton mounted forever produces tens of thousands of DOM nodes in a
+	// large series — each AcerolaHeroButton mounts about 40 nodes. Rendering only
+	// what is near the current viewport solves this without flicker: since the data
+	// is already cached, leaving and re-entering the window is instant, no refetch.
 	let visiblePages = new SvelteSet<number>();
 
 	/**
-	 * Criado de forma eager (não em onMount): as actions `use:trackPage` dos
-	 * blocos do {#each} rodam durante a montagem inicial, antes do onMount do
-	 * componente disparar — se o observer fosse criado em onMount, as páginas
-	 * já montadas nunca seriam observadas.
+	 * Created eagerly (not in onMount): the `use:trackPage` actions of the
+	 * {#each} blocks run during the initial mount, before the component's
+	 * onMount fires — if the observer were created in onMount, the pages
+	 * already mounted would never be observed.
 	 */
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -132,12 +129,12 @@
 	}
 
 	/**
-	 * Reciclagem de nós de DOM, igual RecyclerView/LazyColumn: um pool FIXO de
-	 * "cadeiras" reaproveitadas em vez de montar/desmontar um AcerolaHeroButton
-	 * por página toda vez que ela entra/sai da janela de renderização. Cada
-	 * cadeira é keyed pela própria posição no pool (não pelo id do capítulo),
-	 * então trocar qual página ela representa só rebind os props — o nó de
-	 * DOM nunca é destruído, o que elimina o pop-in/fade toda vez que se rola.
+	 * DOM node recycling, like RecyclerView/LazyColumn: a FIXED pool of reused
+	 * "seats" instead of mounting/unmounting an AcerolaHeroButton per page every
+	 * time it enters/leaves the render window. Each seat is keyed by its own
+	 * position in the pool (not by chapter id), so changing which page it
+	 * represents only rebinds the props — the DOM node is never destroyed, which
+	 * removes the pop-in/fade on every scroll.
 	 */
 	const POOL_SIZE = 6;
 
@@ -177,8 +174,8 @@
 			<!-- prettier-ignore -->
 			{@const itemsInThisPage = pageIndex === totalPages - 1 ? data.totalChapters % data.pageSize || data.pageSize : data.pageSize}
 
-			<!-- Espaçador: só reserva a altura no fluxo do documento e dispara o
-			     IntersectionObserver — o conteúdo real vem do pool reciclado abaixo. -->
+			<!-- Spacer: only reserves the height in the document flow and triggers the
+			     IntersectionObserver — the real content comes from the recycled pool below. -->
 			<div use:trackPage={pageIndex} style:height="{itemsInThisPage * ITEM_HEIGHT}px"></div>
 		{/each}
 
@@ -201,7 +198,10 @@
 						<AcerolaHeroButton
 							data={{
 								title: chapter.title,
-								description: chapter.fileName
+								description:
+									chapter.fileName !== chapter.title
+										? chapter.fileName
+										: undefined
 							}}
 							events={{
 								onClick: () => {
@@ -224,42 +224,44 @@
 							{#snippet icon()}
 								{#if openingChapterId === chapter.id && !data.isSelectionMode}
 									<div class="text-primary">
-										<RefreshCw size={24} class="animate-spin" />
+										<RefreshCw size={18} class="animate-spin" />
 									</div>
 								{:else if data.isSelectionMode}
 									{#if data.isSelected?.(chapter.id)}
 										<div
-											class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+											class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 										>
 											<Check size={16} strokeWidth={3} />
 										</div>
 									{:else}
 										<div class="flex h-6 w-6 items-center justify-center">
-											<div class="h-5 w-5 rounded-full border-2 border-muted-foreground"></div>
+											<div
+												class="size-5 rounded-full border-2 border-border"
+											></div>
 										</div>
 									{/if}
 								{:else if chapter.hasConflict}
-									<!-- Mesma ideia do círculo de "lido" (ícone principal + cor diferente), mas
-									     com bg-destructive/15 (tintado) em vez de sólido: não existe
-									     --destructive-foreground no tema (nenhum lugar do app usa `destructive`
-									     como fundo sólido com texto/ícone em cima), então não há garantia de
-									     contraste pra essa combinação — tintado, o ícone fica só na cor
-									     `text-destructive` sobre o fundo por trás, que já é usada em outros
-									     lugares do app. -->
+									<!-- Same idea as the "read" circle (main icon + different color), but
+									     with bg-destructive/15 (tinted) instead of solid: there is no
+									     --destructive-foreground in the theme (nowhere in the app uses
+									     `destructive` as a solid background with text/icon on top), so contrast
+									     isn't guaranteed for that combination — tinted, the icon only uses the
+									     `text-destructive` color over the background behind, which is already
+									     used elsewhere in the app. -->
 									<div
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/15 text-destructive"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-destructive-soft text-destructive"
 									>
 										<TriangleAlert size={16} />
 									</div>
 								{:else if chapter.isRead}
 									<div
-										class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-crust"
+										class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground"
 									>
 										<Check size={16} strokeWidth={3} />
 									</div>
 								{:else}
 									<div class="text-primary">
-										<BookOpen size={24} />
+										<BookOpen size={18} />
 									</div>
 								{/if}
 							{/snippet}
@@ -268,37 +270,38 @@
 								<div class="flex items-center gap-2">
 									{#if chapter.hasConflict}
 										<span
-											class="rounded-full bg-muted px-3 py-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
+											class="rounded-full bg-destructive-soft px-3 py-1 text-[11px] font-black text-destructive"
 										>
 											{m['pages.comic.metadata.conflict']()}
 										</span>
 									{/if}
 									{#if chapter.isRead}
 										<span
-											class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black tracking-widest text-primary uppercase"
+											class="rounded-full bg-primary-soft px-3 py-1 text-[11px] font-black text-primary"
 										>
-											{m['pages.comic.metadata.completed']
-												? m['pages.comic.metadata.completed']()
-												: 'LIDO'}
+											{m['pages.comic.metadata.completed']()}
 										</span>
 									{/if}
-									<div role="presentation" onclick={(event) => event.stopPropagation()}>
+									<div
+										role="presentation"
+										onclick={(event) => event.stopPropagation()}
+									>
 										<AcerolaPopover
 											state={{ open: openMenuId === chapter.id }}
 											events={{
-												onOpenChange: (open) => (openMenuId = open ? chapter.id : null)
+												onOpenChange: (open) =>
+													(openMenuId = open ? chapter.id : null)
 											}}
 											ui={{
 												align: 'end',
-												contentClass:
-													'w-52 overflow-hidden rounded-2xl border-border/40 bg-card/95 p-1.5 shadow-2xl backdrop-blur-md'
+												contentClass: 'w-52 p-1.5'
 											}}
 										>
 											{#snippet trigger()}
 												<span
-													class="flex size-10 items-center justify-center rounded-xl bg-accent-hero text-accent-hero-foreground transition-[filter] hover:brightness-110"
+													class="flex size-10 items-center justify-center rounded-full bg-card text-foreground transition-[filter] hover:brightness-110"
 												>
-													<MoreVertical size={20} />
+													<MoreVertical size={18} />
 												</span>
 											{/snippet}
 
@@ -308,8 +311,7 @@
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-amber-500 hover:bg-amber-500/10 hover:text-amber-400'
+																class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-warning hover:bg-warning-soft hover:text-warning'
 															}}
 															events={{
 																onClick: () => {
@@ -319,14 +321,15 @@
 															}}
 														>
 															<BookOpen size={16} class="shrink-0" />
-															{m['pages.comic.selection.mark_unread']()}
+															{m[
+																'pages.comic.selection.markUnread'
+															]()}
 														</AcerolaButton>
 													{:else}
 														<AcerolaButton
 															ui={{
 																variant: 'ghost',
-																class:
-																	'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium text-primary hover:bg-primary/10'
+																class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold text-primary hover:bg-primary-soft'
 															}}
 															events={{
 																onClick: () => {
@@ -336,17 +339,16 @@
 															}}
 														>
 															<Check size={16} class="shrink-0" />
-															{m['pages.comic.selection.mark_read']()}
+															{m['pages.comic.selection.markRead']()}
 														</AcerolaButton>
 													{/if}
 
-													<div class="mx-1 my-1 h-px bg-border/60"></div>
+													<div class="mx-3 my-1 h-px bg-border"></div>
 
 													<AcerolaButton
 														ui={{
 															variant: 'ghost',
-															class:
-																'h-9 w-full justify-start gap-2.5 rounded-xl px-2.5 text-sm font-medium'
+															class: 'h-10 w-full justify-start gap-2.5 px-3 text-sm font-bold'
 														}}
 														events={{
 															onClick: () => {
@@ -355,7 +357,10 @@
 															}
 														}}
 													>
-														<CheckSquare size={16} class="shrink-0 text-muted-foreground" />
+														<CheckSquare
+															size={16}
+															class="shrink-0 text-muted-foreground"
+														/>
 														{m['pages.comic.selection.select']()}
 													</AcerolaButton>
 												</div>
@@ -370,9 +375,11 @@
 			{/each}
 		{/each}
 	{:else}
-		<div class="space-y-4 py-20 text-center opacity-50">
-			<RefreshCw size={48} class="mx-auto animate-spin text-primary" />
-			<p class="text-sm font-black tracking-widest uppercase">{m['pages.comic.loading']()}</p>
+		<!-- Loading: chapter-row skeleton, never a loose spinner. -->
+		<div class="space-y-3 py-4" role="status" aria-label={m['pages.comic.loading']()}>
+			{#each Array.from({ length: 6 }, (_, i) => i) as i (i)}
+				<div class="h-16 w-full animate-pulse rounded-tile bg-surface"></div>
+			{/each}
 		</div>
 	{/if}
 </div>

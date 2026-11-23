@@ -1,34 +1,35 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { toast } from 'svelte-sonner';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
 import type {
 	ChapterPayload,
 	ChapterFilePayload,
 	ChapterPagePayload
-} from '$lib/contracts/library/chapter.payloads';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { LRUService } from '$lib/services/lru.service';
+} from '#lib/contracts/library/chapter.payloads.ts';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { LRUService } from '#lib/services/lru.service.ts';
 import { onMount } from 'svelte';
-import { m } from '$lib/paraglide/messages';
+import { m } from '#lib/paraglide/messages.js';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 const { notify } = notificationStore;
 
-// INFO: A lista de capítulos é buscada inteira de uma vez — nem RAM (metadados
-// são leves) nem DOM (a renderização é virtualizada por posição de scroll)
-// dependem mais de paginação. Um comic com milhares de capítulos ainda fica
-// muito abaixo desse teto; ele só existe pra dar um limite explícito à query.
+// INFO: The chapter list is fetched whole at once — neither RAM (metadata is
+// light) nor DOM (rendering is virtualized by scroll position) depend on
+// pagination anymore. A comic with thousands of chapters still sits far below
+// this ceiling; it only exists to give the query an explicit limit.
 const FETCH_ALL_PAGE_SIZE = 1_000_000;
 
-// INFO: Espelha o cache do backend (ChapterCacheService, chapter_cache.rs) —
-// mesma chave (comic + volume + ordenação + busca), mesma capacidade. Reabrir
-// um volume/ordenação já visto nesta sessão não depende nem de round-trip de
-// IPC: aplica na hora, sem o período em branco que causava o "clica duas
-// vezes" — bem diferente do LRU antigo daqui, que cacheava blocos de
-// paginação de uma única busca (removido junto com a paginação client-side).
+// INFO: Mirrors the backend cache (ChapterCacheService, chapter_cache.rs) —
+// same key (comic + volume + sort + search), same capacity. Reopening a
+// volume/sort already seen in this session doesn't even need an IPC round-trip:
+// it applies right away, without the blank period that caused the "click
+// twice" — quite unlike the old LRU here, which cached pagination blocks of a
+// single search (removed along with client-side pagination).
 const CHAPTER_CACHE_CAPACITY = 32;
 
 type SortBy = 'number_asc' | 'number_desc' | 'modified_asc' | 'modified_desc';
@@ -51,7 +52,8 @@ export function useComicChapters() {
 	let currentKey: string | null = null;
 
 	let metadata = $state<
-		(Omit<ChapterPayload, 'archive'> & { archive: Omit<ChapterPagePayload, 'items'> }) | undefined
+		| (Omit<ChapterPayload, 'archive'> & { archive: Omit<ChapterPagePayload, 'items'> })
+		| undefined
 	>(undefined);
 
 	function applyPayload(payload: ChapterPayload) {
@@ -83,12 +85,11 @@ export function useComicChapters() {
 		loading = false;
 	}
 
-	// INFO: `clear()` sozinho não basta pra forçar um dado fresco — o próximo `fetch()`
-	// pra essa mesma chave (comic + volume + ordenação + busca) ainda acha o payload
-	// antigo no `chapterCache` e aplica ele sem round-trip nenhum. Usado depois de uma
-	// mutação real (rescan leve/completo), onde o conteúdo por trás da mesma chave mudou —
-	// diferente de só trocar de volume/ordenação, onde reaproveitar o cache é o
-	// comportamento certo.
+	// INFO: `clear()` alone isn't enough to force fresh data — the next `fetch()` for
+	// that same key (comic + volume + sort + search) still finds the old payload in
+	// `chapterCache` and applies it without any round-trip. Used after a real mutation
+	// (light/full rescan), where the content behind the same key changed — unlike just
+	// switching volume/sort, where reusing the cache is the right behavior.
 	function invalidate() {
 		chapterCache.clear();
 	}
@@ -98,26 +99,32 @@ export function useComicChapters() {
 		let unlistenError: (() => void) | undefined;
 
 		const setupListeners = async () => {
-			unlistenChapters = await listen<ChapterPayload>(LIBRARY_EVENTS.comicChapters, (event) => {
-				const payload = event.payload;
+			unlistenChapters = await listen<ChapterPayload>(
+				LIBRARY_EVENTS.comicChapters,
+				(event) => {
+					const payload = event.payload;
 
-				applyPayload(payload);
+					applyPayload(payload);
 
-				if (currentKey) {
-					chapterCache.set(currentKey, payload);
+					if (currentKey) {
+						chapterCache.set(currentKey, payload);
+					}
 				}
-			});
+			);
 
-			unlistenError = await listen<ErrorPayload>(LIBRARY_EVENTS.comicChaptersError, (event) => {
-				const errorMessage = resolveErrorMessage(event.payload);
+			unlistenError = await listen<ErrorPayload>(
+				LIBRARY_EVENTS.comicChaptersError,
+				(event) => {
+					const errorMessage = resolveErrorMessage(event.payload);
 
-				notify.error(m['hooks.comic_chapters.error.load'](), {
-					description: errorMessage
-				});
-				toast.error(errorMessage);
+					notify.error(m['hooks.comicChapters.error.load'](), {
+						description: errorMessage
+					});
+					toast.error(errorMessage);
 
-				loading = false;
-			});
+					loading = false;
+				}
+			);
 		};
 
 		setupListeners();
@@ -159,9 +166,9 @@ export function useComicChapters() {
 				searchQuery: searchQuery || null
 			});
 		} catch (error) {
-			const errorMessage = error as string;
+			const errorMessage = extractErrorMessage(error);
 
-			notify.error(m['hooks.comic_chapters.error.request'](), {
+			notify.error(m['hooks.comicChapters.error.request'](), {
 				description: errorMessage
 			});
 			toast.error(errorMessage);
@@ -174,12 +181,12 @@ export function useComicChapters() {
 	const chapters = $derived.by(() => {
 		if (!metadata) return undefined;
 
-		// INFO: `items` fica undefined enquanto uma nova busca está em voo
-		// (clear(true) sempre limpa items, mesmo preservando metadata) — cair
-		// pra [] aqui em vez de retornar undefined evita que archive.volumes
-		// suma nesse meio-tempo. Sem isso, expandir um volume fazia a lista de
-		// volumes inteira desmontar e remontar a cada clique (nada estava
-		// realmente quebrado, só piscava e engolia o primeiro clique).
+		// INFO: `items` stays undefined while a new fetch is in flight
+		// (clear(true) always clears items, even while keeping metadata) — falling
+		// back to [] here instead of returning undefined keeps archive.volumes from
+		// vanishing in the meantime. Without it, expanding a volume made the whole
+		// volume list unmount and remount on every click (nothing was really
+		// broken, it just flickered and swallowed the first click).
 		return {
 			...metadata,
 			archive: {

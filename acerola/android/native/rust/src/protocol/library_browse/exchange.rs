@@ -12,10 +12,10 @@ const RESPONSE_READ_TIMEOUT: Duration = Duration::from_secs(15);
 
 use crate::protocol::framing::{Recv, Writer};
 
-/// Usa `get_library_summary()` (consulta só de Room/SQLite, sem SAF) em vez de
-/// `get_file_manifest()` — este último faz um `DocumentFile.exists()` por capítulo (uma
-/// transação binder cada), que é custo desnecessário só pra listar títulos e já foi a causa de
-/// `browse-library` estourar `RESPONSE_READ_TIMEOUT` numa biblioteca grande. Ver o comentário em
+/// Uses `get_library_summary()` (Room/SQLite-only query, no SAF) instead of
+/// `get_file_manifest()` — the latter does a `DocumentFile.exists()` per chapter (one
+/// binder transaction each), which is unnecessary cost just to list titles and already caused
+/// `browse-library` to exceed `RESPONSE_READ_TIMEOUT` on a large library. See the comment in
 /// `callbacks::FileSyncProvider::get_library_summary`.
 pub(super) async fn build_summary(
     provider: &Arc<dyn FileSyncProvider>,
@@ -36,13 +36,13 @@ pub(super) async fn build_summary(
     Ok(LibrarySummary { comics })
 }
 
-/// Papel inbound: o marcador que `run_outbound` escreve existe só pra satisfazer a regra do
-/// quinn do lado de quem disca (`open_bi()` precisa escrever antes do `accept_bi()` remoto
-/// enxergar o stream) — este lado NÃO espera nem lê esse marcador antes de responder. Ler aqui
-/// acoplaria a resposta a quanto tempo o path P2P (NAT traversal/multipath) leva pra ficar
-/// pronto pra carregar dados de verdade, que pode ser bem maior que o handshake inicial da
-/// conexão — travando a sessão inteira nesse meio tempo (mesmo problema já corrigido no Desktop,
-/// ver `library_browse_handler.rs` lá).
+/// Inbound role: the marker `run_outbound` writes only exists to satisfy quinn's rule on the
+/// dialing side (`open_bi()` must write before the remote `accept_bi()` can
+/// see the stream) — this side does NOT wait for nor read that marker before replying. Reading it
+/// here would couple the reply to how long the P2P path (NAT traversal/multipath) takes to be
+/// ready to carry real data, which can be much longer than the connection's initial
+/// handshake — blocking the whole session in the meantime (same problem already fixed on Desktop,
+/// see `library_browse_handler.rs` there).
 pub(super) async fn run_inbound(
     provider: &Arc<dyn FileSyncProvider>,
     send: Box<dyn AsyncWrite + Send + Unpin>,
@@ -53,10 +53,10 @@ pub(super) async fn run_inbound(
     crate::protocol::framing::write_json(&mut writer, &summary).await
 }
 
-/// Papel outbound: escreve um marcador mínimo (`{}`) antes de esperar a resposta — sem essa
-/// escrita, o lado que chamou `open_bi()` nunca garante que o inbound vai ver o stream via
-/// `accept_bi()` (regra do quinn, a lib QUIC por baixo do iroh), o que causava timeout/demora
-/// aleatória em vez de uma troca previsível.
+/// Outbound role: writes a minimal marker (`{}`) before waiting for the reply — without this
+/// write, the side that called `open_bi()` never guarantees the inbound will see the stream via
+/// `accept_bi()` (rule of quinn, the QUIC lib under iroh), which caused random
+/// timeouts/delays instead of a predictable exchange.
 pub(super) async fn run_outbound(
     send: Box<dyn AsyncWrite + Send + Unpin>,
     recv: Box<dyn AsyncRead + Send + Unpin>,
@@ -142,8 +142,8 @@ mod tests {
         }
     }
 
-    /// `build_summary` só mapeia/ordena o que `get_library_summary()` (agrupamento já feito no
-    /// SQL, ver `ChapterArchiveDao.getLibrarySummary`) devolveu — não agrupa mais nada em Rust.
+    /// `build_summary` only maps/sorts what `get_library_summary()` (grouping already done in
+    /// SQL, see `ChapterArchiveDao.getLibrarySummary`) returned — it no longer groups anything in Rust.
     #[tokio::test]
     async fn build_summary_sorts_by_comic_name() {
         let provider: Arc<dyn FileSyncProvider> = Arc::new(StubProvider {
@@ -159,10 +159,10 @@ mod tests {
         assert_eq!(summary.comics[1].chapter_count, 1);
     }
 
-    /// Round-trip real sobre um `tokio::io::duplex`: prova que `run_inbound`/`run_outbound`
-    /// falam o mesmo formato de wire (sem depender de nenhum handler/ALPN, só o par de
-    /// funções puras de I/O) — o outbound escreve o marcador de pedido, mas o inbound nunca lê
-    /// nada, só responde direto (mesma garantia que o teste equivalente do Desktop cobre).
+    /// Real round-trip over a `tokio::io::duplex`: proves `run_inbound`/`run_outbound`
+    /// speak the same wire format (without depending on any handler/ALPN, only the pair of
+    /// pure I/O functions) — the outbound writes the request marker, but the inbound never reads
+    /// anything, it just replies directly (same guarantee the equivalent Desktop test covers).
     #[tokio::test]
     async fn run_outbound_writes_request_but_inbound_never_reads_it_and_still_responds() {
         let provider: Arc<dyn FileSyncProvider> = Arc::new(StubProvider {
@@ -183,8 +183,8 @@ mod tests {
         );
 
         let (inbound_result, outbound_result) = tokio::join!(inbound_fut, outbound_fut);
-        inbound_result.expect("inbound deveria completar sem erro");
-        let summary = outbound_result.expect("outbound deveria receber o resumo sem erro");
+        inbound_result.expect("inbound should complete without error");
+        let summary = outbound_result.expect("outbound should receive the summary without error");
 
         assert_eq!(summary.comics.len(), 1);
         assert_eq!(summary.comics[0].comic_name, "Solo Leveling");

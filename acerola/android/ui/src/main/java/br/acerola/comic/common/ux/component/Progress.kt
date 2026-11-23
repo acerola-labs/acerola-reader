@@ -13,15 +13,18 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,12 +34,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.raised
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.ui.R
@@ -75,14 +84,15 @@ fun Acerola.Component.Progress(
         Box(
             contentAlignment = Alignment.BottomStart,
         ) {
-            Card(
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = SpacingTokens.Small),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = ShapeTokens.Large,
+            // Toast (`.ac-toast`): rounded-card, bg-card, shadow-float.
+            Surface(
+                color = AcerolaExtendedTheme.colors.card,
+                shape = AcerolaShapes.Card,
+                modifier = Modifier.float(AcerolaShapes.Card),
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Medium),
-                    horizontalArrangement = Arrangement.spacedBy(space = SpacingTokens.Large),
+                    modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.MediumLarge),
+                    horizontalArrangement = Arrangement.spacedBy(space = SpacingTokens.MediumLarge),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     AnimatedContent(
@@ -97,22 +107,20 @@ fun Acerola.Component.Progress(
                             Icon(
                                 imageVector = Icons.Rounded.CheckCircle,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = AcerolaExtendedTheme.colors.success,
                                 modifier = Modifier.size(SizeTokens.IconMedium),
                             )
                         } else {
                             if (progress == null) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(size = SizeTokens.IconMedium),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 3.dp,
-                                )
+                                Acerola.Component.Spinner(size = SizeTokens.IconMedium)
                             } else {
                                 CircularProgressIndicator(
                                     progress = { progress.coerceIn(0f, 1f) },
                                     modifier = Modifier.size(size = SizeTokens.IconMedium),
                                     color = MaterialTheme.colorScheme.primary,
+                                    trackColor = AcerolaExtendedTheme.colors.surface,
                                     strokeWidth = 3.dp,
+                                    strokeCap = StrokeCap.Round,
                                 )
                             }
                         }
@@ -142,14 +150,47 @@ fun Acerola.Component.Progress(
 
                         Text(
                             text = text,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (finished) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (finished) AcerolaExtendedTheme.colors.success else AcerolaExtendedTheme.colors.foreground,
                         )
                     }
                 }
             }
         }
     }
+}
+
+/** Indeterminate spinner in the current content color, for a busy button or row. */
+@Composable
+fun Acerola.Component.Spinner(
+    modifier: Modifier = Modifier,
+    size: Dp = SizeTokens.IconSmall,
+    color: Color = LocalContentColor.current,
+) {
+    CircularProgressIndicator(
+        modifier = modifier.size(size),
+        color = color,
+        trackColor = Color.Transparent,
+        strokeWidth = 2.5.dp,
+        strokeCap = StrokeCap.Round,
+    )
+}
+
+/** Thin progress bar (`.ac-progress`): `bg-surface` track, `bg-primary` fill, rounded ends. */
+@Composable
+fun Acerola.Component.ProgressBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+) {
+    LinearProgressIndicator(
+        progress = { progress.coerceIn(0f, 1f) },
+        modifier = modifier.fillMaxWidth().height(4.dp),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = AcerolaExtendedTheme.colors.raised,
+        strokeCap = StrokeCap.Round,
+        gapSize = 0.dp,
+        drawStopIndicator = {},
+    )
 }
 
 @Preview(name = "Light", showBackground = true)

@@ -63,11 +63,11 @@ impl NetworkStatusPayload {
     }
 }
 
-/// Peer já pareado (TOFU) alguma vez, com o último endereço conhecido pra disparar `connect`.
-/// `device_name` vem de `AcerolaP2p::known_peers()` (ver `NetworkServiceApi::paired_peers`) —
-/// persiste entre reinícios, ao contrário do `DeviceInfo` de `ConnectedPeerPayload` (só existe
-/// pros poucos segundos em que a sessão de handshake está de fato aberta). O frontend só cai
-/// pro id cru quando esse peer nunca respondeu a entrevista de identidade.
+/// Peer paired (TOFU) at some point, with the last known address to trigger `connect`.
+/// `device_name` comes from `AcerolaP2p::known_peers()` (see `NetworkServiceApi::paired_peers`) —
+/// it persists across restarts, unlike `ConnectedPeerPayload`'s `DeviceInfo` (which only exists
+/// for the few seconds the handshake session is actually open). The frontend only falls back
+/// to the raw id when this peer never answered the identity exchange.
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PairedPeerPayload {
@@ -82,20 +82,20 @@ impl From<(peer::PeerAddr, Option<DeviceInfo>)> for PairedPeerPayload {
     }
 }
 
-/// Estado completo de configuração de relay, combinando as fontes lidas de
-/// `settings.json` (ver [`RelaySettings`]). Trocar qualquer campo só tem efeito no
-/// próximo início do app, já que a lib não suporta trocar a configuração de relay em
+/// Full relay configuration state, combining the sources read from
+/// `settings.json` (see [`RelaySettings`]). Changing any field only takes effect on the
+/// next app start, since the lib does not support changing the relay configuration at
 /// runtime.
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RelayInfo {
-    /// URL fixa do relay oficial do Acerola, pra exibir mesmo quando desabilitado.
+    /// Fixed URL of Acerola's official relay, to display it even when disabled.
     pub acerola_relay_url: String,
     pub use_acerola_relay: bool,
     pub use_iroh_public_network: bool,
     pub custom_relay_urls: Vec<String>,
-    /// Só indica SE um ticket da Iroh Services já foi colado e salvo — o valor em si nunca
-    /// volta pro frontend (é uma credencial real, ver `SecureP2pStorage::load_iroh_services_ticket`).
+    /// Only tells WHETHER an Iroh Services ticket has been pasted and saved — the value itself
+    /// never goes back to the frontend (it is a real credential, see `SecureP2pStorage::load_iroh_services_ticket`).
     pub has_iroh_services_ticket: bool,
 }
 

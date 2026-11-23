@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { children, context, data }: ReaderViewportProps = $props();
 
@@ -34,7 +34,7 @@
 <main
 	use:mountViewport
 	class={cn(
-		'scrollbar-hide flex-1 bg-mantle/30',
+		'scrollbar-hide flex-1 bg-crust',
 		zoom.isZoomed && 'touch-none overflow-hidden select-none',
 		!zoom.isZoomed &&
 			data.mode === 'horizontal' &&

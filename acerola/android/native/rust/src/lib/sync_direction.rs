@@ -1,9 +1,9 @@
 use crate::protocol::files::SyncDirection;
 
-/// Direção explícita de um `P2PNode::sync_comic`, exposta pra fronteira FFI (Kotlin) — mesmo
-/// padrão de `FfiNetworkMode`/`NetworkMode` em `lib/mode.rs`. `SyncDirection` (o tipo interno do
-/// protocolo, em `protocol::files::model`) não é exportável via UniFFI diretamente porque vive
-/// num módulo `pub(crate)`, então esse enum espelhado é o que o Kotlin realmente vê.
+/// Explicit direction of a `P2PNode::sync_comic`, exposed to the FFI boundary (Kotlin) — same
+/// pattern as `FfiNetworkMode`/`NetworkMode` in `lib/mode.rs`. `SyncDirection` (the protocol's
+/// internal type, in `protocol::files::model`) cannot be exported via UniFFI directly because it lives
+/// in a `pub(crate)` module, so this mirrored enum is what Kotlin actually sees.
 #[derive(uniffi::Enum, Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FfiSyncDirection {
     Push,

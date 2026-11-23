@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { reroute } from './hooks';
 
-// `Reroute` exige `fetch` no request mesmo essa implementação nunca o usando (deLocalizeUrl só
-// olha pra `url`) — stub aqui só pra satisfazer o tipo.
+// `Reroute` requires `fetch` on the request even though this implementation never uses it
+// (deLocalizeUrl only looks at `url`) — stubbed here just to satisfy the type.
 const fetchStub = vi.fn() as unknown as typeof fetch;
 
 describe('reroute', () => {

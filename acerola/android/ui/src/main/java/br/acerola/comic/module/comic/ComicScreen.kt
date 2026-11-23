@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.RemoveDone
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -48,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.acerola.comic.common.state.LocalSnackbarHostState
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.GlassButton
+import br.acerola.comic.common.ux.component.ScrimButton
 import br.acerola.comic.common.ux.component.SelectionAction
 import br.acerola.comic.common.ux.component.SelectionActionDock
 import br.acerola.comic.common.ux.component.SelectionTopBar
@@ -101,9 +100,9 @@ fun ComicScreen(
         comicViewModel.init(comicId = comic.remoteInfo?.id, folderId = comic.directory.id)
     }
 
-    // Coleta de eventos de UI para snackbars. A maioria desses canais só carrega erro, mas
-    // UserMessage.Raw pode marcar isSuccess (ex.: confirmação de envio de capítulo pra peer) —
-    // sem essa checagem, uma mensagem de sucesso aparecia com a cor/estilo de erro.
+    // Collects UI events for snackbars. Most of these channels only carry errors, but
+    // UserMessage.Raw can flag isSuccess (e.g. confirmation of sending a chapter to a peer) —
+    // without this check, a success message showed up with the error color/style.
     LaunchedEffect(Unit) {
         launch {
             comicViewModel.uiEvents.collect { message ->
@@ -225,10 +224,10 @@ fun ComicScreen(
             else -> SyncActionVisualState.IDLE
         }
 
-    // `sendSelectedChaptersToPeer` limpa a seleção assim que dispara o envio (não quando
-    // termina), então o conjunto de capítulos sendo enviados precisa ser capturado no
-    // momento do disparo (ver `onSendSelectedChaptersToPeer` abaixo) — não dá pra derivar
-    // de `selectedChapterSorts` porque ele já volta vazio.
+    // `sendSelectedChaptersToPeer` clears the selection as soon as it fires the send (not when
+    // it finishes), so the set of chapters being sent must be captured at
+    // firing time (see `onSendSelectedChaptersToPeer` below) — it can't be derived
+    // from `selectedChapterSorts` because that's already back to empty.
     var sendingChapterSorts by remember { mutableStateOf<Set<String>>(emptySet()) }
     var sendChaptersSuccess by remember { mutableStateOf(false) }
     var wasSendingChapters by remember { mutableStateOf(false) }
@@ -435,9 +434,9 @@ private fun ComicScreenContent(
     onSendSelectedChaptersToPeer: (String) -> Unit,
     onSendSelectedChaptersHistoryToPeer: (String) -> Unit,
 ) {
-    // Categorias da aba de preferências colapsam/expandem inline, mesmo padrão do
-    // Acerola.Component.AccordionCard usado na config principal — hoisted aqui porque
-    // `configSection` não é `@Composable` (só monta `scope.item {}`).
+    // Preferences tab categories collapse/expand inline, same pattern as the
+    // Acerola.Component.AccordionCard used in the main config — hoisted here because
+    // `configSection` isn't `@Composable` (it only builds `scope.item {}`).
     var expandedConfigCategories by remember { mutableStateOf(setOf<String>()) }
 
     val listState = rememberLazyListState()
@@ -452,10 +451,10 @@ private fun ComicScreenContent(
     var showSendChaptersPeerPicker by remember { mutableStateOf(false) }
     var showSendHistoryPeerPicker by remember { mutableStateOf(false) }
 
-    // Ação "Enviar" do menu de três pontinhos de UM capítulo (`ChapterItem`) — mesmo fluxo da
-    // barra de seleção múltipla abaixo (`SelectionActionDock`/`PeerPickerSheet`), só que
-    // selecionando primeiro (e só) esse capítulo via `onSelectAllChapters`, que substitui a
-    // seleção inteira em vez de alternar (evita depender do estado de seleção anterior).
+    // "Send" action from a SINGLE chapter's three-dot menu (`ChapterItem`) — same flow as the
+    // multi-selection bar below (`SelectionActionDock`/`PeerPickerSheet`), except it first
+    // selects (only) that chapter via `onSelectAllChapters`, which replaces the whole
+    // selection instead of toggling (avoids depending on the previous selection state).
     val onSendChapterToPeer: (String) -> Unit = { chapterSort ->
         onSelectAllChapters(listOf(chapterSort))
         onLoadPairedPeers()
@@ -497,7 +496,7 @@ private fun ComicScreenContent(
                     )
                 }
 
-                // TODO: Fazer eles não só trocarem quando clicados, mas com o arrastar do dedo uma troca entre abas com arrastar de dedos.
+                // TODO: Make tabs switch not only on click, but also by swiping between them.
                 when (uiState.selectedTab) {
                     MainTab.CHAPTERS -> {
                         uiState.chapters?.let {
@@ -590,27 +589,17 @@ private fun ComicScreenContent(
         } else {
             Acerola.Component.TopBar(
                 navigationIcon = {
-                    Acerola.Component.GlassButton(
+                    Acerola.Component.ScrimButton(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.description_icon_navigation_back),
                         onClick = { onAction(ComicAction.NavigateBack) },
-                        icon = {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.description_icon_navigation_back),
-                            )
-                        },
                     )
                 },
                 actions = {
-                    Acerola.Component.GlassButton(
+                    Acerola.Component.ScrimButton(
+                        icon = Icons.Default.FilterList,
+                        contentDescription = stringResource(id = R.string.description_icon_home_filter),
                         onClick = { showSortSheet = true },
-                        icon = {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = stringResource(id = R.string.description_icon_home_filter),
-                            )
-                        },
                     )
                 },
             )

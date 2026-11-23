@@ -1,4 +1,5 @@
 pub mod db;
+pub mod migration;
 pub mod network;
 pub mod scopes;
 
@@ -191,17 +192,17 @@ fn resolve_paths(app: &tauri::App) -> (PathBuf, PathBuf, PathBuf) {
     (base_directory.clone(), base_directory.join("acerola.db"), logs_directory)
 }
 
-/// Desliga o node P2P de forma graciosa antes do processo terminar — chamado no
-/// `RunEvent::Exit` do Tauri (ver `lib.rs`). Sem isso, o `Endpoint` do iroh nunca fecha de
-/// verdade (o processo simplesmente morre e o SO recolhe os sockets), o relay não recebe um
-/// disconnect limpo e continua tratando esta identidade como "conectada" por um tempo depois
-/// do processo já ter saído. Isso deixa a PRÓXIMA execução (ex: depois de recompilar durante o
-/// desenvolvimento, ou só reabrir o app rápido) sem conseguir se reconectar direito com peers
-/// já pareados — mesma classe de erro do relay ("Another endpoint connected with the same
-/// endpoint id") já corrigida pra restarts concorrentes dentro do mesmo processo (ver
-/// `NetworkService::restart`), mas nunca coberta pro caso de fechar e reabrir o processo
-/// inteiro. Best-effort: se o node ainda nem tinha terminado de subir, ou o shutdown falhar,
-/// só loga — o processo vai terminar de qualquer forma, não há como impedir isso aqui.
+/// Gracefully shuts down the P2P node before the process exits — called on Tauri's
+/// `RunEvent::Exit` (see `lib.rs`). Without this, the iroh `Endpoint` never really closes
+/// (the process just dies and the OS reclaims the sockets), the relay gets no clean disconnect
+/// and keeps treating this identity as "connected" for a while after the process has exited.
+/// That leaves the NEXT run (e.g. after recompiling during development, or just reopening the
+/// app quickly) unable to properly reconnect to already-paired peers — the same relay error
+/// class ("Another endpoint connected with the same endpoint id") already fixed for concurrent
+/// restarts inside the same process (see `NetworkService::restart`), but never covered for
+/// closing and reopening the whole process. Best-effort: if the node had not even finished
+/// starting, or the shutdown fails, it only logs — the process will exit anyway, there is no
+/// way to prevent that here.
 pub fn shutdown_network<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
     let Some(network_service) = app_handle.try_state::<std::sync::Arc<dyn NetworkServiceApi>>()
     else {
@@ -242,11 +243,18 @@ mod tests {
         }
 
         fn local_addr(&self) -> Result<PeerAddr, String> {
-            Ok(PeerAddr { id: PeerIdentity { id: "local-id".to_string(), device_id: None }, addrs: vec![] })
+            Ok(PeerAddr {
+                id: PeerIdentity { id: "local-id".to_string(), device_id: None },
+                addrs: vec![],
+            })
         }
 
         async fn local_device_info(&self) -> Result<DeviceInfo, String> {
-            Ok(DeviceInfo { name: "test".to_string(), os: "test".to_string(), version: "0.0.0".to_string() })
+            Ok(DeviceInfo {
+                name: "test".to_string(),
+                os: "test".to_string(),
+                version: "0.0.0".to_string(),
+            })
         }
 
         async fn set_local_device_name(&self, _name: String) -> Result<(), String> {
@@ -310,7 +318,8 @@ mod tests {
     #[test]
     fn shutdown_network_shuts_down_the_managed_network_service() {
         let service = Arc::new(RecordingNetworkService::default());
-        let managed: Arc<dyn NetworkServiceApi> = Arc::clone(&service) as Arc<dyn NetworkServiceApi>;
+        let managed: Arc<dyn NetworkServiceApi> =
+            Arc::clone(&service) as Arc<dyn NetworkServiceApi>;
         let app = tauri::test::mock_builder()
             .manage(managed)
             .build(tauri::test::mock_context(tauri::test::noop_assets()))
@@ -327,8 +336,8 @@ mod tests {
             .build(tauri::test::mock_context(tauri::test::noop_assets()))
             .expect("mock app should build");
 
-        // Não deve entrar em pânico mesmo sem `NetworkServiceApi` gerenciado (ex: app fechado
-        // bem cedo, antes de `setup_network_services` terminar).
+        // Must not panic even without a managed `NetworkServiceApi` (e.g. app closed very
+        // early, before `setup_network_services` finishes).
         shutdown_network(&app.handle().clone());
     }
 }

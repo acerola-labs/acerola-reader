@@ -23,20 +23,20 @@ use crate::{
 
 const LOG_KIND: &str = "history-entry";
 
-/// Push UNIDIRECIONAL de um `HistoryManifest` restrito ao(s) capítulo(s) selecionado(s) de UM
-/// quadrinho — existe pra não precisar de uma sessão `acerola/sync-history/1` completa (que
-/// troca a biblioteca inteira nos dois sentidos) só pra levar o progresso/marcador de "lido" de
-/// capítulo(s) que o usuário escolheu enviar.
+/// ONE-WAY push of a `HistoryManifest` restricted to the selected chapter(s) of ONE
+/// comic — exists so a full `acerola/sync-history/1` session (which exchanges the
+/// whole library in both directions) is not needed just to carry the progress/"read" marker
+/// of the chapter(s) the user chose to send.
 ///
-/// Contrato de duas mensagens (padronizado com `ComicSyncOutbound`): primeiro um
-/// `HistoryEntryRequest` (quadrinho + capítulos escopados, sempre presente mesmo se o manifesto
-/// que vem a seguir estiver vazio), depois o `HistoryManifest`. A resposta é um `HistoryEntryAck`
-/// com o resultado real (não um `{}` vazio) — se `comic_known` vier `false`, o peer não tinha
-/// esse quadrinho e nada foi aplicado; o outbound trata isso como erro, não sucesso silencioso.
+/// Two-message contract (standardized with `ComicSyncOutbound`): first a
+/// `HistoryEntryRequest` (comic + scoped chapters, always present even if the manifest
+/// that follows is empty), then the `HistoryManifest`. The answer is a `HistoryEntryAck`
+/// with the real result (not an empty `{}`) — if `comic_known` comes back `false`, the peer did
+/// not have that comic and nothing was applied; the outbound treats this as an error, not silent success.
 ///
-/// O escopo (quadrinho + `chapter_ids`) vem de `PendingHistoryEntryRegistry` (mesma técnica de
-/// `ComicSyncOutbound`/`PendingComicSyncRegistry`), gravado pelo comando Tauri
-/// `sync_history_entry` antes de chamar `connect()`.
+/// The scope (comic + `chapter_ids`) comes from `PendingHistoryEntryRegistry` (same technique as
+/// `ComicSyncOutbound`/`PendingComicSyncRegistry`), written by the Tauri command
+/// `sync_history_entry` before calling `connect()`.
 pub struct HistoryEntrySyncOutbound {
     emit: EventEmitter,
     service: HistorySyncService,
@@ -123,11 +123,11 @@ impl Handler for HistoryEntrySyncOutbound {
     }
 }
 
-/// Lado que RESPONDE ao push — lê o `HistoryEntryRequest` (declara o escopo mesmo se o
-/// manifesto vier vazio), valida se o quadrinho existe localmente ANTES de aplicar qualquer
-/// coisa, aplica o manifesto só se existir, e confirma com um `HistoryEntryAck` carregando o
-/// resultado real — nunca um ack vazio que esconderia um quadrinho ausente como se fosse
-/// sucesso.
+/// Side that ANSWERS the push — reads the `HistoryEntryRequest` (declares the scope even if the
+/// manifest comes empty), checks that the comic exists locally BEFORE applying anything,
+/// applies the manifest only if it exists, and confirms with a `HistoryEntryAck` carrying the
+/// real result — never an empty ack that would hide a missing comic as if it were
+/// success.
 pub struct HistoryEntrySyncInbound {
     emit: EventEmitter,
     service: HistorySyncService,
@@ -211,8 +211,7 @@ mod tests {
 
     use acerola_p2p::api::peer::PeerIdentity;
 
-    use super::super::history_entry_registry::HistoryEntryScope;
-    use super::*;
+    use super::{super::history_entry_registry::HistoryEntryScope, *};
     use crate::{
         data::repositories::history::reading_history_repo::ReadingHistoryRepository,
         tests::utils::setup_test_db::setup_test_db_with_comic,
@@ -281,8 +280,8 @@ mod tests {
 
         let (outbound_fut, inbound_fut) = run_pair(outbound, inbound, peer);
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let applied = inbound_service.build_manifest().await.unwrap();
         assert_eq!(applied.entries.len(), 1);
@@ -320,21 +319,21 @@ mod tests {
 
         let (outbound_fut, inbound_fut) = run_pair(outbound, inbound, peer);
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let applied = inbound_service.build_manifest().await.unwrap();
         assert_eq!(applied.read_markers.len(), 1);
         assert_eq!(applied.read_markers[0].chapter, "2");
     }
 
-    /// Núcleo do contrato novo: se o peer não tem o quadrinho, o `HistoryEntryAck` volta com
-    /// `comic_known: false` e o outbound TERMINA COM ERRO — não mais o falso positivo de
-    /// "enviado com sucesso" quando na verdade nada foi aplicado do outro lado.
+    /// Core of the new contract: if the peer does not have the comic, the `HistoryEntryAck` comes
+    /// back with `comic_known: false` and the outbound ENDS WITH AN ERROR — no longer the false
+    /// positive of "sent successfully" when actually nothing was applied on the other side.
     #[tokio::test]
     async fn outbound_fails_when_peer_does_not_have_the_comic() {
         let (outbound_pool, outbound_service) = setup().await;
-        // Inbound "vazio": banco sem o quadrinho "Test" (nenhum `setup_test_db_with_comic`).
+        // "Empty" inbound: database without the "Test" comic (no `setup_test_db_with_comic`).
         let inbound_pool = crate::tests::utils::setup_test_db::setup_test_db().await;
         let inbound_service = HistorySyncService::new(inbound_pool);
 
@@ -363,7 +362,8 @@ mod tests {
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
 
         assert!(outbound_result.is_err());
-        inbound_result.expect("inbound ainda deve completar a sessão (o erro é do outbound)");
+        inbound_result
+            .expect("inbound must still complete the session (the error is on the outbound)");
     }
 
     #[tokio::test]

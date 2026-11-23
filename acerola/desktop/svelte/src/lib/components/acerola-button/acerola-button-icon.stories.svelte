@@ -6,11 +6,11 @@
 	import AcerolaButtonIcon from './acerola-button-icon.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaButtonIcon',
+		title: 'Primitives/AcerolaButtonIcon',
 		component: AcerolaButtonIcon,
 		tags: ['autodocs'],
 		argTypes: {
-			ui: { description: 'Configuração visual do botão', control: 'object' }
+			ui: { description: 'Button visual configuration', control: 'object' }
 		}
 	});
 </script>

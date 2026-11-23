@@ -1,0 +1,13 @@
+node_modules
+.svelte-kit
+.wrangler
+build
+src/lib/paraglide
+project.inlang/cache
+coverage
+storybook-static
+test-results
+playwright-report
+mutants.out
+mutants.out.old
+.stryker-tmp

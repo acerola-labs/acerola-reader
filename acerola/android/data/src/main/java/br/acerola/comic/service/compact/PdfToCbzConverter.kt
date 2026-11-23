@@ -73,7 +73,7 @@ class PdfToCbzConverter
                             val pageName = String.format(Locale.ENGLISH, "%04d.jpg", it + 1)
                             zip.putNextEntry(ZipEntry(pageName))
 
-                            // Comprime direto para o disco
+                            // Compresses straight to disk
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, zip)
 
                             zip.closeEntry()

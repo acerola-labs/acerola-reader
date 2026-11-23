@@ -69,9 +69,9 @@ export default defineConfig({
 				'src/**/*.d.ts'
 			],
 			thresholds: {
-				// Trocado de placeholder pro baseline real medido (unit + storybook
-				// combinados, que é o que `npm run test:coverage` roda) depois de escrever
-				// os testes/stories, com folga por métrica.
+				// Switched from a placeholder to the real measured baseline (unit + storybook
+				// combined, which is what `npm run test:coverage` runs) after writing the
+				// tests/stories, with some slack per metric.
 				lines: 40,
 				statements: 37,
 				functions: 43,

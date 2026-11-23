@@ -3,12 +3,12 @@ import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { useComicChapters } from './use-comic-chapters.svelte';
 import ComicChaptersHarness from '../../../../tests/harness/hooks/comic-chapters-store.svelte';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
 import { mockIPC, mockWindows } from '@tauri-apps/api/mocks';
 import { listen } from '@tauri-apps/api/event';
 
-// Mock das ferramentas de eventos do Tauri
+// Mock of the Tauri event tools
 vi.mock('@tauri-apps/api/event', () => ({
 	listen: vi.fn()
 }));
@@ -53,7 +53,7 @@ describe('useComicChapters (Hook Integration)', () => {
 			return;
 		});
 
-		// Captura o callback do ouvinte para simular eventos do Rust funcionalmente
+		// Capture the listener callback to simulate Rust events functionally
 		(listen as any).mockImplementation((event: string, callback: Function) => {
 			if (event === LIBRARY_EVENTS.comicChapters) {
 				eventCallback = callback;
@@ -120,7 +120,7 @@ describe('useComicChapters (Hook Integration)', () => {
 	it('does not request again after an IPC failure', async () => {
 		mockIPC(async (command, args) => {
 			ipcCalls.push({ command, args });
-			throw new Error('falha parcial');
+			throw new Error('partial failure');
 		});
 
 		const chapterHook = await renderComicChaptersHook();
@@ -176,12 +176,12 @@ describe('useComicChapters (Hook Integration)', () => {
 
 		expect(chapterHook.chapters?.archive.volumes).toHaveLength(1);
 
-		// Simula o efeito de expandir um volume: o hook consumidor sempre
-		// chama clear(true) antes de refazer a busca com o novo filtro.
+		// Simulates expanding a volume: the consuming hook always calls
+		// clear(true) before refetching with the new filter.
 		chapterHook.clear(true);
 
-		// archive.volumes não pode sumir nesse meio-tempo — é o que fazia a
-		// lista de volumes inteira desmontar e remontar a cada clique.
+		// archive.volumes must not vanish in the meantime — that is what made the
+		// whole volume list unmount and remount on every click.
 		expect(chapterHook.chapters?.archive.volumes).toHaveLength(1);
 		expect(chapterHook.chapters?.archive.items).toEqual([]);
 	});
@@ -199,9 +199,9 @@ describe('useComicChapters (Hook Integration)', () => {
 
 		expect(chapterHook.chapters).toBeUndefined();
 
-		// Mesma chave (comic + ordenação) já foi buscada nesta sessão — deve
-		// aplicar na hora, sem round-trip, exatamente o que evita a tela em
-		// branco ao reabrir um volume/ordenação já visto.
+		// The same key (comic + sort) was already fetched in this session — it must
+		// apply right away, without a round-trip, exactly what avoids the blank
+		// screen when reopening an already seen volume/sort.
 		await chapterHook.fetch('directory-id-1', 'number_asc');
 
 		expect(ipcCalls).toHaveLength(1);
@@ -242,7 +242,7 @@ describe('useComicChapters (Hook Integration)', () => {
 
 		chapterHook.clear();
 
-		// volume-a já tinha sido buscado — volta do cache, sem IPC novo.
+		// volume-a had already been fetched — comes back from cache, no new IPC.
 		await chapterHook.fetch('directory-id-1', 'number_asc', 'volume-a');
 
 		expect(ipcCalls).toHaveLength(2);

@@ -4,9 +4,9 @@
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import SearchXIcon from '@lucide/svelte/icons/search-x';
-	import * as Command from '$lib/components/ui/command/index';
-	import * as InputGroup from '$lib/components/ui/input-group/index';
-	import { m } from '$lib/paraglide/messages';
+	import * as Command from '#lib/components/ui/command/index.ts';
+	import * as InputGroup from '#lib/components/ui/input-group/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	type PagefindResult = { url: string; excerpt: string; meta: { title?: string } };
 	type PagefindApi = {
@@ -18,10 +18,10 @@
 	let query = $state('');
 	let results = $state<PagefindResult[]>([]);
 	let status = $state<'idle' | 'loading' | 'unavailable'>('idle');
-	// $state (não `let` puro): precisa disparar o $effect de busca de novo quando o import
-	// dinâmico do pagefind.js resolve — sem isso, uma busca digitada antes do pagefind
-	// terminar de carregar zera `results` e nunca tenta de novo (nenhum evento reativo
-	// aciona o re-run), mesmo esperando o quanto for no timeout do teste/asserção.
+	// $state (not a plain `let`): the search $effect must rerun when the dynamic import of
+	// pagefind.js resolves — without this, a query typed before pagefind finishes loading
+	// clears `results` and never retries (no reactive event triggers the rerun), no matter
+	// how long the test/assertion timeout waits.
 	let pagefind = $state<PagefindApi | null>(null);
 
 	async function ensurePagefind() {
@@ -56,9 +56,9 @@
 		const search = await pagefind.search(value);
 		const data = await Promise.all(search.results.slice(0, 8).map((result) => result.data()));
 
-		// Pagefind indexa o build estático e devolve o caminho de arquivo real
-		// (ex.: "/docs/architecture.html"), mas as rotas do SvelteKit servem sem
-		// extensão — sem isso o link do resultado cai no 404.
+		// Pagefind indexes the static build and returns the real file path
+		// (e.g. "/docs/architecture.html"), but SvelteKit routes are served without an
+		// extension — without this the result link lands on a 404.
 		results = data.map((result) => ({
 			...result,
 			url: result.url.replace(/(?:\/index)?\.html$/, '')
@@ -89,10 +89,10 @@
 	shouldFilter={false}
 	title={m['search.title']()}
 	description={m['search.title']()}
-	class="top-1/4 w-full max-w-lg translate-y-0 gap-0 overflow-hidden rounded-xl! p-0 shadow-2xl ring-1 ring-border sm:max-w-lg"
+	class="top-1/4 w-full max-w-lg translate-y-0 gap-0 overflow-hidden rounded-inner! p-0 shadow-float ring-1 ring-border sm:max-w-lg"
 >
 	<div data-slot="command-input-wrapper" class="p-3 pb-2">
-		<InputGroup.Root class="h-11 rounded-lg border-border bg-input/50">
+		<InputGroup.Root class="h-11 rounded-inner border-border bg-input/50">
 			<InputGroup.Addon>
 				<SearchIcon class="size-4 shrink-0 opacity-50" />
 			</InputGroup.Addon>
@@ -111,7 +111,7 @@
 		{#if status === 'unavailable'}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 				<SearchXIcon size={20} />
-				<span>{m['search.unavailable_dev']()}</span>
+				<span>{m['search.unavailableDev']()}</span>
 			</Command.Empty>
 		{:else if status === 'loading'}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
@@ -126,15 +126,21 @@
 		{:else if query && results.length === 0}
 			<Command.Empty class="flex flex-col items-center gap-2 py-10 text-muted-foreground">
 				<SearchXIcon size={20} />
-				<span>{m['search.no_results']()}</span>
+				<span>{m['search.noResults']()}</span>
 			</Command.Empty>
 		{:else}
 			{#each results as result (result.url)}
-				<Command.LinkItem href={result.url} onclick={() => (open = false)} class="rounded-lg py-2">
+				<Command.LinkItem
+					href={result.url}
+					onclick={() => (open = false)}
+					class="rounded-inner py-2"
+				>
 					<FileTextIcon size={16} class="mt-0.5 shrink-0 self-start" />
 					<div class="flex min-w-0 flex-col gap-0.5">
 						<span class="truncate font-medium">{result.meta?.title ?? result.url}</span>
-						<span class="line-clamp-2 text-xs text-muted-foreground">{@html result.excerpt}</span>
+						<span class="line-clamp-2 text-xs text-muted-foreground"
+							>{@html result.excerpt}</span
+						>
 					</div>
 				</Command.LinkItem>
 			{/each}

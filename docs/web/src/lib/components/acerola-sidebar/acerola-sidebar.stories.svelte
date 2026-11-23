@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { SidebarGroup } from '$lib/content/docs';
+	import type { SidebarGroup } from '#lib/content/docs.ts';
 	import AcerolaSidebar from './acerola-sidebar.svelte';
 
 	function doc(slug: string, title: string, section: string): SidebarGroup['docs'][number] {
@@ -29,13 +29,13 @@
 			docs: {
 				description: {
 					component:
-						'Navegacao lateral da documentacao, agrupada por secao. O link cujo `slug` bate com `activeSlug` recebe destaque visual.'
+						'Documentation side navigation, grouped by section. The link whose `slug` matches `activeSlug` gets visual emphasis.'
 				}
 			}
 		},
 		argTypes: {
-			groups: { description: 'Secoes e documentos a exibir.', control: false },
-			activeSlug: { description: 'Slug do documento atualmente aberto.', control: 'text' }
+			groups: { description: 'Sections and documents to display.', control: false },
+			activeSlug: { description: 'Slug of the currently open document.', control: 'text' }
 		}
 	});
 </script>
@@ -46,7 +46,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Duas secoes com um documento cada; o item "Arquitetura" esta ativo.'
+				story: 'Two sections with one document each; the "Arquitetura" item is active.'
 			}
 		}
 	}}
