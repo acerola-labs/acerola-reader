@@ -4,7 +4,7 @@ description = "Aplicativo para ler e gerenciar bibliotecas de quadrinhos locais.
 edition = "2021"
 license = "MPL-2.0"
 name = "acerola"
-version = "1.0.2"
+version = "1.1.0"
 
 # NOTE: In Rust, run cargo build to download the libs
 [lib]
