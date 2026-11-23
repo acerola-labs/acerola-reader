@@ -21,20 +21,31 @@ pub fn get_base_data_dir() -> Option<PathBuf> {
     }
 }
 
-/// Migrates data from legacy directories (`br.acerola.reader` or `br.acerola.comic`) to the new directory (`Acerola Reader`)
-/// if a legacy directory exists and the new directory does not yet contain the main database.
+/// The Tauri `identifier` (tauri.conf.json): Tauri derives the app data directory from it, and a
+/// bundle identifier only accepts letters, digits, hyphens and periods.
+const APP_DATA_DIR_NAME: &str = "app.acerola.reader";
+
+/// Migrates data from legacy directories (`Acerola Reader`, `br.acerola.reader` or `br.acerola.comic`)
+/// to the current directory (`app.acerola.reader`) if a legacy directory exists and the current
+/// directory does not yet contain the main database.
 pub fn migrate_legacy_data_dir_if_needed() {
     let Some(base_dir) = get_base_data_dir() else {
         return;
     };
 
-    let target_dir = base_dir.join("Acerola Reader");
+    let target_dir = base_dir.join(APP_DATA_DIR_NAME);
 
     if target_dir.join("acerola.db").exists() {
         return;
     }
 
-    let legacy_candidates = [base_dir.join("br.acerola.reader"), base_dir.join("br.acerola.comic")];
+    // Newest first: "Acerola Reader" was the identifier of the development builds after 1.0.2
+    // (never released: the bundler rejects it).
+    let legacy_candidates = [
+        base_dir.join("Acerola Reader"),
+        base_dir.join("br.acerola.reader"),
+        base_dir.join("br.acerola.comic"),
+    ];
 
     let Some(legacy_dir) =
         legacy_candidates.into_iter().find(|p| p.join("acerola.db").exists() || p.exists())
