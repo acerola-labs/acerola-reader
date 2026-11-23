@@ -1,4 +1,5 @@
 # Acerola Relay on the hetzner Swarm (Komodo Stack hetzner_relay, see komodo.toml).
+# The route is relay.caddy, published by route.sh.
 # APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
 # Caddy (config) reaches the service as hetzner_relay_relay:80 over the edge network.
 services:

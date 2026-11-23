@@ -1,5 +1,5 @@
-// Only the method the /api/apk-latest and /api/apk-status resolvers use — avoids pulling in
-// all of @cloudflare/workers-types for a single binding.
+// Only the method the /api/apk-latest and /api/apk-status resolvers use, so tests can fake the
+// bucket without an S3 client (the real one is in r2.ts).
 export interface ApkBucket {
 	list(options: { prefix: string }): Promise<{ objects: { key: string }[] }>;
 }
