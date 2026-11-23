@@ -1,6 +1,6 @@
 [package]
 authors = ["Vinícius Gabriel Pereira Leitão"]
-description = "FFI para implementar camada p2p para o android conectar a outros node"
+description = "FFI that implements the P2P layer so Android can connect to other nodes"
 edition = "2021"
 license = "MPL-2.0"
 name = "acerola_android"

@@ -3,14 +3,14 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-/// Impede que duas sessões de `acerola/sync-files/1` concorram pro mesmo peer — a mesma
-/// corrida que o lado Android já observa em produção (retry do usuário, reconexão automática,
-/// ou o transporte entregando duas conexões físicas pro mesmo peer, ver fix 1/3 no
-/// `acerola-p2p`). Compartilhado entre `FileSyncOutbound` e `FileSyncInbound`: uma inbound e
-/// uma outbound pro mesmo peer se bloqueiam entre si, não só sessões do mesmo papel.
+/// Prevents two `acerola/sync-files/1` sessions from competing for the same peer — the same
+/// race the Android side already observes in production (user retry, automatic reconnection,
+/// or the transport delivering two physical connections for the same peer, see fix 1/3 in
+/// `acerola-p2p`). Shared between `FileSyncOutbound` and `FileSyncInbound`: an inbound and
+/// an outbound for the same peer block each other, not only sessions of the same role.
 ///
-/// Sync de histórico não precisa disso — é um round-trip curto de JSON, a janela de
-/// sobreposição é desprezível comparada à transferência de bytes de arquivos.
+/// History sync does not need this — it is a short JSON round-trip, the overlap window
+/// is negligible compared to transferring file bytes.
 #[derive(Default)]
 pub struct FileSyncSessionGuard {
     active_peers: Mutex<HashSet<String>>,
@@ -21,9 +21,9 @@ impl FileSyncSessionGuard {
         Arc::new(Self::default())
     }
 
-    /// Tenta reservar a sessão pro peer. `None` se já existe uma sessão ativa (inbound ou
-    /// outbound) pro mesmo peer — quem chamou deve recusar a conexão sem abrir os streams
-    /// nem tocar o serviço de sync.
+    /// Tries to reserve the session for the peer. `None` if there is already an active session
+    /// (inbound or outbound) for the same peer — the caller must refuse the connection without
+    /// opening the streams or touching the sync service.
     pub fn try_acquire(self: &Arc<Self>, peer_id: &str) -> Option<FileSyncSessionLease> {
         let mut active_peers = self.active_peers.lock().expect("file sync guard mutex poisoned");
         if !active_peers.insert(peer_id.to_string()) {
@@ -34,8 +34,8 @@ impl FileSyncSessionGuard {
     }
 }
 
-/// RAII: libera o peer do guard quando a sessão termina, seja por sucesso, erro, ou drop
-/// antecipado — nunca precisa de um caminho de liberação manual.
+/// RAII: releases the peer from the guard when the session ends, whether by success, error, or
+/// early drop — never needs a manual release path.
 pub struct FileSyncSessionLease {
     guard: Arc<FileSyncSessionGuard>,
     peer_id: String,
@@ -59,7 +59,7 @@ mod tests {
     fn test_second_attempt_for_same_peer_is_rejected_while_first_is_active() {
         let guard = FileSyncSessionGuard::new();
 
-        let first_lease = guard.try_acquire("peer-1").expect("primeira aquisição deveria suceder");
+        let first_lease = guard.try_acquire("peer-1").expect("first acquisition should succeed");
         assert!(guard.try_acquire("peer-1").is_none());
 
         drop(first_lease);
@@ -70,7 +70,7 @@ mod tests {
     fn test_different_peers_do_not_block_each_other() {
         let guard = FileSyncSessionGuard::new();
 
-        let _lease_a = guard.try_acquire("peer-a").expect("peer-a deveria adquirir");
+        let _lease_a = guard.try_acquire("peer-a").expect("peer-a should acquire");
         assert!(guard.try_acquire("peer-b").is_some());
     }
 }

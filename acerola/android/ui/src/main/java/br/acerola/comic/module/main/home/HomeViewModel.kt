@@ -264,10 +264,10 @@ class HomeViewModel
             }
         }
 
-        /** Carrega os peers pareados pro `PeerPickerSheet` — sob demanda, não reativo.
-         *  `deviceName` já vem resolvido de `getPairedPeers()` (via `known_peers()` do lado
-         *  nativo, persistente) — não precisa cruzar com `getConnectedPeersWithInfo()`, que só
-         *  tem dado durante os poucos segundos em que a conexão de handshake está aberta. */
+        /** Loads the paired peers for `PeerPickerSheet` — on demand, not reactive.
+         *  `deviceName` already comes resolved from `getPairedPeers()` (via the persistent
+         *  `known_peers()` on the native side) — no need to cross-check with `getConnectedPeersWithInfo()`,
+         *  which only has data during the few seconds the handshake connection is open. */
         fun loadPairedPeers() {
             viewModelScope.launch(Dispatchers.IO) {
                 _pairedPeers.value = p2pUseCase.getPairedPeers().map { PairedPeer(peerId = it.id, deviceName = it.deviceName) }
@@ -293,13 +293,13 @@ class HomeViewModel
             }
         }
 
-        /** Sincroniza histórico + todos os capítulos que faltam com um peer — mesmos dois
-         *  protocolos que [br.acerola.comic.module.main.sync.state.SyncAction.SyncAll]
-         *  dispara na tela de Rede, reaproveitados aqui via [SyncHistoryWithPeerUseCase]/
-         *  [SyncFilesWithPeerUseCase] (compartilhados) em vez de duplicar os ALPNs. Cada
-         *  protocolo é independente: uma falha no histórico não impede o de arquivos (e
-         *  vice-versa). Confirmação explícita já é responsabilidade de quem chama (ver
-         *  `HomeScreen`), não desta função. */
+        /** Syncs history + all missing chapters with a peer — the same two
+         *  protocols [br.acerola.comic.module.main.sync.state.SyncAction.SyncAll]
+         *  fires on the Network screen, reused here via [SyncHistoryWithPeerUseCase]/
+         *  [SyncFilesWithPeerUseCase] (shared) instead of duplicating the ALPNs. Each
+         *  protocol is independent: a history failure doesn't block the files one (and
+         *  vice versa). Explicit confirmation is the caller's responsibility (see
+         *  `HomeScreen`), not this function's. */
         fun syncAllWithPeer(peerId: String) {
             AcerolaLogger.audit(
                 TAG,

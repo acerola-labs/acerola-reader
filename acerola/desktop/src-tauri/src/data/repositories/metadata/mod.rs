@@ -62,7 +62,7 @@ impl MetadataRepository {
         Ok(result)
     }
 
-    /// Busca a linha de dados do AniList (nota, popularidade) vinculada a um `comic_metadata`.
+    /// Fetches the AniList data row (score, popularity) linked to a `comic_metadata`.
     pub async fn get_anilist_source_by_comic_metadata_id(
         &self, metadata_id: i64,
     ) -> Result<Option<AnilistSource>, DbError> {
@@ -80,12 +80,11 @@ impl MetadataRepository {
         Ok(result)
     }
 
-    /// Remove por completo os metadados sincronizados de um quadrinho: o registro
-    /// principal em `comic_metadata` e todas as tabelas filhas (autores e fontes
-    /// externas). O cascade de FK não roda em runtime (ver comentário em
-    /// `VolumeRepository::delete_by_comic`), então cada tabela filha precisa ser
-    /// limpa explicitamente antes de apagar o registro pai. No-op se o quadrinho
-    /// nunca teve metadados sincronizados.
+    /// Fully removes a comic's synced metadata: the main record in `comic_metadata`
+    /// and every child table (authors and external sources). The FK cascade does not
+    /// run at runtime (see the comment in `VolumeRepository::delete_by_comic`), so each
+    /// child table must be cleared explicitly before deleting the parent record. No-op if
+    /// the comic never had synced metadata.
     pub async fn delete_by_comic_id(&self, comic_directory_fk: i64) -> Result<(), DbError> {
         let Some(metadata) = self.get_comic_metadata_by_comic_id(comic_directory_fk).await? else {
             return Ok(());

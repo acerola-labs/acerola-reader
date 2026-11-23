@@ -18,8 +18,8 @@ describe('AcerolaSelect', () => {
 			}
 		});
 
-		// o componente subjacente do bits-ui usa um botão com a role combobox,
-		// mas sem a montagem completa de JS às vezes é apenas um botão
+		// the underlying bits-ui component uses a button with the combobox role,
+		// but without the full JS mount it is sometimes just a button
 		const trigger = screen.getByText('Escolha o idioma');
 		expect(trigger).toBeInTheDocument();
 	});
@@ -41,14 +41,14 @@ describe('AcerolaSelect', () => {
 		const trigger = screen.getByText('Selecione...');
 		await user.click(trigger);
 
-		// roles de opções do bits-ui select às vezes podem ser difíceis de consultar no JSDom
-		// Vamos consultar por texto para garantir, já que está definitivamente renderizado
+		// bits-ui select option roles can sometimes be hard to query in JSDom
+		// Query by text to be safe, since it is definitely rendered
 		const option = await screen.findByText('Inglês');
 		expect(option).toBeInTheDocument();
 
 		await user.click(option);
 
-		// Após clicar na opção, o gatilho deve agora exibir "Inglês"
+		// After clicking the option, the trigger must now show "Inglês"
 		expect(screen.getByText('Inglês')).toBeInTheDocument();
 	});
 });

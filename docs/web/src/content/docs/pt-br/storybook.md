@@ -6,9 +6,9 @@ order: 1
 ---
 
 <script>
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import Card from '$lib/mdsvex/card.svelte';
-	import { STORYBOOK_WEB_URL, STORYBOOK_DESKTOP_URL } from '$lib/constants/site';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import Card from '#lib/mdsvex/card.svelte';
+	import { STORYBOOK_WEB_URL, STORYBOOK_DESKTOP_URL } from '#lib/constants/site.ts';
 </script>
 
 O Storybook cataloga os componentes de UI do Acerola isolados por variante e estado, fora do fluxo normal do app — útil para revisão visual e testes de componente.

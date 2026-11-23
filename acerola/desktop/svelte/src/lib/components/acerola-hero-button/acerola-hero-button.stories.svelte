@@ -5,7 +5,7 @@
 	import PlayIcon from '@lucide/svelte/icons/play';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaHeroButton',
+		title: 'Primitives/AcerolaHeroButton',
 		component: AcerolaHeroButton,
 		tags: ['autodocs'],
 		args: {
@@ -15,12 +15,12 @@
 			}
 		},
 		argTypes: {
-			data: { description: 'Conteúdo principal do botão', control: 'object' },
-			events: { description: 'Callbacks do botão', control: 'object' },
-			ui: { description: 'Configuração visual do botão', control: 'object' },
-			icon: { description: 'Snippet para renderizar um ícone à esquerda', control: 'object' },
+			data: { description: 'Main button content', control: 'object' },
+			events: { description: 'Button callbacks', control: 'object' },
+			ui: { description: 'Button visual configuration', control: 'object' },
+			icon: { description: 'Snippet to render an icon on the left', control: 'object' },
 			action: {
-				description: 'Snippet para renderizar um componente de ação à direita',
+				description: 'Snippet to render an action component on the right',
 				control: 'object'
 			}
 		}
@@ -40,7 +40,7 @@
 {/snippet}
 
 <Story
-	name="Completo"
+	name="Complete"
 	args={{
 		data: {
 			title: 'Pasta dos Mangás',
@@ -48,12 +48,12 @@
 		},
 		icon: folderIcon,
 		action: actionButton,
-		events: { onClick: () => console.log('Clicou!') }
+		events: { onClick: () => console.log('Clicked!') }
 	}}
 />
 
 <Story
-	name="Apenas Texto"
+	name="Text Only"
 	args={{
 		data: {
 			title: 'Título de Exemplo',
@@ -62,7 +62,7 @@
 	}}
 />
 
-<Story name="Uso Manual">
+<Story name="Manual Usage">
 	<AcerolaHeroButton
 		data={{
 			title: 'Uso Manual',

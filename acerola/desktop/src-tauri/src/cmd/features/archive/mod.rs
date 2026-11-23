@@ -7,7 +7,7 @@ use crate::{
     data::models::archive::archive_template::{ArchiveTemplate, SortType},
 };
 
-/// Comando Tauri para listar todos os templates de nomenclatura (padrão + do usuário).
+/// Tauri command that lists every naming template (default + user-defined).
 #[tauri::command]
 pub async fn get_archive_templates(
     pool: State<'_, SqlitePool>,
@@ -16,7 +16,7 @@ pub async fn get_archive_templates(
     service.list_templates().await.map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para criar um template de nomenclatura definido pelo usuário.
+/// Tauri command that creates a user-defined naming template.
 #[tauri::command]
 pub async fn create_archive_template(
     label: String, pattern: String, sort_type: SortType, pool: State<'_, SqlitePool>,
@@ -28,8 +28,8 @@ pub async fn create_archive_template(
         .map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para remover um template de nomenclatura criado pelo usuário.
-/// Templates padrão são rejeitados pelo serviço e nunca chegam a ser removidos.
+/// Tauri command that removes a user-created naming template.
+/// Default templates are rejected by the service and are never removed.
 #[tauri::command]
 pub async fn delete_archive_template(
     id: i64, pool: State<'_, SqlitePool>,

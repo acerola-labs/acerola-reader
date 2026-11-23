@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils/cn.utils';
+	import { cn, type WithElementRef } from '#lib/utils/cn.util.ts';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {
@@ -13,10 +13,7 @@
 <div
 	bind:this={ref}
 	data-slot="card-footer"
-	class={cn(
-		'flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3',
-		className
-	)}
+	class={cn('flex items-center px-5 group-data-[size=sm]/card:px-3', className)}
 	{...restProps}
 >
 	{@render children?.()}

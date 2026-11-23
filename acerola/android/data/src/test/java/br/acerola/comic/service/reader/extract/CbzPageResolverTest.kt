@@ -29,11 +29,11 @@ class CbzPageResolverTest {
         assertTrue(result.isLeft())
     }
 
-    // NOTE: Testar o fluxo feliz de Cbz/CbrChapterSourceService requer arquivos reais
-    // ou um sistema de arquivos mockado complexo (Jimfs).
-    // Como os serviços usam 'new ZipFile(file)', o mockk não consegue interceptar o construtor nativo facilmente.
-    // Recomendo que estes dois arquivos sejam testados via Testes de Integração com arquivos reais no androidTest
-    // ou mantê-los com testes básicos de erro no Unit Test.
+    // NOTE: Testing the happy path of Cbz/CbrChapterSourceService requires real files
+    // or a complex mocked file system (Jimfs).
+    // Since the services use 'new ZipFile(file)', mockk cannot easily intercept the native constructor.
+    // I recommend testing these two files via integration tests with real files in androidTest
+    // or keeping them with basic error tests in the unit tests.
 
     @Test
     fun close_should_clean_references_and_temporary_files() {

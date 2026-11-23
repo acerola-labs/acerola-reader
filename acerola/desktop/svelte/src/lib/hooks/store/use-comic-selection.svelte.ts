@@ -12,8 +12,8 @@ export function _resetComicSelectionState() {
 }
 
 /**
- * Hook para gerenciar seleção múltipla de quadrinhos.
- * Permite selecionar um ou vários quadrinhos para ações em batch.
+ * Hook to manage multiple comic selection.
+ * Allows selecting one or more comics for batch actions.
  */
 export function useComicSelection() {
 	function toggleSelection(id: ComicId): void {

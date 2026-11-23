@@ -1,7 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
 import { error } from '@tauri-apps/plugin-log';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
-import type { Category, MangaCategory } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
+import type { Category, MangaCategory } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
+import { extractErrorMessage } from '#lib/utils/error.util.ts';
 
 let bookmarks = $state<Category[]>([]);
 let assignments = $state<MangaCategory[]>([]);
@@ -68,11 +69,16 @@ export function useBookmarks() {
 
 	async function assignToComic(comicId: string | number, categoryId: number) {
 		try {
-			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, { comicId: comicId.toString() });
-			const assignment = await invoke<MangaCategory>(BOOKMARKS_COMMANDS.assignCategoryToComic, {
-				comicId: comicId.toString(),
-				categoryId: Number(categoryId)
+			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, {
+				comicId: comicId.toString()
 			});
+			const assignment = await invoke<MangaCategory>(
+				BOOKMARKS_COMMANDS.assignCategoryToComic,
+				{
+					comicId: comicId.toString(),
+					categoryId: Number(categoryId)
+				}
+			);
 
 			const comicIdStr = String(comicId);
 			assignments = [
@@ -81,7 +87,7 @@ export function useBookmarks() {
 			];
 			return assignment;
 		} catch (err: unknown) {
-			const msg = typeof err === 'object' && err !== null ? JSON.stringify(err) : String(err);
+			const msg = extractErrorMessage(err);
 			error(`Failed to assign bookmark: ${msg}`);
 			throw err;
 		}
@@ -89,7 +95,9 @@ export function useBookmarks() {
 
 	async function removeComicBookmark(comicId: string | number) {
 		try {
-			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, { comicId: comicId.toString() });
+			await invoke(BOOKMARKS_COMMANDS.removeCategoryFromComic, {
+				comicId: comicId.toString()
+			});
 			const comicIdStr = String(comicId);
 			assignments = assignments.filter((a) => String(a.comic_directory_fk) !== comicIdStr);
 		} catch (err) {

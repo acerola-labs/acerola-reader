@@ -3,14 +3,14 @@
 	import AcerolaNavControls from './acerola-nav-controls.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaNavControls',
+		title: 'Composites/AcerolaNavControls',
 		component: AcerolaNavControls,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Grupo de controles do cabecalho: alternancia de idioma, selecao de modo do tema, paleta de cores e link para o GitHub do projeto.'
+						'Header control group: language toggle, theme mode selection, color palette and a link to the project’s GitHub.'
 				}
 			}
 		}
@@ -20,6 +20,8 @@
 <Story
 	name="Default"
 	parameters={{
-		docs: { description: { story: 'Uso padrao dentro do cabecalho (top-nav) ou do menu mobile.' } }
+		docs: {
+			description: { story: 'Default usage inside the header (top-nav) or the mobile menu.' }
+		}
 	}}
 />

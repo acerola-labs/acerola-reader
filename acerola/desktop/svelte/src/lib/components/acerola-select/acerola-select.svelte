@@ -24,9 +24,14 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import { m } from '$lib/paraglide/messages';
-	import { cn } from '$lib/utils/cn.utils';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '#lib/components/ui/select/index.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { cn } from '#lib/utils/cn.util.ts';
 
 	let { data, state: control, events, ui }: AcerolaSelectProps = $props();
 
@@ -60,7 +65,7 @@
 <Select type="single" bind:value>
 	<SelectTrigger
 		class={cn(
-			'h-10 w-auto min-w-48 justify-between border-surface/30 bg-surface/20 transition-all hover:bg-surface/40',
+			'h-11 w-auto min-w-48 justify-between rounded-full border-0 bg-input px-4.5 font-medium transition-[filter] hover:brightness-110',
 			ui?.class
 		)}
 	>
@@ -68,11 +73,11 @@
 			{#if selectedOption?.color != null}
 				{@const hex = (selectedOption.color & 0xffffff).toString(16).padStart(6, '0')}
 				<div
-					class="flex items-center gap-2 rounded-md border px-2 py-0.5 shadow-sm"
-					style="background-color: #{hex}15; border-color: #{hex}30; color: #{hex}"
+					class="flex items-center gap-2 rounded-full px-2.5 py-0.5"
+					style="background-color: #{hex}26; color: #{hex}"
 				>
-					<div class="h-2 w-2 rounded-full shadow-sm" style="background-color: #{hex}"></div>
-					<span class="text-xs font-bold tracking-widest uppercase">{selectedLabel}</span>
+					<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>
+					<span class="text-xs font-black">{selectedLabel}</span>
 				</div>
 			{:else}
 				<span class="text-sm font-medium text-foreground">{selectedLabel}</span>
@@ -87,11 +92,14 @@
 					{#if option.color != null}
 						{@const hex = (option.color & 0xffffff).toString(16).padStart(6, '0')}
 						<div
-							class="flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors"
+							class="flex items-center gap-2 rounded-inner px-2 py-0.5 transition-colors"
 							style="background-color: #{hex}15; color: #{hex}"
 						>
-							<div class="h-2 w-2 rounded-full" style="background-color: #{hex}"></div>
-							<span class="text-xs font-bold tracking-widest uppercase">{option.label}</span>
+							<div
+								class="h-2 w-2 rounded-full"
+								style="background-color: #{hex}"
+							></div>
+							<span class="text-xs font-black">{option.label}</span>
 						</div>
 					{:else}
 						<span class="text-sm font-medium">{option.label}</span>

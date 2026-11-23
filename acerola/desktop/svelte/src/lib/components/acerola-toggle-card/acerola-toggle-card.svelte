@@ -7,16 +7,16 @@
 			subtitle?: string;
 		};
 		state: {
-			/** Controla a borda/fundo destacados e o selo de check — "esta fonte/opção está
-			 *  ligada agora". Pode ficar sempre `false` num consumidor que só usa o card como uma
-			 *  simples "gaveta" (disclosure), sem noção de ligado/desligado (ver uso em
+			/** Controls the highlighted background and the check badge — "this source/option
+			 *  is on now". May stay always `false` in a consumer that only uses the card as a
+			 *  simple "drawer" (disclosure), without an on/off notion (see usage in
 			 *  `acerola-bookmark-manager.svelte`). */
 			active: boolean;
-			/** Mostra/esconde `children` com uma transição de slide. Independente de `active` —
-			 *  um consumidor pode ligar os dois juntos (o conteúdo aparece quando a fonte liga,
-			 *  ver o toggle de sync externo em `acerola-comic-preferences.svelte`) ou mantê-los
-			 *  separados (expandir só mostra/gerencia algo que já está ativo por outro motivo,
-			 *  ver o card de relays próprios). */
+			/** Shows/hides `children` with a slide transition. Independent of `active` — a
+			 *  consumer can tie both together (the content shows when the source turns on, see
+			 *  the external sync toggle in `acerola-comic-preferences.svelte`) or keep them apart
+			 *  (expanding only shows/manages something already active for another reason, see
+			 *  the custom relays card). */
 			expanded?: boolean;
 		};
 		events: {
@@ -25,8 +25,8 @@
 		ui?: {
 			disabled?: boolean;
 			class?: string;
-			/** Sobrescreve o fundo/cor padrão (`bg-muted text-foreground`) do círculo do ícone —
-			 *  mesmo padrão do `ui.iconClass` do AcerolaHeroButton/AcerolaAccordionCard. */
+			/** Overrides the icon circle's default background/color (`bg-muted text-foreground`) —
+			 *  same pattern as AcerolaHeroButton/AcerolaAccordionCard's `ui.iconClass`. */
 			iconClass?: string;
 		};
 	};
@@ -40,8 +40,8 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { cn } from '$lib/utils/cn.utils';
-	import { checkBadgePop } from '$lib/utils/check-badge-motion.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
+	import { checkBadgePop } from '#lib/utils/check-badge-motion.util.ts';
 
 	let {
 		data,
@@ -55,10 +55,8 @@
 
 <div
 	class={cn(
-		'overflow-hidden rounded-2xl border-2 transition-all duration-200',
-		state.active
-			? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
-			: 'border-border/60 bg-card hover:border-muted-foreground/50',
+		'overflow-hidden rounded-tile transition-colors duration-200 ease-brand',
+		state.active ? 'bg-primary-soft' : 'bg-surface',
 		ui?.class
 	)}
 >
@@ -66,12 +64,12 @@
 		type="button"
 		onclick={events.onClick}
 		disabled={ui?.disabled}
-		class="group flex w-full items-center gap-3 p-4 text-left enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+		class="group flex w-full items-center gap-3 p-4 text-left enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
 	>
 		{#if icon}
 			<div
 				class={cn(
-					'flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground transition-[filter] group-hover:brightness-110',
+					'flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-foreground transition-[filter] group-hover:brightness-110',
 					ui?.iconClass
 				)}
 			>
@@ -79,7 +77,7 @@
 			</div>
 		{/if}
 		<div class="min-w-0 flex-1">
-			<p class="text-sm font-semibold text-foreground">{data.title}</p>
+			<p class="text-sm font-black tracking-tight text-foreground">{data.title}</p>
 			{#if data.subtitle}
 				<p class="truncate text-xs text-muted-foreground">{data.subtitle}</p>
 			{/if}
@@ -95,7 +93,7 @@
 	</button>
 
 	{#if state.expanded && children}
-		<div transition:slide={{ duration: 200 }} class="space-y-2 border-t border-border/60 p-3">
+		<div transition:slide={{ duration: 200 }} class="space-y-2 px-4 pb-4">
 			{@render children()}
 		</div>
 	{/if}

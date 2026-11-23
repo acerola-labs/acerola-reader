@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import type { DocEntry } from '$lib/content/docs';
+import type { DocEntry } from '#lib/content/docs.ts';
 import AcerolaPrevNextNav from './acerola-prev-next-nav.svelte';
 
 function makeDoc(slug: string, title: string): DocEntry {

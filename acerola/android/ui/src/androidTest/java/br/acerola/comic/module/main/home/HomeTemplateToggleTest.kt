@@ -71,14 +71,14 @@ class HomeTemplateToggleTest {
             }
         }
 
-        // 1. Abre o HUB de ferramentas
+        // 1. Opens the tools HUB
         val hubDescription = context.getString(R.string.description_icon_home_floating_tool_hub)
         composeTestRule.onNodeWithContentDescription(hubDescription, substring = true).performClick()
 
-        // Aguarda animação de expansão do FloatingTool
+        // Waits for the FloatingTool expand animation
         composeTestRule.waitForIdle()
 
-        // Verifica se o botão de mudar layout está visível no HUB
+        // Checks that the change-layout button is visible in the HUB
         val layoutToggleDescription = context.getString(R.string.description_icon_home_change_layout)
         composeTestRule
             .onNodeWithContentDescription(layoutToggleDescription, substring = true, useUnmergedTree = true)

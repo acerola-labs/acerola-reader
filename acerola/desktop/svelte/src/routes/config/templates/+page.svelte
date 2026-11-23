@@ -1,26 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { fly, fade } from 'svelte/transition';
 
-	import AcerolaAccordionCard from '$lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaCard from '$lib/components/acerola-card/acerola-card.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import AcerolaSettingsHeader from '$lib/components/acerola-settings-header/acerola-settings-header.svelte';
-	import AcerolaToggleGroup from '$lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
-	import * as ToggleGroup from '$lib/components/ui/toggle-group/index';
-	import { extractErrorMessage } from '$lib/utils/error.utils';
-	import { autoAnimateList } from '$lib/utils/auto-animate.utils';
-	import { m } from '$lib/paraglide/messages';
+	import AcerolaAccordionCard from '#lib/components/acerola-accordion-card/acerola-accordion-card.svelte';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import AcerolaCard from '#lib/components/acerola-card/acerola-card.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import AcerolaSettingsHeader from '#lib/components/acerola-settings-header/acerola-settings-header.svelte';
+	import AcerolaToggleGroup from '#lib/components/acerola-toggle-group/acerola-toggle-group.svelte';
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.ts';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import { autoAnimateList } from '#lib/utils/auto-animate.util.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
-	import { useArchiveTemplates } from '$lib/hooks/store/use-archive-templates.svelte';
+	import { useArchiveTemplates } from '#lib/hooks/store/use-archive-templates.svelte.ts';
 	import type {
 		ArchiveTemplate,
 		ArchiveTemplateSortType
-	} from '$lib/contracts/archive/archive-template.payloads';
+	} from '#lib/contracts/archive/archive-template.payloads.ts';
 
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -29,12 +30,12 @@
 
 	const templateStore = useArchiveTemplates();
 
-	// Macros e exemplos são sintaxe técnica, não texto de idioma — ficam fixos aqui
-	// em vez de nas mensagens i18n, para não colidir com a interpolação do paraglide.
+	// Macros and examples are technical syntax, not language text — they stay fixed here
+	// instead of in the i18n messages, so they don't collide with paraglide interpolation.
 	const CHAPTER_EXAMPLE = 'Ch. {chapter}{decimal}.*.{extension}';
 	const VOLUME_EXAMPLE = 'Vol. {volume}{decimal}';
-	// {extension} nunca é digitado pelo usuário: é sempre o último token de um
-	// template de capítulo, então o formulário anexa automaticamente na hora de criar.
+	// {extension} is never typed by the user: it is always the last token of a chapter
+	// template, so the form appends it automatically on creation.
 	const CHAPTER_BODY_PLACEHOLDER = 'Ch. {chapter}{decimal}.*.';
 
 	let newLabel = $state('');
@@ -54,14 +55,16 @@
 
 	onMount(() => {
 		templateStore.loadTemplates().catch((err: unknown) => {
-			toast.error(m['pages.config.templates.toast.load_error']({ msg: extractErrorMessage(err) }));
+			toast.error(
+				m['pages.config.templates.toast.loadError']({ msg: extractErrorMessage(err) })
+			);
 		});
 	});
 
 	function selectSortType(value: ArchiveTemplateSortType) {
 		newSortType = value;
-		// Troca de tipo limpa o padrão: uma macro de capítulo dentro de um template
-		// de volume (ou vice-versa) não é barrada pelo parser e gera extração errada.
+		// Switching type clears the pattern: a chapter macro inside a volume template (or vice
+		// versa) isn't blocked by the parser and produces a wrong extraction.
 		newPattern = '';
 	}
 
@@ -76,12 +79,14 @@
 		try {
 			const fullPattern = newSortType === 'Chapter' ? `${newPattern}{extension}` : newPattern;
 			const created = await templateStore.createTemplate(newLabel, fullPattern, newSortType);
-			toast.success(m['pages.config.templates.toast.create_success']({ label: created.label }));
+			toast.success(
+				m['pages.config.templates.toast.createSuccess']({ label: created.label })
+			);
 			newLabel = '';
 			newPattern = '';
 		} catch (err: unknown) {
 			toast.error(
-				m['pages.config.templates.toast.create_error']({ msg: extractErrorMessage(err) })
+				m['pages.config.templates.toast.createError']({ msg: extractErrorMessage(err) })
 			);
 		} finally {
 			isCreating = false;
@@ -93,10 +98,10 @@
 
 		try {
 			await templateStore.deleteTemplate(templateToDelete.id);
-			toast.success(m['pages.config.templates.toast.delete_success']());
+			toast.success(m['pages.config.templates.toast.deleteSuccess']());
 		} catch (err: unknown) {
 			toast.error(
-				m['pages.config.templates.toast.delete_error']({ msg: extractErrorMessage(err) })
+				m['pages.config.templates.toast.deleteError']({ msg: extractErrorMessage(err) })
 			);
 		} finally {
 			templateToDelete = null;
@@ -109,14 +114,17 @@
 	out:fade={{ duration: 100 }}
 	class="mx-auto w-full max-w-5xl space-y-10 p-8"
 >
-	<div class="space-y-1">
-		<AcerolaSettingsHeader data={{ title: m['pages.config.templates.title']() }} />
-		<p class="text-muted-foreground">
-			{m['pages.config.templates.desc']()}
-		</p>
-	</div>
+	<AcerolaSettingsHeader
+		data={{
+			eyebrow: m['pages.config.title'](),
+			title: m['pages.config.templates.title'](),
+			lead: m['pages.config.templates.desc']()
+		}}
+		events={{ onBack: () => goto('/config') }}
+		ui={{ backLabel: m['pages.config.templates.back']() }}
+	/>
 
-	<!-- Referência: como montar um template -->
+	<!-- Reference: how to build a template -->
 	<AcerolaAccordionCard
 		data={{
 			title: m['pages.config.templates.help.title'](),
@@ -131,66 +139,72 @@
 
 		{#snippet children()}
 			<div class="grid gap-3 sm:grid-cols-2">
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{chapter}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_chapter_desc']()}
+						{m['pages.config.templates.help.macroChapterDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{volume}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_volume_desc']()}
+						{m['pages.config.templates.help.macroVolumeDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{decimal}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_decimal_desc']()}
+						{m['pages.config.templates.help.macroDecimalDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3">
+				<div class="rounded-tile bg-surface p-3">
 					<code class="text-sm font-bold text-primary">{'{extension}'}</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.macro_extension_desc']()}
+						{m['pages.config.templates.help.macroExtensionDesc']()}
 					</p>
 				</div>
-				<div class="rounded-xl border border-border/40 bg-background/50 p-3 sm:col-span-2">
+				<div class="rounded-tile bg-surface p-3 sm:col-span-2">
 					<code class="text-sm font-bold text-primary">*</code>
 					<p class="mt-1 text-xs text-muted-foreground">
-						{m['pages.config.templates.help.wildcard_desc']()}
+						{m['pages.config.templates.help.wildcardDesc']()}
 					</p>
 				</div>
 			</div>
 
 			<div class="mt-5 grid gap-3 sm:grid-cols-2">
-				<div class="rounded-xl bg-muted/30 p-3">
+				<div class="rounded-tile bg-primary-soft p-3">
 					<p class="text-xs font-semibold text-foreground">
-						{m['pages.config.templates.help.example_chapter_label']()}
+						{m['pages.config.templates.help.exampleChapterLabel']()}
 					</p>
-					<code class="mt-1 block truncate text-xs text-muted-foreground">{CHAPTER_EXAMPLE}</code>
-					<p class="mt-1 text-xs text-muted-foreground/80">
-						{m['pages.config.templates.help.example_chapter_match']()}
+					<code class="mt-1 block truncate text-xs text-muted-foreground"
+						>{CHAPTER_EXAMPLE}</code
+					>
+					<p class="mt-1 text-xs text-muted-foreground">
+						{m['pages.config.templates.help.exampleChapterMatch']()}
 					</p>
 				</div>
-				<div class="rounded-xl bg-muted/30 p-3">
+				<div class="rounded-tile bg-primary-soft p-3">
 					<p class="text-xs font-semibold text-foreground">
-						{m['pages.config.templates.help.example_volume_label']()}
+						{m['pages.config.templates.help.exampleVolumeLabel']()}
 					</p>
-					<code class="mt-1 block truncate text-xs text-muted-foreground">{VOLUME_EXAMPLE}</code>
-					<p class="mt-1 text-xs text-muted-foreground/80">
-						{m['pages.config.templates.help.example_volume_match']()}
+					<code class="mt-1 block truncate text-xs text-muted-foreground"
+						>{VOLUME_EXAMPLE}</code
+					>
+					<p class="mt-1 text-xs text-muted-foreground">
+						{m['pages.config.templates.help.exampleVolumeMatch']()}
 					</p>
 				</div>
 			</div>
 		{/snippet}
 	</AcerolaAccordionCard>
 
-	<!-- Criar novo template -->
+	<!-- Create a new template -->
 	<AcerolaCard data={{ title: m['pages.config.templates.form.title']() }}>
 		<div class="space-y-4">
 			<div class="space-y-1">
-				<span class="text-xs font-semibold">{m['pages.config.templates.form.sort_type']()}</span>
+				<span class="text-xs font-semibold"
+					>{m['pages.config.templates.form.sortType']()}</span
+				>
 				<AcerolaToggleGroup
 					state={{ value: newSortType }}
 					events={{
@@ -200,10 +214,10 @@
 					ui={{ variant: 'outline' }}
 				>
 					<ToggleGroup.Item value="Chapter" class="px-4">
-						{m['pages.config.templates.form.sort_type_chapter']()}
+						{m['pages.config.templates.form.sortTypeChapter']()}
 					</ToggleGroup.Item>
 					<ToggleGroup.Item value="Volume" class="px-4">
-						{m['pages.config.templates.form.sort_type_volume']()}
+						{m['pages.config.templates.form.sortTypeVolume']()}
 					</ToggleGroup.Item>
 				</AcerolaToggleGroup>
 			</div>
@@ -218,7 +232,7 @@
 						events={{ onValueChange: (value) => (newLabel = value) }}
 						ui={{
 							id: 'templateLabel',
-							placeholder: m['pages.config.templates.form.label_placeholder'](),
+							placeholder: m['pages.config.templates.form.labelPlaceholder'](),
 							class: 'w-full bg-background'
 						}}
 					/>
@@ -235,7 +249,10 @@
 							events={{ onValueChange: (value) => (newPattern = value) }}
 							ui={{
 								id: 'templatePattern',
-								placeholder: newSortType === 'Chapter' ? CHAPTER_BODY_PLACEHOLDER : VOLUME_EXAMPLE,
+								placeholder:
+									newSortType === 'Chapter'
+										? CHAPTER_BODY_PLACEHOLDER
+										: VOLUME_EXAMPLE,
 								class:
 									newSortType === 'Chapter'
 										? 'w-full bg-background font-mono pr-24'
@@ -255,26 +272,42 @@
 						{#if newSortType === 'Chapter'}
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{chapter}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{chapter}'}
 							</AcerolaButton>
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{decimal}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{decimal}'}
 							</AcerolaButton>
 						{:else}
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{volume}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{volume}'}
 							</AcerolaButton>
 							<AcerolaButton
 								events={{ onClick: () => insertMacro('{decimal}') }}
-								ui={{ variant: 'outline', size: 'xs', class: 'rounded-full font-mono' }}
+								ui={{
+									variant: 'outline',
+									size: 'xs',
+									class: 'rounded-full font-mono'
+								}}
 							>
 								+ {'{decimal}'}
 							</AcerolaButton>
@@ -283,7 +316,7 @@
 
 					{#if newSortType === 'Chapter'}
 						<p class="text-xs text-muted-foreground/80">
-							{m['pages.config.templates.form.extension_auto_hint']()}
+							{m['pages.config.templates.form.extensionAutoHint']()}
 						</p>
 					{/if}
 				</div>
@@ -306,17 +339,17 @@
 		</div>
 	</AcerolaCard>
 
-	<!-- Listagem -->
+	<!-- Listing -->
 	<section class="grid gap-8 sm:grid-cols-2">
-		{#each [{ title: m['pages.config.templates.list.chapter_title'](), items: chapterTemplates, empty: m['pages.config.templates.list.empty_chapter']() }, { title: m['pages.config.templates.list.volume_title'](), items: volumeTemplates, empty: m['pages.config.templates.list.empty_volume']() }] as group (group.title)}
+		{#each [{ title: m['pages.config.templates.list.chapterTitle'](), items: chapterTemplates, empty: m['pages.config.templates.list.emptyChapter']() }, { title: m['pages.config.templates.list.volumeTitle'](), items: volumeTemplates, empty: m['pages.config.templates.list.emptyVolume']() }] as group (group.title)}
 			<div class="space-y-3">
-				<h2 class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+				<h2 class="text-lg font-black tracking-tight text-foreground">
 					{group.title}
 				</h2>
 
 				{#if group.items.length === 0}
 					<div
-						class="rounded-xl border border-dashed border-border/40 p-6 text-center text-sm text-muted-foreground"
+						class="rounded-tile bg-surface p-6 text-center text-sm text-muted-foreground"
 					>
 						{group.empty}
 					</div>
@@ -324,18 +357,22 @@
 					<div class="space-y-2" use:autoAnimateList>
 						{#each group.items as template (template.id)}
 							<div
-								class="flex items-center justify-between gap-3 rounded-xl border border-border/40 bg-background/50 p-3 transition-colors hover:bg-muted/50"
+								class="flex items-center justify-between gap-3 rounded-tile bg-surface p-3 transition-[filter] duration-200 ease-brand hover:brightness-110"
 							>
 								<div class="min-w-0">
 									<div class="flex items-center gap-2">
-										<span class="truncate font-medium">{template.label}</span>
+										<span class="truncate font-black tracking-tight"
+											>{template.label}</span
+										>
 										{#if template.is_default}
 											<span
-												title={m['pages.config.templates.list.default_hint']()}
-												class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary uppercase"
+												title={m[
+													'pages.config.templates.list.defaultHint'
+												]()}
+												class="flex shrink-0 items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-bold text-primary"
 											>
 												<LockIcon size={10} />
-												{m['pages.config.templates.list.default_badge']()}
+												{m['pages.config.templates.list.defaultBadge']()}
 											</span>
 										{/if}
 									</div>
@@ -369,12 +406,12 @@
 <AcerolaAlertDialog
 	state={{ open: templateToDelete !== null }}
 	data={{
-		title: m['pages.config.templates.delete_confirm.title'](),
+		title: m['pages.config.templates.deleteConfirm.title'](),
 		description: templateToDelete
-			? m['pages.config.templates.delete_confirm.desc']({ label: templateToDelete.label })
+			? m['pages.config.templates.deleteConfirm.desc']({ label: templateToDelete.label })
 			: '',
-		cancelText: m['pages.config.templates.delete_confirm.cancel'](),
-		actionText: m['pages.config.templates.delete_confirm.action']()
+		cancelText: m['pages.config.templates.deleteConfirm.cancel'](),
+		actionText: m['pages.config.templates.deleteConfirm.action']()
 	}}
 	events={{
 		onAction: handleDelete,

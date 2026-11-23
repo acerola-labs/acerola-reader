@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import PlatformCard from './platform-card.svelte';
-import GithubIcon from '$lib/icons/github.svelte';
+import GithubIcon from '#lib/icons/github.svelte';
 
 function ctaSnippet(text: string) {
 	return createRawSnippet(() => ({
@@ -32,7 +32,9 @@ describe('PlatformCard (mdsvex)', () => {
 	});
 
 	it('renders the icon when provided', () => {
-		const { container } = render(PlatformCard, { props: { title: 'Windows', icon: GithubIcon } });
+		const { container } = render(PlatformCard, {
+			props: { title: 'Windows', icon: GithubIcon }
+		});
 
 		expect(container.querySelector('svg')).toBeInTheDocument();
 	});

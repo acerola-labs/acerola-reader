@@ -3,29 +3,29 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-/// Impede duas sessões concorrentes do protocolo `acerola/sync-files/1` com o MESMO peer —
-/// log real já mostrou duas conexões inbound aceitas quase simultaneamente pro mesmo peer, e
-/// sem essa trava cada uma dispara sua própria varredura completa da biblioteca via
-/// `run_blocking` (ver `protocol::ffi_blocking`), dobrando a carga de I/O/CPU do bug de
-/// travamento do runtime que essa trava, junto com `run_blocking`, resolve. Compartilhado
-/// pela MESMA instância entre `FileSyncInbound` e `FileSyncOutbound` (ver
-/// `api.rs::P2PNode::new`) — a trava precisa valer pros dois papéis ao mesmo tempo, não só
-/// dentro de cada um isoladamente, senão uma sessão outbound e uma inbound simultâneas pro
-/// mesmo peer ainda passariam batido.
+/// Prevents two concurrent `acerola/sync-files/1` sessions with the SAME peer —
+/// a real log already showed two inbound connections accepted almost simultaneously for the same
+/// peer, and without this lock each one triggers its own full library scan via
+/// `run_blocking` (see `protocol::ffi_blocking`), doubling the I/O/CPU load of the runtime
+/// freeze bug that this lock, together with `run_blocking`, fixes. Shared
+/// as the SAME instance between `FileSyncInbound` and `FileSyncOutbound` (see
+/// `api.rs::P2PNode::new`) — the lock must hold for both roles at once, not only
+/// within each one in isolation, otherwise simultaneous outbound and inbound sessions for the
+/// same peer would still slip through.
 ///
-/// `std::sync::Mutex` (não `tokio::sync::Mutex`) é seguro aqui porque o lock nunca é mantido
-/// através de um `.await` — só protege `insert`/`remove` síncronos no `HashSet`.
+/// `std::sync::Mutex` (not `tokio::sync::Mutex`) is safe here because the lock is never held
+/// across an `.await` — it only protects synchronous `insert`/`remove` on the `HashSet`.
 #[derive(Default)]
 pub(crate) struct FileSyncSessionGuard {
     active_peers: Mutex<HashSet<String>>,
 }
 
 impl FileSyncSessionGuard {
-    /// Tenta reservar uma sessão pra `peer_id`. `None` se já existe uma sessão ativa pra esse
-    /// peer — a segunda sessão é REJEITADA, não enfileirada: enfileirar exigiria um mecanismo
-    /// de fila com timeout/limite que não existe hoje em lugar nenhum do protocolo, e o peer
-    /// que foi rejeitado pode simplesmente tentar de novo depois (reconexão do lado dele já é
-    /// o comportamento natural do `acerola-p2p`).
+    /// Tries to reserve a session for `peer_id`. `None` if there is already an active session for
+    /// that peer — the second session is REJECTED, not queued: queuing would require a queue
+    /// mechanism with timeout/limit that does not exist anywhere in the protocol today, and the
+    /// rejected peer can simply try again later (reconnecting on its side is already
+    /// the natural behavior of `acerola-p2p`).
     pub(crate) fn try_acquire(self: &Arc<Self>, peer_id: &str) -> Option<FileSyncSessionLease> {
         let mut active = self
             .active_peers
@@ -41,9 +41,9 @@ impl FileSyncSessionGuard {
     }
 }
 
-/// RAII: libera a reserva de `peer_id` automaticamente quando a sessão termina — sucesso,
-/// erro (`?` saindo cedo de `run_exchange`) ou até panic. Sem isso, uma sessão que falhasse
-/// no meio deixaria o peer travado pra sempre até reiniciar o app.
+/// RAII: releases the `peer_id` reservation automatically when the session ends — success,
+/// error (`?` returning early from `run_exchange`) or even panic. Without this, a session that
+/// failed midway would leave the peer locked forever until the app restarts.
 pub(crate) struct FileSyncSessionLease {
     guard: Arc<FileSyncSessionGuard>,
     peer_id: String,

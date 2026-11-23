@@ -24,7 +24,7 @@ vi.mock('@tauri-apps/api/core', () => ({
 }));
 
 import AcerolaOnboarding from './acerola-onboarding.svelte';
-import { useOnboarding } from '$lib/hooks/onboarding/use-onboarding.svelte';
+import { useOnboarding } from '#lib/hooks/onboarding/use-onboarding.svelte.ts';
 
 describe('AcerolaOnboarding', () => {
 	beforeEach(() => {
@@ -36,7 +36,9 @@ describe('AcerolaOnboarding', () => {
 		render(AcerolaOnboarding);
 
 		expect(screen.getByText('Acerola')).toBeInTheDocument();
-		expect(screen.getByText('Bem-vindo ao Acerola, seu leitor de quadrinhos.')).toBeInTheDocument();
+		expect(
+			screen.getByText('Bem-vindo ao Acerola, seu leitor de quadrinhos.')
+		).toBeInTheDocument();
 		expect(screen.getByText('Começar')).toBeInTheDocument();
 	});
 
@@ -46,8 +48,10 @@ describe('AcerolaOnboarding', () => {
 
 		await user.click(screen.getByText('Começar'));
 
-		expect(screen.getByText('Selecionar Idioma')).toBeInTheDocument();
-		expect(screen.getByText('Escolha o idioma preferido para a aplicação.')).toBeInTheDocument();
+		expect(screen.getByText('Selecionar idioma')).toBeInTheDocument();
+		expect(
+			screen.getByText('Escolha o idioma preferido para a aplicação.')
+		).toBeInTheDocument();
 	});
 
 	it('advances through Language steps to Formats when clicking Next', async () => {
@@ -57,7 +61,7 @@ describe('AcerolaOnboarding', () => {
 		await user.click(screen.getByText('Começar'));
 		await user.click(screen.getByText('Próximo'));
 
-		expect(screen.getByText('Formatos Suportados')).toBeInTheDocument();
+		expect(screen.getByText('Formatos suportados')).toBeInTheDocument();
 		expect(screen.getByText('CBZ')).toBeInTheDocument();
 		expect(screen.getByText('CBR')).toBeInTheDocument();
 		expect(screen.getByText('PDF')).toBeInTheDocument();

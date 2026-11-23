@@ -1,12 +1,12 @@
 import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { READER_COMMANDS } from '$lib/contracts/reader/reader.commands';
+import { READER_COMMANDS } from '#lib/contracts/reader/reader.commands.ts';
 import type {
 	ReaderChapterPayload,
 	ReaderPagePayload,
 	ReaderSessionPayload
-} from '$lib/contracts/reader/reader.payloads';
+} from '#lib/contracts/reader/reader.payloads.ts';
 import { useReader } from './use-reader.svelte';
 import ReaderHarness from '../../../../tests/harness/hooks/reader-store.svelte';
 import { invoke } from '@tauri-apps/api/core';
@@ -128,8 +128,8 @@ describe('useReader', () => {
 		expect(reader.currentPage).toBe(4);
 		expect(reader.current?.index).toBe(4);
 		expect(reader.current?.mimeType).toBe('image/jpeg');
-		// Blob real: type e tamanho vêm de `payload.mimeType`/`payload.bytes`, não de um
-		// literal vazio — o mock de createObjectURL expõe isso no formato `blob:<type>:<size>`.
+		// Real Blob: type and size come from `payload.mimeType`/`payload.bytes`, not from an
+		// empty literal — the createObjectURL mock exposes this as `blob:<type>:<size>`.
 		expect(reader.current?.url).toBe('blob:image/jpeg:2');
 		expect(invokeMock).toHaveBeenCalledWith(READER_COMMANDS.openChapter, {
 			chapter: chapterPayload
@@ -164,7 +164,7 @@ describe('useReader', () => {
 		expect(await reader.loadPage(5)).toBeUndefined();
 		expect(invokeMock).not.toHaveBeenCalled();
 
-		// pageCount é 5 (0..4) — o último índice válido é a fronteira, não pageCount.
+		// pageCount is 5 (0..4) — the last valid index is the boundary, not pageCount.
 		const lastPage = await reader.loadPage(4);
 		expect(lastPage?.index).toBe(4);
 	});
@@ -187,7 +187,7 @@ describe('useReader', () => {
 		await reader.previousPage();
 		await reader.previousPage();
 		await waitMicrotasks();
-		// Clampado em 0, não fica negativo.
+		// Clamped at 0, never negative.
 		expect(reader.currentPage).toBe(0);
 	});
 
@@ -296,8 +296,8 @@ describe('useReader', () => {
 	it('prefetches a window around the center, skipping the center itself and already-cached pages', async () => {
 		const { reader } = await renderHook();
 
-		// pageCount 10, abre na página 5: janela esperada = [3,4,6,7] (raio 2, sem o 5 que já
-		// virou "current" e já está em cache).
+		// pageCount 10, opens on page 5: expected window = [3,4,6,7] (radius 2, without 5,
+		// which already became "current" and is already cached).
 		invokeMock.mockImplementation(async (command, args) => {
 			if (command === READER_COMMANDS.openChapter) {
 				return session(chapter(), 10);
@@ -340,7 +340,7 @@ describe('useReader', () => {
 			([, args]) => (args as { index: number }).index
 		);
 
-		// pageCount 5, center 0, raio 2 -> janela real é [0,1,2], nunca índice negativo.
+		// pageCount 5, center 0, radius 2 -> the real window is [0,1,2], never a negative index.
 		expect(Math.min(...loadedIndices)).toBe(0);
 		expect(loadedIndices).toContain(2);
 	});
@@ -420,11 +420,11 @@ describe('useReader', () => {
 			if (command === READER_COMMANDS.loadPage) {
 				const payload = args as { index: number };
 
-				// O índice 4 fica fora do raio de prefetch do startPage 0 (a janela é
-				// [0,1,2]), então nunca é tocado pelo prefetch automático abaixo.
+				// Index 4 is outside startPage 0's prefetch radius (the window is
+				// [0,1,2]), so it is never touched by the automatic prefetch below.
 				if (payload.index === 4 && !oldRequestIssued) {
 					oldRequestIssued = true;
-					// Nunca resolvida pelo teste — simula uma requisição abandonada por um reset.
+					// Never resolved by the test — simulates a request abandoned by a reset.
 					return new Promise<ReaderPagePayload>(() => {});
 				}
 
@@ -437,12 +437,12 @@ describe('useReader', () => {
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 
-		// Inicia uma requisição em andamento para o índice 4 que nunca vai se resolver.
+		// Start an in-flight request for index 4 that will never resolve.
 		void reader.loadPage(4, false).catch(() => undefined);
 		await Promise.resolve();
 
-		// Reabrir reseta o mapa de requisições pendentes — uma requisição posterior
-		// para o MESMO índice não pode ser servida pela promise abandonada e pendente para sempre.
+		// Reopening resets the pending request map — a later request for the SAME index
+		// must not be served the abandoned, forever-pending promise.
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 		invokeMock.mockClear();
@@ -474,7 +474,7 @@ describe('useReader', () => {
 
 		const openPromise = reader.open(chapter('chapter-1'), 0);
 
-		// Ainda sem await/tick — isso já precisa ser true de forma síncrona.
+		// Still no await/tick — this must already be true synchronously.
 		expect(reader.loading).toBe(true);
 
 		resolveOpenChapter(session(chapter()));
@@ -521,23 +521,23 @@ describe('useReader', () => {
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 
-		// Uma requisição não relacionada ao openChapter começa e fica pendente.
+		// A request unrelated to openChapter starts and stays pending.
 		const stalePromise = reader.loadPage(2, true);
 		await Promise.resolve();
 
-		// Começa a abrir chapter-2 — o openChapter em si ainda está pendente, então
-		// tudo até (e incluindo) o reset já precisa ter rodado de forma síncrona
-		// no momento em que voltamos para cá.
+		// Start opening chapter-2 — openChapter itself is still pending, so everything up
+		// to (and including) the reset must already have run synchronously by the time
+		// we get back here.
 		const openPromise = reader.open(chapter('chapter-2'), 0);
 		await Promise.resolve();
 
-		// Enquanto ainda se aguarda o openChapter, a requisição pendente ANTIGA resolve.
+		// While openChapter is still being awaited, the OLD pending request resolves.
 		resolveStalePage(page('chapter-1', 2));
 		await Promise.resolve();
 		await Promise.resolve();
 
-		// Ela já precisa ter sido invalidada pelo reset que roda ANTES de aguardar
-		// o openChapter — não apenas pelo reset posterior que vem depois dele.
+		// It must already have been invalidated by the reset that runs BEFORE awaiting
+		// openChapter — not just by the later reset that comes after it.
 		await expect(stalePromise).resolves.toBeUndefined();
 		expect(reader.currentPage).toBe(0);
 		expect(reader.pageAt(2)).toBeUndefined();
@@ -570,9 +570,9 @@ describe('useReader', () => {
 		await waitMicrotasks();
 		await waitMicrotasks();
 
-		// session.cacheCapacity é 3 (veja o helper `session()`); o prefetch carrega 5
-		// páginas distintas (3,4,5,6,7) ao redor do centro 5 — o cache precisa ter
-		// evictado até a capacidade vinda do backend, não o padrão pré-sessão de 20.
+		// session.cacheCapacity is 3 (see the `session()` helper); the prefetch loads 5
+		// distinct pages (3,4,5,6,7) around center 5 — the cache must have evicted down to
+		// the capacity coming from the backend, not the pre-session default of 20.
 		expect(reader.cacheKeys.length).toBe(3);
 	});
 
@@ -665,15 +665,15 @@ describe('useReader', () => {
 		const staleLoad = reader.loadPage(3, false);
 		await Promise.resolve();
 
-		// Reabre o MESMO id de capítulo — incrementa a versão da requisição, mas o
-		// chapterId (tanto o capturado no momento da emissão quanto o atual) permanece
-		// idêntico ao da requisição pendente.
+		// Reopen the SAME chapter id — bumps the request version, but the chapterId (both
+		// the one captured at issue time and the current one) stays identical to the
+		// pending request's.
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 		invokeMock.mockClear();
 
-		// Resolve a requisição emitida ANTES da reabertura com um payload cujo chapterId
-		// bate perfeitamente — só o contador de versão da requisição a marca como obsoleta.
+		// Resolve the request issued BEFORE the reopen with a payload whose chapterId matches
+		// perfectly — only the request version counter marks it as stale.
 		hangingResolve?.(page('chapter-1', 3));
 
 		await expect(staleLoad).resolves.toBeUndefined();
@@ -690,8 +690,8 @@ describe('useReader', () => {
 			}
 
 			if (command === READER_COMMANDS.loadPage) {
-				// O backend responde com um payload marcado para um capítulo DIFERENTE do
-				// que está realmente aberto — simula uma resposta do backend desviada/cruzada.
+				// The backend answers with a payload tagged for a DIFFERENT chapter than the
+				// one actually open — simulates a misrouted/crossed backend response.
 				const payload = args as { index: number };
 				return page('some-other-chapter', payload.index);
 			}
@@ -780,7 +780,7 @@ describe('useReader', () => {
 		const staleLoad = reader.loadPage(3, false).catch(() => undefined);
 		await Promise.resolve();
 
-		// Requisição substituta/incremento de versão (a reabertura invalida a requisição pendente).
+		// Replacement request/version bump (reopening invalidates the pending request).
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 
@@ -865,8 +865,8 @@ describe('useReader', () => {
 		const oldRequest = reader.loadPage(5, false).catch(() => undefined);
 		await Promise.resolve();
 
-		// Reabre o mesmo capítulo: incrementa a versão da requisição e limpa o mapa de
-		// pendentes, mas a chamada ANTIGA ao backend para o índice 5 continua rodando por baixo.
+		// Reopen the same chapter: bumps the request version and clears the pending map, but
+		// the OLD backend call for index 5 keeps running underneath.
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 
@@ -875,15 +875,14 @@ describe('useReader', () => {
 
 		invokeMock.mockClear();
 
-		// A requisição obsoleta (de antes da reabertura) finalmente se resolve agora.
+		// The stale request (from before the reopen) finally resolves now.
 		resolveOldIndex5(page('chapter-1', 5));
 		await oldRequest;
 		await waitMicrotasks();
 
-		// Uma terceira chamada para o mesmo índice, enquanto a requisição NOVA ainda
-		// está pendente, precisa reutilizá-la em vez de disparar uma chamada redundante
-		// ao backend — provando que a limpeza da requisição obsoleta não evictou
-		// indevidamente a entrada pendente mais nova.
+		// A third call for the same index, while the NEW request is still pending, must
+		// reuse it instead of firing a redundant backend call — proving the stale request's
+		// cleanup did not wrongly evict the newer pending entry.
 		void reader.loadPage(5, false);
 		await waitMicrotasks();
 
@@ -929,24 +928,24 @@ describe('useReader', () => {
 		await reader.open(chapter('chapter-1'), 0);
 		await waitMicrotasks();
 
-		// Requisição com setCurrent=false: nunca pode forçar `loading` true/false sozinha.
+		// Request with setCurrent=false: can never force `loading` true/false on its own.
 		const sideRequest = reader.loadPage(4, false);
 		await Promise.resolve();
 		expect(reader.loading).toBe(false);
 
-		// Requisição com setCurrent=true: liga o loading.
+		// Request with setCurrent=true: turns loading on.
 		const mainRequest = reader.loadPage(6, true);
 		await Promise.resolve();
 		expect(reader.loading).toBe(true);
 
-		// A conclusão da requisição com setCurrent=false NÃO pode limpar o loading
-		// enquanto a requisição com setCurrent=true ainda está em andamento.
+		// Completing the setCurrent=false request must NOT clear loading while the
+		// setCurrent=true request is still in flight.
 		resolveSide(page('chapter-1', 4));
 		await sideRequest;
 		await waitMicrotasks();
 		expect(reader.loading).toBe(true);
 
-		// Concluir a requisição com setCurrent=true limpa o loading.
+		// Completing the setCurrent=true request clears loading.
 		resolveMain(page('chapter-1', 6));
 		await mainRequest;
 		await waitMicrotasks();
@@ -993,15 +992,14 @@ describe('useReader', () => {
 		const stale = reader.loadPage(4, true).catch(() => undefined);
 		await Promise.resolve();
 
-		// Começa a abrir um capítulo diferente — o próprio load com setCurrent dele fica
-		// parado no meio do await assim que o openChapter resolve, mas por enquanto o
-		// openChapter em si ainda não resolveu.
+		// Start opening a different chapter — its own setCurrent load stalls mid-await once
+		// openChapter resolves, but for now openChapter itself hasn't resolved yet.
 		const openPromise = reader.open(chapter('chapter-2'), 0).catch(() => undefined);
 		await Promise.resolve();
 
-		// Enquanto a abertura ainda está em andamento, a requisição obsoleta do índice 4
-		// de ANTES resolve. Ela não pode limpar `loading` — o open() já o forçou para true,
-		// e um load de verdade ainda está pendente.
+		// While the open is still in flight, the stale index-4 request from BEFORE resolves.
+		// It must not clear `loading` — open() already forced it to true, and a real load is
+		// still pending.
 		resolveStalePage(page('chapter-1', 4));
 		await stale;
 		await waitMicrotasks();
@@ -1025,8 +1023,8 @@ describe('useReader', () => {
 	it('records an error when the backend prefetchWindow call rejects', async () => {
 		const { reader } = await renderHook();
 
-		// pageCount 3 + radius 2 faz a janela inteira ser [0,1,2] — exatamente a
-		// cacheCapacity de 3 da sessão, então nada é evictado após o prefetch.
+		// pageCount 3 + radius 2 makes the whole window [0,1,2] — exactly the session's
+		// cacheCapacity of 3, so nothing is evicted after the prefetch.
 		invokeMock.mockImplementation(async (command, args) => {
 			if (command === READER_COMMANDS.openChapter) {
 				const payload = args as { chapter: ReaderChapterPayload };
@@ -1045,10 +1043,9 @@ describe('useReader', () => {
 		await waitMicrotasks();
 		await waitMicrotasks();
 
-		// A essa altura, todas as páginas do capítulo já estão em cache via o prefetch
-		// inicial, então uma segunda chamada a prefetchWindow não emite mais chamadas
-		// a loadPage — isolando a rejeição do prefetchWindow no backend como a única
-		// fonte de `error`.
+		// By now, every page of the chapter is already cached via the initial prefetch, so
+		// a second prefetchWindow call issues no more loadPage calls — isolating the
+		// backend prefetchWindow rejection as the only source of `error`.
 		invokeMock.mockClear();
 		const failure = new Error('prefetch failed');
 		invokeMock.mockImplementation(async (command, args) => {
@@ -1092,8 +1089,8 @@ describe('useReader', () => {
 		await waitMicrotasks();
 		invokeMock.mockClear();
 
-		// Chama prefetchWindow diretamente com um centro que nunca foi carregado via
-		// goToPage, garantindo que ele esteja ausente do cache.
+		// Call prefetchWindow directly with a center never loaded via goToPage, ensuring
+		// it is absent from the cache.
 		await reader.prefetchWindow(8);
 		await waitMicrotasks();
 
@@ -1101,7 +1098,7 @@ describe('useReader', () => {
 			([, args]) => (args as { index: number }).index
 		);
 
-		// A janela é [6,7,8,9] (raio 2, limitado a pageCount-1=9) menos o centro.
+		// The window is [6,7,8,9] (radius 2, capped at pageCount-1=9) minus the center.
 		expect(loadedIndices).not.toContain(8);
 		expect(loadedIndices).toEqual(expect.arrayContaining([6, 7, 9]));
 	});
@@ -1112,9 +1109,9 @@ describe('useReader', () => {
 		invokeMock.mockImplementation(async (command, args) => {
 			if (command === READER_COMMANDS.openChapter) {
 				const payload = args as { chapter: ReaderChapterPayload };
-				// A janela [3,4,5,6,7] tem 5 páginas — aumenta o cacheCapacity acima disso
-				// para que nada seja evictado, mantendo este teste focado na lógica de
-				// pular repetições, não no comportamento de capacidade/eviction do cache.
+				// The [3,4,5,6,7] window has 5 pages — raise cacheCapacity above that so
+				// nothing is evicted, keeping this test focused on the repeat-skipping logic,
+				// not on the cache capacity/eviction behavior.
 				return { ...session(payload.chapter, 10), cacheCapacity: 10 };
 			}
 
@@ -1151,8 +1148,8 @@ describe('useReader', () => {
 
 		invokeMock.mockImplementation(async (command, args) => {
 			if (command === READER_COMMANDS.loadPage) {
-				// O backend responde para um capítulo diferente do que está aberto —
-				// loadPage descarta isso e resolve para undefined.
+				// The backend answers for a chapter other than the open one —
+				// loadPage discards it and resolves to undefined.
 				const payload = args as { index: number };
 				return page('some-other-chapter', payload.index);
 			}

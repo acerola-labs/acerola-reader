@@ -5,10 +5,11 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 
-	import { m } from '$lib/paraglide/messages';
-	import AcerolaButtonIcon from '$lib/components/acerola-button/acerola-button-icon.svelte';
-	import AcerolaAlertDialog from '$lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
-	import AcerolaRemoteLibraryDialog from '$lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import AcerolaButtonIcon from '#lib/components/acerola-button/acerola-button-icon.svelte';
+	import { extractErrorMessage } from '#lib/utils/error.util.ts';
+	import AcerolaAlertDialog from '#lib/components/acerola-alert-dialog/acerola-alert-dialog.svelte';
+	import AcerolaRemoteLibraryDialog from '#lib/components/acerola-remote-library-dialog/acerola-remote-library-dialog.svelte';
 	import AcerolaNetworkMyDeviceCard from './components/acerola-network-my-device-card.svelte';
 	import AcerolaNetworkRelaySettingsCard from './components/acerola-network-relay-settings-card.svelte';
 	import AcerolaNetworkPairingCard from './components/acerola-network-pairing-card.svelte';
@@ -18,33 +19,33 @@
 	} from './components/acerola-network-peer-list.svelte';
 	import AcerolaNetworkTransfersLog from './components/acerola-network-transfers-log.svelte';
 
-	import { usePeerConnection } from '$lib/hooks/store/use-peer-connection.svelte';
-	import type { useNetworkSync } from '$lib/hooks/store/use-network-sync.svelte';
-	import { useRemoteLibrary } from '$lib/hooks/store/use-remote-library.svelte';
-	import { useRelaySettings } from '$lib/hooks/preferences/use-relay-settings.svelte';
-	import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-	import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-	import { CONTEXT_KEYS } from '$lib/constants/context-keys';
+	import { usePeerConnection } from '#lib/hooks/store/use-peer-connection.svelte.ts';
+	import type { useNetworkSync } from '#lib/hooks/store/use-network-sync.svelte.ts';
+	import { useRemoteLibrary } from '#lib/hooks/store/use-remote-library.svelte.ts';
+	import { useRelaySettings } from '#lib/hooks/preferences/use-relay-settings.svelte.ts';
+	import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+	import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+	import { CONTEXT_KEYS } from '#lib/constants/context-keys.ts';
 
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
 	import XIcon from '@lucide/svelte/icons/x';
 
 	const peers = usePeerConnection();
-	// Compartilhada com `+layout.svelte` (nunca desmonta) via contexto — não cria uma instância
-	// própria. `syncComic()` só resolve via um listener da instância que o chamou; uma instância
-	// só-desta-página (desmontada ao navegar pra outra tela) rejeitava essa promise à força com
-	// "sync cancelled: listener stopped" mesmo o sync de verdade continuando no backend. Ver
-	// `CONTEXT_KEYS.networkSync`.
+	// Shared with `+layout.svelte` (never unmounts) via context — doesn't create its own
+	// instance. `syncComic()` only resolves via a listener of the instance that called it; a
+	// page-only instance (unmounted when navigating to another screen) forcibly rejected that
+	// promise with "sync cancelled: listener stopped" even though the real sync kept going in
+	// the backend. See `CONTEXT_KEYS.networkSync`.
 	const sync = getContext<ReturnType<typeof useNetworkSync>>(CONTEXT_KEYS.networkSync);
 	const relay = useRelaySettings();
 	const remoteLibrary = useRemoteLibrary();
 
 	let browsingPeerId = $state<string | null>(null);
 	let peerPendingRemoval = $state<DisplayPeer | null>(null);
-	// Não é um toast: enquanto verdadeiro, a chave mestra que protege identidade/peers/confiança
-	// está sem a proteção do keyring do SO (ver `security:keyring_unavailable` no backend,
-	// `infra::security::MasterKeySource::FallbackFile`) — precisa ficar visível até o usuário
-	// dispensar, não sumir sozinho como um toast.
+	// Not a toast: while true, the master key protecting identity/peers/trust lacks the OS
+	// keyring's protection (see `security:keyring_unavailable` in the backend,
+	// `infra::security::MasterKeySource::FallbackFile`) — it must stay visible until the user
+	// dismisses it, not vanish on its own like a toast.
 	let keyringUnavailable = $state(false);
 	let keyringWarningDismissed = $state(false);
 
@@ -52,9 +53,9 @@
 		let unlistenKeyringWarning: UnlistenFn | undefined;
 
 		(async () => {
-			// `setup_network` (backend) roda numa task assíncrona à parte e pode terminar antes
-			// desta tela montar — um listener sozinho perderia o evento. Consulta o estado atual
-			// sob demanda; o listener abaixo cobre o caso do backend ainda não ter terminado.
+			// `setup_network` (backend) runs in a separate async task and may finish before this
+			// screen mounts — a listener alone would miss the event. Query the current state on
+			// demand; the listener below covers the case where the backend hasn't finished yet.
 			try {
 				keyringUnavailable = await invoke<boolean>(NETWORK_COMMANDS.getSecurityStatus);
 			} catch (err) {
@@ -80,14 +81,14 @@
 		};
 	});
 
-	// Une os pareados persistidos (sobrevivem a restart, `deviceName` vem de `known_peers()`
-	// no backend — ver `NetworkServiceApi::paired_peers`) com os conectados agora
-	// (`network:status`, mais fresco mas só existe nos poucos segundos em que a conexão de
-	// handshake está de fato aberta). Sem os pareados, o botão de sync só existiria no
-	// instante exato em que o peer está conectado — quase nunca. `connected` é derivado da
-	// presença em `status.peers`; ao sobrescrever com a entrada "ao vivo", mantém o
-	// `deviceName` já persistido como fallback pro caso raro do `device` ainda não ter
-	// chegado nesse instante exato (handshake acabou de abrir).
+	// Merges the persisted paired peers (survive restarts, `deviceName` comes from
+	// `known_peers()` in the backend — see `NetworkServiceApi::paired_peers`) with the ones
+	// connected now (`network:status`, fresher but only exists for the few seconds the
+	// handshake connection is actually open). Without the paired ones, the sync button would
+	// only exist at the exact moment the peer is connected — almost never. `connected` is
+	// derived from presence in `status.peers`; when overwriting with the "live" entry, it keeps
+	// the already persisted `deviceName` as a fallback for the rare case where `device` hasn't
+	// arrived at that exact moment (handshake just opened).
 	const uniquePeers = $derived.by(() => {
 		const byId = new Map<string, DisplayPeer>();
 		for (const peer of peers.pairedPeers) {
@@ -113,8 +114,8 @@
 	function peerStatusLabel(peer: DisplayPeer): string {
 		if (peer.connected) return m['pages.network.peers.online']();
 		const timestamp = sync.lastSyncedAt(peer.peerId);
-		if (!timestamp) return m['pages.network.peers.never_synced']();
-		return m['pages.network.peers.last_synced']({ when: new Date(timestamp).toLocaleString() });
+		if (!timestamp) return m['pages.network.peers.neverSynced']();
+		return m['pages.network.peers.lastSynced']({ when: new Date(timestamp).toLocaleString() });
 	}
 
 	async function withSync(
@@ -127,7 +128,7 @@
 		try {
 			await action(peerId, addrs);
 		} catch (err) {
-			toast.error(String(err));
+			toast.error(extractErrorMessage(err));
 		}
 	}
 
@@ -137,116 +138,123 @@
 	}
 
 	async function handleSyncRemoteComic(peerId: string, comicName: string) {
-		// Vem da navegação da biblioteca remota — o usuário só pode escolher um quadrinho que
-		// ainda não tem, então é sempre pull.
+		// Comes from remote library browsing — the user can only pick a comic they don't have
+		// yet, so it is always a pull.
 		await withSync((id, addrs) => sync.syncComic(id, addrs, comicName, 'pull'), peerId);
 	}
 </script>
 
-<div class="mx-auto w-full max-w-5xl space-y-12 p-8">
-	<!-- Header -->
-	<div>
-		<h1 class="text-3xl font-bold tracking-tight text-foreground">
+<div class="mx-auto grid w-full max-w-6xl gap-6 px-8 pt-8 pb-14">
+	<header class="grid gap-2">
+		<p class="text-xs font-semibold text-muted-foreground">{m['pages.network.eyebrow']()}</p>
+		<h1 class="text-[44px] leading-none font-black tracking-tighter text-foreground">
 			{m['pages.network.title']()}
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			{m['pages.network.subtitle']()}
-		</p>
-	</div>
+		<p class="text-sm text-muted-foreground">{m['pages.network.subtitle']()}</p>
+	</header>
 
 	{#if keyringUnavailable && !keyringWarningDismissed}
 		<div
-			class="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4"
+			class="flex items-center gap-3 rounded-card bg-destructive-soft p-4 text-destructive"
+			role="alert"
 		>
-			<ShieldAlertIcon size={18} class="mt-0.5 shrink-0 text-destructive" />
-			<p class="flex-1 text-sm text-foreground">{m['pages.network.keyring_unavailable']()}</p>
+			<ShieldAlertIcon size={18} class="shrink-0" />
+			<p class="flex-1 text-sm font-semibold">{m['pages.network.keyringUnavailable']()}</p>
 			<AcerolaButtonIcon
 				events={{ onClick: () => (keyringWarningDismissed = true) }}
 				ui={{
-					variant: 'ghost',
-					tone: 'muted',
-					class: 'size-8 shrink-0 rounded-md p-1',
+					tone: 'destructive',
 					title: m['pages.network.dismiss'](),
 					'aria-label': m['pages.network.dismiss']()
 				}}
 			>
-				<XIcon size={14} />
+				<XIcon size={16} />
 			</AcerolaButtonIcon>
 		</div>
 	{/if}
 
-	<AcerolaNetworkMyDeviceCard
-		data={{
-			deviceName: peers.localDeviceInfo?.name,
-			localId: peers.localId,
-			mode: peers.status?.mode
-		}}
-		events={{ onRenameDevice: (name) => peers.setDeviceName(name) }}
-	/>
+	<!-- Two columns: the settings on the left, the connection code pinned on the right. -->
+	<div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+		<div class="grid gap-6 lg:col-span-7">
+			<AcerolaNetworkMyDeviceCard
+				data={{
+					deviceName: peers.localDeviceInfo?.name,
+					localId: peers.localId,
+					mode: peers.status?.mode
+				}}
+				events={{ onRenameDevice: (name) => peers.setDeviceName(name) }}
+			/>
 
-	<AcerolaNetworkRelaySettingsCard
-		data={relay.relayInfo}
-		events={{
-			onToggleAcerolaRelay: (value) => relay.setUseAcerolaRelay(value),
-			onToggleIrohPublicNetwork: (value) => relay.setUseIrohPublicNetwork(value),
-			onAddCustomRelayUrl: (url) => relay.addCustomRelayUrl(url),
-			onRemoveCustomRelayUrl: (url) => relay.removeCustomRelayUrl(url),
-			onSetIrohServicesTicket: (ticket) => relay.setIrohServicesTicket(ticket),
-			onClearIrohServicesTicket: () => relay.clearIrohServicesTicket(),
-			onRestart: async () => {
-				await relay.restartP2p();
-				toast.success(m['pages.network.relay_settings.restart.success']());
-			}
-		}}
-	/>
+			<AcerolaNetworkConnectCard
+				data={{ connecting: peers.connecting }}
+				events={{ onConnect: (code) => peers.connectWithCode(code) }}
+			/>
 
-	<AcerolaNetworkPairingCard data={{ code: peers.connectionCode() }} />
+			<!-- Connected Devices (in its own section with a skeleton when empty) -->
+			<AcerolaNetworkPeerList
+				data={{
+					peers: uniquePeers,
+					addrFor: (peerId) => peers.getKnownAddr(peerId),
+					statusLabel: peerStatusLabel,
+					isSyncing: (peerId, kind) => sync.isSyncing(peerId, kind)
+				}}
+				events={{
+					onSyncHistory: (peerId) =>
+						withSync((id, addrs) => sync.syncHistory(id, addrs), peerId),
+					onSyncFiles: (peerId) =>
+						withSync((id, addrs) => sync.syncFiles(id, addrs), peerId),
+					onSyncAll: (peerId) => withSync((id, addrs) => sync.syncAll(id, addrs), peerId),
+					onBrowseLibrary: openRemoteLibrary,
+					onRemove: (peer) => (peerPendingRemoval = peer),
+					onRename: (peerId, nickname) => peers.setPeerNickname(peerId, nickname)
+				}}
+			/>
 
-	<AcerolaNetworkConnectCard
-		data={{ connecting: peers.connecting }}
-		events={{ onConnect: (code) => peers.connectWithCode(code) }}
-	/>
+			<AcerolaNetworkRelaySettingsCard
+				data={relay.relayInfo}
+				events={{
+					onToggleAcerolaRelay: (value) => relay.setUseAcerolaRelay(value),
+					onToggleIrohPublicNetwork: (value) => relay.setUseIrohPublicNetwork(value),
+					onAddCustomRelayUrl: (url) => relay.addCustomRelayUrl(url),
+					onRemoveCustomRelayUrl: (url) => relay.removeCustomRelayUrl(url),
+					onSetIrohServicesTicket: (ticket) => relay.setIrohServicesTicket(ticket),
+					onClearIrohServicesTicket: () => relay.clearIrohServicesTicket(),
+					onRestart: async () => {
+						await relay.restartP2p();
+						toast.success(m['pages.network.relaySettings.restart.success']());
+					}
+				}}
+			/>
 
-	<AcerolaNetworkPeerList
-		data={{
-			peers: uniquePeers,
-			addrFor: (peerId) => peers.getKnownAddr(peerId),
-			statusLabel: peerStatusLabel,
-			isSyncing: (peerId, kind) => sync.isSyncing(peerId, kind)
-		}}
-		events={{
-			onSyncHistory: (peerId) => withSync((id, addrs) => sync.syncHistory(id, addrs), peerId),
-			onSyncFiles: (peerId) => withSync((id, addrs) => sync.syncFiles(id, addrs), peerId),
-			onSyncAll: (peerId) => withSync((id, addrs) => sync.syncAll(id, addrs), peerId),
-			onBrowseLibrary: openRemoteLibrary,
-			onRemove: (peer) => (peerPendingRemoval = peer),
-			onRename: (peerId, nickname) => peers.setPeerNickname(peerId, nickname)
-		}}
-	/>
+			<!-- Transfers -->
+			<AcerolaNetworkTransfersLog
+				data={{ entries: sync.log, peerLabel: peers.peerLabel }}
+				events={{
+					onRefresh: async () => {
+						try {
+							await sync.refreshLog();
+						} catch (err) {
+							toast.error(extractErrorMessage(err));
+						}
+					},
+					onClear: async () => {
+						try {
+							await sync.clearLog();
+						} catch (err) {
+							toast.error(extractErrorMessage(err));
+						}
+					}
+				}}
+			/>
+		</div>
 
-	<!-- Transferências -->
-	<AcerolaNetworkTransfersLog
-		data={{ entries: sync.log, peerLabel: peers.peerLabel }}
-		events={{
-			onRefresh: async () => {
-				try {
-					await sync.refreshLog();
-				} catch (err) {
-					toast.error(String(err));
-				}
-			},
-			onClear: async () => {
-				try {
-					await sync.clearLog();
-				} catch (err) {
-					toast.error(String(err));
-				}
-			}
-		}}
-	/>
+		<div class="lg:sticky lg:top-22 lg:col-span-5">
+			<AcerolaNetworkPairingCard data={{ code: peers.connectionCode() }} />
+		</div>
+	</div>
 </div>
 
-<!-- Buscar biblioteca remota -->
+<!-- Browse remote library -->
 <AcerolaRemoteLibraryDialog
 	state={{ open: browsingPeerId !== null }}
 	data={{
@@ -268,16 +276,16 @@
 	}}
 />
 
-<!-- Confirmar remoção de dispositivo pareado -->
+<!-- Confirm removal of a paired device -->
 <AcerolaAlertDialog
 	state={{ open: peerPendingRemoval !== null }}
 	data={{
-		title: m['pages.network.peers.remove_confirm.title']({
+		title: m['pages.network.peers.removeConfirm.title']({
 			peer: peerPendingRemoval ? peers.peerLabel(peerPendingRemoval.peerId) : ''
 		}),
-		description: m['pages.network.peers.remove_confirm.desc'](),
-		cancelText: m['pages.network.peers.remove_confirm.cancel'](),
-		actionText: m['pages.network.peers.remove_confirm.confirm']()
+		description: m['pages.network.peers.removeConfirm.desc'](),
+		cancelText: m['pages.network.peers.removeConfirm.cancel'](),
+		actionText: m['pages.network.peers.removeConfirm.confirm']()
 	}}
 	ui={{ variant: 'destructive' }}
 	events={{

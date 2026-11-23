@@ -3,10 +3,8 @@ package br.acerola.comic.module.comic.component
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,19 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.rounded.CollectionsBookmark
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,23 +32,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
 import br.acerola.comic.common.ux.component.ActionListItem
 import br.acerola.comic.common.ux.component.AdaptiveSheet
+import br.acerola.comic.common.ux.component.Badge
+import br.acerola.comic.common.ux.component.RoundIcon
 import br.acerola.comic.common.ux.component.SyncActionIcon
+import br.acerola.comic.common.ux.component.Tone
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.archive.ChapterFileDto
@@ -83,147 +81,66 @@ fun Comic.Component.ChapterItem(
     val mainTitle = stringResource(id = R.string.title_chapter_item_chapter_number, chapterFileDto.chapterSort)
     val subtitle = chapterFileDto.name
 
-    val surfaceColor =
-        when {
-            hasConflict -> MaterialTheme.colorScheme.error.copy(alpha = 0.08f)
-            isRead -> MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-            else -> Color.Transparent
-        }
+    val brand = AcerolaExtendedTheme.colors
+    // Desktop chapter row: a `rounded-tile bg-surface` row; selected turns `bg-primary-soft`.
+    val rowColor = if (isSelectionMode && isSelected) brand.primarySoft else brand.surface
+    // The file name only adds something when it is not just the chapter title again.
+    val showSubtitle = subtitle.isNotBlank() && !subtitle.equals(mainTitle, ignoreCase = true)
 
-    Surface(
-        color = surfaceColor,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                ),
-    ) {
+    ProvideSurfaceLevel(AcerolaSurfaceLevel.Surface) {
         Row(
-            modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Medium),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.ExtraSmall)
+                    .clip(AcerolaShapes.Tile)
+                    .background(rowColor)
+                    .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+                    .padding(start = SpacingTokens.Large, end = SpacingTokens.Small, top = SpacingTokens.Medium, bottom = SpacingTokens.Medium),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
         ) {
             when {
                 sendState != SyncActionVisualState.IDLE ->
-                    Acerola.Component.SyncActionIcon(
-                        state = sendState,
-                        containerSize = SizeTokens.ClickTargetSmall,
-                        iconSize = SizeTokens.IconSmall,
-                    ) {
+                    Acerola.Component.SyncActionIcon(state = sendState) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(SizeTokens.IconSmall),
                         )
                     }
-                isSelectionMode && isSelected ->
-                    ChapterLeadingIcon(
-                        icon = Icons.Default.Check,
-                        iconTint = MaterialTheme.colorScheme.onPrimary,
-                        circleColor = MaterialTheme.colorScheme.primary,
-                    )
-                isSelectionMode ->
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(SizeTokens.ClickTargetSmall)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = CircleShape,
-                                ).border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = CircleShape,
-                                ),
-                    )
-                // Mesma ideia do círculo de "lido" (ícone principal + cor diferente), mas com
-                // preenchimento tintado (alpha) em vez de sólido: testei `onError` sobre `error`
-                // sólido (o par que seria o equivalente direto de onPrimary/primary) e ele falha
-                // contraste em dois temas — Dracula (2.95:1) e Alucard (1.01:1, praticamente sem
-                // distinção). Tintado, o ícone continua na cor `error` pura (não `onError`), que
-                // já passa em todos os temas contra o fundo por trás.
-                hasConflict ->
-                    ChapterLeadingIcon(
-                        icon = Icons.Default.Warning,
-                        iconTint = MaterialTheme.colorScheme.error,
-                        circleColor = MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
-                    )
-                isRead ->
-                    ChapterLeadingIcon(
-                        icon = Icons.Default.Check,
-                        iconTint = MaterialTheme.colorScheme.onPrimary,
-                        circleColor = MaterialTheme.colorScheme.primary,
-                    )
-                else ->
-                    ChapterLeadingIcon(
-                        icon = Icons.Default.MenuBook,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                    )
+                isSelectionMode && isSelected -> Acerola.Component.RoundIcon(icon = Icons.Default.Check, tone = Tone.Primary)
+                isSelectionMode -> Acerola.Component.RoundIcon(icon = Icons.Default.RadioButtonUnchecked)
+                hasConflict -> Acerola.Component.RoundIcon(icon = Icons.Default.Warning, tone = Tone.Destructive)
+                isRead -> Acerola.Component.RoundIcon(icon = Icons.Default.Check, tone = Tone.Success)
+                else -> Acerola.Component.RoundIcon(icon = Icons.AutoMirrored.Filled.MenuBook)
             }
-
-            Spacer(modifier = Modifier.width(SpacingTokens.Large))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = mainTitle,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isRead) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+                    color = if (isRead) brand.mutedForeground else brand.foreground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (showSubtitle) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = brand.mutedForeground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
 
-            // Mesma estrutura do pill de "Lido" (só texto, sem ícone repetido — o ícone já
-            // aparece no círculo principal à esquerda). `error` como texto falha 4.5:1 em
-            // Nord (3.03~3.55:1), por isso o texto usa `onSurfaceVariant` (par já confiável
-            // em todo o app) — só o círculo à esquerda carrega a cor de alerta.
             if (hasConflict) {
-                Surface(
-                    shape = ShapeTokens.Full,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.label_comic_status_conflict),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier =
-                            Modifier.padding(
-                                horizontal = SpacingTokens.Medium,
-                                vertical = SpacingTokens.ExtraSmall,
-                            ),
-                    )
-                }
-                Spacer(modifier = Modifier.width(SpacingTokens.Small))
+                Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_status_conflict), tone = Tone.Destructive)
             }
-
             if (isRead) {
-                Surface(
-                    shape = ShapeTokens.Full,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.label_comic_status_read),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier =
-                            Modifier.padding(
-                                horizontal = SpacingTokens.Medium,
-                                vertical = SpacingTokens.ExtraSmall,
-                            ),
-                    )
-                }
+                Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_status_read), tone = Tone.Success)
             }
 
             Acerola.Component.ActionIcon(
@@ -251,150 +168,77 @@ fun Comic.Component.ChapterItem(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Large),
+                        .padding(horizontal = SpacingTokens.Huge, vertical = SpacingTokens.Small),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
             ) {
-                ChapterLeadingIcon(
-                    icon =
-                        when {
-                            hasConflict -> Icons.Default.Warning
-                            isRead -> Icons.Default.Check
-                            else -> Icons.Default.MenuBook
-                        },
-                    iconTint =
-                        when {
-                            hasConflict -> MaterialTheme.colorScheme.error
-                            isRead -> MaterialTheme.colorScheme.onPrimary
-                            else -> MaterialTheme.colorScheme.primary
-                        },
-                    circleColor =
-                        when {
-                            hasConflict -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
-                            isRead -> MaterialTheme.colorScheme.primary
-                            else -> Color.Transparent
-                        },
-                    circleSize = SizeTokens.ClickTarget,
-                    iconSize = SizeTokens.IconMedium,
-                )
-
-                Spacer(modifier = Modifier.width(SpacingTokens.Large))
+                when {
+                    hasConflict -> Acerola.Component.RoundIcon(icon = Icons.Default.Warning, tone = Tone.Destructive)
+                    isRead -> Acerola.Component.RoundIcon(icon = Icons.Default.Check, tone = Tone.Success)
+                    else -> Acerola.Component.RoundIcon(icon = Icons.AutoMirrored.Filled.MenuBook)
+                }
 
                 Column {
                     Text(
                         text = mainTitle,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = brand.foreground,
                         maxLines = 2,
                     )
                     val volumeName = chapterFileDto.volumeName
                     if (!volumeName.isNullOrBlank()) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Rounded.CollectionsBookmark,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(SizeTokens.IconExtraSmall),
-                            )
-                            Spacer(modifier = Modifier.width(SpacingTokens.ExtraSmall))
-                            Text(
-                                text = volumeName,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        Text(text = volumeName, style = MaterialTheme.typography.bodySmall, color = brand.mutedForeground)
                     }
                 }
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-
             Column(
-                modifier = Modifier.padding(SpacingTokens.Large),
-                verticalArrangement = Arrangement.spacedBy(SpacingTokens.Large),
+                modifier = Modifier.padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Medium),
+                verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
             ) {
-                Surface(
-                    shape = ShapeTokens.Large,
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(AcerolaShapes.Tile)
+                            .background(brand.surface)
+                            .padding(SpacingTokens.Large),
+                    verticalArrangement = Arrangement.spacedBy(SpacingTokens.Small),
                 ) {
-                    Column(modifier = Modifier.padding(SpacingTokens.Large)) {
+                    DetailRow(
+                        label = stringResource(id = R.string.label_chapter_detail_file),
+                        value = chapterFileDto.name,
+                    )
+                    if (lastModifiedText != null) {
                         DetailRow(
-                            label = stringResource(id = R.string.label_chapter_detail_file),
-                            value = chapterFileDto.name,
+                            label = stringResource(id = R.string.label_chapter_detail_last_modified),
+                            value = lastModifiedText,
+                            isLast = true,
                         )
-                        if (lastModifiedText != null) {
-                            DetailRow(
-                                label = stringResource(id = R.string.label_chapter_detail_last_modified),
-                                value = lastModifiedText,
-                                isLast = true,
-                            )
-                        }
                     }
                 }
 
-                Surface(
-                    shape = ShapeTokens.Large,
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                ) {
-                    Acerola.Component.ActionListItem(
-                        icon = if (isRead) Icons.Default.BookmarkRemove else Icons.Default.Check,
-                        title =
-                            stringResource(
-                                id = if (isRead) R.string.action_mark_as_unread else R.string.action_mark_as_read,
-                            ),
-                        tint = if (isRead) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary,
-                        iconBackground = if (isRead) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        isLast = true,
-                        onClick = {
-                            showDetails = false
-                            onToggleRead()
-                        },
-                    )
-                }
-
-                Surface(
-                    shape = ShapeTokens.Large,
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                ) {
-                    Acerola.Component.ActionListItem(
-                        icon = Icons.AutoMirrored.Filled.Send,
-                        title = stringResource(id = R.string.action_send_chapters_to_peer),
-                        tint = AcerolaExtendedTheme.colors.onAccent,
-                        iconBackground = AcerolaExtendedTheme.colors.accent,
-                        isLast = true,
-                        onClick = {
-                            showDetails = false
-                            onSendToPeer()
-                        },
-                    )
-                }
+                Acerola.Component.ActionListItem(
+                    icon = if (isRead) Icons.Default.BookmarkRemove else Icons.Default.Check,
+                    title = stringResource(id = if (isRead) R.string.action_mark_as_unread else R.string.action_mark_as_read),
+                    tone = if (isRead) Tone.Neutral else Tone.Success,
+                    onClick = {
+                        showDetails = false
+                        onToggleRead()
+                    },
+                )
+                Acerola.Component.ActionListItem(
+                    icon = Icons.AutoMirrored.Filled.Send,
+                    title = stringResource(id = R.string.action_send_chapters_to_peer),
+                    onClick = {
+                        showDetails = false
+                        onSendToPeer()
+                    },
+                )
             }
 
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    }
-}
-
-@Composable
-private fun ChapterLeadingIcon(
-    icon: ImageVector,
-    iconTint: Color,
-    circleColor: Color = Color.Transparent,
-    circleSize: Dp = SizeTokens.ClickTargetSmall,
-    iconSize: Dp = SizeTokens.IconSmall,
-) {
-    Box(
-        modifier =
-            Modifier
-                .size(circleSize)
-                .background(color = circleColor, shape = CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconTint,
-            modifier = Modifier.size(iconSize),
-        )
     }
 }
 
@@ -405,17 +249,16 @@ private fun DetailRow(
     isLast: Boolean = false,
 ) {
     if (value.isBlank()) return
-    Column(modifier = Modifier.padding(bottom = if (isLast) 0.dp else SpacingTokens.Medium)) {
+    Column(modifier = Modifier.padding(bottom = if (isLast) 0.dp else SpacingTokens.ExtraSmall)) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold,
+            color = AcerolaExtendedTheme.colors.mutedForeground,
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = AcerolaExtendedTheme.colors.foreground,
         )
     }
 }

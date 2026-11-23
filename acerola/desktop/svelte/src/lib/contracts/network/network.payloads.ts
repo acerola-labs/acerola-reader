@@ -15,50 +15,50 @@ export type NetworkStatusPayload = {
 	peers: ConnectedPeerPayload[];
 };
 
-/** Peer já pareado alguma vez, com o último endereço conhecido — sobrevive a restart e
- *  independe de estar conectado agora (ver `NetworkServiceApi::paired_peers` no backend).
- *  `deviceName` vem de `known_peers()` (persistente) — `null` só quando esse peer nunca
- *  respondeu a entrevista de identidade (DeviceInfo). */
+/** A peer paired at some point, with its last known address — survives restarts and does
+ *  not depend on being connected now (see `NetworkServiceApi::paired_peers` in the backend).
+ *  `deviceName` comes from `known_peers()` (persistent) — `null` only when this peer never
+ *  answered the identity interview (DeviceInfo). */
 export type PairedPeerPayload = {
 	peerId: string;
 	addrs: number[];
 	deviceName: string | null;
 };
 
-/** Configuração de relay combinável, lida de `settings.json` (ver `RelaySettings` no
- *  backend). `acerolaRelayUrl` é fixo, só pra exibir mesmo quando `useAcerolaRelay` é
- *  `false`. Trocar qualquer campo só tem efeito no próximo início do app. */
+/** Composable relay configuration, read from `settings.json` (see `RelaySettings` in the
+ *  backend). `acerolaRelayUrl` is fixed, only for display even when `useAcerolaRelay` is
+ *  `false`. Changing any field only takes effect on the next app start. */
 export type RelayInfo = {
 	acerolaRelayUrl: string;
 	useAcerolaRelay: boolean;
 	useIrohPublicNetwork: boolean;
 	customRelayUrls: string[];
-	/** Só indica SE um ticket da conta do usuário em `services.iroh.computer` já foi colado e
-	 *  salvo — o valor em si nunca é devolvido pro frontend (é uma credencial real, guardada
-	 *  no cofre criptografado, não em `settings.json`). */
+	/** Only tells WHETHER a ticket for the user's `services.iroh.computer` account has been
+	 *  pasted and saved — the value itself is never returned to the frontend (it is a real
+	 *  credential, kept in the encrypted vault, not in `settings.json`). */
 	hasIrohServicesTicket: boolean;
 };
 
-/** Resumo de um quadrinho da biblioteca remota (ver `library_browse_handler.rs`) — só título +
- *  contagem de capítulos, sem transferir nada ainda. `coverVersion` reaproveita
- *  `comic_directory.last_modified` do peer — usado pra decidir se `queryRemoteCover` precisa
- *  buscar uma capa nova antes de disparar a busca. */
+/** Summary of a comic in the remote library (see `library_browse_handler.rs`) — just title +
+ *  chapter count, nothing transferred yet. `coverVersion` reuses the peer's
+ *  `comic_directory.last_modified` — used to decide whether `queryRemoteCover` needs to
+ *  fetch a new cover before firing the request. */
 export type ComicSummary = {
 	comicName: string;
 	chapterCount: number;
 	coverVersion: number;
 };
 
-/** Payload do evento `library:query:result`. */
+/** Payload of the `library:query:result` event. */
 export type LibraryQueryResultPayload = {
 	peerId: string;
 	comics: ComicSummary[];
 };
 
-/** Payload do evento `browse:cover:result` (`cover_browse_handler.rs`, ALPN
- *  `acerola/browse-cover/1`). `path` só vem preenchido quando `status === 'changed'` — caminho
- *  local (`<app_data_dir>/remote_covers/...`) já resolvido via `convertFileSrc` do lado do
- *  chamador (ver `resolveArtworkPath`, `artwork.utils.ts`). */
+/** Payload of the `browse:cover:result` event (`cover_browse_handler.rs`, ALPN
+ *  `acerola/browse-cover/1`). `path` is only filled when `status === 'changed'` — a local
+ *  path (`<app_data_dir>/remote_covers/...`) resolved via `convertFileSrc` on the caller's
+ *  side (see `resolveArtworkPath`, `artwork.utils.ts`). */
 export type CoverQueryResultPayload = {
 	peerId: string;
 	comicName: string;

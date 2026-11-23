@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">acerola</string>
+    <string name="description_comic_untitled">Untitled</string>
+    <string name="title_http_error">Communication error</string>
+    <string name="description_http_error_rate_limit">Too many requests. Try again soon.</string>
+    <string name="description_http_error_generic">Could not talk to MangaDex.</string>
+    <string name="title_remote_info_request_error">Metadata search error</string>
+    <string name="description_remote_info_request_error">Something went wrong while fetching the metadata from MangaDex.</string>
+    <string name="title_download_error">Could not sync the cover images</string>
+    <string name="description_error_download_failed">Something went wrong while fetching the covers of the comics being synced.</string>
+    <string name="title_genre_dao_insert_error">Could not save a comic genre</string>
+    <string name="description_genre_dao_insert_error">Something went wrong while saving a comic genre in the database.</string>
+    <string name="title_remote_info_null_error">No chapter metadata on MangaDex</string>
+    <string name="description_remote_info_null_error">Could not find metadata for any chapter on the MangaDex server.</string>
+    <string name="sync_library_title_incremental">Syncing the library</string>
+    <string name="sync_library_title_refresh">Refreshing the library</string>
+    <string name="sync_library_title_rebuild">Rebuilding the library</string>
+    <string name="sync_library_title_generic">Syncing…</string>
+    <string name="sync_library_description_scanning">Hold on while we scan your files…</string>
+    <string name="sync_library_error_title">Sync error</string>
+    <string name="sync_library_success_title">Sync done</string>
+    <string name="sync_library_success_message">Your library is up to date.</string>
+    <string name="sync_library_fatal_error_title">Fatal error</string>
+    <string name="sync_library_unexpected_error">Something unexpected went wrong.</string>
+    <string name="sync_metadata_title_mangadex">Fetching metadata (MangaDex)</string>
+    <string name="sync_metadata_title_comicinfo">Reading ComicInfo.xml</string>
+    <string name="sync_metadata_title_anilist">Fetching metadata (AniList)</string>
+    <string name="sync_metadata_title_generic">Syncing metadata…</string>
+    <string name="sync_metadata_description_fetching">Fetching information for your library…</string>
+    <string name="sync_metadata_error_title">Metadata error</string>
+    <string name="sync_metadata_success_title">Metadata updated</string>
+    <string name="sync_metadata_success_message">Information downloaded.</string>
+    <string name="sync_metadata_fetching_error">Could not fetch the metadata.</string>
+    <string name="download_chapter_title">Downloading chapters</string>
+    <string name="download_chapter_description">Downloading chapters of %1$s…</string>
+    <string name="download_chapter_success_title">Download done</string>
+    <string name="download_chapter_success_message">%1$d of %2$d chapters downloaded.</string>
+    <string name="download_chapter_error_title">Download error</string>
+    <string name="download_chapter_error_no_ids">Chapter IDs were not given</string>
+    <string name="download_chapter_error_no_title">Comic title was not given</string>
+    <string name="download_chapter_error_no_uri">Library URI was not given</string>
+    <string name="download_chapter_error_access_folder">Could not open the library folder</string>
+    <string name="download_chapter_error_create_folder">Could not create the comic folder: %1$s</string>
+    <string name="download_chapter_error_all_failed">All %1$d downloads failed</string>
+    <string name="download_chapter_error_fatal">Fatal error during the download</string>
+</resources>

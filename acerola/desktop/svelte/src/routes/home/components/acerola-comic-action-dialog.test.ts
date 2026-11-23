@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import AcerolaComicActionDialog from './acerola-comic-action-dialog.svelte';
-import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 // Mock do toast
 vi.mock('svelte-sonner', () => ({
@@ -16,7 +16,7 @@ vi.mock('@tauri-apps/plugin-log', () => ({
 	error: vi.fn()
 }));
 
-// Mock do element.animate para jsdom
+// Mock of element.animate for jsdom
 if (!window.HTMLElement.prototype.animate) {
 	window.HTMLElement.prototype.animate = function () {
 		const self = {} as Animation;
@@ -95,9 +95,7 @@ describe('AcerolaComicActionDialog', () => {
 		).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Hide|Ocultar/i })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Delete|Deletar/i })).toBeInTheDocument();
-		expect(
-			screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i })
-		).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Adicionar marcador/i })).toBeInTheDocument();
 		expect(
 			screen.getByRole('button', { name: /Select all|Selecionar todos/i })
 		).toBeInTheDocument();
@@ -258,7 +256,7 @@ describe('AcerolaComicActionDialog', () => {
 			}
 		});
 
-		const bookmarkButton = screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i });
+		const bookmarkButton = screen.getByRole('button', { name: /Adicionar marcador/i });
 		await fireEvent.click(bookmarkButton);
 
 		expect(screen.getByText('Favoritos')).toBeInTheDocument();
@@ -285,7 +283,7 @@ describe('AcerolaComicActionDialog', () => {
 			}
 		});
 
-		const bookmarkButton = screen.getByRole('button', { name: /Bookmark|Adicionar Bookmark/i });
+		const bookmarkButton = screen.getByRole('button', { name: /Adicionar marcador/i });
 		await fireEvent.click(bookmarkButton);
 
 		const favoritosOption = screen.getByText('Favoritos');

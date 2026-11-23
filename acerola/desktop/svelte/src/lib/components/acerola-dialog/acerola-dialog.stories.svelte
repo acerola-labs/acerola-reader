@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaDialog,
-		title: 'Primitivos/AcerolaDialog',
+		title: 'Primitives/AcerolaDialog',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Diálogo modal genérico com título e descrição, base para composições mais específicas.'
+						'Generic modal dialog with title and description, the base for more specific compositions.'
 				}
 			}
 		}
@@ -18,9 +18,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaDialog nao tem trigger proprio (state.open e totalmente controlado pelo chamador) —
-	// fechado por padrao aqui, com um botao real na story pra abrir, senao a aba Docs mostra
-	// varias versoes do dialog abertas ao mesmo tempo.
+	// AcerolaDialog has no trigger of its own (state.open is fully controlled by the caller) —
+	// closed by default here, with a real button in the story to open it, otherwise the Docs
+	// tab shows several versions of the dialog open at the same time.
 	let open = $state(false);
 </script>
 
@@ -38,7 +38,7 @@
 		<button
 			type="button"
 			onclick={() => (open = true)}
-			class="hover:bg-surface-elevated rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+			class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 		>
 			Open Dialog
 		</button>

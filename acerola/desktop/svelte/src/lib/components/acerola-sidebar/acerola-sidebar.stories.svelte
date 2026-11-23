@@ -5,7 +5,7 @@
 	import HistoryIcon from '@lucide/svelte/icons/history';
 	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
-	import AcerolaLogo from '$lib/assets/icons/acerola.svg?component';
+	import AcerolaLogo from '#lib/assets/icons/acerola-logo-foreground.svg?component';
 
 	const items = [
 		{ href: '/home', label: 'Home', icon: HouseIcon },
@@ -22,7 +22,7 @@
 			docs: {
 				description: {
 					component:
-						'Barra lateral de navegação do app, com itens de menu e slot opcional para a marca.'
+						'App navigation sidebar, with menu items and an optional slot for the brand.'
 				}
 			}
 		}

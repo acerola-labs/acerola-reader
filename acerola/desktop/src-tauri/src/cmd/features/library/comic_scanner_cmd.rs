@@ -8,8 +8,8 @@ use crate::{
     core::services::archive::comic_scanner_engine::ComicScannerService,
 };
 
-/// Processa todas as pastas encontradas no disco sem comparar com o banco.
-/// Pastas já indexadas são ignoradas via INSERT OR IGNORE.
+/// Processes every folder found on disk without comparing against the database.
+/// Already indexed folders are skipped via INSERT OR IGNORE.
 #[tauri::command]
 pub async fn refresh_library<R: Runtime>(
     path: String, app: AppHandle<R>, pool: State<'_, SqlitePool>,
@@ -52,8 +52,8 @@ pub async fn refresh_library<R: Runtime>(
     Ok(())
 }
 
-/// Processa apenas pastas novas ou modificadas com base no `last_modified`.
-/// Remove do banco as pastas que não existem mais no disco.
+/// Processes only new or modified folders based on `last_modified`.
+/// Removes from the database the folders that no longer exist on disk.
 #[tauri::command]
 pub async fn incremental_scan<R: Runtime>(
     path: String, app: AppHandle<R>, pool: State<'_, SqlitePool>,
@@ -96,8 +96,8 @@ pub async fn incremental_scan<R: Runtime>(
     Ok(())
 }
 
-/// Faz o refresh completo de todas as pastas e re-escaneia os capítulos de cada comic.
-/// É a operação mais pesada — use quando o banco pode estar em estado inconsistente.
+/// Fully refreshes every folder and rescans the chapters of each comic.
+/// It is the heaviest operation — use it when the database may be in an inconsistent state.
 #[tauri::command]
 pub async fn rebuild_library<R: Runtime>(
     path: String, app: AppHandle<R>, pool: State<'_, SqlitePool>,

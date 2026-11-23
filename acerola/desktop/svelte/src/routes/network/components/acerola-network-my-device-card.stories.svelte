@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaNetworkMyDeviceCard,
-		title: 'Páginas/Network/AcerolaNetworkMyDeviceCard',
+		title: 'Pages/Network/AcerolaNetworkMyDeviceCard',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Cartão com as informações do dispositivo local: nome, identificador e modo de conexão (local ou relay).'
+						'Card with the local device info: name, identifier and connection mode (local or relay).'
 				}
 			}
 		}

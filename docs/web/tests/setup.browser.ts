@@ -1,5 +1,5 @@
-// Setup do projeto Vitest `storybook` (roda stories como testes via addon-vitest, em
-// browser real headless). Vazio por enquanto — docs/web não tem nada tipo Tauri pra
-// mockar aqui; mantido como stub para futuros mocks (ex: silenciar avisos do WebGL do
-// `faulty-terminal` durante a execução das stories).
+// Setup for the `storybook` Vitest project (runs stories as tests via addon-vitest, in a
+// real headless browser). Empty for now — docs/web has nothing like Tauri to mock here;
+// kept as a stub for future mocks (e.g. silencing `faulty-terminal` WebGL warnings while
+// stories run).
 export {};

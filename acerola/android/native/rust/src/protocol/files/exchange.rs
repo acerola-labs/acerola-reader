@@ -29,9 +29,9 @@ use crate::{
     protocol::{ffi_blocking::run_blocking, sync_error::SyncErrorCode},
 };
 
-/// Valor do campo `error` em `SessionBusy` — mesmo literal usado pelo Desktop
-/// (`file_handler.rs`), é o que os dois lados usam para reconhecer essa mensagem específica
-/// em vez de um `FileManifest` normal.
+/// Value of the `error` field in `SessionBusy` — same literal used by Desktop
+/// (`file_handler.rs`); it is what both sides use to recognize this specific message
+/// instead of a regular `FileManifest`.
 pub(super) const SESSION_BUSY_TAG: &str = "busy";
 
 const FRAME_READ_TIMEOUT: Duration = Duration::from_secs(30);
@@ -40,25 +40,25 @@ const PROGRESS_EVERY_BYTES: u64 = 1024 * 1024;
 
 pub(super) use crate::protocol::framing::{Recv, Writer};
 
-/// Fina camada sobre `framing::write_json` — só existe pra manter o nome já usado em todo o
-/// resto deste arquivo sem precisar tocar cada call site depois da consolidação (ver
-/// `protocol::framing`, que antes era reimplementado igual aqui, em `history`, `library_browse`
-/// e `cover_browse`).
+/// Thin layer over `framing::write_json` — only exists to keep the name already used across the
+/// rest of this file without touching every call site after the consolidation (see
+/// `protocol::framing`, which used to be reimplemented identically here, in `history`,
+/// `library_browse` and `cover_browse`).
 async fn write_json<T: Serialize>(send: &mut Writer, value: &T) -> Result<(), P2pError> {
     crate::protocol::framing::write_json(send, value).await
 }
 
-/// Idem, sobre `framing::read_json` — `FRAME_READ_TIMEOUT` continua sendo A CONFIGURAÇÃO deste
-/// protocolo especificamente, só a mecânica de ler/classificar o frame é compartilhada agora.
+/// Same, over `framing::read_json` — `FRAME_READ_TIMEOUT` is still THIS protocol's own
+/// setting; only the mechanics of reading/classifying the frame are shared now.
 async fn read_json<T: DeserializeOwned>(recv: &mut Recv) -> Result<T, P2pError> {
     crate::protocol::framing::read_json(recv, FRAME_READ_TIMEOUT).await
 }
 
-/// Escreve a mensagem de rejeição de sessão diretamente no stream, no lugar do manifesto —
-/// usado quando `FileSyncSessionGuard::try_acquire` já barrou a sessão em `run_and_report`,
-/// antes de `run_exchange` ser chamado. Recebe `send` cru (não um `Writer` já montado) porque
-/// esse é exatamente o estado em que `run_and_report` está no momento da rejeição: o stream
-/// ainda não foi envolvido em nenhum framing.
+/// Writes the session rejection message straight to the stream, in place of the manifest —
+/// used when `FileSyncSessionGuard::try_acquire` already blocked the session in `run_and_report`,
+/// before `run_exchange` is called. Takes the raw `send` (not an assembled `Writer`) because
+/// that is exactly the state `run_and_report` is in at the moment of rejection: the stream
+/// has not been wrapped in any framing yet.
 pub(super) async fn write_session_busy(
     send: Box<dyn AsyncWrite + Send + Unpin>,
     reason: &str,
@@ -74,11 +74,11 @@ pub(super) async fn write_session_busy(
     .await
 }
 
-/// Espia o JSON bruto e devolve `Err("peer busy: ...")` se for um `SessionBusy` — extraído de
-/// `read_manifest_or_busy`/`read_comic_scope_or_busy` pra não duplicar a checagem
-/// `error == "busy"` em cada ponto do protocolo que pode legitimamente receber essa rejeição no
-/// lugar da mensagem esperada. Se não for busy, devolve o `value` cru pro chamador desserializar
-/// no tipo concreto certo (`FileManifest`, `ComicSyncScope`, etc.).
+/// Peeks at the raw JSON and returns `Err("peer busy: ...")` if it is a `SessionBusy` — extracted
+/// from `read_manifest_or_busy`/`read_comic_scope_or_busy` to avoid duplicating the
+/// `error == "busy"` check at every protocol point that can legitimately receive this rejection
+/// instead of the expected message. If not busy, returns the raw `value` for the caller to
+/// deserialize into the right concrete type (`FileManifest`, `ComicSyncScope`, etc.).
 async fn peek_busy(reader: &mut Recv) -> Result<serde_json::Value, P2pError> {
     let value: serde_json::Value = read_json(reader).await?;
 
@@ -94,35 +94,35 @@ async fn peek_busy(reader: &mut Recv) -> Result<serde_json::Value, P2pError> {
     Ok(value)
 }
 
-/// Lê a primeira mensagem do peer podendo ser tanto o `FileManifest` normal quanto uma
-/// rejeição `SessionBusy` — a única forma de saber qual é sem uma tag de enum no wire (regra
-/// já estabelecida pelo resto do protocolo) é espiar o JSON bruto antes de decidir o tipo
-/// concreto. Só os pontos de leitura inicial em `exchange_manifests`/`exchange_comic_scope`
-/// usam isso: depois da primeira mensagem, uma sessão aceita nunca mais manda `SessionBusy`.
+/// Reads the peer's first message, which may be either the regular `FileManifest` or a
+/// `SessionBusy` rejection — the only way to tell which without an enum tag on the wire (a rule
+/// already established by the rest of the protocol) is to peek at the raw JSON before picking the
+/// concrete type. Only the initial read points in `exchange_manifests`/`exchange_comic_scope`
+/// use this: after the first message, an accepted session never sends `SessionBusy` again.
 async fn read_manifest_or_busy(reader: &mut Recv) -> Result<FileManifest, P2pError> {
     let value = peek_busy(reader).await?;
     serde_json::from_value(value)
         .map_err(|err| P2pError::StreamFailed(format!("failed to decode file sync message: {err}")))
 }
 
-/// Mesma ideia de `read_manifest_or_busy`, pro `ComicSyncScope` — fase 0, exclusiva de
-/// `acerola/sync-comic/1`, lida ANTES até do manifesto. Regressão real (05/09/2026): sem isso,
-/// quando o lado que disca já estava ocupado com outra sessão pro mesmo peer e respondia com
-/// `SessionBusy` em vez de `ComicSyncScope` (ver `run_and_report_scoped`/`ComicSyncOutbound::handle`
-/// no Desktop, que fazem exatamente isso), este lado tentava desserializar `{"error":"busy",...}`
-/// direto como `ComicSyncScope` e quebrava com "missing field `comic_name`" em vez de reportar
-/// "peer busy" — o único dos pontos de leitura inicial do protocolo que não usava o mesmo
-/// espia-antes-de-decodificar que `exchange_manifests` já usava dos dois lados.
+/// Same idea as `read_manifest_or_busy`, for `ComicSyncScope` — phase 0, exclusive to
+/// `acerola/sync-comic/1`, read BEFORE even the manifest. Real regression (05/09/2026): without
+/// this, when the dialing side was already busy with another session for the same peer and replied
+/// with `SessionBusy` instead of `ComicSyncScope` (see `run_and_report_scoped`/`ComicSyncOutbound::handle`
+/// on Desktop, which do exactly that), this side tried to deserialize `{"error":"busy",...}`
+/// directly as `ComicSyncScope` and broke with "missing field `comic_name`" instead of reporting
+/// "peer busy" — the only initial read point of the protocol that did not use the same
+/// peek-before-decode that `exchange_manifests` already used on both sides.
 async fn read_comic_scope_or_busy(reader: &mut Recv) -> Result<ComicSyncScope, P2pError> {
     let value = peek_busy(reader).await?;
     serde_json::from_value(value)
         .map_err(|err| P2pError::StreamFailed(format!("failed to decode file sync message: {err}")))
 }
 
-// --- Fronteira FFI (Kotlin): uma função por método de `FileSyncProvider`, cada uma só
-// clonando o `Arc` e delegando pro pool de blocking threads via `run_blocking` — nunca
-// direto na worker thread do runtime async. Existem só pra `send_one_chapter`/
-// `receive_one_chapter` não repetirem o bloco `{ Arc::clone + run_blocking }` a cada chamada.
+// --- FFI boundary (Kotlin): one function per `FileSyncProvider` method, each one just
+// cloning the `Arc` and delegating to the blocking thread pool via `run_blocking` — never
+// directly on the async runtime's worker thread. They only exist so `send_one_chapter`/
+// `receive_one_chapter` do not repeat the `{ Arc::clone + run_blocking }` block on every call.
 
 async fn open_chapter_for_read(
     provider: &Arc<dyn FileSyncProvider>,
@@ -162,17 +162,17 @@ async fn begin_chapter_write(
         header.size,
     );
 
-    // Log estratégico 3/4: último ponto do lado Rust antes do checksum atravessar a FFI
-    // de volta pro Kotlin (`beginChapterWrite`), onde fica guardado em `WriteHandle` até
-    // `finalizeChapterWrite` comparar contra o hash recém-calculado do arquivo recebido.
-    // Se este valor bater com o log 2/4 (mesmo comic/chapter) mas o Kotlin ainda assim
-    // reportar mismatch, a corrupção está inteiramente do lado Kotlin (escrita/releitura),
-    // fora do alcance do que dá pra instrumentar aqui.
+    // Strategic log 3/4: last point on the Rust side before the checksum crosses the FFI
+    // back to Kotlin (`beginChapterWrite`), where it is kept in `WriteHandle` until
+    // `finalizeChapterWrite` compares it against the freshly computed hash of the received file.
+    // If this value matches log 2/4 (same comic/chapter) but Kotlin still reports a
+    // mismatch, the corruption is entirely on the Kotlin side (write/re-read),
+    // beyond what can be instrumented here.
     tracing::debug!(
         comic = %comic_name,
         chapter = %chapter,
         checksum = %checksum,
-        "sync-files: passando expected_checksum pra FFI Rust->Kotlin (begin_chapter_write)",
+        "sync-files: passing expected_checksum to Rust->Kotlin FFI (begin_chapter_write)",
     );
 
     run_blocking(move || {
@@ -267,12 +267,12 @@ async fn abort_extra_write(
     run_blocking(move || provider.abort_extra_write(handle)).await
 }
 
-/// Retorna `(missing, conflicts)`: `missing` é todo `(comic_name, chapter)` que `peer` oferece
-/// e que `local` não tem, com o mesmo conteúdo (ausente de vez, OU presente com checksum
-/// diferente — continua sendo puxado/sobrescrito normalmente, comportamento inalterado).
-/// `conflicts` é o subconjunto de `missing` onde o capítulo já EXISTIA localmente com um
-/// checksum registrado, só que diferente do peer — os dois lados divergiram de verdade, não é
-/// só "eu nunca tive esse capítulo". Espelha `FileSyncService::diff_wanted` do Desktop.
+/// Returns `(missing, conflicts)`: `missing` is every `(comic_name, chapter)` that `peer` offers
+/// and `local` does not have with the same content (absent entirely, OR present with a different
+/// checksum — still pulled/overwritten normally, behavior unchanged).
+/// `conflicts` is the subset of `missing` where the chapter already EXISTED locally with a
+/// recorded checksum, just different from the peer's — both sides truly diverged, it is not
+/// just "I never had this chapter". Mirrors Desktop's `FileSyncService::diff_wanted`.
 fn missing_from(
     local: &FileManifest, peer: &FileManifest,
 ) -> (Vec<(String, String)>, Vec<(String, String)>) {
@@ -330,9 +330,9 @@ fn manifest_index(
         .collect()
 }
 
-/// Retorna `(comic_name, kind)` de itens extra (capa/banner/`ComicInfo.xml`) que `peer` oferece
-/// e que `local` não tem (ausente, ou com checksum diferente) — mesma lógica de `missing_from`,
-/// aplicada aos três campos opcionais de `FileComicInfo` em vez da lista de capítulos.
+/// Returns `(comic_name, kind)` of extra items (cover/banner/`ComicInfo.xml`) that `peer` offers
+/// and `local` does not have (absent, or with a different checksum) — same logic as `missing_from`,
+/// applied to the three optional fields of `FileComicInfo` instead of the chapter list.
 fn missing_extras_from(local: &FileManifest, peer: &FileManifest) -> Vec<(String, String)> {
     let local_by_key = extras_index(local);
 
@@ -417,10 +417,10 @@ async fn write_missing_extra_header(
     .await
 }
 
-/// Envia um único item extra pedido — mesma mecânica de `send_one_chapter`
-/// (abre via `open_extra_for_read`, publica no blob store via `publish_chapter_to_blob`, que já
-/// é agnóstico a chapter vs. extra, fecha via `close_read_handle` reaproveitado), com
-/// `FileExtraHeader` no lugar de `FileHeader`.
+/// Sends a single requested extra item — same mechanics as `send_one_chapter`
+/// (opens via `open_extra_for_read`, publishes to the blob store via `publish_chapter_to_blob`,
+/// which is already agnostic to chapter vs. extra, closes via the reused `close_read_handle`),
+/// with `FileExtraHeader` instead of `FileHeader`.
 async fn send_one_extra(
     writer: &mut Writer,
     provider: &Arc<dyn FileSyncProvider>,
@@ -460,8 +460,8 @@ async fn send_one_extra(
     Ok(true)
 }
 
-/// Envia os itens extra pedidos — mesma lógica de `send_files`, olhando `cover`/`banner`/
-/// `comic_info` de `local_manifest` em vez da lista de capítulos.
+/// Sends the requested extra items — same logic as `send_files`, looking at `cover`/`banner`/
+/// `comic_info` of `local_manifest` instead of the chapter list.
 async fn send_extras(
     writer: &mut Writer,
     provider: &Arc<dyn FileSyncProvider>,
@@ -499,8 +499,8 @@ async fn send_extras(
     Ok(())
 }
 
-/// Busca o blob de um item extra e grava chunk a chunk — mesma mecânica de
-/// `receive_chapter_from_blob`, com `FileExtraHeader` no lugar de `FileHeader`.
+/// Fetches the blob of an extra item and writes it chunk by chunk — same mechanics as
+/// `receive_chapter_from_blob`, with `FileExtraHeader` instead of `FileHeader`.
 async fn receive_extra_from_blob(
     provider: &Arc<dyn FileSyncProvider>,
     handle: i64,
@@ -521,7 +521,7 @@ async fn receive_extra_from_blob(
                 kind = %header.kind,
                 blob_hash,
                 error = %err,
-                "sync-files: falha ao buscar blob de extra do peer",
+                "sync-files: failed to fetch extra blob from peer",
             );
             return Ok(true);
         }
@@ -568,8 +568,8 @@ fn extra_complete_payload(peer: &PeerIdentity, header: &FileExtraHeader) -> Stri
         .to_string()
 }
 
-/// Ver doc de `chapter_failed_payload` — mesma distinção I/O vs. checksum mismatch, aplicada a
-/// itens extra (capa/banner/`ComicInfo.xml`).
+/// See `chapter_failed_payload` docs — same I/O vs. checksum mismatch distinction, applied to
+/// extra items (cover/banner/`ComicInfo.xml`).
 fn extra_failed_payload(
     peer: &PeerIdentity,
     header: &FileExtraHeader,
@@ -631,8 +631,8 @@ async fn receive_one_extra(
     Ok(())
 }
 
-/// Recebe exatamente `expected_count` itens extra — mesma lógica de `receive_files`, com
-/// `FileExtraHeader` no lugar de `FileHeader`.
+/// Receives exactly `expected_count` extra items — same logic as `receive_files`, with
+/// `FileExtraHeader` instead of `FileHeader`.
 async fn receive_extras(
     reader: &mut Recv,
     expected_count: usize,
@@ -655,10 +655,11 @@ async fn receive_extras(
     Ok(())
 }
 
-/// Lê o capítulo já aberto (`handle` válido) um chunk de cada vez e publica os bytes
-/// acumulados no blob store local (`ChapterTransfer::publish`) — devolve o hash de blob (hex)
-/// que vai no `FileHeader`. A leitura em si continua chunk a chunk (nunca destrava o loop de
-/// progresso existente), só o destino dos bytes muda: iam pro wire, agora vão pro `put()`.
+/// Reads the already opened chapter (valid `handle`) one chunk at a time and publishes the
+/// accumulated bytes to the local blob store (`ChapterTransfer::publish`) — returns the blob hash
+/// (hex) that goes into the `FileHeader`. Reading itself is still chunk by chunk (never breaks the
+/// existing progress loop), only the bytes' destination changes: they used to go to the wire, now
+/// they go to `put()`.
 async fn publish_chapter_to_blob(
     provider: &Arc<dyn FileSyncProvider>,
     handle: i64,
@@ -699,9 +700,9 @@ async fn publish_chapter_to_blob(
     transfer.publish(bytes).await
 }
 
-/// Envia um único capítulo pedido: abre, publica os bytes no blob store local, escreve o
-/// header com o hash resultante, fecha. `Ok(false)` sinaliza "não pôde atender" (item sumiu ou
-/// handle inválido) — header vazio já escrito, sem publicação.
+/// Sends a single requested chapter: opens, publishes the bytes to the local blob store, writes
+/// the header with the resulting hash, closes. `Ok(false)` signals "could not serve" (item gone or
+/// invalid handle) — empty header already written, nothing published.
 async fn send_one_chapter(
     writer: &mut Writer,
     provider: &Arc<dyn FileSyncProvider>,
@@ -731,7 +732,7 @@ async fn send_one_chapter(
         chapter = %chapter,
         blob_hash = %blob_hash,
         size = entry.size,
-        "sync-files: publicado no blob store local, enviando header",
+        "sync-files: published to local blob store, sending header",
     );
 
     write_json(
@@ -750,10 +751,10 @@ async fn send_one_chapter(
     Ok(true)
 }
 
-/// Envia os capítulos pedidos, na ordem pedida. Um item que não existe mais localmente
-/// (corrida com deleção concorrente) manda um `FileHeader` com `size: 0` em vez de ser
-/// simplesmente pulado — o outro lado conta exatamente `requested.len()` headers, então
-/// a contagem precisa ficar determinística mesmo quando um item não pode ser atendido.
+/// Sends the requested chapters, in the requested order. An item that no longer exists locally
+/// (race with a concurrent deletion) sends a `FileHeader` with `size: 0` instead of being
+/// simply skipped — the other side counts exactly `requested.len()` headers, so
+/// the count must stay deterministic even when an item cannot be served.
 async fn send_files(
     writer: &mut Writer,
     provider: &Arc<dyn FileSyncProvider>,
@@ -784,12 +785,12 @@ async fn send_files(
     Ok(())
 }
 
-/// Quantos capítulos buscar em paralelo, a partir do RTT medido AGORA com o peer (ver
-/// `ChapterTransfer::latency`) — mesmo cálculo do Desktop
-/// (`infra/sync/protocol/transfer.rs::chapter_fetch_concurrency`, ver doc lá pro raciocínio
-/// completo): um link lento (relay distante) precisa de vários fetches em voo ao mesmo tempo
-/// pra não ficar ocioso entre um round-trip e o próximo; LAN/mDNS já satura com pouquíssimo
-/// paralelismo. Sem medição cai no mais conservador dos três.
+/// How many chapters to fetch in parallel, based on the RTT measured NOW with the peer (see
+/// `ChapterTransfer::latency`) — same calculation as Desktop
+/// (`infra/sync/protocol/transfer.rs::chapter_fetch_concurrency`, see the docs there for the full
+/// reasoning): a slow link (distant relay) needs several fetches in flight at once
+/// to avoid idling between one round-trip and the next; LAN/mDNS already saturates with very little
+/// parallelism. Without a measurement it falls back to the most conservative of the three.
 fn chapter_fetch_concurrency(latency: Option<Duration>) -> usize {
     match latency {
         Some(rtt) if rtt <= Duration::from_millis(20) => 2,
@@ -799,43 +800,43 @@ fn chapter_fetch_concurrency(latency: Option<Duration>) -> usize {
     }
 }
 
-/// Ver doc do equivalente no Desktop (`transfer.rs::permits_to_forget`) — mesmo cálculo: corta
-/// o pool pela metade na primeira vez que um fetch estoura timeout, nunca abaixo de 1.
+/// See the docs of the Desktop equivalent (`transfer.rs::permits_to_forget`) — same calculation:
+/// halves the pool the first time a fetch times out, never below 1.
 fn permits_to_forget(initial_permits: usize) -> usize {
     initial_permits.saturating_sub((initial_permits / 2).max(1))
 }
 
-/// Resultado de processar UM header já lido do fio — extraído de `receive_files` pra poder
-/// rodar como uma task independente (`tasks.spawn`), em paralelo com a leitura do PRÓXIMO
-/// header, em vez de bloquear o loop inteiro no fetch+gravação de um único capítulo por vez.
+/// Result of processing ONE header already read from the wire — extracted from `receive_files` so
+/// it can run as an independent task (`tasks.spawn`), in parallel with reading the NEXT
+/// header, instead of blocking the whole loop on fetching+writing a single chapter at a time.
 enum ChapterOutcome {
     Received,
-    /// `timed_out: true` só quando a causa especificamente foi `P2pError::Timeout` na busca do
-    /// blob (`ChapterTransfer::fetch_reader`) — o único sinal que `receive_files` usa pra
-    /// reduzir o paralelismo pro resto da sessão. Espelha `ChapterOutcome::Skipped { timed_out }`
-    /// do Desktop.
+    /// `timed_out: true` only when the cause was specifically `P2pError::Timeout` while fetching
+    /// the blob (`ChapterTransfer::fetch_reader`) — the only signal `receive_files` uses to
+    /// reduce parallelism for the rest of the session. Mirrors Desktop's
+    /// `ChapterOutcome::Skipped { timed_out }`.
     Failed {
         timed_out: bool,
     },
 }
 
-/// Recebe exatamente `expected_count` capítulos (a mesma contagem que este lado pediu em
-/// `FileWantList`). Cada header é lido em sequência do fio (só um stream ordenado, não dá pra
-/// ler o header 2 antes do 1), mas a busca+gravação do blob que ele referencia roda numa task
-/// própria, num pool de até `chapter_fetch_concurrency(...)` capítulos concorrentes — mesmo
-/// desenho do Desktop (`infra/sync/protocol/transfer.rs::receive_files`), motivado pelo mesmo
-/// problema real: um sync numa conexão de relay de RTT alto levando minutos, um capítulo por
-/// vez, porque o loop bloqueava no fetch inteiro de UM capítulo antes de sequer ler o próximo
+/// Receives exactly `expected_count` chapters (the same count this side requested in
+/// `FileWantList`). Each header is read sequentially from the wire (a single ordered stream, header
+/// 2 cannot be read before 1), but fetching+writing the blob it references runs in its own
+/// task, in a pool of up to `chapter_fetch_concurrency(...)` concurrent chapters — same
+/// design as Desktop (`infra/sync/protocol/transfer.rs::receive_files`), motivated by the same
+/// real problem: a sync over a high-RTT relay connection taking minutes, one chapter at a
+/// time, because the loop blocked on the whole fetch of ONE chapter before even reading the next
 /// header.
 ///
-/// Antes desta mudança, qualquer falha de `begin_chapter_write`/`receive_chapter_from_blob`/
-/// `finalize_chapter_write` (`?`) abortava a sessão INTEIRA. Agora toda falha por capítulo é
-/// não-fatal (`ChapterOutcome::Failed`, contada em `stats.failed_count` + evento
-/// `chapter_failed` por item) — mesma filosofia já usada pelo Desktop desde o bug de
-/// 22/08/2026. Necessário aqui especificamente por causa do paralelismo: abortar a sessão no
-/// primeiro erro deixaria as tasks IRMÃS, ainda em andamento, sem chance de rodar seu próprio
-/// `finalize_chapter_write`/`abort_chapter_write` — um `WriteHandle` (lado Kotlin) órfão no
-/// `ConcurrentHashMap`, com `OutputStream`/arquivo temporário nunca fechados.
+/// Before this change, any failure in `begin_chapter_write`/`receive_chapter_from_blob`/
+/// `finalize_chapter_write` (`?`) aborted the WHOLE session. Now every per-chapter failure is
+/// non-fatal (`ChapterOutcome::Failed`, counted in `stats.failed_count` + a per-item
+/// `chapter_failed` event) — same philosophy Desktop has used since the bug of
+/// 22/08/2026. Needed here specifically because of parallelism: aborting the session on the
+/// first error would leave SIBLING tasks, still running, no chance to run their own
+/// `finalize_chapter_write`/`abort_chapter_write` — an orphaned `WriteHandle` (Kotlin side) in the
+/// `ConcurrentHashMap`, with `OutputStream`/temp file never closed.
 async fn receive_files(
     reader: &mut Recv,
     expected_count: usize,
@@ -847,7 +848,7 @@ async fn receive_files(
 ) -> Result<(), P2pError> {
     let initial_permits = chapter_fetch_concurrency(transfer.latency(peer).await);
     let semaphore = Arc::new(Semaphore::new(initial_permits));
-    // `backed_off` garante que o corte de `permits_to_forget` só dispare uma vez por sessão.
+    // `backed_off` ensures the `permits_to_forget` cut only fires once per session.
     let backed_off = Arc::new(AtomicBool::new(false));
     let permits_to_forget_on_timeout = permits_to_forget(initial_permits);
 
@@ -865,7 +866,7 @@ async fn receive_files(
             chapter = %header.chapter,
             blob_hash = %header.blob_hash.as_deref().unwrap_or("<none>"),
             size = header.size,
-            "sync-files: header recebido do wire",
+            "sync-files: header received from wire",
         );
 
         let permit = Arc::clone(&semaphore)
@@ -902,12 +903,12 @@ async fn receive_files(
         match result {
             Ok(ChapterOutcome::Received) => stats.received_count += 1,
             Ok(ChapterOutcome::Failed { .. }) => stats.failed_count += 1,
-            // Só cai aqui se a própria task deu panic (bug real, não erro de rede/protocolo) —
-            // nenhum branch de `receive_one_chapter` propaga erro, só retorna o enum.
+            // Only reached if the task itself panicked (a real bug, not a network/protocol error) —
+            // no branch of `receive_one_chapter` propagates an error, it only returns the enum.
             Err(join_err) => {
                 tracing::error!(
                     error = %join_err,
-                    "sync-files: chapter fetch task panicked — contando como falha"
+                    "sync-files: chapter fetch task panicked — counting as failure"
                 );
                 stats.failed_count += 1;
             }
@@ -917,20 +918,20 @@ async fn receive_files(
     Ok(())
 }
 
-/// Resultado de `receive_chapter_from_blob` — `write_failed` mantém o sentido original (I/O
-/// genérico de escrita ou de busca do blob); `timed_out` sinaliza especificamente que a CAUSA
-/// foi `P2pError::Timeout` na busca (não em qualquer outra etapa), o único sinal que
-/// `receive_files` usa pra decidir o backoff de paralelismo.
+/// Result of `receive_chapter_from_blob` — `write_failed` keeps its original meaning (generic
+/// write or blob-fetch I/O); `timed_out` signals specifically that the CAUSE
+/// was `P2pError::Timeout` during the fetch (not any other step), the only signal
+/// `receive_files` uses to decide the parallelism backoff.
 struct BlobFetchOutcome {
     write_failed: bool,
     timed_out: bool,
 }
 
-/// Busca o blob referenciado por `header.blob_hash` no peer (`ChapterTransfer::fetch_reader`) e
-/// grava o resultado chunk a chunk via `FileSyncProvider::write_chapter_chunk`, preservando os
-/// mesmos eventos de progresso de antes — só a origem dos bytes mudou (era o wire cru, agora é
-/// o `AsyncRead` devolvido pelo blob store após `fetch`). `handle` inválido conta como falha
-/// imediata.
+/// Fetches the blob referenced by `header.blob_hash` from the peer (`ChapterTransfer::fetch_reader`)
+/// and writes the result chunk by chunk via `FileSyncProvider::write_chapter_chunk`, keeping the
+/// same progress events as before — only the bytes' source changed (it was the raw wire, now it is
+/// the `AsyncRead` returned by the blob store after `fetch`). An invalid `handle` counts as an
+/// immediate failure.
 async fn receive_chapter_from_blob(
     provider: &Arc<dyn FileSyncProvider>,
     handle: i64,
@@ -954,7 +955,7 @@ async fn receive_chapter_from_blob(
                 chapter = %header.chapter,
                 blob_hash,
                 error = %err,
-                "sync-files: falha ao buscar blob do peer",
+                "sync-files: failed to fetch blob from peer",
             );
             return Ok(BlobFetchOutcome {
                 write_failed: true,
@@ -1007,13 +1008,13 @@ fn chapter_complete_payload(peer: &PeerIdentity, header: &FileHeader) -> String 
     serde_json::json!({ "peerId": peer.id, "comicName": header.comic_name, "chapter": header.chapter }).to_string()
 }
 
-/// `write_failed`: `true` quando `write_chapter_chunk` (ou a busca do blob) falhou em algum
-/// chunk — falha de I/O/rede genérica. `false` significa que TODOS os chunks foram escritos
-/// sem erro, e ainda assim `finalize_chapter_write` retornou `false` — nesse ponto a única
-/// coisa que `finalizeChapterWrite` faz do lado Kotlin é reler o arquivo e comparar o hash
-/// contra `expected_checksum` (ver log estratégico 4/4 acima), então isso É especificamente um
-/// checksum mismatch, não uma falha de I/O qualquer — reportado com `code` reconhecível
-/// (`SyncErrorCode::ChecksumMismatch`) em vez do fallback genérico sem `code`.
+/// `write_failed`: `true` when `write_chapter_chunk` (or the blob fetch) failed on some
+/// chunk — a generic I/O/network failure. `false` means ALL chunks were written
+/// without error, and still `finalize_chapter_write` returned `false` — at that point the only
+/// thing `finalizeChapterWrite` does on the Kotlin side is re-read the file and compare the hash
+/// against `expected_checksum` (see strategic log 4/4 above), so this IS specifically a
+/// checksum mismatch, not just any I/O failure — reported with a recognizable `code`
+/// (`SyncErrorCode::ChecksumMismatch`) instead of the generic fallback without `code`.
 fn chapter_failed_payload(peer: &PeerIdentity, header: &FileHeader, write_failed: bool) -> String {
     let (reason, code) = if write_failed {
         ("write or blob-fetch I/O failure", None)
@@ -1033,11 +1034,11 @@ fn chapter_failed_payload(peer: &PeerIdentity, header: &FileHeader, write_failed
     .to_string()
 }
 
-/// Processa UM header por completo (begin -> fetch/gravação -> finalize/abort), sempre
-/// retornando um outcome — nunca propaga erro (ver doc de `receive_files` pro porquê: com
-/// várias tasks em voo ao mesmo tempo, abortar a sessão inteira no primeiro erro deixaria as
-/// tasks irmãs sem chance de fechar seu próprio `WriteHandle` do lado Kotlin). Recebe tudo por
-/// valor (em vez de referência) pra poder rodar como task independente via `tasks.spawn`.
+/// Processes ONE header completely (begin -> fetch/write -> finalize/abort), always
+/// returning an outcome — never propagates an error (see `receive_files` docs for why: with
+/// several tasks in flight at once, aborting the whole session on the first error would leave
+/// sibling tasks no chance to close their own Kotlin-side `WriteHandle`). Takes everything by
+/// value (instead of by reference) so it can run as an independent task via `tasks.spawn`.
 async fn receive_one_chapter(
     provider: Arc<dyn FileSyncProvider>,
     emit: EventEmitter,
@@ -1052,7 +1053,7 @@ async fn receive_one_chapter(
                 comic = %header.comic_name,
                 chapter = %header.chapter,
                 error = %err,
-                "sync-files: begin_chapter_write falhou — pulando capítulo",
+                "sync-files: begin_chapter_write failed — skipping chapter",
             );
             emit(
                 "sync:files:chapter_failed",
@@ -1073,11 +1074,11 @@ async fn receive_one_chapter(
                 comic = %header.comic_name,
                 chapter = %header.chapter,
                 error = %err,
-                "sync-files: falha de I/O ao buscar/gravar blob — pulando capítulo",
+                "sync-files: I/O failure while fetching/writing blob — skipping chapter",
             );
             if handle >= 0 {
                 if let Err(abort_err) = abort_chapter_write(&provider, handle).await {
-                    tracing::warn!(error = %abort_err, "sync-files: abort_chapter_write falhou");
+                    tracing::warn!(error = %abort_err, "sync-files: abort_chapter_write failed");
                 }
             }
             emit(
@@ -1096,7 +1097,7 @@ async fn receive_one_chapter(
                     comic = %header.comic_name,
                     chapter = %header.chapter,
                     error = %err,
-                    "sync-files: finalize_chapter_write falhou — pulando capítulo",
+                    "sync-files: finalize_chapter_write failed — skipping chapter",
                 );
                 false
             }
@@ -1105,19 +1106,19 @@ async fn receive_one_chapter(
         false
     };
 
-    // Log estratégico 4/4: resultado final da verificação de checksum, que acontece
-    // inteiramente dentro do Kotlin (`finalizeChapterWrite` relê o arquivo escrito e
-    // compara com `expectedChecksum`). O Rust só vê o booleano de volta — não o hash
-    // real calculado do lado Kotlin — então este log mostra o `expected_checksum` que
-    // tínhamos (log 3/4) ao lado do resultado, mas não prova sozinho onde a diferença
-    // está; serve pra confirmar QUAL capítulo falhou e correlacionar com os logs 1-3.
+    // Strategic log 4/4: final result of the checksum verification, which happens
+    // entirely inside Kotlin (`finalizeChapterWrite` re-reads the written file and
+    // compares it with `expectedChecksum`). Rust only sees the boolean back — not the actual
+    // hash computed on the Kotlin side — so this log shows the `expected_checksum` we
+    // had (log 3/4) next to the result, but does not prove on its own where the difference
+    // is; it serves to confirm WHICH chapter failed and correlate with logs 1-3.
     tracing::debug!(
         comic = %header.comic_name,
         chapter = %header.chapter,
         expected_checksum = %header.checksum.as_deref().unwrap_or("<none>"),
         write_failed = fetch_outcome.write_failed,
         succeeded,
-        "sync-files: resultado da finalização (checksum verificado do lado Kotlin)",
+        "sync-files: finalization result (checksum verified on the Kotlin side)",
     );
 
     if succeeded {
@@ -1129,7 +1130,7 @@ async fn receive_one_chapter(
     } else {
         if handle >= 0 {
             if let Err(err) = abort_chapter_write(&provider, handle).await {
-                tracing::warn!(error = %err, "sync-files: abort_chapter_write falhou");
+                tracing::warn!(error = %err, "sync-files: abort_chapter_write failed");
             }
         }
         emit(
@@ -1171,7 +1172,7 @@ fn manifest_exchanged_payload(
     serde_json::json!({ "peerId": peer.id, "missingCount": missing_count, "offeringCount": offering_count }).to_string()
 }
 
-/// Fase 1: troca de manifesto (regra 4) — outbound escreve primeiro, inbound lê primeiro.
+/// Phase 1: manifest exchange (rule 4) — outbound writes first, inbound reads first.
 async fn exchange_manifests(
     outbound_role: bool,
     writer: &mut Writer,
@@ -1188,8 +1189,8 @@ async fn exchange_manifests(
     }
 }
 
-/// Fase 2: troca de want-list, mesma ordem espelhada da fase 1. Retorna
-/// `(wanted, wanted_extras)` do peer.
+/// Phase 2: want-list exchange, same mirrored order as phase 1. Returns the peer's
+/// `(wanted, wanted_extras)`.
 async fn exchange_want_lists(
     outbound_role: bool,
     writer: &mut Writer,
@@ -1213,11 +1214,11 @@ async fn exchange_want_lists(
     }
 }
 
-/// Fase 3: cada lado envia o que o outro pediu e recebe o que pediu, na ordem espelhada —
-/// outbound sempre escreve primeiro em cada etapa, inbound sempre lê primeiro. Capítulos
-/// primeiro, depois extras, nos dois sentidos — mesma ordem usada pelo Desktop
-/// (`infra/sync/protocol/file_handler.rs`), já que os dois lados leem/escrevem o wire na mesma
-/// sequência sem tag de enum que distinga qual mensagem é qual.
+/// Phase 3: each side sends what the other requested and receives what it requested, in mirrored
+/// order — outbound always writes first at each step, inbound always reads first. Chapters
+/// first, then extras, in both directions — same order used by Desktop
+/// (`infra/sync/protocol/file_handler.rs`), since both sides read/write the wire in the same
+/// sequence without an enum tag telling which message is which.
 #[allow(clippy::too_many_arguments)]
 async fn transfer_files(
     outbound_role: bool,
@@ -1325,14 +1326,14 @@ async fn transfer_files(
     Ok(())
 }
 
-/// Cauda comum às fases 1-3 (troca de manifesto -> want-list -> transferência), compartilhada
-/// entre `run_exchange` (biblioteca inteira) e `run_exchange_scoped` (um único quadrinho,
-/// protocolo `acerola/sync-comic/1`) — a diferença entre os dois é como `local_manifest` foi
-/// montado/filtrado antes de chegar aqui, mais `force_empty_wanted`: `run_exchange` sempre passa
-/// `false` (sync de biblioteca é sempre bidirecional); `run_exchange_scoped` passa `true` quando
-/// este lado é o "sender" da direção explícita escolhida (ver `SyncDirection` e
-/// `run_exchange_scoped`) — nesse caso a want-list local é zerada mesmo que o diff mostre algo
-/// faltando, porque este lado só deve entregar, nunca pedir de volta.
+/// Tail shared by phases 1-3 (manifest exchange -> want-list -> transfer), shared
+/// between `run_exchange` (whole library) and `run_exchange_scoped` (a single comic,
+/// protocol `acerola/sync-comic/1`) — the difference between them is how `local_manifest` was
+/// built/filtered before getting here, plus `force_empty_wanted`: `run_exchange` always passes
+/// `false` (library sync is always bidirectional); `run_exchange_scoped` passes `true` when
+/// this side is the "sender" of the chosen explicit direction (see `SyncDirection` and
+/// `run_exchange_scoped`) — in that case the local want-list is emptied even if the diff shows
+/// something missing, because this side should only deliver, never request back.
 async fn run_exchange_with_manifest(
     outbound_role: bool,
     peer: &PeerIdentity,
@@ -1390,9 +1391,9 @@ async fn run_exchange_with_manifest(
     Ok(stats)
 }
 
-/// Executa a sessão inteira do protocolo `acerola/sync-files/1` pra um dos dois lados.
-/// Schema e sequência de wire idênticos ao Desktop (`infra/sync/protocol/file_handler.rs`):
-/// (1) troca de manifesto; (2) troca de want-list; (3) transferência de arquivos.
+/// Runs the whole `acerola/sync-files/1` protocol session for one of the two sides.
+/// Wire schema and sequence identical to Desktop (`infra/sync/protocol/file_handler.rs`):
+/// (1) manifest exchange; (2) want-list exchange; (3) file transfer.
 pub(super) async fn run_exchange(
     outbound_role: bool,
     peer: &PeerIdentity,
@@ -1420,11 +1421,11 @@ pub(super) async fn run_exchange(
     .await
 }
 
-/// Fase 0 exclusiva do `acerola/sync-comic/1`: outbound manda `ComicSyncScope` (o quadrinho e a
-/// direção escolhidos pelo usuário, vindo de `P2PNode::sync_comic`), inbound só lê — nenhum dos
-/// dois lados decide o alvo localmente, só quem discou sabe. Retorna `(comic_name, direction)`
-/// acordados: `comic_name` filtra os manifestos, `direction` decide qual lado é o "sender" (ver
-/// `run_exchange_scoped`).
+/// Phase 0, exclusive to `acerola/sync-comic/1`: outbound sends `ComicSyncScope` (the comic and
+/// direction chosen by the user, coming from `P2PNode::sync_comic`), inbound only reads — neither
+/// side decides the target locally, only the dialer knows. Returns the agreed
+/// `(comic_name, direction)`: `comic_name` filters the manifests, `direction` decides which side is
+/// the "sender" (see `run_exchange_scoped`).
 async fn exchange_comic_scope(
     outbound_role: bool,
     writer: &mut Writer,
@@ -1455,9 +1456,9 @@ async fn exchange_comic_scope(
     }
 }
 
-/// Mantém só as entradas do quadrinho alvo — o resto do manifesto nunca é construído em vão
-/// (a filtragem acontece depois de `get_file_manifest()`, que já é sobre a biblioteca inteira;
-/// não há como pedir pro `FileSyncProvider` só um quadrinho sem mudar a trait FFI).
+/// Keeps only the target comic's entries — the rest of the manifest is never built in vain
+/// (filtering happens after `get_file_manifest()`, which already covers the whole library;
+/// there is no way to ask `FileSyncProvider` for a single comic without changing the FFI trait).
 fn filter_manifest_to_comic(manifest: FileManifest, comic_name: &str) -> FileManifest {
     FileManifest {
         comics: manifest
@@ -1468,11 +1469,11 @@ fn filter_manifest_to_comic(manifest: FileManifest, comic_name: &str) -> FileMan
     }
 }
 
-/// Restringe um manifesto (já filtrado a UM quadrinho, via `filter_manifest_to_comic`) aos
-/// rótulos de capítulo pedidos — lista vazia significa "sem filtro" (quadrinho inteiro),
-/// preservando o comportamento do sync completo. Itens extra (capa/banner/`ComicInfo.xml`)
-/// nunca são filtrados aqui: são metadado do quadrinho como um todo, não de um capítulo
-/// específico. Espelha o Desktop (`core/services/sync/file_sync.rs::restrict_manifest_to_chapters`).
+/// Restricts a manifest (already filtered to ONE comic, via `filter_manifest_to_comic`) to the
+/// requested chapter labels — an empty list means "no filter" (whole comic),
+/// keeping the full sync behavior. Extra items (cover/banner/`ComicInfo.xml`)
+/// are never filtered here: they are metadata of the comic as a whole, not of a specific
+/// chapter. Mirrors Desktop (`core/services/sync/file_sync.rs::restrict_manifest_to_chapters`).
 fn restrict_manifest_to_chapters(mut manifest: FileManifest, chapters: &[String]) -> FileManifest {
     if chapters.is_empty() {
         return manifest;
@@ -1485,15 +1486,15 @@ fn restrict_manifest_to_chapters(mut manifest: FileManifest, chapters: &[String]
     manifest
 }
 
-/// Executa a sessão inteira do protocolo `acerola/sync-comic/1` (sincronização de um único
-/// quadrinho) pra um dos dois lados. Mesma sequência de wire do `sync-files` normal, só que
-/// precedida pela fase 0 (`ComicSyncScope`) e com `local_manifest` filtrado ao quadrinho
-/// acordado. A direção explícita (`SyncDirection`, ponto de vista sempre do outbound) decide
-/// qual lado é o "sender" nesta sessão — o papel de cada lado é sempre o oposto do outro:
-/// `outbound_role=true` + `Push` ou `outbound_role=false` + `Pull` → este lado é sender (want
-/// list forçada vazia em `run_exchange_with_manifest`); os outros dois casos → receiver (pede
-/// normalmente). Isso cobre push e pull com o mesmo pipeline de diff/transferência, sem mudar a
-/// troca de manifestos em si.
+/// Runs the whole `acerola/sync-comic/1` protocol session (sync of a single
+/// comic) for one of the two sides. Same wire sequence as the regular `sync-files`, but
+/// preceded by phase 0 (`ComicSyncScope`) and with `local_manifest` filtered to the agreed
+/// comic. The explicit direction (`SyncDirection`, always from the outbound's point of view)
+/// decides which side is the "sender" in this session — each side's role is always the opposite:
+/// `outbound_role=true` + `Push` or `outbound_role=false` + `Pull` → this side is sender (want
+/// list forced empty in `run_exchange_with_manifest`); the other two cases → receiver (requests
+/// normally). This covers push and pull with the same diff/transfer pipeline, without changing
+/// the manifest exchange itself.
 #[allow(clippy::too_many_arguments)]
 pub(super) async fn run_exchange_scoped(
     outbound_role: bool,
@@ -1556,10 +1557,10 @@ mod tests {
     use crate::protocol::files::model::FileChapterInfo;
     use crate::protocol::files::transfer::InMemoryChapterTransfer;
 
-    /// Um par de transports em memória que compartilham o mesmo hash->bytes — simula os dois
-    /// lados de uma conexão real publicando/buscando no mesmo "store de rede" content-addressed,
-    /// sem precisar de um `Endpoint` iroh de verdade (só `BlobChapterTransfer`, usado em
-    /// produção, precisa disso).
+    /// A pair of in-memory transports sharing the same hash->bytes — simulates both
+    /// sides of a real connection publishing/fetching from the same content-addressed "network store",
+    /// without needing a real iroh `Endpoint` (only `BlobChapterTransfer`, used in
+    /// production, needs that).
     fn test_transfer_pair() -> (Arc<dyn ChapterTransfer>, Arc<dyn ChapterTransfer>) {
         InMemoryChapterTransfer::shared_pair()
     }
@@ -1601,9 +1602,9 @@ mod tests {
         }
     }
 
-    /// Mesmo quadrinho/capítulo dos dois lados, checksum diferente — conflito de verdade
-    /// (bug relatado: "conflito não é detectado nem reportado"). Continua indo pra `missing`
-    /// (comportamento de sobrescrita inalterado), mas agora também aparece em `conflicts`.
+    /// Same comic/chapter on both sides, different checksum — a real conflict
+    /// (reported bug: "conflict is neither detected nor reported"). Still goes to `missing`
+    /// (overwrite behavior unchanged), but now also shows up in `conflicts`.
     #[test]
     fn missing_from_reports_a_real_conflict_when_checksums_differ() {
         let local = manifest_with_chapter("Test", "Cap 1", "checksum-local");
@@ -1615,12 +1616,12 @@ mod tests {
         assert_eq!(
             conflicts,
             vec![("Test".to_string(), "Cap 1".to_string())],
-            "checksum local diferente do peer é um conflito de verdade, não só uma atualização"
+            "local checksum different from the peer's is a real conflict, not just an update"
         );
     }
 
-    /// Quadrinho nunca visto localmente: vai pra `missing` (é isso que faz o download
-    /// acontecer), mas não é um conflito — não havia nada pra divergir.
+    /// Comic never seen locally: goes to `missing` (that is what makes the download
+    /// happen), but it is not a conflict — there was nothing to diverge from.
     #[test]
     fn missing_from_does_not_report_a_conflict_for_a_chapter_never_seen_locally() {
         let local = FileManifest { comics: vec![] };
@@ -1629,10 +1630,10 @@ mod tests {
         let (missing, conflicts) = missing_from(&local, &peer);
 
         assert_eq!(missing, vec![("Novo Quadrinho".to_string(), "Cap 1".to_string())]);
-        assert!(conflicts.is_empty(), "quadrinho nunca visto localmente não é um conflito");
+        assert!(conflicts.is_empty(), "a comic never seen locally is not a conflict");
     }
 
-    /// Mesmo checksum dos dois lados: nem `missing` nem `conflicts` — já está sincronizado.
+    /// Same checksum on both sides: neither `missing` nor `conflicts` — already in sync.
     #[test]
     fn missing_from_reports_nothing_when_checksums_match() {
         let local = manifest_with_chapter("Test", "Cap 1", "same");
@@ -1644,10 +1645,10 @@ mod tests {
         assert!(conflicts.is_empty());
     }
 
-    /// `write_failed: false` é o único caso em que `chapter_failed_payload` pode afirmar que a
-    /// causa foi especificamente um checksum mismatch (ver doc da função) — trava esse contrato
-    /// no nível mais baixo possível, sem precisar montar um round-trip completo só pra provar
-    /// uma checagem de `if`.
+    /// `write_failed: false` is the only case where `chapter_failed_payload` can claim the
+    /// cause was specifically a checksum mismatch (see the function docs) — locks that contract
+    /// at the lowest possible level, without building a full round-trip just to prove
+    /// an `if` check.
     #[test]
     fn chapter_failed_payload_reports_checksum_mismatch_code_when_write_did_not_fail() {
         let peer = PeerIdentity {
@@ -1665,9 +1666,9 @@ mod tests {
             .contains("checksum"));
     }
 
-    /// Contraprova: `write_failed: true` (falha de I/O ao escrever chunks, ou o fetch do blob
-    /// falhou) não pode ser confundido com um checksum mismatch — sem `code` reconhecido, cai no
-    /// fallback genérico do lado Kotlin (`SyncProtocolError.fromCode(null)`).
+    /// Counter-proof: `write_failed: true` (I/O failure writing chunks, or the blob fetch
+    /// failed) must not be mistaken for a checksum mismatch — without a recognized `code`, it falls
+    /// back to the generic Kotlin-side fallback (`SyncProtocolError.fromCode(null)`).
     #[test]
     fn chapter_failed_payload_reports_no_code_for_a_generic_io_failure() {
         let peer = PeerIdentity {
@@ -1685,7 +1686,7 @@ mod tests {
             .contains("i/o"));
     }
 
-    /// Mesmo contrato de `chapter_failed_payload`, aplicado a itens extra.
+    /// Same contract as `chapter_failed_payload`, applied to extra items.
     #[test]
     fn extra_failed_payload_reports_checksum_mismatch_code_when_write_did_not_fail() {
         let peer = PeerIdentity {
@@ -1720,9 +1721,9 @@ mod tests {
             .contains("i/o"));
     }
 
-    /// Provider que nunca é usado pra transferir nada — todos os métodos de dados retornam
-    /// "vazio"/"-1"/"false". Só `get_file_manifest` faz algo (definido por closure em cada
-    /// mock específico via composição).
+    /// Provider never used to transfer anything — all data methods return
+    /// "empty"/"-1"/"false". Only `get_file_manifest` does something (defined by a closure in each
+    /// specific mock via composition).
     struct CountingSlowProvider {
         manifest_calls: Arc<AtomicUsize>,
         sleep_ms: u64,
@@ -1796,9 +1797,9 @@ mod tests {
         Arc::new(|_event: &str, _payload: String| {})
     }
 
-    /// Prova, no nível de `build_local_manifest` (já usando `run_blocking`), que uma chamada
-    /// FFI lenta não trava outras tasks async concorrentes rodando no mesmo runtime — a
-    /// assinatura exata do bug relatado (sync-files travava o app inteiro por minutos).
+    /// Proves, at the `build_local_manifest` level (already using `run_blocking`), that a slow
+    /// FFI call does not block other concurrent async tasks running on the same runtime — the
+    /// exact signature of the reported bug (sync-files froze the whole app for minutes).
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn build_local_manifest_does_not_block_runtime() {
         let provider: Arc<dyn FileSyncProvider> = Arc::new(CountingSlowProvider {
@@ -1821,12 +1822,12 @@ mod tests {
         assert!(manifest.comics.is_empty());
         assert!(
             ticks.load(Ordering::SeqCst) >= 8,
-            "runtime ficou travado durante get_file_manifest"
+            "runtime was blocked during get_file_manifest"
         );
     }
 
-    /// Prova que `run_exchange` monta o manifesto local exatamente 1 vez por sessão — antes
-    /// do fix, `send_files` reconstruía do zero internamente, dobrando o trabalho.
+    /// Proves `run_exchange` builds the local manifest exactly once per session — before
+    /// the fix, `send_files` rebuilt it from scratch internally, doubling the work.
     #[tokio::test]
     async fn run_exchange_builds_local_manifest_exactly_once_per_side() {
         let (client_io, server_io) = tokio::io::duplex(64 * 1024);
@@ -1875,29 +1876,29 @@ mod tests {
         assert_eq!(inbound_calls.load(Ordering::SeqCst), 1);
     }
 
-    // --- Testes de integridade de transferência ---
+    // --- Transfer integrity tests ---
     //
-    // Os mocks acima (`CountingSlowProvider`) nunca tocam bytes reais — `read_chapter_chunk`
-    // sempre devolve vazio, `write_chapter_chunk` sempre falha. Isso deixa uma lacuna: nenhum
-    // teste existente exercita o caminho real de envio -> framing -> recepção -> verificação
-    // de checksum, que é exatamente onde suspeitamos um bug de "checksum mismatch" em produção
-    // (já provado, com hash real de um arquivo real, que o checksum ORIGEM está correto — o
-    // problema está em algum ponto entre a origem e a verificação final).
+    // The mocks above (`CountingSlowProvider`) never touch real bytes — `read_chapter_chunk`
+    // always returns empty, `write_chapter_chunk` always fails. That leaves a gap: no
+    // existing test exercises the real send -> framing -> receive -> checksum verification
+    // path, which is exactly where we suspect a "checksum mismatch" bug in production
+    // (already proven, with a real hash of a real file, that the SOURCE checksum is correct — the
+    // problem is somewhere between the source and the final verification).
     //
-    // `InMemoryFileSyncProvider` guarda bytes de verdade nos dois sentidos e usa blake3 (só
-    // como checksum de teste — não é o SHA-256 real de produção, que é calculado no Kotlin)
-    // pra provar que o que sai de um lado chega intacto no outro, incluindo o próprio valor
-    // do checksum atravessando `FileHeader` pelo wire. Mesmo espírito dos testes de stress do
-    // `acerola-p2p` (`transport_stress.rs`: payload real + hash real + comparação), só que
-    // exercitando o protocolo `sync-files` inteiro (manifesto -> want-list -> transferência)
-    // em vez do transporte cru.
+    // `InMemoryFileSyncProvider` keeps real bytes in both directions and uses blake3 (only
+    // as a test checksum — it is not the real production SHA-256, which is computed in Kotlin)
+    // to prove that what leaves one side arrives intact on the other, including the checksum
+    // value itself crossing the wire inside `FileHeader`. Same spirit as the stress tests of
+    // `acerola-p2p` (`transport_stress.rs`: real payload + real hash + comparison), but
+    // exercising the whole `sync-files` protocol (manifest -> want-list -> transfer)
+    // instead of the raw transport.
 
-    /// `read_chapter_chunk`/`write_chapter_chunk`/`close_read_handle` são reaproveitados sem
-    /// mudança tanto pra capítulo quanto pra extra (ver doc da trait em `callbacks.rs`) — então
-    /// os dois tipos de handle têm que viver no MESMO espaço de handles/mapas aqui, exatamente
-    /// como a implementação Kotlin real (`FileSyncProviderImpl`) vai precisar fazer. Só o que
-    /// muda entre os dois é o que `WriteTarget` guarda e pra qual lista (`finalized` vs.
-    /// `finalized_extras`) o resultado vai.
+    /// `read_chapter_chunk`/`write_chapter_chunk`/`close_read_handle` are reused unchanged
+    /// for both chapter and extra (see the trait docs in `callbacks.rs`) — so
+    /// both handle kinds must live in the SAME handle/map space here, exactly
+    /// like the real Kotlin implementation (`FileSyncProviderImpl`) will need to. The only thing
+    /// that differs between them is what `WriteTarget` holds and which list (`finalized` vs.
+    /// `finalized_extras`) the result goes to.
     enum WriteTarget {
         Chapter { comic_name: String, chapter: String },
         Extra { comic_name: String, kind: String },
@@ -1909,10 +1910,10 @@ mod tests {
         buffer: Vec<u8>,
     }
 
-    /// Um capítulo que já foi finalizado do lado que recebeu — guarda tanto o checksum
-    /// declarado pelo remetente (`expected_checksum`, o que veio no `FileHeader`) quanto o
-    /// que este provider recalculou dos bytes efetivamente recebidos (`actual_checksum`),
-    /// além dos bytes crus — pra poder comparar tanto o hash quanto o conteúdo byte-a-byte.
+    /// A chapter already finalized on the receiving side — keeps both the checksum
+    /// declared by the sender (`expected_checksum`, what came in the `FileHeader`) and the
+    /// one this provider recomputed from the bytes actually received (`actual_checksum`),
+    /// plus the raw bytes — so both the hash and the byte-by-byte content can be compared.
     struct FinalizedChapter {
         comic_name: String,
         chapter: String,
@@ -1921,8 +1922,8 @@ mod tests {
         bytes: Vec<u8>,
     }
 
-    /// Mesmo par (checksum declarado x recalculado) de `FinalizedChapter`, pra um item extra
-    /// (capa/banner/`ComicInfo.xml`) em vez de capítulo.
+    /// Same pair (declared x recomputed checksum) as `FinalizedChapter`, for an extra item
+    /// (cover/banner/`ComicInfo.xml`) instead of a chapter.
     struct FinalizedExtra {
         comic_name: String,
         kind: String,
@@ -2099,9 +2100,9 @@ mod tests {
                 .collect()
         }
 
-        // Reaproveita `read_handles` (o MESMO mapa usado por `open_chapter_for_read`) — não
-        // existe `open_extra_for_read` separado no mapa, só na trait: o handle devolvido aqui
-        // é consumido depois pela mesma `read_chapter_chunk`/`close_read_handle` de sempre.
+        // Reuses `read_handles` (the SAME map used by `open_chapter_for_read`) — there is
+        // no separate `open_extra_for_read` in the map, only in the trait: the handle returned here
+        // is later consumed by the usual `read_chapter_chunk`/`close_read_handle`.
         fn open_extra_for_read(&self, comic_name: String, kind: String) -> i64 {
             let Some((_, bytes)) = self.readable_extras.get(&(comic_name, kind)) else {
                 return -1;
@@ -2114,8 +2115,8 @@ mod tests {
             handle
         }
 
-        // Mesma ideia de `open_extra_for_read`: insere em `write_handles`, o mapa compartilhado
-        // com capítulo — `write_chapter_chunk` (reaproveitado) grava aqui sem saber a diferença.
+        // Same idea as `open_extra_for_read`: inserts into `write_handles`, the map shared
+        // with chapters — `write_chapter_chunk` (reused) writes here without knowing the difference.
         fn begin_extra_write(
             &self,
             comic_name: String,
@@ -2160,21 +2161,21 @@ mod tests {
         }
     }
 
-    /// Gerador determinístico de payload — varia com `seed` pra capítulos diferentes não
-    /// terem o mesmo conteúdo (evita mascarar bug de troca/mistura entre capítulos).
+    /// Deterministic payload generator — varies with `seed` so different chapters do not
+    /// have the same content (avoids masking a swap/mix-up bug between chapters).
     fn make_payload(size: usize, seed: u8) -> Vec<u8> {
         (0..size)
             .map(|i| ((i as u64).wrapping_mul(31).wrapping_add(seed as u64) % 251) as u8)
             .collect()
     }
 
-    /// Round-trip com bytes de verdade nos dois sentidos, tamanhos propositalmente NÃO
-    /// múltiplos de `CHUNK_SIZE` (64KB) pra exercitar o último chunk parcial do loop em
-    /// `stream_chapter_out`/`receive_chapter_bytes`. Verifica três coisas independentes:
-    /// (1) o checksum declarado pelo remetente sobrevive ao wire; (2) o checksum recalculado
-    /// do lado que recebe bate com o declarado; (3) os bytes recebidos são idênticos,
-    /// byte-a-byte, ao que foi enviado — não só o hash batendo (hash batendo não prova
-    /// ausência de bug se o mock também estivesse errado do mesmo jeito dos dois lados).
+    /// Round-trip with real bytes in both directions, sizes deliberately NOT
+    /// multiples of `CHUNK_SIZE` (64KB) to exercise the loop's last partial chunk in
+    /// `stream_chapter_out`/`receive_chapter_bytes`. Checks three independent things:
+    /// (1) the checksum declared by the sender survives the wire; (2) the checksum recomputed
+    /// on the receiving side matches the declared one; (3) the received bytes are identical,
+    /// byte by byte, to what was sent — not just the hash matching (a matching hash does not prove
+    /// absence of a bug if the mock were also wrong the same way on both sides).
     #[tokio::test]
     async fn run_exchange_transfers_real_bytes_with_correct_checksum_round_trip() {
         let outbound_payload = make_payload(1_500_037, 7);
@@ -2226,49 +2227,49 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let outbound_received = outbound_provider.finalized.lock().unwrap();
         assert_eq!(
             outbound_received.len(),
             1,
-            "outbound deveria ter recebido exatamente 1 capítulo de B"
+            "outbound should have received exactly 1 chapter from B"
         );
         let received_from_b = &outbound_received[0];
         assert_eq!(received_from_b.comic_name, "Comic B");
         assert_eq!(
             received_from_b.expected_checksum, received_from_b.actual_checksum,
-            "checksum declarado por B não bate com o recalculado por A após receber"
+            "checksum declared by B does not match the one recomputed by A after receiving"
         );
         assert_eq!(
             received_from_b.bytes, inbound_payload,
-            "bytes recebidos por A não batem byte-a-byte com o que B enviou"
+            "bytes received by A do not match byte by byte what B sent"
         );
 
         let inbound_received = inbound_provider.finalized.lock().unwrap();
         assert_eq!(
             inbound_received.len(),
             1,
-            "inbound deveria ter recebido exatamente 1 capítulo de A"
+            "inbound should have received exactly 1 chapter from A"
         );
         let received_from_a = &inbound_received[0];
         assert_eq!(received_from_a.comic_name, "Comic A");
         assert_eq!(
             received_from_a.expected_checksum, received_from_a.actual_checksum,
-            "checksum declarado por A não bate com o recalculado por B após receber"
+            "checksum declared by A does not match the one recomputed by B after receiving"
         );
         assert_eq!(
             received_from_a.bytes, outbound_payload,
-            "bytes recebidos por B não batem byte-a-byte com o que A enviou"
+            "bytes received by B do not match byte by byte what A sent"
         );
     }
 
-    /// Mesmo quadrinho/capítulo nos dois lados, conteúdo (checksum) diferente — cenário real do
-    /// bug relatado ("conflito não é detectado nem reportado" ao sincronizar um quadrinho já
-    /// existente nos dois devices). Prova que `FileSyncStats::conflicts_count` reflete isso nos
-    /// dois lados, com a sessão completando normalmente (comportamento de sobrescrita
-    /// inalterado — ver `missing_from`).
+    /// Same comic/chapter on both sides, different content (checksum) — real scenario of the
+    /// reported bug ("conflict is neither detected nor reported" when syncing a comic already
+    /// present on both devices). Proves `FileSyncStats::conflicts_count` reflects that on
+    /// both sides, with the session completing normally (overwrite behavior
+    /// unchanged — see `missing_from`).
     #[tokio::test]
     async fn run_exchange_reports_a_real_conflict_when_both_sides_have_the_same_chapter_with_different_content(
     ) {
@@ -2319,24 +2320,24 @@ mod tests {
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
         let outbound_stats =
-            outbound_result.expect("outbound não deveria falhar mesmo havendo conflito");
+            outbound_result.expect("outbound should not fail even with a conflict");
         let inbound_stats =
-            inbound_result.expect("inbound não deveria falhar mesmo havendo conflito");
+            inbound_result.expect("inbound should not fail even with a conflict");
 
         assert_eq!(
             outbound_stats.conflicts_count, 1,
-            "outbound já tinha 'Cap 1' com checksum diferente do peer"
+            "outbound already had 'Cap 1' with a checksum different from the peer's"
         );
         assert_eq!(
             inbound_stats.conflicts_count, 1,
-            "inbound já tinha 'Cap 1' com checksum diferente do peer"
+            "inbound already had 'Cap 1' with a checksum different from the peer's"
         );
     }
 
-    /// Duplo de teste que mede quantos `fetch_reader` ficam em voo ao mesmo tempo (pico
-    /// observado) — a única forma de provar que `receive_files` roda fetches em paralelo de
-    /// verdade, não mais um capítulo por vez como antes desta mudança. Espelha
-    /// `ConcurrencyTrackingTransfer` do Desktop (`infra/sync/protocol/comic_handler.rs`).
+    /// Test double that measures how many `fetch_reader` calls are in flight at once (observed
+    /// peak) — the only way to prove `receive_files` really runs fetches in parallel,
+    /// no longer one chapter at a time as before this change. Mirrors Desktop's
+    /// `ConcurrencyTrackingTransfer` (`infra/sync/protocol/comic_handler.rs`).
     struct ConcurrencyTrackingTransfer {
         latency: Duration,
         fetch_delay: Duration,
@@ -2362,7 +2363,7 @@ mod tests {
     #[async_trait]
     impl ChapterTransfer for ConcurrencyTrackingTransfer {
         async fn publish(&self, _bytes: Vec<u8>) -> Result<String, P2pError> {
-            unimplemented!("este teste só exercita o lado receptor (fetch_reader)")
+            unimplemented!("this test only exercises the receiving side (fetch_reader)")
         }
 
         async fn fetch_reader(
@@ -2382,12 +2383,12 @@ mod tests {
         }
     }
 
-    /// Regressão central desta mudança: antes, `receive_files` lia um header, bloqueava no
-    /// fetch INTEIRO daquele capítulo, só então lia o próximo — pico de concorrência sempre 1,
-    /// não importava a latência. Com um RTT simulado de 500ms (> 200ms, teto de 6 concorrentes
-    /// via `chapter_fetch_concurrency`) e 6 capítulos esperados, se o fetch de verdade rodasse
-    /// em paralelo o pico observado precisa passar de 1 — provando que a leitura do PRÓXIMO
-    /// header não fica mais bloqueada atrás do fetch do capítulo anterior.
+    /// Core regression of this change: before, `receive_files` read a header, blocked on the
+    /// WHOLE fetch of that chapter, and only then read the next one — concurrency peak always 1,
+    /// regardless of latency. With a simulated RTT of 500ms (> 200ms, ceiling of 6 concurrent
+    /// via `chapter_fetch_concurrency`) and 6 expected chapters, if the fetch really ran
+    /// in parallel the observed peak must exceed 1 — proving that reading the NEXT
+    /// header is no longer blocked behind the previous chapter's fetch.
     #[tokio::test]
     async fn receive_files_fetches_chapters_concurrently_on_a_high_latency_connection() {
         let provider: Arc<dyn FileSyncProvider> =
@@ -2395,9 +2396,9 @@ mod tests {
         let emit = no_op_emitter();
         let peer = make_peer("peer-concurrency");
 
-        // Guardado como tipo concreto (não `Arc<dyn ChapterTransfer>`) só pra poder ler
-        // `max_observed()` depois — `receive_files` recebe uma referência via coerção implícita
-        // no próprio call site, não precisa de downcast nenhum.
+        // Kept as the concrete type (not `Arc<dyn ChapterTransfer>`) just to be able to read
+        // `max_observed()` later — `receive_files` gets a reference via implicit coercion
+        // at the call site itself, no downcast needed.
         let transfer = Arc::new(ConcurrencyTrackingTransfer::new(
             Duration::from_millis(500),
             Duration::from_millis(60),
@@ -2410,12 +2411,12 @@ mod tests {
             FramedWrite::new(Box::new(client_send), LengthDelimitedCodec::new());
         let mut reader: Recv = FramedRead::new(Box::new(server_recv), LengthDelimitedCodec::new());
 
-        // `fetch_reader` devolve sempre um leitor vazio — o checksum esperado precisa bater com
-        // o hash de um buffer vazio (`InMemoryFileSyncProvider::finalize_chapter_write` recalcula
-        // de verdade), senão os 6 capítulos "concorrentes" viram falhas de checksum em vez de
-        // sucessos — o teste ainda mediria concorrência corretamente, mas `received_count`
-        // ficaria em 0, mascarando uma regressão real de integridade atrás de uma métrica
-        // sem relação (paralelismo != correção).
+        // `fetch_reader` always returns an empty reader — the expected checksum must match
+        // the hash of an empty buffer (`InMemoryFileSyncProvider::finalize_chapter_write` really
+        // recomputes it), otherwise the 6 "concurrent" chapters become checksum failures instead of
+        // successes — the test would still measure concurrency correctly, but `received_count`
+        // would stay at 0, masking a real integrity regression behind an unrelated
+        // metric (parallelism != correctness).
         let empty_checksum = blake3::hash(&[]).to_hex().to_string();
 
         const CHAPTER_COUNT: usize = 6;
@@ -2435,8 +2436,8 @@ mod tests {
                 .await
                 .unwrap();
             }
-            // Dropar `writer` (fim do escopo desta task) fecha a metade de escrita do duplex —
-            // sem isso o `FramedRead` do lado receptor nunca veria EOF depois do último header.
+            // Dropping `writer` (end of this task's scope) closes the duplex's write half —
+            // without it the receiving side's `FramedRead` would never see EOF after the last header.
         });
 
         let mut stats = FileSyncStats::default();
@@ -2455,22 +2456,22 @@ mod tests {
 
         assert_eq!(
             stats.received_count, CHAPTER_COUNT as u32,
-            "todos os 6 capítulos deveriam ter sido persistidos com sucesso"
+            "all 6 chapters should have been persisted successfully"
         );
         assert_eq!(stats.failed_count, 0);
         let observed = transfer.max_observed();
         assert!(
             observed >= 2,
-            "esperava fetches sobrepostos (pico >= 2) com RTT alto, só observou pico de {observed} \
-             — receive_files voltou a processar um capítulo por vez"
+            "expected overlapping fetches (peak >= 2) with high RTT, only observed a peak of {observed} \
+             — receive_files went back to processing one chapter at a time"
         );
     }
 
-    /// Duplo de teste que injeta falhas específicas por `blob_hash` — permite misturar sucesso,
-    /// falha genérica de fetch e panic de task no MESMO lote concorrente. Só existe pra provar
-    /// o teste abaixo (`receive_files_isolates_failures_within_a_concurrent_batch...`); ao
-    /// contrário de `ConcurrencyTrackingTransfer`, não mede pico de concorrência, só decide o
-    /// resultado do fetch a partir do prefixo do hash.
+    /// Test double that injects specific failures by `blob_hash` — allows mixing success,
+    /// generic fetch failure and task panic in the SAME concurrent batch. Only exists to back
+    /// the test below (`receive_files_isolates_failures_within_a_concurrent_batch...`); unlike
+    /// `ConcurrencyTrackingTransfer`, it does not measure the concurrency peak, it only decides the
+    /// fetch result from the hash prefix.
     struct FaultyTransfer {
         blobs: HashMap<String, Vec<u8>>,
     }
@@ -2484,7 +2485,7 @@ mod tests {
     #[async_trait]
     impl ChapterTransfer for FaultyTransfer {
         async fn publish(&self, _bytes: Vec<u8>) -> Result<String, P2pError> {
-            unimplemented!("este teste só exercita o lado receptor (fetch_reader)")
+            unimplemented!("this test only exercises the receiving side (fetch_reader)")
         }
 
         async fn fetch_reader(
@@ -2510,20 +2511,20 @@ mod tests {
         }
 
         async fn latency(&self, _peer: &PeerIdentity) -> Option<Duration> {
-            // Alto o bastante pra `chapter_fetch_concurrency` liberar o teto de 6 — todos os
-            // headers deste teste (5) cabem num único lote concorrente.
+            // High enough for `chapter_fetch_concurrency` to allow the ceiling of 6 — all the
+            // headers in this test (5) fit in a single concurrent batch.
             Some(Duration::from_millis(500))
         }
     }
 
-    /// Regressão do comportamento central desta mudança: ANTES, qualquer falha em
-    /// `begin_chapter_write`/`receive_chapter_from_blob`/`finalize_chapter_write` propagava via
-    /// `?` e abortava a sessão INTEIRA — um capítulo ruim no meio do lote derrubava todos os
-    /// outros, inclusive os que já tinham chegado. Agora cada capítulo é isolado
-    /// (`ChapterOutcome::Failed`), então um lote com sucesso + falha genérica de fetch +
-    /// checksum mismatch + `blob_hash` ausente + uma task que literalmente PANICOU precisa
-    /// terminar a sessão inteira com `Ok(())` e contagens corretas, sem nenhum efeito colateral
-    /// nos capítulos irmãos que estavam em voo ao mesmo tempo.
+    /// Regression of this change's core behavior: BEFORE, any failure in
+    /// `begin_chapter_write`/`receive_chapter_from_blob`/`finalize_chapter_write` propagated via
+    /// `?` and aborted the WHOLE session — one bad chapter in the middle of the batch took down all
+    /// the others, including those that had already arrived. Now each chapter is isolated
+    /// (`ChapterOutcome::Failed`), so a batch with success + generic fetch failure +
+    /// checksum mismatch + missing `blob_hash` + a task that literally PANICKED must
+    /// finish the whole session with `Ok(())` and correct counts, with no side effect
+    /// on the sibling chapters that were in flight at the same time.
     #[tokio::test]
     async fn receive_files_isolates_failures_within_a_concurrent_batch_instead_of_aborting_the_session(
     ) {
@@ -2571,8 +2572,8 @@ mod tests {
                 chapter: "checksum-mismatch".to_string(),
                 file_name: "checksum-mismatch.cbz".to_string(),
                 size: 10,
-                // Deliberadamente NÃO é o checksum de `wrong_payload` — força
-                // `finalize_chapter_write` a reportar mismatch em vez de sucesso.
+                // Deliberately NOT the checksum of `wrong_payload` — forces
+                // `finalize_chapter_write` to report a mismatch instead of success.
                 checksum: Some(blake3::hash(b"not the real content").to_hex().to_string()),
                 blob_hash: Some("mismatch-1".to_string()),
             },
@@ -2629,14 +2630,14 @@ mod tests {
         .await;
         writer_task.await.unwrap();
 
-        result.expect("uma falha isolada de capítulo não deve abortar a sessão inteira");
+        result.expect("an isolated chapter failure must not abort the whole session");
         assert_eq!(
             stats.received_count, 2,
-            "os 2 capítulos válidos deveriam ter sido persistidos mesmo com falhas ao lado"
+            "the 2 valid chapters should have been persisted even with failures alongside"
         );
         assert_eq!(
             stats.failed_count, 4,
-            "fetch genérico + checksum mismatch + panic da task + blob_hash ausente = 4 falhas isoladas"
+            "generic fetch + checksum mismatch + task panic + missing blob_hash = 4 isolated failures"
         );
 
         let events = emit_log.lock().unwrap();
@@ -2648,26 +2649,26 @@ mod tests {
             .iter()
             .filter(|(name, _)| name == "sync:files:chapter_complete")
             .count();
-        // Só 3, não 4: a task que PANICOU nunca chega a rodar o corpo de `receive_one_chapter`
-        // até o fim (é o `JoinSet` que captura o panic como `Err(join_err)` em `receive_files`),
-        // então não tem de onde emitir `chapter_failed` — só `tracing::error!` + contagem em
-        // `stats.failed_count`. Mesmo comportamento do Desktop (`transfer.rs::receive_files`)
-        // pro branch `Err(join_err)`: um panic é bug real, não falha de rede a nível de item.
+        // Only 3, not 4: the task that PANICKED never runs the body of `receive_one_chapter`
+        // to the end (it is the `JoinSet` that catches the panic as `Err(join_err)` in `receive_files`),
+        // so there is nowhere to emit `chapter_failed` from — only `tracing::error!` + a count in
+        // `stats.failed_count`. Same behavior as Desktop (`transfer.rs::receive_files`)
+        // for the `Err(join_err)` branch: a panic is a real bug, not an item-level network failure.
         assert_eq!(
             failed_events, 3,
-            "fetch genérico + checksum mismatch + blob_hash ausente emitem chapter_failed; \
-             o panic da task não (só conta em stats.failed_count)"
+            "generic fetch + checksum mismatch + missing blob_hash emit chapter_failed; \
+             the task panic does not (only counted in stats.failed_count)"
         );
         assert_eq!(complete_events, 2);
     }
 
-    /// O corte de paralelismo (`permits_to_forget`) só pode acontecer UMA vez por sessão, mesmo
-    /// que várias tasks concorrentes observem `timed_out: true` ao mesmo tempo — sem o
-    /// `compare_exchange`, um lote com vários timeouts simultâneos forjaria o pool várias vezes
-    /// (`forget_permits` é cumulativo, nunca devolve permits), reduzindo a concorrência muito
-    /// além do pretendido. Testado isolado da lógica real de `receive_files` (que depende do
-    /// scheduler de verdade pra ordem de execução das tasks, não determinística o bastante pra
-    /// um teste confiável) — só a mecânica do guard em si, copiada exatamente do call site.
+    /// The parallelism cut (`permits_to_forget`) may only happen ONCE per session, even
+    /// if several concurrent tasks observe `timed_out: true` at the same time — without the
+    /// `compare_exchange`, a batch with several simultaneous timeouts would shrink the pool several times
+    /// (`forget_permits` is cumulative, never returns permits), reducing concurrency far
+    /// beyond what is intended. Tested in isolation from the real `receive_files` logic (which depends on
+    /// the real scheduler for task execution order, not deterministic enough for
+    /// a reliable test) — only the guard mechanics themselves, copied exactly from the call site.
     #[test]
     fn backoff_guard_only_fires_once_even_if_several_tasks_time_out_at_once() {
         let backed_off = AtomicBool::new(false);
@@ -2682,15 +2683,15 @@ mod tests {
         }
         assert_eq!(
             fired, 1,
-            "o guard deveria permitir só UM disparo mesmo com vários timeouts concorrentes"
+            "the guard should allow only ONE firing even with several concurrent timeouts"
         );
     }
 
-    /// Mesmo espírito do round-trip de capítulo acima, só que pros itens extra (capa/banner/
-    /// `ComicInfo.xml`) — prova que `send_extras`/`receive_extras` (que reaproveitam os mesmos
-    /// handles de leitura/escrita usados por capítulo) entregam os bytes certos pro comic certo,
-    /// com o `kind` certo, sem se misturar com a transferência de capítulos que roda na mesma
-    /// sessão.
+    /// Same spirit as the chapter round-trip above, but for extra items (cover/banner/
+    /// `ComicInfo.xml`) — proves that `send_extras`/`receive_extras` (which reuse the same
+    /// read/write handles used for chapters) deliver the right bytes to the right comic,
+    /// with the right `kind`, without mixing with the chapter transfer running in the same
+    /// session.
     #[tokio::test]
     async fn run_exchange_transfers_extras_round_trip() {
         let cover_bytes = make_payload(2048, 11);
@@ -2748,14 +2749,14 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let outbound_received = outbound_provider.finalized_extras.lock().unwrap();
         assert_eq!(
             outbound_received.len(),
             1,
-            "outbound deveria ter recebido o ComicInfo.xml de B"
+            "outbound should have received B's ComicInfo.xml"
         );
         assert_eq!(outbound_received[0].comic_name, "Comic A");
         assert_eq!(outbound_received[0].kind, EXTRA_KIND_COMIC_INFO);
@@ -2769,7 +2770,7 @@ mod tests {
         assert_eq!(
             inbound_received.len(),
             1,
-            "inbound deveria ter recebido a capa de A"
+            "inbound should have received A's cover"
         );
         assert_eq!(inbound_received[0].comic_name, "Comic A");
         assert_eq!(inbound_received[0].kind, EXTRA_KIND_COVER);
@@ -2780,15 +2781,15 @@ mod tests {
         );
     }
 
-    /// Stress: muitos capítulos de tamanhos variados transferidos SEQUENCIALMENTE numa única
-    /// sessão (mesmo `send_files`/`receive_files` loop). Alvo específico: o bug real em
-    /// produção falha capítulos DIFERENTES a cada execução, espalhados por vários quadrinhos
-    /// — a assinatura clássica de um handle sendo reaproveitado incorretamente ou de estado
-    /// (buffer, posição de leitura) vazando entre capítulos consecutivos, não de um bug
-    /// determinístico de cálculo. Se esse tipo de vazamento existisse no lado Rust, um
-    /// arquivo receberia bytes de outro e o checksum bateria errado só nesse — este teste
-    /// pega isso comparando cada capítulo recebido, individualmente, contra seu payload
-    /// original exato.
+    /// Stress: many chapters of varied sizes transferred SEQUENTIALLY in a single
+    /// session (same `send_files`/`receive_files` loop). Specific target: the real production
+    /// bug fails DIFFERENT chapters on each run, spread across several comics
+    /// — the classic signature of a handle being incorrectly reused or of state
+    /// (buffer, read position) leaking between consecutive chapters, not of a
+    /// deterministic calculation bug. If that kind of leak existed on the Rust side, one
+    /// file would receive another's bytes and the checksum would mismatch only on that one — this test
+    /// catches it by comparing each received chapter, individually, against its exact original
+    /// payload.
     #[tokio::test]
     async fn run_exchange_stress_many_sequential_chapters_preserve_checksum_integrity() {
         const CHAPTER_COUNT: usize = 40;
@@ -2842,14 +2843,14 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound deveria completar sem erro");
-        inbound_result.expect("inbound deveria completar sem erro");
+        outbound_result.expect("outbound should complete without error");
+        inbound_result.expect("inbound should complete without error");
 
         let received = inbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             CHAPTER_COUNT,
-            "nem todos os capítulos chegaram"
+            "not all chapters arrived"
         );
 
         let by_chapter: HashMap<&str, &FinalizedChapter> =
@@ -2858,32 +2859,32 @@ mod tests {
         for (comic_name, chapter, _file_name, expected_bytes) in &outbound_entries {
             let got = by_chapter
                 .get(chapter.as_str())
-                .unwrap_or_else(|| panic!("capítulo {chapter} nunca chegou do lado que recebeu"));
+                .unwrap_or_else(|| panic!("chapter {chapter} never arrived on the receiving side"));
             assert_eq!(
                 &got.comic_name, comic_name,
-                "capítulo {chapter}: comic_name divergiu"
+                "chapter {chapter}: comic_name diverged"
             );
             assert_eq!(
                 got.expected_checksum, got.actual_checksum,
-                "capítulo {chapter}: checksum declarado não bate com o recalculado"
+                "chapter {chapter}: declared checksum does not match the recomputed one"
             );
             assert_eq!(
                 &got.bytes, expected_bytes,
-                "capítulo {chapter}: bytes recebidos divergem do original (possível vazamento de estado entre capítulos sequenciais)"
+                "chapter {chapter}: received bytes diverge from the original (possible state leak between sequential chapters)"
             );
         }
     }
 
-    // --- Testes de `run_exchange_scoped` (protocolo `acerola/sync-comic/1`) ---
+    // --- `run_exchange_scoped` tests (protocol `acerola/sync-comic/1`) ---
     //
-    // Reaproveitam o mesmo `InMemoryFileSyncProvider` acima: a única coisa que muda é que o
-    // outbound tem MAIS DE UM quadrinho no manifesto local, e o teste prova que só o
-    // `comic_name` pedido atravessa — não a biblioteca inteira (o que já é coberto pelos testes
-    // de `run_exchange` acima).
+    // They reuse the same `InMemoryFileSyncProvider` above: the only thing that changes is that the
+    // outbound has MORE THAN ONE comic in the local manifest, and the test proves that only the
+    // requested `comic_name` crosses over — not the whole library (which is already covered by the
+    // `run_exchange` tests above).
 
-    /// Push: outbound tem dois quadrinhos, mas só escopa um. Prova que o `ComicSyncScope`
-    /// (fase 0) realmente filtra o manifesto local antes da troca — sem a filtragem, o inbound
-    /// receberia os dois quadrinhos, não só o pedido.
+    /// Push: outbound has two comics, but scopes only one. Proves that `ComicSyncScope`
+    /// (phase 0) really filters the local manifest before the exchange — without filtering, the inbound
+    /// would receive both comics, not just the requested one.
     #[tokio::test]
     async fn run_exchange_scoped_transfers_only_the_target_comic() {
         let payload_a = make_payload(50_000, 3);
@@ -2940,23 +2941,23 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("outbound scoped exchange deveria completar sem erro");
-        inbound_result.expect("inbound scoped exchange deveria completar sem erro");
+        outbound_result.expect("outbound scoped exchange should complete without error");
+        inbound_result.expect("inbound scoped exchange should complete without error");
 
         let received = inbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             1,
-            "só o quadrinho escopado deveria ter sido transferido, não a biblioteca inteira"
+            "only the scoped comic should have been transferred, not the whole library"
         );
         assert_eq!(received[0].comic_name, "Comic A");
         assert_eq!(received[0].bytes, payload_a);
     }
 
-    /// Prova o caso de uso do botão "Enviar" da seleção de capítulos: escopar a sessão a um
-    /// subconjunto de rótulos de capítulo (`ComicSyncScope.chapters`) entrega SÓ os capítulos
-    /// escopados — mesmo pro peer que ainda não tem o quadrinho, que precisa ser criado no
-    /// destino contendo apenas o que foi pedido, não a coleção inteira do outbound.
+    /// Proves the use case of the chapter selection's "Send" button: scoping the session to a
+    /// subset of chapter labels (`ComicSyncScope.chapters`) delivers ONLY the scoped
+    /// chapters — even to a peer that does not have the comic yet, which must be created at the
+    /// destination containing only what was requested, not the outbound's whole collection.
     #[tokio::test]
     async fn run_exchange_scoped_to_chapters_only_sends_the_requested_ones() {
         let payload_a = make_payload(20_000, 1);
@@ -2976,8 +2977,8 @@ mod tests {
                 payload_b.clone(),
             ),
         ]));
-        // Inbound NÃO tem "Test" ainda — prova que o quadrinho é criado do zero com só o
-        // capítulo escopado, não com a coleção inteira do outbound.
+        // Inbound does NOT have "Test" yet — proves the comic is created from scratch with only the
+        // scoped chapter, not with the outbound's whole collection.
         let inbound_provider = Arc::new(InMemoryFileSyncProvider::with_readable(vec![]));
 
         let (client_io, server_io) = tokio::io::duplex(256 * 1024);
@@ -2993,7 +2994,7 @@ mod tests {
         let inbound_dyn: Arc<dyn FileSyncProvider> =
             Arc::clone(&inbound_provider) as Arc<dyn FileSyncProvider>;
 
-        // Só escopa "Cap A" — "Cap B" fica de fora.
+        // Only scopes "Cap A" — "Cap B" is left out.
         let outbound_fut = run_exchange_scoped(
             true,
             &peer,
@@ -3016,24 +3017,24 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("push escopado a capítulos não deveria falhar");
-        inbound_result.expect("push escopado a capítulos não deveria falhar");
+        outbound_result.expect("push scoped to chapters should not fail");
+        inbound_result.expect("push scoped to chapters should not fail");
 
         let received = inbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             1,
-            "quadrinho deveria ter sido criado no destino só com o capítulo escopado"
+            "comic should have been created at the destination with only the scoped chapter"
         );
         assert_eq!(received[0].comic_name, "Test");
         assert_eq!(received[0].chapter, "Cap A");
         assert_eq!(received[0].bytes, payload_a);
     }
 
-    /// Pull: o quadrinho pedido só existe no peer (inbound), o outbound não tem nada dele
-    /// localmente. Prova que a mesma troca simétrica que cobre push também cobre pull sem
-    /// nenhum código extra — o manifesto local filtrado do outbound fica vazio, então
-    /// `missing_from` já resolve "quero tudo que o peer tem desse quadrinho" sozinho.
+    /// Pull: the requested comic only exists on the peer (inbound), the outbound has nothing of it
+    /// locally. Proves the same symmetric exchange that covers push also covers pull without
+    /// any extra code — the outbound's filtered local manifest is empty, so
+    /// `missing_from` already resolves "I want everything the peer has of this comic" on its own.
     #[tokio::test]
     async fn run_exchange_scoped_pulls_a_comic_that_only_exists_on_the_peer() {
         let payload = make_payload(30_000, 5);
@@ -3081,25 +3082,25 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("pull deveria completar sem erro");
-        inbound_result.expect("lado que oferece deveria completar sem erro");
+        outbound_result.expect("pull should complete without error");
+        inbound_result.expect("offering side should complete without error");
 
         let received = outbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             1,
-            "quem pediu deveria ter recebido o capítulo que só existia no peer"
+            "the requester should have received the chapter that only existed on the peer"
         );
         assert_eq!(received[0].comic_name, "Comic Only On Peer");
         assert_eq!(received[0].bytes, payload);
     }
 
-    /// Prova que `SyncDirection::Push` é respeitada mesmo quando o diff normal mostraria o
-    /// outbound como "faltando" o capítulo do peer: outbound entrega "Cap A" (que só ele tem)
-    /// mas NUNCA pede "Cap B" de volta, mesmo estando genuinamente sem esse capítulo. Ao
-    /// contrário dos dois testes acima (onde um dos lados não tem NADA do quadrinho, então a
-    /// direção nunca chega a ser testada de verdade — o diff já dava zero), aqui os dois lados
-    /// têm conteúdo real e diferente do MESMO quadrinho.
+    /// Proves `SyncDirection::Push` is respected even when the regular diff would show the
+    /// outbound as "missing" the peer's chapter: outbound delivers "Cap A" (which only it has)
+    /// but NEVER requests "Cap B" back, even though it genuinely lacks that chapter. Unlike
+    /// the two tests above (where one side has NOTHING of the comic, so the
+    /// direction is never really tested — the diff was already zero), here both sides
+    /// have real, different content of the SAME comic.
     #[tokio::test]
     async fn run_exchange_scoped_push_never_requests_what_it_is_missing() {
         let payload_a = make_payload(40_000, 3);
@@ -3153,26 +3154,26 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("push não deveria falhar");
-        inbound_result.expect("push não deveria falhar");
+        outbound_result.expect("push should not fail");
+        inbound_result.expect("push should not fail");
 
         assert!(
             outbound_provider.finalized.lock().unwrap().is_empty(),
-            "outbound (sender) nunca deveria ter pedido 'Cap B' de volta"
+            "outbound (sender) should never have requested 'Cap B' back"
         );
         let received = inbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             1,
-            "inbound (receiver) deveria ter recebido 'Cap A'"
+            "inbound (receiver) should have received 'Cap A'"
         );
         assert_eq!(received[0].comic_name, "Shared Comic");
         assert_eq!(received[0].chapter, "Cap A");
         assert_eq!(received[0].bytes, payload_a);
     }
 
-    /// Espelho do teste acima pra `SyncDirection::Pull` — outbound puxa "Cap B" do peer sem
-    /// nunca mandar "Cap A", mesmo o inbound estando genuinamente sem esse capítulo.
+    /// Mirror of the test above for `SyncDirection::Pull` — outbound pulls "Cap B" from the peer
+    /// without ever sending "Cap A", even though the inbound genuinely lacks that chapter.
     #[tokio::test]
     async fn run_exchange_scoped_pull_never_sends_what_the_peer_is_missing() {
         let payload_a = make_payload(40_000, 3);
@@ -3226,27 +3227,27 @@ mod tests {
         );
 
         let (outbound_result, inbound_result) = tokio::join!(outbound_fut, inbound_fut);
-        outbound_result.expect("pull não deveria falhar");
-        inbound_result.expect("pull não deveria falhar");
+        outbound_result.expect("pull should not fail");
+        inbound_result.expect("pull should not fail");
 
         assert!(
             inbound_provider.finalized.lock().unwrap().is_empty(),
-            "inbound (sender) nunca deveria ter pedido 'Cap A' de volta"
+            "inbound (sender) should never have requested 'Cap A' back"
         );
         let received = outbound_provider.finalized.lock().unwrap();
         assert_eq!(
             received.len(),
             1,
-            "outbound (receiver) deveria ter puxado 'Cap B'"
+            "outbound (receiver) should have pulled 'Cap B'"
         );
         assert_eq!(received[0].comic_name, "Shared Comic");
         assert_eq!(received[0].chapter, "Cap B");
         assert_eq!(received[0].bytes, payload_b);
     }
 
-    /// Sem `comic_name` do lado outbound (bug de wiring — `P2PNode::sync_comic` sempre grava o
-    /// pending scope antes de conectar, então isso não deveria acontecer em produção), a sessão
-    /// falha imediatamente em vez de travar esperando o peer mandar algo que nunca vai vir.
+    /// Without `comic_name` on the outbound side (a wiring bug — `P2PNode::sync_comic` always stores the
+    /// pending scope before connecting, so this should not happen in production), the session
+    /// fails immediately instead of hanging while waiting for the peer to send something that will never come.
     #[tokio::test]
     async fn run_exchange_scoped_outbound_without_comic_name_fails_fast() {
         let provider: Arc<dyn FileSyncProvider> =
@@ -3270,18 +3271,18 @@ mod tests {
 
         assert!(
             result.is_err(),
-            "outbound sem comic_name deveria falhar sem travar esperando o peer"
+            "outbound without comic_name should fail without hanging on the peer"
         );
     }
 
-    /// Regressão real (05/09/2026): o lado que disca (outbound) já estava ocupado com outra
-    /// sessão pro mesmo peer e respondeu com `SessionBusy` em vez do `ComicSyncScope` normal —
-    /// exatamente o que `write_session_busy` produz (ver `run_and_report_scoped`/
-    /// `ComicSyncOutbound::handle` no Desktop, espelhado aqui). O lado inbound (`outbound_role:
-    /// false`) precisa reconhecer isso como "peer busy", não tentar decodificar `{"error":
-    /// "busy", "reason": "..."}` como `ComicSyncScope` — antes desta correção, `exchange_comic_scope`
-    /// lia a fase 0 com `read_json` cru, sem checar busy, e quebrava com "missing field
-    /// `comic_name`" (visto ao vivo: peer WINDOWS mostrando esse erro cru na tela de sync).
+    /// Real regression (05/09/2026): the dialing side (outbound) was already busy with another
+    /// session for the same peer and replied with `SessionBusy` instead of the regular `ComicSyncScope` —
+    /// exactly what `write_session_busy` produces (see `run_and_report_scoped`/
+    /// `ComicSyncOutbound::handle` on Desktop, mirrored here). The inbound side (`outbound_role:
+    /// false`) must recognize this as "peer busy", not try to decode `{"error":
+    /// "busy", "reason": "..."}` as `ComicSyncScope` — before this fix, `exchange_comic_scope`
+    /// read phase 0 with raw `read_json`, without checking busy, and broke with "missing field
+    /// `comic_name`" (seen live: WINDOWS peer showing that raw error on the sync screen).
     #[tokio::test]
     async fn run_exchange_scoped_inbound_reports_clean_busy_error_instead_of_decode_failure() {
         let provider: Arc<dyn FileSyncProvider> =
@@ -3292,8 +3293,8 @@ mod tests {
         let peer = make_peer("peer-busy-scope");
         let emit = no_op_emitter();
 
-        // Simula o outro lado (quem discou) já ocupado: a primeira coisa que ele manda na fase
-        // 0 do `acerola/sync-comic/1` é `SessionBusy`, não `ComicSyncScope`.
+        // Simulates the other side (the dialer) already busy: the first thing it sends in phase
+        // 0 of `acerola/sync-comic/1` is `SessionBusy`, not `ComicSyncScope`.
         write_session_busy(
             Box::new(client_send) as Box<dyn AsyncWrite + Send + Unpin>,
             "sync-comic session already in progress for this peer",
@@ -3313,71 +3314,71 @@ mod tests {
         )
         .await;
 
-        let err = result.expect_err("deveria reportar erro, não travar nem ter sucesso");
+        let err = result.expect_err("should report an error, not hang or succeed");
         let message = err.to_string();
         assert!(
             message.contains("peer busy"),
-            "esperava um erro de 'peer busy' reconhecido, recebeu: {message}"
+            "expected a recognized 'peer busy' error, got: {message}"
         );
         assert!(
             !message.contains("missing field"),
-            "não deveria mais tentar decodificar SessionBusy como ComicSyncScope: {message}"
+            "should no longer try to decode SessionBusy as ComicSyncScope: {message}"
         );
     }
 
-    /// Mesmos degraus e limites do equivalente no Desktop
-    /// (`infra/sync/protocol/transfer.rs::chapter_fetch_concurrency`) — os dois lados têm que
-    /// concordar no dimensionamento pra um sync entre plataformas diferentes se comportar de
-    /// forma previsível sob a mesma condição de rede.
+    /// Same steps and limits as the Desktop equivalent
+    /// (`infra/sync/protocol/transfer.rs::chapter_fetch_concurrency`) — both sides must
+    /// agree on sizing so a sync between different platforms behaves
+    /// predictably under the same network condition.
     #[test]
     fn chapter_fetch_concurrency_scales_with_measured_latency() {
         assert_eq!(
             chapter_fetch_concurrency(None),
             2,
-            "sem medição, fica no mais conservador"
+            "without a measurement, stays at the most conservative"
         );
         assert_eq!(chapter_fetch_concurrency(Some(Duration::from_millis(0))), 2);
         assert_eq!(
             chapter_fetch_concurrency(Some(Duration::from_millis(20))),
             2,
-            "limite exato do degrau baixo, ainda dentro dele"
+            "exact limit of the low step, still within it"
         );
         assert_eq!(
             chapter_fetch_concurrency(Some(Duration::from_millis(21))),
             4,
-            "1ms acima do degrau baixo já sobe pro médio"
+            "1ms above the low step already moves to the middle one"
         );
         assert_eq!(
             chapter_fetch_concurrency(Some(Duration::from_millis(200))),
             4,
-            "limite exato do degrau médio, ainda dentro dele"
+            "exact limit of the middle step, still within it"
         );
         assert_eq!(
             chapter_fetch_concurrency(Some(Duration::from_millis(201))),
             6,
-            "1ms acima do degrau médio já sobe pro teto"
+            "1ms above the middle step already moves to the ceiling"
         );
         assert_eq!(
             chapter_fetch_concurrency(Some(Duration::from_secs(2))),
             6,
-            "RTT bem alto (relay ruim) nunca passa do teto de 6"
+            "very high RTT (bad relay) never exceeds the ceiling of 6"
         );
     }
 
     #[test]
     fn permits_to_forget_halves_the_pool_but_never_below_one_permit_left() {
-        assert_eq!(permits_to_forget(6), 3, "6 -> mantém 3, esquece 3");
-        assert_eq!(permits_to_forget(4), 2, "4 -> mantém 2, esquece 2");
-        assert_eq!(permits_to_forget(2), 1, "2 -> mantém max(1,1)=1, esquece 1");
+        assert_eq!(permits_to_forget(6), 3, "6 -> keeps 3, forgets 3");
+        assert_eq!(permits_to_forget(4), 2, "4 -> keeps 2, forgets 2");
+        assert_eq!(permits_to_forget(2), 1, "2 -> keeps max(1,1)=1, forgets 1");
         assert_eq!(
             permits_to_forget(1),
             0,
-            "1 -> mantém max(1,0)=1, não há o que esquecer"
+            "1 -> keeps max(1,0)=1, nothing to forget"
         );
         assert_eq!(
             permits_to_forget(0),
             0,
-            "0 -> nunca deveria acontecer na prática, mas não deve estourar (saturating_sub)"
+            "0 -> should never happen in practice, but must not overflow (saturating_sub)"
         );
     }
 }

@@ -27,6 +27,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
@@ -45,6 +46,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
@@ -52,7 +54,7 @@ class ComicActionsSheetTest {
 
         composeTestRule.onNodeWithText(context.getString(R.string.action_hide)).performClick()
 
-        // Verifica se o título do diálogo de ocultar aparece
+        // Checks that the hide dialog title shows up
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_hide_title)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.action_cancel)).assertIsDisplayed()
     }
@@ -65,6 +67,7 @@ class ComicActionsSheetTest {
                 categories = emptyList(),
                 onHide = {},
                 onDelete = {},
+                onClearMetadata = {},
                 onBookmark = {},
                 onDismiss = {},
             )
@@ -72,7 +75,7 @@ class ComicActionsSheetTest {
 
         composeTestRule.onNodeWithText(context.getString(R.string.action_delete)).performClick()
 
-        // Verifica se o título do diálogo de deletar aparece
+        // Checks that the delete dialog title shows up
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_delete_title)).assertIsDisplayed()
     }
 }

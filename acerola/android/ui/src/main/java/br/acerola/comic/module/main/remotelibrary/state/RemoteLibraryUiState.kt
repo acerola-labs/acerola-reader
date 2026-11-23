@@ -6,20 +6,20 @@ import br.acerola.comic.service.network.ComicSummary
 data class RemoteLibraryUiState(
     val peerDisplayName: String = "",
     val comics: List<ComicSummary> = emptyList(),
-    /** Distingue "ainda esperando `browse:library:result`" de "peer realmente tem biblioteca
-     *  vazia" — [comics] sozinho não diferencia os dois assim que fica vazio. */
+    /** Distinguishes "still waiting for `browse:library:result`" from "peer really has an empty
+     *  library" — [comics] alone can't tell those apart once it's empty. */
     val loaded: Boolean = false,
-    /** Cru — usado só como fallback/argumento de template quando [errorType] é `null` (ver
-     *  `RemoteLibraryScreen`, mesmo padrão de `TransferLogEntry`/`SyncResult`). */
+    /** Raw — only used as a fallback/template argument when [errorType] is `null` (see
+     *  `RemoteLibraryScreen`, same pattern as `TransferLogEntry`/`SyncResult`). */
     val errorMessage: String? = null,
-    /** Causa reconhecida (`SyncProtocolError`), quando houver — a UI prefere isso a embutir
-     *  [errorMessage] cru num template. */
+    /** Recognized cause (`SyncProtocolError`), when there is one — the UI prefers this over
+     *  embedding the raw [errorMessage] in a template. */
     val errorType: SyncProtocolError? = null,
-    /** `comicName` -> caminho local (`file://...`) da capa já baixada via
-     *  `acerola/browse-cover/1`, pronto pro Coil carregar. */
+    /** `comicName` -> local path (`file://...`) of the cover already downloaded via
+     *  `acerola/browse-cover/1`, ready for Coil to load. */
     val coverPaths: Map<String, String> = emptyMap(),
-    /** `comicName` da sessão `acerola/sync-comic/1` em andamento, ou `null` se nenhuma — só uma
-     *  por vez, mesma restrição de protocolo que
+    /** `comicName` of the in-progress `acerola/sync-comic/1` session, or `null` if none — only one
+     *  at a time, same protocol restriction as
      *  [br.acerola.comic.module.comic.ComicViewModel]'s `_syncingPeerId`. */
     val syncingComicName: String? = null,
 )

@@ -12,11 +12,12 @@
 <script lang="ts">
 	import PlugIcon from '@lucide/svelte/icons/plug';
 	import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
-	import AcerolaButton from '$lib/components/acerola-button/acerola-button.svelte';
-	import AcerolaInput from '$lib/components/acerola-input/acerola-input.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { InvalidConnectionCodeError } from '$lib/utils/connection-code.utils';
-	import { toastAsync } from '$lib/utils/toast-async.utils';
+	import AcerolaButton from '#lib/components/acerola-button/acerola-button.svelte';
+	import AcerolaInput from '#lib/components/acerola-input/acerola-input.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { InvalidConnectionCodeError } from '#lib/utils/connection-code.util.ts';
+	import { toastAsync } from '#lib/utils/toast-async.util.ts';
+	import AcerolaSettingSection from '#lib/components/acerola-setting-section/acerola-setting-section.svelte';
 
 	let { data, events }: NetworkConnectCardProps = $props();
 
@@ -31,51 +32,55 @@
 				success: m['pages.network.connect.success'](),
 				error: (err) =>
 					err instanceof InvalidConnectionCodeError
-						? m['pages.network.connect.invalid_code']()
+						? m['pages.network.connect.invalidCode']()
 						: m['pages.network.connect.error']()
 			});
 			pasteValue = '';
 		} catch (err) {
 			connectError =
 				err instanceof InvalidConnectionCodeError
-					? m['pages.network.connect.invalid_code']()
+					? m['pages.network.connect.invalidCode']()
 					: m['pages.network.connect.error']();
 		}
 	}
 </script>
 
-<section class="space-y-4">
-	<div
-		class="flex items-center gap-3 text-xs font-bold tracking-widest text-muted-foreground uppercase"
+<AcerolaSettingSection
+	data={{
+		id: 'connect',
+		title: m['pages.network.connect.title'](),
+		lead: m['pages.network.connect.lead']()
+	}}
+>
+	<form
+		class="flex flex-col gap-2 sm:flex-row"
+		onsubmit={(event) => {
+			event.preventDefault();
+			if (pasteValue.trim() && !data.connecting) handleConnect();
+		}}
 	>
-		<PlugIcon size={16} />
-		{m['pages.network.connect.title']()}
-	</div>
+		<AcerolaInput
+			state={{ value: pasteValue }}
+			events={{ onValueChange: (value) => (pasteValue = value) }}
+			ui={{
+				placeholder: m['pages.network.connect.placeholder'](),
+				'aria-label': m['pages.network.connect.placeholder'](),
+				class: 'flex-1'
+			}}
+		/>
+		<!-- The screen's one primary action. -->
+		<AcerolaButton ui={{ type: 'submit', disabled: !pasteValue.trim() || data.connecting }}>
+			<PlugIcon size={16} />
+			{m['pages.network.connect.button']()}
+		</AcerolaButton>
+	</form>
 
-	<div class="rounded-2xl border border-border/40 bg-card/50 p-6 backdrop-blur-sm">
-		<div class="flex flex-col gap-3 sm:flex-row">
-			<AcerolaInput
-				state={{ value: pasteValue }}
-				events={{ onValueChange: (value) => (pasteValue = value) }}
-				ui={{
-					placeholder: m['pages.network.connect.placeholder'](),
-					class: 'h-10 flex-1 bg-background font-mono text-xs'
-				}}
-			/>
-			<AcerolaButton
-				events={{ onClick: handleConnect }}
-				ui={{ class: 'h-10 gap-2 px-6', disabled: !pasteValue.trim() || data.connecting }}
-			>
-				<PlugIcon size={16} />
-				{m['pages.network.connect.button']()}
-			</AcerolaButton>
-		</div>
-
-		{#if connectError}
-			<p class="mt-3 flex items-center gap-2 text-sm text-destructive">
-				<AlertCircleIcon size={14} />
-				{connectError}
-			</p>
-		{/if}
-	</div>
-</section>
+	{#if connectError}
+		<p
+			class="flex items-center gap-2 rounded-tile bg-destructive-soft p-3 text-sm font-semibold text-destructive"
+		>
+			<AlertCircleIcon size={16} class="shrink-0" />
+			{connectError}
+		</p>
+	{/if}
+</AcerolaSettingSection>

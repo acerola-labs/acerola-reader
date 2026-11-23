@@ -2,9 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { invoke } from '@tauri-apps/api/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ARCHIVE_TEMPLATE_COMMANDS } from '$lib/contracts/archive/archive-template.commands';
-import { _resetArchiveTemplatesState } from '$lib/hooks/store/use-archive-templates.svelte';
-import type { ArchiveTemplate } from '$lib/contracts/archive/archive-template.payloads';
+import { ARCHIVE_TEMPLATE_COMMANDS } from '#lib/contracts/archive/archive-template.commands.ts';
+import { _resetArchiveTemplatesState } from '#lib/hooks/store/use-archive-templates.svelte.ts';
+import type { ArchiveTemplate } from '#lib/contracts/archive/archive-template.payloads.ts';
 
 vi.mock('@tauri-apps/api/core', () => ({
 	invoke: vi.fn()
@@ -116,7 +116,9 @@ describe('config/templates +page', () => {
 		await user.click(screen.getByRole('button', { name: '+ {chapter}' }));
 		await user.click(screen.getByRole('button', { name: '+ {decimal}' }));
 
-		const createButton = screen.getByRole('button', { name: /create template|criar template/i });
+		const createButton = screen.getByRole('button', {
+			name: /create template|criar template/i
+		});
 		await user.click(createButton);
 
 		expect(invokeMock).toHaveBeenCalledWith(
@@ -168,7 +170,9 @@ describe('config/templates +page', () => {
 		render(TemplatesPage);
 		await screen.findByText(/how to build a template|como montar um template/i);
 
-		const createButton = screen.getByRole('button', { name: /create template|criar template/i });
+		const createButton = screen.getByRole('button', {
+			name: /create template|criar template/i
+		});
 		await fireEvent.click(createButton);
 
 		expect(invokeMock).toHaveBeenCalledTimes(1); // only the initial getArchiveTemplates call

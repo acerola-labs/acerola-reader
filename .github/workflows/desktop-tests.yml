@@ -8,6 +8,9 @@ on:
     paths:
       - 'acerola/desktop/**'
       - 'lib/p2p/**'
+      - 'scripts/design/**'
+      - 'scripts/i18n/**'
+      - 'acerola.config.json'
       - '.github/workflows/desktop-tests.yml'
   pull_request:
     branches:
@@ -16,10 +19,35 @@ on:
     paths:
       - 'acerola/desktop/**'
       - 'lib/p2p/**'
+      - 'scripts/design/**'
+      - 'scripts/i18n/**'
+      - 'acerola.config.json'
       - '.github/workflows/desktop-tests.yml'
   workflow_dispatch:
 
+concurrency:
+  group: desktop-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  standard:
+    name: Acerola standard (design and i18n)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.20.0
+
+      - name: Design
+        run: node scripts/design/check-design.mjs
+
+      - name: i18n
+        run: node scripts/i18n/check-i18n.mjs
+
   rust:
     name: Rust Tests
     runs-on: windows-latest

@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaPeerPicker from './acerola-peer-picker.svelte';
-	import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+	import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 
 	const peers: PairedPeerPayload[] = [
 		{ peerId: 'peer-1', addrs: [1, 2, 3], deviceName: 'Meu Celular' },
@@ -10,13 +10,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaPeerPicker,
-		title: 'Compositores/AcerolaPeerPicker',
+		title: 'Composites/AcerolaPeerPicker',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Diálogo para selecionar um peer pareado da rede, usado antes de ações que dependem de um dispositivo de destino.'
+						'Dialog to pick a paired network peer, used before actions that depend on a target device.'
 				}
 			}
 		}
@@ -24,9 +24,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaPeerPicker e totalmente controlado (state.open + events.onOpenChange) e nao tem
-	// trigger proprio — cada story precisa do seu proprio estado local e de um botao real pra
-	// abrir, senao a aba Docs mostra as variantes com o dialog aberto ao mesmo tempo.
+	// AcerolaPeerPicker is fully controlled (state.open + events.onOpenChange) and has no
+	// trigger of its own — each story needs its own local state and a real button to open it,
+	// otherwise the Docs tab shows the variants with the dialog open at the same time.
 	let openWithPeers = $state(false);
 	let openEmpty = $state(false);
 </script>
@@ -37,7 +37,7 @@
 			<button
 				type="button"
 				onclick={() => (openWithPeers = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -56,7 +56,7 @@
 			<button
 				type="button"
 				onclick={() => (openEmpty = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>

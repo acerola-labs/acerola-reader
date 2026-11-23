@@ -41,7 +41,7 @@ class ComicInfoParserTest {
 
         assertTrue("Should be a success", result.isRight())
         result.onRight { info ->
-            assertEquals("One Piece Series", info.title) // Series tem prioridade sobre Title
+            assertEquals("One Piece Series", info.title) // Series takes priority over Title
             assertEquals("Pirates adventure", info.description)
             assertEquals("Eiichiro Oda", info.authors?.name)
             assertEquals(1997, info.year)
@@ -76,7 +76,7 @@ class ComicInfoParserTest {
             <?xml version="1.0"?>
             <ComicInfo>
                 <Title>One Piece
-            </ComicInfo> <!-- Falta fechar a tag Title -->
+            </ComicInfo> <!-- Title tag is not closed -->
             """.trimIndent()
 
         val inputStream = ByteArrayInputStream(xml.toByteArray())

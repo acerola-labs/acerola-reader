@@ -21,7 +21,7 @@ class ArchiveFormatTest {
         assertTrue(ArchiveFormat.isIndexable("cbz"))
         assertTrue(ArchiveFormat.isIndexable("file.cbz"))
 
-        // PDF é indexable = false no enum
+        // PDF is indexable = false in the enum
         assertFalse(ArchiveFormat.isIndexable("pdf"))
     }
 }

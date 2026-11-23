@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, within } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AcerolaFilterPanel from './acerola-filter-panel.svelte';
-import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 // Not anchored: selected sort options render extra content (A–Z/Z–A badge, check icon)
 // appended to their accessible name, so an exact/anchored match would miss them.
@@ -10,9 +10,9 @@ const CHAPTER_COUNT_SORT = /Chapter Count|Quantidade de Capítulos/i;
 const APPLY = /Apply|Aplicar/i;
 const RESET = /Reset|Resetar/i;
 const ALL = /All|Todos/i;
-const NO_BOOKMARK = /No bookmark|Sem bookmark/i;
+const NO_BOOKMARK = /No bookmark|Sem marcador/i;
 const SHOW_HIDDEN = /Show hidden|Mostrar ocultos/i;
-const BOOKMARK_FILTER_GROUP = /Filter by bookmark|Filtrar por bookmark/i;
+const BOOKMARK_FILTER_GROUP = /Filter by bookmark|Filtrar por marcador/i;
 
 function bookmarkFilterGroup() {
 	return within(screen.getByRole('group', { name: BOOKMARK_FILTER_GROUP }));
@@ -66,7 +66,10 @@ describe('AcerolaFilterPanel', () => {
 		});
 
 		expect(screen.getByRole('dialog')).toBeInTheDocument();
-		expect(screen.getByRole('radio', { name: TITLE_SORT })).toHaveAttribute('aria-checked', 'true');
+		expect(screen.getByRole('radio', { name: TITLE_SORT })).toHaveAttribute(
+			'aria-checked',
+			'true'
+		);
 		expect(screen.getByRole('button', { name: 'Favoritos' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Lendo' })).toBeInTheDocument();
 	});

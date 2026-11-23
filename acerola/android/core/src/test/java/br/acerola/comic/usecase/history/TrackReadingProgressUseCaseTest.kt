@@ -34,7 +34,7 @@ class TrackReadingProgressUseCaseTest {
             coVerify(exactly = 1) { historyRepository.markChapterAsRead(1L, "001", 10L) }
         }
 
-    // toggleReadStatus — isRead = true → desmarcar capítulo
+    // toggleReadStatus — isRead = true → unmark chapter
     @Test
     fun `toggleReadStatus when isRead=true should call unmarkChapterAsRead`() =
         runTest {
@@ -45,7 +45,7 @@ class TrackReadingProgressUseCaseTest {
             coVerify(exactly = 1) { historyRepository.unmarkChapterAsRead(1L, "001") }
         }
 
-    // toggleReadStatus — isRead = false → marcar capítulo
+    // toggleReadStatus — isRead = false → mark chapter
     @Test
     fun `toggleReadStatus when isRead=false should call markChapterAsRead`() =
         runTest {

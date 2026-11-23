@@ -1,5 +1,5 @@
 import '@poppanator/sveltekit-svg/dist/svg.d.ts';
-import type { ApkBucket } from '$lib/server/apk-bucket';
+import type { ApkBucket } from '#lib/server/apk-bucket.ts';
 
 declare global {
 	namespace App {

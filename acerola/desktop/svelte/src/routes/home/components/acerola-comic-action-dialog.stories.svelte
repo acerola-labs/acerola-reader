@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaComicActionDialog from './acerola-comic-action-dialog.svelte';
-	import type { Category } from '$lib/contracts/bookmarks/bookmarks.payloads';
+	import type { Category } from '#lib/contracts/bookmarks/bookmarks.payloads.ts';
 
 	const mockBookmarks: Category[] = [
 		{ id: 1, name: 'Favoritos', color: 0xff0000 },
@@ -11,13 +11,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaComicActionDialog,
-		title: 'Páginas/Home/AcerolaComicActionDialog',
+		title: 'Pages/Home/AcerolaComicActionDialog',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Diálogo de ações em lote para quadrinhos selecionados: ocultar, deletar, limpar metadados e marcar em uma categoria.'
+						'Batch action dialog for selected comics: hide, delete, clear metadata and assign to a category.'
 				}
 			}
 		}
@@ -25,9 +25,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaComicActionDialog e totalmente controlado (state.open + events.onClose) e nao tem
-	// trigger proprio — cada story precisa do seu proprio estado local e de um botao real pra
-	// abrir, senao a aba Docs mostra as 5 variantes com o dialog aberto ao mesmo tempo.
+	// AcerolaComicActionDialog is fully controlled (state.open + events.onClose) and has no
+	// trigger of its own — each story needs its own local state and a real button to open it,
+	// otherwise the Docs tab shows all 5 variants with the dialog open at the same time.
 	let openDefault = $state(false);
 	let openSingleSelection = $state(false);
 	let openManySelected = $state(false);
@@ -41,7 +41,7 @@
 			<button
 				type="button"
 				onclick={() => (openDefault = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -66,7 +66,7 @@
 			<button
 				type="button"
 				onclick={() => (openSingleSelection = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -91,7 +91,7 @@
 			<button
 				type="button"
 				onclick={() => (openManySelected = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -116,7 +116,7 @@
 			<button
 				type="button"
 				onclick={() => (openEmpty = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -141,7 +141,7 @@
 			<button
 				type="button"
 				onclick={() => (openNoBookmarks = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>

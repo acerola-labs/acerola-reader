@@ -3,11 +3,11 @@
 	import DialogPortal from './dialog-portal.svelte';
 	import type { Snippet } from 'svelte';
 	import * as Dialog from './index';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils/cn.utils';
+	import { cn, type WithoutChildrenOrChild } from '#lib/utils/cn.util.ts';
 	import type { ComponentProps } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let {
 		ref = $bindable(null),
@@ -29,7 +29,7 @@
 		bind:ref
 		data-slot="dialog-content"
 		class={cn(
-			'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+			'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 rounded-sheet bg-card p-6 text-sm text-card-foreground shadow-float duration-200 ease-brand outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
 			className
 		)}
 		{...restProps}
@@ -40,8 +40,8 @@
 				{#snippet child({ props })}
 					<Button
 						variant="ghost"
-						class="absolute top-2 right-2 rounded-full"
-						size="icon-sm"
+						class="absolute top-4 right-4 rounded-full bg-surface"
+						size="icon"
 						{...props}
 					>
 						<XIcon />

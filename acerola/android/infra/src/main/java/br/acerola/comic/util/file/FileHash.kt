@@ -11,11 +11,11 @@ fun DocumentFile.sha256(context: Context): String {
         val buffer = ByteArray(size = 8_192)
         var read = input.read(buffer)
 
-        // `InputStream.read()` só sinaliza fim de arquivo com -1 — 0 é uma leitura
-        // legítima de "nenhum byte disponível agora, mas não acabou", possível num
-        // stream que atravessa outro processo (SAF/ContentResolver). Parar em `read <= 0`
-        // (como estava antes) tratava esse 0 como EOF e cortava o hash de um arquivo
-        // recém-escrito antes do fim, mesmo com o arquivo em disco correto e completo.
+        // `InputStream.read()` only signals end of file with -1 — 0 is a legitimate
+        // "no bytes available right now, but not done" read, possible on a
+        // stream that crosses another process (SAF/ContentResolver). Stopping at `read <= 0`
+        // (as before) treated that 0 as EOF and cut the hash of a freshly written
+        // file before the end, even with the file on disk correct and complete.
         while (read != -1) {
             if (read > 0) digest.update(buffer, 0, read)
             read = input.read(buffer)

@@ -137,7 +137,7 @@ class ChapterArchiveEngineVolumeTest {
             coEvery { directoryDao.getDirectoryById(any()) } returns comicDir
             coEvery { volumeSyncService.sync(any(), any(), any(), any(), any()) } returns mapOf("vol_uri" to 101L)
 
-            // Mockando a verificação para conversão de PDF
+            // Mocking the check for PDF conversion
             val volDoc = mockk<DocumentFile>(relaxed = true)
             every { volDoc.exists() } returns true
             every { folderDoc.findFile(any()) } returns volDoc

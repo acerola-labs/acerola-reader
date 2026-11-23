@@ -1,19 +1,33 @@
 package br.acerola.comic.common.ux.component
 import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.modifier.float
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.tokens.SizeTokens
+import br.acerola.comic.common.ux.tokens.SpacingTokens
 
 enum class SnackbarVariant { Error, Success, Warn }
 
@@ -45,31 +59,15 @@ fun Acerola.Component.SnackbarError(
     message: String,
     modifier: Modifier = Modifier,
 ) {
-    Snackbar(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        content = { Text(text = message) },
-    )
+    Toast(message, Tone.Destructive, Icons.Rounded.ErrorOutline, modifier)
 }
 
-// `successContainer`/`onSuccessContainer` não `secondaryContainer`/`tertiaryContainer` do tema:
-// em Catppuccin, Nord, Dracula, Alucard e TokyoNight esses papéis mapeiam pra tons neutros de
-// superfície ou pra cores de destaque sem nada de verde — "sucesso" precisa ler como sucesso em
-// qualquer tema. Os papéis extras vêm de AcerolaExtendedTheme, derivados do próprio verde de
-// cada paleta (ver Theme.kt), então a cor muda de tom junto com o tema em vez de ser um verde
-// fixo que destoa do resto da UI.
 @Composable
 fun Acerola.Component.SnackbarSuccess(
     message: String,
     modifier: Modifier = Modifier,
 ) {
-    Snackbar(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        containerColor = AcerolaExtendedTheme.colors.successContainer,
-        contentColor = AcerolaExtendedTheme.colors.onSuccessContainer,
-        content = { Text(text = message) },
-    )
+    Toast(message, Tone.Success, Icons.Rounded.CheckCircle, modifier)
 }
 
 @Composable
@@ -77,12 +75,34 @@ fun Acerola.Component.SnackbarWarn(
     message: String,
     modifier: Modifier = Modifier,
 ) {
-    Snackbar(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        content = { Text(text = message) },
-    )
+    Toast(message, Tone.Warning, Icons.Rounded.WarningAmber, modifier)
+}
+
+// Brand toast (`.ac-toast`): rounded-card, shadow-float, no border, background and text in the
+// tone of the type (`success-soft` + `success`, and so on), an icon in the tone.
+@Composable
+private fun Toast(
+    message: String,
+    tone: Tone,
+    icon: ImageVector,
+    modifier: Modifier,
+) {
+    val colors = tone.colors()
+    Row(
+        modifier =
+            modifier
+                .padding(horizontal = SpacingTokens.Large, vertical = SpacingTokens.Small)
+                .fillMaxWidth()
+                .float(AcerolaShapes.Card)
+                .clip(AcerolaShapes.Card)
+                .background(colors.container)
+                .padding(horizontal = SpacingTokens.ExtraLarge - SpacingTokens.ExtraSmall / 2, vertical = SpacingTokens.MediumLarge),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpacingTokens.MediumLarge),
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(SizeTokens.IconSmall))
+        Text(text = message, style = MaterialTheme.typography.labelLarge, color = colors.content)
+    }
 }
 
 @Preview(name = "Light", showBackground = true)

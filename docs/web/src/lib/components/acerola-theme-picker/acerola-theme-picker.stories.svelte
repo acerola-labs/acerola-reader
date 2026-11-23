@@ -3,14 +3,14 @@
 	import AcerolaThemePicker from './acerola-theme-picker.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaThemePicker',
+		title: 'Primitives/AcerolaThemePicker',
 		component: AcerolaThemePicker,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Botao que alterna o modo de exibicao do tema entre claro, escuro e sistema, ciclando nessa ordem a cada clique. O estado vem do hook `useTheme`, um singleton reativo compartilhado por toda a aplicacao.'
+						'Button that toggles the theme display mode between light, dark and system, cycling in that order on each click. The state comes from the `useTheme` hook, a reactive singleton shared across the whole app.'
 				}
 			}
 		}
@@ -22,7 +22,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Icone reflete o modo atual (sol, lua ou monitor) e alterna ao ser clicado.'
+				story: 'The icon reflects the current mode (sun, moon or monitor) and toggles when clicked.'
 			}
 		}
 	}}

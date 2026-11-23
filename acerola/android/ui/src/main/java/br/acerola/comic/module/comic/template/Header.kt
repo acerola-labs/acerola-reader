@@ -3,7 +3,6 @@ package br.acerola.comic.module.comic.template
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,22 +32,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.Badge
 import br.acerola.comic.common.ux.component.BookmarkRibbon
 import br.acerola.comic.common.ux.component.Button
+import br.acerola.comic.common.ux.component.Tone
+import br.acerola.comic.common.ux.modifier.lift
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -55,7 +58,6 @@ import br.acerola.comic.dto.archive.ComicDirectoryDto
 import br.acerola.comic.dto.history.ReadingHistoryDto
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.pattern.metadata.ComicStatus
-import br.acerola.comic.pattern.metadata.MetadataSource
 import br.acerola.comic.ui.R
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -112,7 +114,6 @@ fun Comic.Template.Header(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .blur(radius = SpacingTokens.ExtraLarge)
                         .height(height = SizeTokens.ComicHeaderBannerHeight)
                         .align(Alignment.TopCenter),
             )
@@ -157,8 +158,8 @@ fun Comic.Template.Header(
                                     .padding(top = SpacingTokens.ExtraSmall)
                                     .width(width = SizeTokens.ComicHeaderCoverWidth)
                                     .height(height = SizeTokens.ComicHeaderCoverHeight)
-                                    .clip(shape = ShapeTokens.Medium)
-                                    .background(color = MaterialTheme.colorScheme.surfaceVariant),
+                                    .clip(shape = AcerolaShapes.Tile)
+                                    .background(color = AcerolaExtendedTheme.colors.surface),
                         )
 
                         val categoryColor = comic.category?.color
@@ -178,15 +179,15 @@ fun Comic.Template.Header(
                             Icon(
                                 imageVector = Icons.Rounded.VisibilityOff,
                                 contentDescription = stringResource(id = R.string.description_icon_comic_hidden),
-                                tint = Color.White,
+                                tint = AcerolaColors.OnScrim,
                                 modifier =
                                     Modifier
                                         .align(Alignment.BottomStart)
                                         .padding(SpacingTokens.Small)
                                         .size(SizeTokens.IconSmall)
                                         .background(
-                                            color = Color.Black.copy(alpha = 0.5f),
-                                            shape = ShapeTokens.ExtraSmall,
+                                            color = AcerolaColors.Scrim.copy(alpha = 0.5f),
+                                            shape = AcerolaShapes.Inner,
                                         ).padding(2.dp),
                             )
                         }
@@ -206,14 +207,11 @@ fun Comic.Template.Header(
                             overflow = TextOverflow.Ellipsis,
                             text = comic.remoteInfo?.title ?: comic.directory.name,
                             style =
-                                MaterialTheme.typography.headlineMedium.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                ),
+                                MaterialTheme.typography.headlineMedium.copy(color = AcerolaExtendedTheme.colors.foreground),
                         )
 
                         Text(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = AcerolaExtendedTheme.colors.mutedForeground,
                             style = MaterialTheme.typography.bodyLarge,
                             text = comic.remoteInfo?.authors?.name ?: stringResource(id = R.string.comic_header_unknown),
                         )
@@ -222,9 +220,9 @@ fun Comic.Template.Header(
 
                         Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
                             val status = ComicStatus.fromRawValue(comic.remoteInfo?.status)
-                            StatusBadge(status = stringResource(id = status.stringRes))
+                            Acerola.Component.Badge(text = stringResource(id = status.stringRes), tone = Tone.Primary)
                             comic.remoteInfo?.syncSource?.let { source ->
-                                SourceBadge(source = source)
+                                Acerola.Component.Badge(text = source.displayName)
                             }
                         }
                     }
@@ -244,29 +242,31 @@ fun Comic.Template.Header(
                     ),
         ) {
             comic.remoteInfo?.genre?.forEach { genre ->
-                GenreBadge(text = genre.name)
+                Acerola.Component.Badge(text = genre.name)
             }
         }
 
+        // Synopsis card (`rounded-card bg-card p-5`), tap to unfold.
         Surface(
-            shape = ShapeTokens.Medium,
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = AcerolaShapes.Card,
+            color = AcerolaExtendedTheme.colors.card,
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = SpacingTokens.ExtraLarge)
+                    .padding(horizontal = SpacingTokens.Large)
+                    .lift(AcerolaShapes.Card)
                     .animateContentSize()
                     .clickable {
                         isExpanded = !isExpanded
                     },
         ) {
             Column(
-                modifier = Modifier.padding(SpacingTokens.Medium),
+                modifier = Modifier.padding(SpacingTokens.ExtraLarge),
             ) {
                 Text(
                     text = stringResource(id = R.string.comic_header_synopsis_title),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = AcerolaExtendedTheme.colors.foreground,
+                    style = MaterialTheme.typography.titleMedium,
                 )
 
                 Spacer(modifier = Modifier.height(height = SpacingTokens.Small))
@@ -275,7 +275,7 @@ fun Comic.Template.Header(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AcerolaExtendedTheme.colors.mutedForeground,
                     lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
                     text = comic.remoteInfo?.description ?: stringResource(id = R.string.comic_header_no_description),
                 )
@@ -285,7 +285,7 @@ fun Comic.Template.Header(
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = AcerolaExtendedTheme.colors.mutedForeground,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                 )
             }
@@ -294,7 +294,8 @@ fun Comic.Template.Header(
         Spacer(modifier = Modifier.height(height = SpacingTokens.Medium))
 
         Acerola.Component.Button(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.ExtraLarge),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SpacingTokens.Large),
+            icon = Icons.Default.PlayArrow,
             onClick = {
                 if (history != null) {
                     onContinueClick(history.chapterArchiveId, history.lastPage)
@@ -307,83 +308,6 @@ fun Comic.Template.Header(
                     history != null -> stringResource(id = R.string.label_comic_action_continue)
                     else -> stringResource(id = R.string.label_comic_action_start)
                 },
-        )
-    }
-}
-
-@Composable
-private fun GenreBadge(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier =
-            modifier
-                .clip(shape = ShapeTokens.Full)
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                .padding(
-                    horizontal = SpacingTokens.Large,
-                    vertical = 6.dp,
-                ),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
-private fun SourceBadge(
-    source: MetadataSource,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier =
-            modifier
-                .clip(shape = ShapeTokens.ExtraSmall)
-                .background(
-                    color =
-                        when (source) {
-                            MetadataSource.COMIC_INFO -> MaterialTheme.colorScheme.secondaryContainer
-                            MetadataSource.MANGADEX -> MaterialTheme.colorScheme.tertiaryContainer
-                            MetadataSource.ANILIST -> MaterialTheme.colorScheme.primaryContainer
-                        },
-                ).border(
-                    width = SizeTokens.BorderThin,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = ShapeTokens.ExtraSmall,
-                ).padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
-    ) {
-        Text(
-            text = source.displayName,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
-private fun StatusBadge(
-    status: String,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier =
-            modifier
-                .clip(shape = ShapeTokens.ExtraSmall)
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-                .border(
-                    width = SizeTokens.BorderThin,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = ShapeTokens.ExtraSmall,
-                ).padding(horizontal = SpacingTokens.Small, vertical = 2.dp),
-    ) {
-        Text(
-            text = status,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
 }

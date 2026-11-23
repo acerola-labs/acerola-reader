@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table/index';
+	import * as Table from '#lib/components/ui/table/index.ts';
 
 	type Library = {
 		name: string;

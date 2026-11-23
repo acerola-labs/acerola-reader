@@ -34,7 +34,6 @@ describe('AcerolaHeroButton', () => {
 		const wrapper = screen.getByText('Item clicável').closest('[data-slot="item"]');
 
 		expect(wrapper).toHaveClass('cursor-pointer');
-		expect(wrapper).toHaveClass('hover:border-primary/50');
 
 		const user = userEvent.setup();
 		await user.click(wrapper as HTMLElement);
@@ -52,6 +51,5 @@ describe('AcerolaHeroButton', () => {
 
 		const wrapper = screen.getByText('Apenas leitura').closest('[data-slot="item"]');
 		expect(wrapper).not.toHaveClass('cursor-pointer');
-		expect(wrapper).not.toHaveClass('hover:border-primary/50');
 	});
 });

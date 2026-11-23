@@ -37,32 +37,32 @@ sealed interface SyncAction {
         val peerId: String,
     ) : SyncAction
 
-    /** Define (ou limpa, com string vazia) o apelido local de um peer — só neste dispositivo,
-     *  nunca chega no protocolo (ver `PeerNicknamePreference`). */
+    /** Sets (or clears, with an empty string) a peer's local nickname — only on this device,
+     *  it never reaches the protocol (see `PeerNicknamePreference`). */
     data class RenamePeer(
         val peerId: String,
         val nickname: String,
     ) : SyncAction
 
-    /** Pede a lista de quadrinhos do peer (nome + contagem de capítulos), sem sincronizar
-     *  nada — abre o [br.acerola.comic.module.main.sync.RemoteLibrarySheet]. */
+    /** Requests the peer's comic list (name + chapter count), without syncing
+     *  anything — opens [br.acerola.comic.module.main.sync.RemoteLibrarySheet]. */
     data class BrowseLibrary(
         val peerId: String,
     ) : SyncAction
 
     data object DismissLibraryBrowse : SyncAction
 
-    /** Sincroniza um único quadrinho (descoberto via [BrowseLibrary]) com o peer. */
+    /** Syncs a single comic (discovered via [BrowseLibrary]) with the peer. */
     data class SyncComic(
         val peerId: String,
         val comicName: String,
     ) : SyncAction
 
-    /** Todas as ações de relay abaixo persistem no DataStore E aplicam na hora
-     *  (`P2pUseCase.applyRelaySettings`, troca o modo de relay num `Endpoint` que continua
-     *  vivo, sem derrubar conexões) — ver [RelaySettingsUiState]. Um caso raro que a troca ao
-     *  vivo não resolve sozinha (conexão presa depois de uma troca de rede física do SO) tem
-     *  o botão manual [RestartP2p] como saída, que derruba e sobe o node inteiro de novo. */
+    /** All relay actions below persist to DataStore AND apply right away
+     *  (`P2pUseCase.applyRelaySettings`, switches the relay mode on an `Endpoint` that stays
+     *  alive, without dropping connections) — see [RelaySettingsUiState]. A rare case the live
+     *  switch doesn't solve on its own (connection stuck after an OS physical network change) has
+     *  the manual [RestartP2p] button as a way out, which tears down and restarts the whole node. */
     data class ToggleUseAcerolaRelay(
         val value: Boolean,
     ) : SyncAction
@@ -79,8 +79,8 @@ sealed interface SyncAction {
         val url: String,
     ) : SyncAction
 
-    /** Valida o formato antes de persistir — se malformado, `SyncUiState.irohServicesTicketError`
-     *  vira `true` (ver `SyncViewModel`). */
+    /** Validates the format before persisting — if malformed, `SyncUiState.irohServicesTicketError`
+     *  becomes `true` (see `SyncViewModel`). */
     data class SetIrohServicesTicket(
         val ticket: String,
     ) : SyncAction
@@ -89,8 +89,8 @@ sealed interface SyncAction {
 
     data object DismissIrohServicesTicketError : SyncAction
 
-    /** Botão manual "Reiniciar" — desliga o node P2P atual e sobe um novo do zero (mesma
-     *  identidade/storage), estilo LocalSend. Escape hatch pra quando a troca ao vivo de relay
-     *  não é suficiente (ex: conexão presa depois de uma troca de rede física do SO). */
+    /** Manual "Restart" button — shuts down the current P2P node and starts a new one from scratch
+     *  (same identity/storage), LocalSend style. Escape hatch for when the live relay switch
+     *  isn't enough (e.g. connection stuck after an OS physical network change). */
     data object RestartP2p : SyncAction
 }

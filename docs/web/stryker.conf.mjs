@@ -37,19 +37,18 @@ export default {
 		fileName: 'mutants.out/mutation-report.html'
 	},
 	thresholds: {
-		// Trocado de placeholder pro baseline real medido (44.31% na primeira rodada
-		// completa).
+		// Switched from a placeholder to the real measured baseline (44.31% on the first full
+		// run).
 		//
-		// TODO (não corrigido, só documentado): os arquivos abaixo apareceram
-		// majoritariamente como "no coverage" no relatório (mutants.out/mutation-report.html)
-		// MESMO TENDO teste escrito — mesmo padrão observado no desktop (ver
-		// acerola/desktop/stryker.conf.mjs), provável limitação do `coverageAnalysis:
-		// perTest` do Stryker com módulos chamados fora de um componente montado ou com
-		// estado em nível de módulo. Mutation score real desses arquivos é desconhecido,
-		// não necessariamente zero — precisa de investigação dedicada:
-		// - src/routes/sitemap.xml/+server.ts (25 mutantes, 0 cobertura, apesar de server.test.ts existir)
-		// - src/routes/docs/[...slug]/+page.ts (6 mutantes, 0 cobertura, apesar de page.test.ts existir)
-		// - src/lib/hooks/theme/use-theme.svelte.ts (43 mutantes, 21 sem cobertura — parcial)
+		// TODO (not fixed, only documented): the files below showed up mostly as
+		// "no coverage" in the report (mutants.out/mutation-report.html) EVEN THOUGH they
+		// have tests — same pattern seen on desktop (see acerola/desktop/stryker.conf.mjs),
+		// likely a limitation of Stryker's `coverageAnalysis: perTest` with modules called
+		// outside a mounted component or with module-level state. The real mutation score of
+		// these files is unknown, not necessarily zero — needs dedicated investigation:
+		// - src/routes/sitemap.xml/+server.ts (25 mutants, 0 coverage, despite server.test.ts existing)
+		// - src/routes/docs/[...slug]/+page.ts (6 mutants, 0 coverage, despite page.test.ts existing)
+		// - src/lib/hooks/theme/use-theme.svelte.ts (43 mutants, 21 uncovered — partial)
 		high: 60,
 		low: 40,
 		break: 38

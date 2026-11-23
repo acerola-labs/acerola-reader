@@ -3,9 +3,9 @@ import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useRemoteLibrary } from './use-remote-library.svelte';
 
@@ -93,11 +93,11 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 
 		await expect(hook.queryRemoteLibrary('peer-1b', [])).rejects.toThrow('peer offline');
-		expect(hook.errorFor('peer-1b')).toBe('Error: peer offline');
+		expect(hook.errorFor('peer-1b')).toBe('peer offline');
 
 		invokeMock.mockResolvedValueOnce(undefined);
 		const pending = hook.queryRemoteLibrary('peer-1b', [1]);
-		// Limpo de imediato, antes mesmo do invoke resolver.
+		// Cleared immediately, even before the invoke resolves.
 		expect(hook.errorFor('peer-1b')).toBeUndefined();
 		await pending;
 	});
@@ -110,7 +110,7 @@ describe('useRemoteLibrary', () => {
 		await expect(hook.queryRemoteLibrary('peer-2', [])).rejects.toThrow('peer offline');
 
 		expect(hook.isLoading('peer-2')).toBe(false);
-		expect(hook.errorFor('peer-2')).toBe('Error: peer offline');
+		expect(hook.errorFor('peer-2')).toBe('peer offline');
 	});
 
 	it('libraryQueryResult stores comics for the peer and clears loading/errors', async () => {
@@ -146,8 +146,8 @@ describe('useRemoteLibrary', () => {
 		});
 		await Promise.resolve();
 
-		// `errors.delete(payload.peerId)` precisa realmente remover a entrada — não
-		// basta `loading` ter sido limpo.
+		// `errors.delete(payload.peerId)` must really remove the entry — it isn't enough
+		// for `loading` to have been cleared.
 		expect(hook.errorFor('peer-3b')).toBeUndefined();
 	});
 
@@ -193,9 +193,9 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// Só é observável combinado com um peerId real, já que sem peerId o handler
-		// descarta o evento (ver teste abaixo) — usamos o formato certo pra chegar no
-		// fallback de mensagem crua sem cair nesse outro guard.
+		// Only observable combined with a real peerId, since without a peerId the handler
+		// drops the event (see test below) — we use the right shape to reach the raw-message
+		// fallback without hitting that other guard.
 		await hook.queryRemoteLibrary('peer-5b', []);
 		callbacks.get(NETWORK_EVENTS.libraryQueryError)?.({
 			payload: JSON.stringify({ peerId: 'peer-5b', message: 42 })
@@ -204,11 +204,11 @@ describe('useRemoteLibrary', () => {
 		expect(hook.errorFor('peer-5b')).toBeUndefined();
 	});
 
-	// Mutantes equivalentes de `parseErrorPayload` (ConditionalExpression e LogicalOperator em
-	// 21:7/21:17, ObjectLiteral em 27:9) já documentados com `// Stryker disable next-line`
-	// diretamente no source (use-remote-library.svelte.ts) — ver lá a explicação completa,
-	// incluindo por que o `&&` → `||` também é equivalente (confirmado por Stryker de verdade,
-	// não só por inspeção: um teste anterior desta suíte que supostamente o matava não matava).
+	// Equivalent `parseErrorPayload` mutants (ConditionalExpression and LogicalOperator at
+	// 21:7/21:17, ObjectLiteral at 27:9) are already documented with `// Stryker disable next-line`
+	// right in the source (use-remote-library.svelte.ts) — see the full explanation there,
+	// including why `&&` → `||` is also equivalent (confirmed by actually running Stryker, not
+	// just by inspection: an earlier test in this suite that supposedly killed it didn't).
 
 	it('libraryQueryError with no peerId in the payload is ignored (no peer to attach the error to)', async () => {
 		const { callbacks } = setupListeners();
@@ -221,8 +221,8 @@ describe('useRemoteLibrary', () => {
 			payload: JSON.stringify({ message: 'no peer id here' })
 		});
 
-		// O guard `if (!peerId) return;` descarta o evento inteiro — loading continua
-		// como estava (não foi limpo) e nenhum erro foi registrado pra peer-5c.
+		// The `if (!peerId) return;` guard drops the whole event — loading stays as it was
+		// (not cleared) and no error was recorded for peer-5c.
 		expect(hook.isLoading('peer-5c')).toBe(true);
 		expect(hook.errorFor('peer-5c')).toBeUndefined();
 	});
@@ -236,8 +236,8 @@ describe('useRemoteLibrary', () => {
 			payload: JSON.stringify({ peerId: '', message: 'should be discarded' })
 		});
 
-		// `!peerId` também precisa pegar peerId vazio (falsy), não só ausente —
-		// nada deveria ter sido registrado sob a chave ''.
+		// `!peerId` must also catch an empty (falsy) peerId, not just a missing one —
+		// nothing should have been recorded under the '' key.
 		expect(hook.errorFor('')).toBeUndefined();
 	});
 
@@ -318,9 +318,9 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// Força `resolveArtworkPath` (que delega em `convertFileSrc`) a devolver um
-		// valor falsy pra essa única chamada, simulando `resolved` vazio mesmo com
-		// status "changed" e `path` presente.
+		// Forces `resolveArtworkPath` (which delegates to `convertFileSrc`) to return a
+		// falsy value for this single call, simulating an empty `resolved` even with
+		// status "changed" and `path` present.
 		convertFileSrcMock.mockReturnValueOnce('');
 
 		callbacks.get(NETWORK_EVENTS.coverQueryResult)?.({
@@ -333,8 +333,8 @@ describe('useRemoteLibrary', () => {
 			})
 		});
 
-		// `if (resolved) coverPaths.set(key, resolved);` não deveria gravar nada
-		// quando `resolved` é falsy.
+		// `if (resolved) coverPaths.set(key, resolved);` should write nothing
+		// when `resolved` is falsy.
 		expect(hook.coverPathFor('peer-7d', 'Ghost')).toBeUndefined();
 	});
 
@@ -343,8 +343,8 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// `coverVersion: null` chega antes — o guard `!== null` não deveria gravar
-		// nada em `knownCoverVersions` pra essa chave.
+		// `coverVersion: null` arrives first — the `!== null` guard should write
+		// nothing to `knownCoverVersions` for this key.
 		callbacks.get(NETWORK_EVENTS.coverQueryResult)?.({
 			payload: JSON.stringify({
 				peerId: 'peer-nullver',
@@ -358,11 +358,11 @@ describe('useRemoteLibrary', () => {
 		await hook.queryRemoteLibrary('peer-nullver', [7]);
 		invokeMock.mockClear();
 
-		// Um quadrinho com o mesmo `coverVersion: null` chega na lista. Se
-		// `knownCoverVersions` tivesse sido atualizado com `null` (mutante), a
-		// comparação `knownCoverVersions.get(key) === comic.coverVersion` seria
-		// `null === null` e a busca de capa seria pulada — o que não deve
-		// acontecer, já que o cache nunca deveria ter sido escrito com `null`.
+		// A comic with the same `coverVersion: null` arrives in the list. If
+		// `knownCoverVersions` had been updated with `null` (mutant), the comparison
+		// `knownCoverVersions.get(key) === comic.coverVersion` would be
+		// `null === null` and the cover fetch would be skipped — which must not
+		// happen, since the cache should never have been written with `null`.
 		callbacks.get(NETWORK_EVENTS.libraryQueryResult)?.({
 			payload: JSON.stringify({
 				peerId: 'peer-nullver',
@@ -404,7 +404,7 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// Registra a versão conhecida via um coverQueryResult "not_modified" anterior.
+		// Records the known version via an earlier "not_modified" coverQueryResult.
 		callbacks.get(NETWORK_EVENTS.coverQueryResult)?.({
 			payload: JSON.stringify({
 				peerId: 'peer-8',
@@ -438,8 +438,8 @@ describe('useRemoteLibrary', () => {
 		const hook = await renderHook();
 		await hook.startListening();
 
-		// libraryQueryResult chega sem que `queryRemoteLibrary` tenha sido chamado antes pra
-		// esse peer — não há `addrs` guardado.
+		// libraryQueryResult arrives without `queryRemoteLibrary` having been called before for
+		// this peer — there are no stored `addrs`.
 		callbacks.get(NETWORK_EVENTS.libraryQueryResult)?.({
 			payload: JSON.stringify({ peerId: 'peer-9', comics: [comic()] })
 		});

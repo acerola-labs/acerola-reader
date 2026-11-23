@@ -35,13 +35,13 @@ export async function waitForTauriReady() {
 		{
 			timeout: 5_000,
 			interval: 100,
-			timeoutMsg: 'window.__TAURI_INTERNALS__ não ficou disponível no WebView.'
+			timeoutMsg: 'window.__TAURI_INTERNALS__ did not become available in the WebView.'
 		}
 	);
 }
 
 export async function navigateTo(route: string) {
-	// WebView2/Tauri precisam da origem customizada; URL relativa quebra em about:blank.
+	// WebView2/Tauri need the custom origin; a relative URL breaks on about:blank.
 	const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
 	const fullUrl = `${APP_ORIGIN}${normalizedRoute}`;
 
@@ -55,7 +55,7 @@ export async function navigateTo(route: string) {
 		{
 			timeout: 5_000,
 			interval: 100,
-			timeoutMsg: `WebView não navegou para ${normalizedRoute}.`
+			timeoutMsg: `WebView did not navigate to ${normalizedRoute}.`
 		}
 	);
 }
@@ -69,7 +69,8 @@ export async function navigateToWithState(route: string, state: Record<string, u
 			const currentState = window.history.state ?? {};
 			const fallbackIndex = Date.now();
 			const currentHistoryIndex = Number(currentState['sveltekit:history']) || fallbackIndex;
-			const currentNavigationIndex = Number(currentState['sveltekit:navigation']) || fallbackIndex;
+			const currentNavigationIndex =
+				Number(currentState['sveltekit:navigation']) || fallbackIndex;
 
 			const nextState = {
 				...currentState,
@@ -92,7 +93,7 @@ export async function navigateToWithState(route: string, state: Record<string, u
 		{
 			timeout: 5_000,
 			interval: 100,
-			timeoutMsg: `WebView não navegou para ${normalizedRoute} com estado de página.`
+			timeoutMsg: `WebView did not navigate to ${normalizedRoute} with page state.`
 		}
 	);
 }
@@ -115,7 +116,11 @@ export async function setStoreValues(entries: Record<string, unknown>) {
 				options: {}
 			});
 			for (const [k, v] of Object.entries(items)) {
-				await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|set', { rid, key: k, value: v });
+				await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|set', {
+					rid,
+					key: k,
+					value: v
+				});
 			}
 			await tauriWindow.__TAURI_INTERNALS__.invoke('plugin:store|save', { rid });
 		}
@@ -159,17 +164,17 @@ export async function ensureOnboardingCompleted() {
 	if (alreadyCompleted) return;
 
 	await setStoreValue('onboarding_completed', true);
-	// Ver o comentário equivalente em waitForAppReady: sem recarregar de
-	// verdade, o $state em memória de use-onboarding.svelte.ts não pega o
-	// valor novo. navigateTo('/home') não serve aqui porque, se a webview já
-	// estiver em /home, navegar pra a mesma URL é um no-op — refresh() força
-	// o reload de fato.
+	// See the matching comment in waitForAppReady: without a real reload, the
+	// in-memory $state of use-onboarding.svelte.ts does not pick up the new
+	// value. navigateTo('/home') does not work here because, if the webview is
+	// already on /home, navigating to the same URL is a no-op — refresh() forces
+	// an actual reload.
 	await browser.refresh();
 	await waitForTauriReady();
 }
 
 export async function waitForAppReady(skipOnboardingComplete = false) {
-	// __TAURI_INTERNALS__ fica disponivel ainda em about:blank; carregue a rota real primeiro.
+	// __TAURI_INTERNALS__ is already available on about:blank; load the real route first.
 	await waitForTauriReady();
 
 	const state = await getAppState();
@@ -183,13 +188,13 @@ export async function waitForAppReady(skipOnboardingComplete = false) {
 		if (!alreadyCompleted) {
 			await setStoreValue('onboarding_completed', true);
 
-			// INFO: use-onboarding.svelte.ts só lê o store uma vez, no boot do
-			// módulo (checkStatus() roda uma única vez ao importar o módulo) —
-			// escrever o valor no store depois que o app já carregou não muda
-			// o $state que já está em memória. navigateTo('/home') não serve
-			// aqui porque a webview já está em /home nesse ponto (linha acima)
-			// — navegar pra a mesma URL é tratado como no-op pelo WebView2, o
-			// módulo nunca reavalia. refresh() força o reload de fato.
+			// INFO: use-onboarding.svelte.ts reads the store only once, on module
+			// boot (checkStatus() runs a single time when the module is imported) —
+			// writing the value to the store after the app has loaded does not
+			// change the $state already in memory. navigateTo('/home') does not
+			// work here because the webview is already on /home at this point
+			// (line above) — navigating to the same URL is a no-op for WebView2,
+			// the module never re-evaluates. refresh() forces an actual reload.
 			await browser.refresh();
 			await waitForTauriReady();
 		}
@@ -204,13 +209,13 @@ export async function waitForAppReady(skipOnboardingComplete = false) {
 			{
 				timeout: 5_000,
 				interval: 100,
-				timeoutMsg: 'DOM do app não renderizou após __TAURI_INTERNALS__ disponível.'
+				timeoutMsg: 'App DOM did not render after __TAURI_INTERNALS__ became available.'
 			}
 		);
 	} catch {
 		const currentState = await getAppState();
 		throw new Error(
-			`DOM do app não renderizou após __TAURI_INTERNALS__ disponível. Estado: ${JSON.stringify(
+			`App DOM did not render after __TAURI_INTERNALS__ became available. State: ${JSON.stringify(
 				currentState
 			)}`
 		);
@@ -229,7 +234,7 @@ export async function expectPathname(pathname: string) {
 	await browser.waitUntil(async () => (await getPathname()) === pathname, {
 		timeout: 5_000,
 		interval: 100,
-		timeoutMsg: `Rota atual não ficou em ${pathname}.`
+		timeoutMsg: `Current route did not settle on ${pathname}.`
 	});
 }
 
@@ -276,10 +281,10 @@ export async function clickText(text: string, timeout = 5_000) {
 }
 
 /**
- * O dock de navegação (AcerolaDock) abre em modo `hover`: fica colapsado
- * numa pilulazinha até o mouse passar por cima — os links `<a href>` só
- * existem no DOM depois disso (ver acerola-dock.svelte:33-48). Precisa
- * chamar isso antes de qualquer seletor que dependa dos itens do dock.
+ * The navigation dock (AcerolaDock) opens in `hover` mode: it stays collapsed
+ * into a small pill until the mouse passes over it — the `<a href>` links only
+ * exist in the DOM after that (see acerola-dock.svelte:33-48). Call this
+ * before any selector that depends on the dock items.
  */
 export async function expandDock(timeout = 5_000) {
 	const dockArea = await firstDisplayed('[role="navigation"]', timeout);
@@ -293,7 +298,7 @@ export async function expandDock(timeout = 5_000) {
 		{
 			timeout,
 			interval: 100,
-			timeoutMsg: 'Dock de navegação não expandiu após hover.'
+			timeoutMsg: 'Navigation dock did not expand after hover.'
 		}
 	);
 }
@@ -315,7 +320,7 @@ export async function firstDisplayed(selector: string, timeout = 5_000) {
 		{
 			timeout,
 			interval: 100,
-			timeoutMsg: `Nenhum elemento visível para seletor "${selector}" (${lastCount} encontrados).`
+			timeoutMsg: `No visible element for selector "${selector}" (${lastCount} found).`
 		}
 	);
 
@@ -324,7 +329,7 @@ export async function firstDisplayed(selector: string, timeout = 5_000) {
 		if (await element.isDisplayed().catch(() => false)) return element;
 	}
 
-	throw new Error(`Nenhum elemento visível para seletor "${selector}".`);
+	throw new Error(`No visible element for selector "${selector}".`);
 }
 
 export async function invokeTauriCommand<T = unknown>(command: string, args?: unknown) {
@@ -337,7 +342,7 @@ export async function invokeTauriCommand<T = unknown>(command: string, args?: un
 			};
 
 			if (!tauriWindow.__TAURI_INTERNALS__) {
-				throw new Error('window.__TAURI_INTERNALS__ indisponível.');
+				throw new Error('window.__TAURI_INTERNALS__ unavailable.');
 			}
 
 			return tauriWindow.__TAURI_INTERNALS__.invoke(commandName, commandArgs);

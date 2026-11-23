@@ -2,20 +2,20 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaSearchDialog from './acerola-search-dialog.svelte';
 
-	// `open: true` como arg inicial (em vez de aberto via interação real) deixa o
-	// Dialog.Content do bits-ui preso — a lógica de "presence" que revela o conteúdo só
-	// roda numa transição fechado→aberto de verdade, então "nascer" já aberto quebra o
-	// preview (e, na aba Docs, o overlay em tela cheia borra a página de documentação
-	// inteira atrás dele). Falso por padrão; use o botão da story (ou Ctrl/Cmd+K) pra abrir.
+	// `open: true` as the initial arg (instead of opening via real interaction) leaves bits-ui's
+	// Dialog.Content stuck — the "presence" logic that reveals the content only runs on a real
+	// closed→open transition, so starting already open breaks the preview (and, on the Docs
+	// tab, the full-screen overlay blurs the whole documentation page behind it). False by
+	// default; use the story's button (or Ctrl/Cmd+K) to open it.
 	const { Story } = defineMeta({
-		title: 'Compositores/AcerolaSearchDialog',
+		title: 'Composites/AcerolaSearchDialog',
 		component: AcerolaSearchDialog,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Command palette de busca, aberta via `bind:open` ou pelo atalho Ctrl/Cmd+K. O indice Pagefind so existe no build de producao, entao em desenvolvimento (e nesta story) o estado exibido e sempre "indisponivel".'
+						'Search command palette, opened via `bind:open` or the Ctrl/Cmd+K shortcut. The Pagefind index only exists in the production build, so in development (and in this story) the state shown is always "unavailable".'
 				}
 			}
 		}
@@ -23,9 +23,9 @@
 </script>
 
 <script lang="ts">
-	// O Command.Dialog não renderiza nada visível enquanto `open` é falso (é só um portal) —
-	// sem um gatilho real na story, a aba Docs mostra um canvas vazio e não dá pra inspecionar
-	// o componente sem já saber o atalho de teclado.
+	// Command.Dialog renders nothing visible while `open` is false (it's just a portal) —
+	// without a real trigger in the story, the Docs tab shows an empty canvas and the
+	// component can't be inspected without already knowing the keyboard shortcut.
 	let open = $state(false);
 </script>
 
@@ -34,7 +34,7 @@
 		<button
 			type="button"
 			onclick={() => (open = true)}
-			class="hover:bg-surface-elevated rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+			class="hover:bg-surface-elevated rounded-inner border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
 		>
 			Abrir busca (Ctrl/Cmd+K)
 		</button>
@@ -48,8 +48,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Estado fechado por padrão — clique no botão (ou Ctrl/Cmd+K) pra abrir e ver o estado de indisponibilidade da busca fora do build de producao.'
+				story: 'Closed by default — click the button (or Ctrl/Cmd+K) to open it and see the search unavailable state outside the production build.'
 			}
 		}
 	}}

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import type { SidebarGroup } from '$lib/content/docs';
+import type { SidebarGroup } from '#lib/content/docs.ts';
 import AcerolaSidebar from './acerola-sidebar.svelte';
 
 // Doc titles are deliberately different from their section names below — the sidebar renders
@@ -16,7 +16,11 @@ function makeGroups(): SidebarGroup[] {
 					slug: 'getting-started',
 					component: {} as never,
 					raw: '',
-					frontmatter: { title: 'Guia de instalação', section: 'Primeiros passos', order: 1 }
+					frontmatter: {
+						title: 'Guia de instalação',
+						section: 'Primeiros passos',
+						order: 1
+					}
 				}
 			]
 		},
@@ -28,7 +32,11 @@ function makeGroups(): SidebarGroup[] {
 					slug: 'architecture',
 					component: {} as never,
 					raw: '',
-					frontmatter: { title: 'Visão geral da arquitetura', section: 'Conceitos', order: 1 }
+					frontmatter: {
+						title: 'Visão geral da arquitetura',
+						section: 'Conceitos',
+						order: 1
+					}
 				}
 			]
 		}
@@ -57,7 +65,7 @@ describe('AcerolaSidebar', () => {
 		const active = screen.getByRole('link', { name: 'Visão geral da arquitetura' });
 		const inactive = screen.getByRole('link', { name: 'Guia de instalação' });
 
-		expect(active.className).toContain('text-primary');
-		expect(inactive.className).not.toContain('text-primary');
+		expect(active).toHaveAttribute('aria-current', 'page');
+		expect(inactive).not.toHaveAttribute('aria-current');
 	});
 });

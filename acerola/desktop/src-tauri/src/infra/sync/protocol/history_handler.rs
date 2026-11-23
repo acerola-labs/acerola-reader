@@ -19,10 +19,10 @@ use crate::{
 
 const LOG_KIND: &str = "history";
 
-/// Lado que INICIA a sessão (papel "outbound": ativado quando este device chama
-/// `connect()` no ALPN de histórico). Escreve o manifesto local primeiro, depois lê o do
-/// peer — mesma disciplina de "quem escreve primeiro" que o handshake RPC da lib já usa,
-/// pra nunca ter os dois lados bloqueados escrevendo ao mesmo tempo no mesmo stream.
+/// Side that STARTS the session ("outbound" role: activated when this device calls
+/// `connect()` on the history ALPN). Writes the local manifest first, then reads the
+/// peer's — the same "who writes first" discipline the lib's RPC handshake already uses,
+/// so both sides are never blocked writing to the same stream at the same time.
 pub struct HistorySyncOutbound {
     emit: EventEmitter,
     service: HistorySyncService,
@@ -89,8 +89,8 @@ impl Handler for HistorySyncOutbound {
     }
 }
 
-/// Lado que RESPONDE à sessão (papel "inbound": ativado quando o peer remoto conecta
-/// nesse ALPN). Lê o manifesto do peer primeiro, depois escreve o local.
+/// Side that ANSWERS the session ("inbound" role: activated when the remote peer connects
+/// on this ALPN). Reads the peer's manifest first, then writes the local one.
 pub struct HistorySyncInbound {
     emit: EventEmitter,
     service: HistorySyncService,

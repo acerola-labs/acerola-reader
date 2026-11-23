@@ -6,11 +6,11 @@ license = "MPL-2.0"
 name = "acerola"
 version = "1.0.2"
 
-# NOTE: Em rust para baixar libs cargo build
+# NOTE: In Rust, run cargo build to download the libs
 [lib]
-# WARN: Sufixo _lib é para não dar conflito de binário
-# Desktop-only: o binario linka esta lib como rlib. staticlib/cdylib ficam para mobile/FFI
-# e geram artefatos enormes no debug do Windows, principalmente acerola_lib.lib/.pdb.
+# WARN: The _lib suffix avoids a name clash with the binary
+# Desktop-only: the binary links this lib as an rlib. staticlib/cdylib are for mobile/FFI
+# and produce huge artifacts in Windows debug builds, mainly acerola_lib.lib/.pdb.
 crate-type = ["rlib"]
 name = "acerola_lib"
 

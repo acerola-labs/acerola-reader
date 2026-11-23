@@ -25,7 +25,7 @@ describe('AcerolaComicMetadataPanel', () => {
 		expect(screen.getByText('Test Author')).toBeInTheDocument();
 		expect(screen.getByText('Ongoing')).toBeInTheDocument();
 		expect(screen.getByText('LOCAL')).toBeInTheDocument();
-		expect(screen.getByText('15 Caps')).toBeInTheDocument();
+		expect(screen.getByText('15 caps')).toBeInTheDocument();
 		expect(screen.getByText('Test description')).toBeInTheDocument();
 	});
 

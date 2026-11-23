@@ -12,7 +12,7 @@ import org.junit.Test
 class MangadexSourceInterceptorTest {
     @Test
     fun intercept_should_add_custom_User_Agent() {
-        // Preparação
+        // Arrange
         val interceptor = MangadexInterceptor()
         val chain = mockk<Interceptor.Chain>()
         val request =
@@ -26,10 +26,10 @@ class MangadexSourceInterceptorTest {
         every { chain.request() } returns request
         every { chain.proceed(capture(requestSlot)) } returns mockk<Response>()
 
-        // Execução
+        // Act
         interceptor.intercept(chain)
 
-        // Verificação
+        // Assert
         val capturedRequest = requestSlot.captured
         val userAgent = capturedRequest.header("User-Agent")
 

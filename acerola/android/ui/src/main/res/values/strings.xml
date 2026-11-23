@@ -17,24 +17,24 @@
     <!-- Screen label -->
     <string name="label_tutorial_activity">Tutorial</string>
     <string name="description_tutorial_activity">Tela de tutorial inicial</string>
-    <string name="label_home_activity">home</string>
+    <string name="label_home_activity">Início</string>
     <string name="label_config_activity">Configurações</string>
     <string name="label_history_activity">Histórico</string>
     <string name="label_chapters_activity">Capítulos</string>
     <string name="label_reader_activity">Leitor</string>
-    <string name="label_template_config_activity">Padrões de arquivos</string>
+    <string name="label_template_config_activity">Templates de nomenclatura</string>
     <string name="label_sync_activity">Rede</string>
     <string name="label_remote_library_activity">Biblioteca remota</string>
     <string name="label_transfer_log_activity">@string/title_sync_activity_log</string>
 
     <!-- Screen content description -->
     <string name="description_home_activity">Tela de início que lista os quadrinhos.</string>
-    <string name="description_config_activity">Tela de configurações</string>
+    <string name="description_config_activity">Personalize sua experiência de leitura</string>
     <string name="description_history_activity">Tela de histórico de quadrinhos lidos</string>
     <string name="description_chapters_activity">Tela de listagem dos capítulos</string>
     <string name="description_reader_activity">Tela de leitura do capítulo</string>
-    <string name="description_template_config_activity">Gerencie como o app identifica números de capítulos nos arquivos</string>
-    <string name="description_sync_activity">Conecte outro dispositivo Acerola pra levar seu histórico de leitura e seus quadrinhos com você.</string>
+    <string name="description_template_config_activity">Padrões de nome usados para achar capítulos e volumes</string>
+    <string name="description_sync_activity">Conecte outro dispositivo Acerola para levar seu histórico de leitura e seus quadrinhos com você</string>
     <string name="description_remote_library_activity">Tela de biblioteca remota de um dispositivo pareado.</string>
     <string name="description_transfer_log_activity">Tela de histórico de transferências P2P.</string>
 
@@ -54,11 +54,11 @@
     <string name="tab_sync_connect">Conectar</string>
 
     <string name="title_sync_pairing">Código de conexão</string>
-    <string name="description_sync_pairing">Escaneie este QR Code no outro dispositivo, ou copie o código abaixo.</string>
-    <string name="description_sync_security_note">Só pareie com dispositivos que você confia — a primeira conexão dá acesso permanente à sua biblioteca.</string>
+    <string name="description_sync_pairing">Escaneie este QR Code no outro dispositivo ou copie o código abaixo</string>
+    <string name="description_sync_security_note">Só pareie com dispositivos que você confia: a primeira conexão dá acesso permanente à sua biblioteca</string>
     <string name="action_sync_copy_code">Copiar código</string>
     <string name="action_sync_scan_code">Escanear QR Code</string>
-    <string name="action_sync_show_code">Mostrar código como texto</string>
+    <string name="action_sync_show_code">Ver código</string>
     <string name="action_sync_hide_code">Ocultar código</string>
     <string name="label_sync_generating_code">Gerando código…</string>
 
@@ -70,8 +70,8 @@
     <string name="error_sync_connect_failed">Não foi possível conectar. Confira se o código está certo e se o outro dispositivo está com o Acerola aberto.</string>
     <string name="error_sync_scan_failed">Não foi possível abrir o leitor de QR Code. Tente novamente ou cole o código manualmente.</string>
 
-    <!-- Notificações de RESULTADO de sessão P2P moveram pra core/res (P2pSyncCoordinator é
-         quem dispara agora, não mais esta ViewModel — ver core/src/main/res/values/strings.xml). -->
+    <!-- P2P session RESULT notifications moved to core/res (P2pSyncCoordinator fires them now,
+         not this ViewModel; see core/src/main/res/values/strings.xml). -->
     <string name="error_sync_scan_empty">O QR Code escaneado não contém texto legível.</string>
 
     <!-- Sync screen - Relay settings card -->
@@ -80,11 +80,11 @@
     <string name="label_relay_settings_summary_iroh_public">Usando a rede pública de relays do Iroh.</string>
     <string name="label_relay_settings_summary_active">%1$d fonte(s) de relay ativa(s).</string>
     <string name="label_relay_settings_use_acerola_relay">Usar o relay do Acerola</string>
-    <string name="label_relay_settings_use_acerola_relay_desc">Gerenciado automaticamente (%1$s).</string>
+    <string name="label_relay_settings_use_acerola_relay_desc">Gerenciado automaticamente (%1$s)</string>
     <string name="label_relay_settings_use_iroh_public_network">Usar a Iroh Services (conta própria)</string>
-    <string name="label_relay_settings_use_iroh_public_network_desc">Autenticado com o ticket da sua própria conta em services.iroh.computer — não pode ser combinada com as fontes abaixo.</string>
+    <string name="label_relay_settings_use_iroh_public_network_desc">Autenticado com o ticket da sua conta em services.iroh.computer; não combina com as outras fontes</string>
     <string name="label_relay_settings_exclusive_note">Desabilitado enquanto a Iroh Services estiver ativa.</string>
-    <string name="label_relay_settings_iroh_services_ticket_required_hint">Configure um ticket abaixo para ativar essa fonte.</string>
+    <string name="label_relay_settings_iroh_services_ticket_required_hint">Configure um ticket para ativar essa fonte</string>
     <string name="title_relay_settings_iroh_services_ticket">Ticket da Iroh Services</string>
     <string name="label_relay_settings_iroh_services_ticket_configured">Ticket configurado.</string>
     <string name="label_relay_settings_iroh_services_ticket_not_configured">Nenhum ticket configurado ainda.</string>
@@ -103,13 +103,13 @@
     <string name="label_relay_settings_switch_confirm_desc">Isso reconecta usando um relay diferente. Dispositivos pareados que não convergirem pro mesmo relay podem ficar inalcançáveis até que isso aconteça.</string>
     <string name="action_relay_settings_switch_confirm">Trocar relay</string>
     <string name="title_relay_settings_restart">Reiniciar módulo P2P</string>
-    <string name="label_relay_settings_restart_desc">Desliga e religa a conexão P2P do zero — útil se a conexão ficou travada depois de trocar de rede ou de relay.</string>
+    <string name="label_relay_settings_restart_desc">Desliga e religa a conexão P2P do zero; útil se ela travou depois de trocar de rede ou de relay</string>
     <string name="action_relay_settings_restart">Reiniciar</string>
     <string name="action_relay_settings_restarting">Reiniciando…</string>
     <string name="error_relay_settings_restart_failed">Não foi possível reiniciar o módulo P2P.</string>
 
     <string name="title_sync_peers">Dispositivos pareados</string>
-    <string name="label_sync_no_peers">Nenhum dispositivo pareado ainda. Toque em \"Adicionar dispositivo\" pra parear um.</string>
+    <string name="label_sync_no_peers">Dispositivos na mesma rede ou pareados por código aparecem aqui</string>
     <string name="action_sync_history">Sincronizar histórico</string>
     <string name="action_sync_files">Sincronizar arquivos</string>
     <string name="action_sync_all">Sincronizar tudo</string>
@@ -128,11 +128,11 @@
     <string name="title_sync_remove_peer_confirm">Remover \"%1$s\"?</string>
     <string name="description_sync_remove_peer_confirm">Esse dispositivo deixa de ter acesso à sua biblioteca. Se ele tentar se conectar de novo depois, vai passar pela mesma confirmação de um dispositivo nunca pareado.</string>
 
-    <string name="title_config_sync_devices">Sincronização entre Dispositivos</string>
+    <string name="title_config_sync_devices">Sincronização entre dispositivos</string>
     <string name="action_sync_comic_with_peer">Sincronizar com dispositivo</string>
-    <string name="description_sync_comic_with_peer">Envia ou recebe capítulos deste quadrinho com um dispositivo pareado.</string>
-    <string name="action_sync_comic_push">Enviar para dispositivo</string>
-    <string name="action_sync_comic_pull">Puxar de dispositivo</string>
+    <string name="description_sync_comic_with_peer">Sincroniza só este quadrinho com o dispositivo escolhido, sem mexer no resto da biblioteca</string>
+    <string name="action_sync_comic_push">Enviar</string>
+    <string name="action_sync_comic_pull">Puxar</string>
     <string name="title_sync_peer_picker">Escolher dispositivo</string>
     <string name="error_sync_comic_peer_not_paired">Esse dispositivo não está mais pareado.</string>
     <string name="error_sync_comic_peer_failed">Falha ao sincronizar com o dispositivo.</string>
@@ -154,11 +154,10 @@
     <string name="title_sync_remote_library">Biblioteca de \"%1$s\"</string>
     <string name="label_sync_remote_library_loading">Buscando quadrinhos…</string>
     <string name="label_sync_remote_library_empty">Nenhum quadrinho encontrado nesse dispositivo.</string>
-    <string name="label_sync_remote_library_chapter_count">%1$d capítulos</string>
-    <string name="error_sync_remote_library_failed">Não foi possível carregar a biblioteca: %1$s</string>
+    <string name="label_sync_remote_library_chapter_count">%1$d capítulos</string>    <string name="error_sync_remote_library_failed">Não foi possível carregar a biblioteca: %1$s</string>
 
     <string name="title_sync_activity_log">Transferências</string>
-    <string name="label_sync_activity_log_empty">Nenhuma transferência em andamento.</string>
+    <string name="label_sync_activity_log_empty">Nenhuma transferência em andamento</string>
     <string name="action_sync_activity_log_refresh">Atualizar</string>
     <string name="action_sync_activity_log_clear">Limpar</string>
     <string name="title_sync_activity_log_clear_confirm">Limpar histórico de transferências?</string>
@@ -180,16 +179,16 @@
     <string name="title_sync_trust_dialog">Novo dispositivo confiado</string>
     <string name="description_sync_trust_dialog">Você conectou com o dispositivo \"%1$s\" pela primeira vez. Esse acesso agora é permanente até que ele seja removido.</string>
 
-    <!-- Diálogo global de confirmação de dados móveis (ver `MobileDataSyncGate`) — aparece por
-         cima de QUALQUER tela que dispare uma sincronização P2P, não só a de Sync. -->
+    <!-- Global mobile data confirmation dialog (see `MobileDataSyncGate`): it shows on top of ANY
+         screen that starts a P2P sync, not only the Sync one. -->
     <string name="title_mobile_data_sync_confirm">Sincronizar usando dados móveis?</string>
     <string name="description_mobile_data_sync_confirm">Este dispositivo está conectado à internet pelos dados móveis. Continuar pode consumir a franquia do seu plano.</string>
     <string name="label_mobile_data_sync_remember">Sempre permitir com dados móveis</string>
     <string name="action_mobile_data_sync_confirm">Sincronizar</string>
 
-    <!-- Tela de Sync ("Rede") — seção Conexão -->
+    <!-- Sync ("Network") screen: Connection section -->
     <string name="label_relay_settings_allow_mobile_data_sync">Sincronizar usando dados móveis</string>
-    <string name="label_relay_settings_allow_mobile_data_sync_desc">Quando desativado, o app pede confirmação toda vez antes de sincronizar pela rede celular.</string>
+    <string name="label_relay_settings_allow_mobile_data_sync_desc">Desligado, o app pede confirmação antes de sincronizar pela rede celular</string>
 
     <!-- Icons -->
     <string name="description_icon_navigation_back">Ícone do botão que volta na pilha da navegação.</string>
@@ -198,7 +197,7 @@
     <string name="description_icon_sync_comic_directory">Sincronização somente das pastas ou dos quadrinhos completos.</string>
     <string name="description_icon_sync_mangadex">Sincronização de dados do mangadex.</string>
     <string name="description_icon_home_floating_tool_hub">Abrir hub de ferramentas</string>
-    <string name="description_icon_home_change_layout">Mudar Visualização</string>
+    <string name="description_icon_home_change_layout">Mudar visualização</string>
     <string name="description_icon_home_filter">Filtro</string>
     <string name="description_icon_home_browse_remote_library">Buscar quadrinhos em outro dispositivo</string>
     <string name="description_icon_home_sync_all_peer">Sincronizar tudo com um dispositivo</string>
@@ -210,12 +209,12 @@
     <string name="title_text_mangadex_configs_in_app">Configuração do mangadex</string>
     <string name="title_text_config_select_path_comic">Pasta dos quadrinhos</string>
     <string name="title_preference_file_extension">Tipo do arquivo a ser salvo</string>
-    <string name="title_config_sync_mangadex">Sincronizar metadados com mangadex</string>
-    <string name="title_chapter_item_chapter_number">Capitulo %1$s</string>
+    <string name="title_config_sync_mangadex">Sincronização com MangaDex</string>
+    <string name="title_chapter_item_chapter_number">Capítulo %1$s</string>
     <string name="title_sync_mangadex_remote_info">Sincronizar metadados</string>
     <string name="title_sync_external_metadata">Sincronizar metadados</string>
     <string name="title_chapter_tabs_chapters">Capítulos (%1$d)</string>
-    <string name="title_chapter_tabs_settings">Configurações</string>
+    <string name="title_chapter_tabs_settings">Preferências</string>
 
     <!-- Text other types -->
     <string name="description_text_config_select_path_comic">Pasta onde será buscado e salvo.</string>
@@ -223,32 +222,32 @@
     <string name="description_text_preference_file_extension_default">Escolha o formato padrão para salvar os quadrinhos</string>
     <string name="description_text_home_search_placeholder" tools:ignore="TypographyEllipsis">Buscar quadrinho...</string>
     <string name="description_text_home_deep_sync">Sincronização profunda</string>
-    <string name="description_text_home_deep_sync_supporting">Verifica todos as pastas. Pode demorar.</string>
+    <string name="description_text_home_deep_sync_supporting">Reescreve todos os arquivos do banco de dados</string>
     <string name="description_text_home_quick_sync">Sincronização rápida</string>
-    <string name="description_text_home_quick_sync_supporting">Adiciona apenas novos arquivos e pastas.</string>
+    <string name="description_text_home_quick_sync_supporting">Atualiza apenas arquivos alterados</string>
     <string name="description_text_home_empty_state">Nenhum quadrinho na biblioteca</string>
     <string name="description_text_home_empty_subtitle">Sua biblioteca está vazia no momento. Execute uma sincronização rápida na pasta atual ou selecione outra pasta contendo seus quadrinhos.</string>
-    <string name="action_home_quick_sync">Sincronização Rápida</string>
-    <string name="action_home_select_folder">Selecionar Pasta</string>
-    <string name="description_comic_list_item_chapter_count">Capitulos %1$s</string>
+    <string name="action_home_quick_sync">Sincronização rápida</string>
+    <string name="action_home_select_folder">Selecionar pasta</string>
+    <string name="description_comic_list_item_chapter_count">Capítulos %1$s</string>
 
     <string name="label_sync_group">Sincronizar</string>
     <string name="label_mangadex_group">MangaDex</string>
     <string name="label_anilist_group">Configuração do AniList</string>
     <string name="label_library_context">Biblioteca</string>
-    <string name="label_local_file_group">Arquivo Local</string>
+    <string name="label_local_file_group">Arquivo local</string>
 
     <string name="title_preference_metadata_comic_info">Gerar ComicInfo.xml</string>
-    <string name="description_preference_metadata_comic_info">Criar arquivo de metadados na pasta ao sincronizar com fontes externas.</string>
+    <string name="description_preference_metadata_comic_info">Criar arquivo de metadados na pasta ao sincronizar</string>
 
-    <string name="title_settings_chapters_per_page">Capítulos pré-carregados</string>
-    <string name="description_settings_chapters_per_page">Quantidade de itens exibidos na lista</string>
+    <string name="title_settings_chapters_per_page">Capítulos por página</string>
+    <string name="description_settings_chapters_per_page">Quantos capítulos a lista carrega de cada vez</string>
 
     <string name="title_sync_anilist_remote_info">Sincronizar metadados</string>
     <string name="description_sync_anilist_remote_info">Busca metadados no AniList pelo título do quadrinho</string>
 
-    <string name="title_sync_comic_info">Sincronizar ComicInfo.xml</string>
-    <string name="description_sync_comic_info">Busca metadados locais no arquivo ou pasta</string>
+    <string name="title_sync_comic_info">ComicInfo.xml</string>
+    <string name="description_sync_comic_info">Extrair metadados do arquivo ComicInfo.xml da pasta local</string>
     <string name="description_sync_chapters_internal">Sincronizar capítulos usando metadados internos</string>
 
     <string name="label_sync_progress">Sincronizando…</string>
@@ -256,39 +255,39 @@
     <string name="label_sync_complete">Sincronizado!</string>
 
     <!-- Components -->
-    <string name="message_image_parameter_required_smart_card">A image não pode ser nula para CardType.IMAGE</string>
+    <string name="message_image_parameter_required_smart_card">A imagem não pode ser nula para CardType.IMAGE</string>
     <string name="message_path_not_found">Pasta não encontrada.</string>
 
-    <!-- Comic Preferences: categorias (mesmo agrupamento Leitura/Sincronização/Avançado do desktop) -->
+    <!-- Comic Preferences: categories (same Reading/Sync/Advanced grouping as the desktop) -->
     <string name="title_comic_preferences_reading">Leitura</string>
-    <string name="description_comic_preferences_reading">Exibição de volume, categoria</string>
+    <string name="description_comic_preferences_reading">Como este quadrinho aparece e em qual marcador ele fica</string>
     <string name="title_comic_preferences_sync">Sincronização</string>
     <string name="description_comic_preferences_sync">Metadados, arquivos e dispositivos</string>
     <string name="title_comic_preferences_advanced">Avançado</string>
     <string name="description_comic_preferences_advanced">Zona de risco</string>
     <string name="label_comic_preferences_section_metadata">Metadados</string>
     <string name="label_comic_preferences_section_files">Arquivos</string>
-    <string name="label_comic_preferences_section_devices">Dispositivos Pareados</string>
-    <string name="label_comic_preferences_section_danger_zone">Zona de Risco</string>
+    <string name="label_comic_preferences_section_devices">Dispositivos pareados</string>
+    <string name="label_comic_preferences_section_danger_zone">Zona de risco</string>
 
     <!-- Settings Section -->
-    <string name="title_settings_display_config">Configurações de Exibição</string>
+    <string name="title_settings_display_config">Configurações de exibição</string>
     <string name="title_settings_page_preferences">Preferências da página</string>
-    <string name="title_settings_file_config">Configurações dos Arquivos</string>
+    <string name="title_settings_file_config">Configurações dos arquivos</string>
     <string name="title_settings_sync_files">Sincronizar arquivos</string>
-    <string name="title_sync_chapters">Sincronizar capítulos</string>
-    <string name="description_sync_chapters_local">Sincroniza capítulos local</string>
+    <string name="title_sync_chapters">Sincronizar capítulos locais</string>
+    <string name="description_sync_chapters_local">Atualiza apenas os capítulos novos ou alterados nesta pasta</string>
     <string name="description_sync_chapters_remote">Sincroniza numeração oficial e datas</string>
-    <string name="title_sync_cover_banner">Sincronizar cover e banner</string>
-    <string name="description_sync_cover_banner">Busca imagens já baixadas na pasta</string>
-    <string name="title_extract_first_page_as_cover">Usar página do capítulo como cover</string>
-    <string name="description_extract_first_page_as_cover">Extrai a primeira página do primeiro capítulo para usar como capa</string>
+    <string name="title_sync_cover_banner">Buscar capa e banner</string>
+    <string name="description_sync_cover_banner">Usa as imagens que já estão na pasta</string>
+    <string name="title_extract_first_page_as_cover">Usar página do capítulo como capa</string>
+    <string name="description_extract_first_page_as_cover">Extrai a primeira página do primeiro capítulo e define como capa, substituindo a atual</string>
 
     <string name="title_extract_volume_covers">Gerar capas dos volumes</string>
-    <string name="description_extract_volume_covers">Usa a primeira página do volume como capa</string>
+    <string name="description_extract_volume_covers">Usa a primeira página de cada volume como capa dele, substituindo as atuais</string>
 
-    <string name="description_icon_pagination_previous">Página Anterior</string>
-    <string name="description_icon_pagination_next">Próxima Página</string>
+    <string name="description_icon_pagination_previous">Página anterior</string>
+    <string name="description_icon_pagination_next">Próxima página</string>
     <string name="label_pagination_format">%1$d / %2$d</string>
 
     <!-- Chapter Item & Details -->
@@ -300,14 +299,14 @@
     <string name="label_chapter_detail_scanlation">Grupo de tradução</string>
     <string name="label_chapter_detail_pages">Páginas</string>
     <string name="label_chapter_scanlation_prefix">Scan: %1$s</string>
-    <string name="label_volume_header_unknown">Volume Desconhecido</string>
+    <string name="label_volume_header_unknown">Volume desconhecido</string>
     <string name="label_volume_header_special">Especial</string>
-    <string name="label_volume_header_root">Capítulos Avulsos</string>
+    <string name="label_volume_header_root">Capítulos avulsos</string>
     <string name="label_volume_card_description">%1$d de %2$d capítulos carregados</string>
     <string name="action_volume_load_more">Carregar mais capítulos</string>
-    <string name="title_settings_volume_style">Estilo dos volumes</string>
-    <string name="label_volume_style_normal">Normal</string>
-    <string name="label_volume_style_cover">Capas</string>
+    <string name="title_settings_volume_style">Destaque do volume</string>
+    <string name="label_volume_style_normal">Banner</string>
+    <string name="label_volume_style_cover">Capa</string>
 
     <!-- Comic Header -->
     <string name="comic_header_cover_description">Capa do quadrinho</string>
@@ -336,82 +335,55 @@
     <string name="description_icon_continue_reading">Continuar leitura</string>
 
     <!-- History & Reader Info -->
-    <string name="description_history_empty_state">Nenhum quadrinho lido recentemente</string>
+    <string name="description_history_empty_state">Nenhum histórico ainda</string>
     <string name="description_icon_history_sync_with_peer">Sincronizar histórico com um dispositivo pareado.</string>
     <string name="label_chapter_unknown">Capítulo desconhecido</string>
     <string name="label_reader_chapter_order">Ordem: %1$s</string>
     <string name="label_reader_page_format">Página %1$d / %2$d</string>
     <string name="label_history_chapter_progress">Capítulo %1$s - Pág. %2$d</string>
-    <string name="label_history_hero_most_recent">MAIS RECENTE</string>
-    <string name="label_history_hero_continue">CONTINUAR LENDO</string>
-    <string name="label_banner_continue_reading">Continuar Lendo</string>
+    <string name="label_history_hero_most_recent">Mais recente</string>
+    <string name="label_history_hero_continue">Continuar lendo</string>
+    <string name="label_banner_continue_reading">Continuar lendo</string>
     <string name="label_banner_chapter_progress">Capítulo %1$s</string>
-    <string name="label_banner_continue">Continuar Lendo</string>
+    <string name="label_banner_continue">Continuar lendo</string>
     <string name="description_icon_collapse_banner">Colapsar banner</string>
     <string name="description_icon_home_search">Pesquisar</string>
-    <string name="label_reader_config_title">Modo de Leitura</string>
+    <string name="label_reader_config_title">Modo de leitura</string>
     <string name="label_reader_pages_prefix">Páginas</string>
     <string name="label_reader_next_chapter">Próximo</string>
     <string name="label_reader_previous_chapter">Anterior</string>
-    <!-- Theme Settings -->
-    <string name="title_settings_appearance">Aparência</string>
-    <string name="description_settings_appearance">Personalize as cores do aplicativo</string>
-    <string name="title_settings_dynamic_color">Adaptável</string>
-    <string name="subtitle_settings_dynamic_color">Cores do sistema</string>
-    <string name="description_settings_dynamic_color">Usa cores do seu papel de parede (Android 12+)</string>
-    <string name="title_settings_catppuccin_theme">Catppuccin</string>
-    <string name="subtitle_settings_catppuccin_theme">Mocha</string>
-    <string name="description_settings_catppuccin_theme">Usa a paleta de cores original do app</string>
-
-    <string name="title_settings_nord_theme">Nord</string>
-    <string name="title_settings_dracula_theme">Dracula</string>
-    <string name="title_settings_alucard_theme">Alucard</string>
-    <string name="subtitle_settings_latte_theme">Latte</string>
-    <string name="subtitle_settings_mocha_theme">Mocha</string>
-    <string name="subtitle_settings_dracula_theme">Dracula</string>
-    <string name="subtitle_settings_vampire_theme">Vampire</string>
-    <string name="subtitle_settings_nord_dark_theme">Arctic Night</string>
-    <string name="subtitle_settings_nord_light_theme">Snow Storm</string>
-    <string name="title_settings_tokyo_night_theme">Tokyo Night</string>
-    <string name="subtitle_settings_tokyo_night_dark_theme">Night</string>
-    <string name="subtitle_settings_tokyo_night_light_theme">Day</string>
-
-    <string name="label_settings_see_more_themes">Ver mais</string>
-    <string name="label_settings_see_less_themes">Ver menos</string>
-    <string name="title_dialog_select_theme">Escolha um Tema</string>
-
     <!-- Search & Download Screen -->
     <string name="placeholder_search_mangadex">Nome, ID ou URL do quadrinho…</string>
     <string name="label_search_results">Resultados</string>
 
     <!-- Categories -->
-    <string name="title_config_categories">Categorias e Marcações</string>
-    <string name="description_config_categories">Organize seus arquivos com marcações personalizadas</string>
-    <string name="label_category_name">Nome da Categoria</string>
+    <string name="title_config_categories">Marcadores</string>
+    <string name="description_config_categories">Crie e organize marcadores</string>
+    <string name="label_category_name">Nome do marcador</string>
     <string name="label_category_color">Cor</string>
-    <string name="action_add_category">Adicionar Categoria</string>
-    <string name="action_select_category">Selecionar Categoria</string>
-    <string name="action_manage_categories">Gerenciar Categorias</string>
-    <string name="action_delete_category">Excluir Categoria</string>
-    <string name="label_category_empty">Nenhuma categoria cadastrada</string>
-    <string name="label_category_none_selected">Sem categoria</string>
-    <string name="title_comic_category">Categoria do quadrinho</string>
-    <string name="placeholder_category_name">Ex: Light Novel, HQ, Comic…</string>
+    <string name="action_add_category">Criar</string>
+    <string name="action_select_category">Selecionar categoria</string>
+    <string name="action_manage_categories">Gerenciar categorias</string>
+    <string name="action_delete_category">Remover marcador</string>
+    <string name="label_category_empty">Nenhum marcador criado</string>
+    <string name="label_category_none_selected">Nenhum</string>
+    <string name="title_comic_category">Marcador</string>
+    <string name="placeholder_category_name">Nome do marcador</string>
 
-    <string name="label_config_external_sync">Sincronização Externa</string>
-    <string name="description_config_external_sync">Permitir busca de metadados via AniList ou MangaDex</string>
+    <string name="label_config_external_sync">Sincronização externa</string>
+    <string name="description_config_external_sync">Permitir que este quadrinho seja atualizado nas sincronizações em lote</string>
 
         <!-- Chapter Naming Templates -->
-    <string name="label_template_empty_state">Nenhum padrão de arquivo criado</string>
-    <string name="title_chapter_naming_templates">Padrões de arquivos</string>
-    <string name="action_add_template">Adicionar Padrão</string>
-    <string name="label_system_template">SISTEMA</string>
-    <string name="description_icon_delete_template">Excluir Padrão</string>
-    <string name="description_icon_edit_template">Editar Padrão</string>
-    <string name="title_dialog_new_template">Novo Padrão</string>
-    <string name="title_dialog_edit_template">Editar Padrão</string>
-    <string name="label_template_label">Nome (ex: Meu Padrão)</string>
-    <string name="label_template_pattern">Padrão (ex: Cap. {chapter})</string>
+    <string name="label_template_empty_state">Nenhum template criado</string>
+    <string name="title_chapter_naming_templates">Templates de nomenclatura</string>
+    <string name="action_add_template">Criar template</string>
+    <string name="label_system_template">Padrão</string>
+    <string name="description_icon_delete_template">Excluir padrão</string>
+    <string name="description_icon_edit_template">Editar padrão</string>
+    <string name="title_dialog_new_template">Criar novo template</string>
+    <string name="title_dialog_edit_template">Editar template</string>
+    <string name="label_template_label">Nome do template</string>
+    <string name="label_template_pattern">Padrão</string>
     <string name="placeholder_template_pattern">{chapter}, {decimal}</string>
     <string name="description_template_macros">{volume} representa o número do volume (obrigatório no modo Volume). {chapter} é o número do capítulo (obrigatório no modo Capítulo). {decimal} indica variação decimal do capítulo (ex: .5). Utilize * como wildcard para ignorar qualquer trecho de texto.</string>
     <string name="action_add">Adicionar</string>
@@ -419,12 +391,12 @@
     <string name="action_cancel">Cancelar</string>
 
     <!-- Comic Card Actions -->
-    <string name="action_bookmark">Bookmark</string>
+    <string name="action_bookmark">Marcar</string>
     <string name="action_hide">Ocultar</string>
     <string name="action_unhide">Reexibir</string>
     <string name="action_delete">Deletar</string>
-    <string name="action_remove_bookmark">Remover bookmark</string>
-    <string name="label_no_bookmark">Sem bookmark</string>
+    <string name="action_remove_bookmark">Remover marcador</string>
+    <string name="label_no_bookmark">Sem marcador</string>
     <string name="description_hide">Esconde da biblioteca</string>
     <string name="description_unhide">Mostra na biblioteca</string>
     <string name="description_delete">Remove do banco e do dispositivo</string>
@@ -434,10 +406,10 @@
     <string name="dialog_unhide_message">Este quadrinho voltará a ser exibido na biblioteca principal.</string>
     <string name="dialog_delete_title">Deletar quadrinho?</string>
     <string name="dialog_delete_message">Esta ação remove o quadrinho do banco de dados e apaga a pasta do dispositivo. Não pode ser desfeita.</string>
-    <string name="action_clear_metadata">Limpar Metadados</string>
-    <string name="description_clear_metadata">Remove título, descrição, autores, gêneros e fonte sincronizada</string>
-    <string name="dialog_clear_metadata_title">Limpar metadados?</string>
-    <string name="dialog_clear_metadata_message">Esta ação remove os metadados sincronizados deste quadrinho (título, descrição, autores, gêneros e fonte). Os arquivos no dispositivo não são afetados. Não pode ser desfeita.</string>
+    <string name="action_clear_metadata">Limpar metadados</string>
+    <string name="description_clear_metadata">Apaga o ComicInfo.xml, a capa e o banner da pasta e remove os metadados sincronizados do banco</string>
+    <string name="dialog_clear_metadata_title">Limpar metadados deste quadrinho?</string>
+    <string name="dialog_clear_metadata_message">Isso apaga o ComicInfo.xml, a capa e o banner da pasta, além dos metadados sincronizados. Capítulos e volumes não são afetados. Não dá para desfazer.</string>
     <string name="label_selection_count">%1$d selecionado(s)</string>
     <string name="action_select_all">Selecionar tudo</string>
     <string name="action_deselect_all">Desmarcar tudo</string>
@@ -460,13 +432,13 @@
     <string name="dialog_discard_changes_message">Tem certeza? As alterações serão perdidas.</string>
 
     <!-- Filter & Sort Sheet -->
-    <string name="title_home_filter_sheet">Filtrar e Ordenar</string>
+    <string name="title_home_filter_sheet">Filtrar e ordenar</string>
     <string name="subtitle_home_sort">Ordenar por</string>
     <string name="subtitle_home_filter">Filtrar por</string>
     <string name="label_home_filter_show_hidden">Mostrar ocultos</string>
-    <string name="subtitle_home_filter_categories">Categorias</string>
-    <string name="subtitle_home_filter_sources">Fontes de Metadados</string>
-    <string name="title_chapter_sort_sheet">Ordenar Capítulos</string>
+    <string name="subtitle_home_filter_categories">Marcadores</string>
+    <string name="subtitle_home_filter_sources">Fontes de metadados</string>
+    <string name="title_chapter_sort_sheet">Ordenar capítulos</string>
 
     <string name="label_filter_all">Todos</string>
     <string name="label_filter_none">Sem metadados</string>
@@ -480,8 +452,8 @@
     <string name="label_sort_chapter_count">Quantidade de capítulos</string>
     <string name="label_sort_last_update">Última atualização</string>
     <string name="label_sort_number">Número</string>
-    <string name="label_sort_type_chapter">Capítulo</string>
-    <string name="label_sort_type_volume">Volume</string>
+    <string name="label_sort_type_chapter">Capítulos</string>
+    <string name="label_sort_type_volume">Volumes</string>
 
     <!-- Language names for metadata -->
     <string name="lang_pt_br">Português (BR)</string>
@@ -497,7 +469,7 @@
     <string name="lang_zh">中文</string>
     <string name="lang_id">Indonesia</string>
 
-    <string name="title_settings_metadata_language">Idioma de Metadados</string>
+    <string name="title_settings_metadata_language">Idioma dos metadados</string>
     <string name="description_settings_metadata_language">Idioma padrão para busca e metadados (Apenas MangaDex)</string>
     <string name="label_select_language">Selecionar</string>
     <string name="common_back">Voltar</string>
@@ -508,21 +480,21 @@
     <string name="common_search_corner_radius">Raio do canto</string>
 
     <!-- Tutorial/Onboarding Strings -->
-    <string name="title_tutorial_setup">Bem-vindo ao Acerola!</string>
+    <string name="title_tutorial_setup">Comece por aqui</string>
     <string name="description_tutorial_setup">Para começar, precisamos configurar sua biblioteca de quadrinhos.</string>
-    <string name="action_configure_library">Configurar Biblioteca</string>
+    <string name="action_configure_library">Configurar biblioteca</string>
 
-    <string name="description_tutorial_folder_select">Clique aqui para selecionar a pasta onde seus quadrinhos estão armazenados.</string>
-    <string name="description_tutorial_sync_deep">Use a Sincronização Profunda se for a primeira vez ou se precisar verificar arquivos renomeados.</string>
+    <string name="description_tutorial_folder_select">Escolha a pasta onde estão os seus quadrinhos</string>
+    <string name="description_tutorial_sync_deep">Depois, use a sincronização profunda para ler tudo pela primeira vez</string>
 
     <string name="tutorial_title_welcome">Bem-vindo ao Acerola!</string>
-    <string name="tutorial_desc_welcome">Seu leitor de quadrinhos locais. Vamos mostrar como organizar sua biblioteca para o app funcionar perfeitamente.</string>
+    <string name="tutorial_desc_welcome">Bem-vindo ao Acerola, seu leitor de quadrinhos</string>
     <string name="tutorial_title_folder">Organize suas pastas</string>
     <string name="tutorial_desc_folder">Crie uma pasta raiz para a biblioteca. Dentro dela, cada quadrinho deve ter sua própria subpasta contendo os capítulos.</string>
-    <string name="tutorial_title_files">Formatos Suportados</string>
+    <string name="tutorial_title_files">Formatos suportados</string>
     <string name="tutorial_desc_files">O Acerola suporta arquivos .cbz e .cbr. PDFs são convertidos automaticamente para .cbz. Organize os capítulos numericamente dentro da pasta do quadrinho para melhor experiência.</string>
-    <string name="tutorial_formats_title">Formatos Suportados</string>
-    <string name="tutorial_formats_subtitle">O Acerola suporta os seguintes formatos de leitura:</string>
+    <string name="tutorial_formats_title">Formatos suportados</string>
+    <string name="tutorial_formats_subtitle">O Acerola lê estes formatos</string>
     <string name="tutorial_formats_cbz_title">Comic Book ZIP</string>
     <string name="tutorial_formats_cbz_badge">Nativo (SDK)</string>
     <string name="tutorial_formats_cbz_desc">Container ZIP de acesso randômico nativo do Android SDK. Leitura instantânea com cache inteligente em memória e pré-carregamento.</string>
@@ -534,20 +506,131 @@
     <string name="tutorial_formats_cbr_feat_1">Leitura sob demanda</string>
     <string name="tutorial_formats_cbr_feat_2">Sem sujeira no disco</string>
     <string name="tutorial_formats_pdf_title">Documento PDF</string>
-    <string name="tutorial_formats_pdf_badge">PdfRenderer Nativo</string>
+    <string name="tutorial_formats_pdf_badge">PdfRenderer nativo</string>
     <string name="tutorial_formats_pdf_desc">Renderizado nativamente via Android PdfRenderer e convertido automaticamente em background para garantir a máxima performance.</string>
     <string name="tutorial_formats_pdf_feat_1">Android PdfRenderer nativo</string>
     <string name="tutorial_formats_pdf_feat_2">Conversão otimizada para CBZ</string>
-    <string name="tutorial_formats_sync_note_title">Sincronização Automática:</string>
-    <string name="tutorial_formats_sync_note_content">O Acerola escaneia e indexa seus arquivos nesses formatos sem precisar extraí-los manualmente.</string>
-    <string name="tutorial_title_settings">Configurações Iniciais</string>
-    <string name="tutorial_title_complete">Tudo Pronto!</string>
-    <string name="tutorial_desc_complete">O Acerola está pronto para uso.</string>
-    <string name="tutorial_note_complete">Você pode alterar essas configurações a qualquer momento na página de Configurações.</string>
+    <string name="tutorial_formats_sync_note_title">Sincronização automática</string>
+    <string name="tutorial_formats_sync_note_content">o Acerola indexa esses arquivos sem precisar extraí-los</string>
+    <string name="tutorial_title_settings">Configuração inicial</string>
+    <string name="tutorial_title_complete">Tudo pronto!</string>
+    <string name="tutorial_desc_complete">Seu Acerola está pronto para uso</string>
+    <string name="tutorial_note_complete">Você pode mudar tudo isso depois nas Configurações</string>
     <string name="tutorial_action_next">Próximo</string>
     <string name="tutorial_action_previous">Voltar</string>
     <string name="tutorial_action_skip">Pular</string>
-    <string name="tutorial_action_finish">Ir para Início</string>
+    <string name="tutorial_action_finish">Ir para o início</string>
     <string name="tutorial_content_description_slide">Imagem ilustrativa do tutorial</string>
 
+    <!-- Error screen (acerola-brand error.* messages) -->
+    <string name="error_eyebrow">Erro %1$d</string>
+    <string name="error_eyebrow_offline">Sem conexão</string>
+    <string name="error_eyebrow_generic">Erro</string>
+    <string name="error_sticker">Ops!</string>
+    <string name="error_action_home">Ir para o início</string>
+    <string name="error_action_back">Voltar</string>
+    <string name="error_action_retry">Tentar de novo</string>
+    <string name="error_bad_request_title">Algo no pedido não fechou</string>
+    <string name="error_bad_request_text">O endereço ou os dados enviados vieram de um jeito que a gente não entende. Confira e tente de novo pelo início.</string>
+    <string name="error_unauthorized_title">Entre para continuar</string>
+    <string name="error_unauthorized_text">Esta página é só para quem entrou na conta. Entre e volte aqui.</string>
+    <string name="error_forbidden_title">Esta página não é para você</string>
+    <string name="error_forbidden_text">Sua conta não tem acesso a isto. Se acha que deveria ter, fale com quem cuida do app.</string>
+    <string name="error_not_found_title">Página não encontrada</string>
+    <string name="error_not_found_text">O endereço pode ter mudado ou nunca ter existido. Volte ao início e siga de lá.</string>
+    <string name="error_timeout_title">Demorou demais</string>
+    <string name="error_timeout_text">A resposta não chegou a tempo. Tente de novo em instantes.</string>
+    <string name="error_too_many_title">Calma, muitos pedidos</string>
+    <string name="error_too_many_text">Foram muitos pedidos em pouco tempo. Espere um minuto e tente de novo.</string>
+    <string name="error_server_title">Algo quebrou do nosso lado</string>
+    <string name="error_server_text">O erro foi nosso, não seu. Tente de novo; se continuar, volte mais tarde.</string>
+    <string name="error_unavailable_title">Fora do ar por um momento</string>
+    <string name="error_unavailable_text">O serviço está em manutenção ou sobrecarregado. Tente de novo em alguns minutos.</string>
+    <string name="error_offline_title">Você está sem internet</string>
+    <string name="error_offline_text">Confira o Wi-Fi ou os dados móveis e tente de novo.</string>
+    <string name="error_unknown_title">Algo deu errado</string>
+    <string name="error_unknown_text">Não sabemos bem o que houve. Tente de novo; se continuar, volte ao início.</string>
+    <string name="label_config_eyebrow">Preferências</string>
+    <string name="title_config_files">Arquivos</string>
+    <string name="description_config_files">Onde ficam seus quadrinhos e o que o Acerola grava na pasta</string>
+    <string name="description_config_library">Mantenha a biblioteca em dia com os arquivos do disco</string>
+    <string name="title_config_metadata">Metadados</string>
+    <string name="description_config_metadata">De onde vêm títulos, capas e sinopses</string>
+    <string name="label_config_comic_folder_empty">Nenhuma pasta escolhida</string>
+    <string name="description_config_metadata_language">Idioma padrão de títulos e sinopses</string>
+    <string name="description_config_sync_mangadex">Sincroniza metadados com o MangaDex</string>
+    <string name="title_config_sync_anilist">Sincronização com AniList</string>
+    <string name="description_config_sync_anilist">Sincroniza metadados com o AniList</string>
+    <string name="action_config_choose_folder">Escolher pasta</string>
+    <string name="action_config_sync">Sincronizar</string>
+    <string name="action_config_rebuild">Reconstruir</string>
+    <string name="action_config_open">Abrir</string>
+    <string name="action_config_syncing">Sincronizando</string>
+    <string name="label_category_empty_hint">Dê um nome, escolha uma cor e crie o primeiro</string>
+    <string name="label_category_color_option">Cor %1$d</string>
+    <string name="description_comic_preferences_metadata">De onde vêm título, capa e sinopse deste quadrinho</string>
+    <string name="title_comic_preferences_files">Sincronização de arquivos</string>
+    <string name="description_comic_preferences_files">Mantenha os capítulos em dia com a pasta</string>
+    <string name="title_comic_preferences_devices">Sincronizar com dispositivo</string>
+    <string name="description_comic_preferences_devices">Leve só este quadrinho para outro dispositivo</string>
+    <string name="title_comic_preferences_cover">Capa</string>
+    <string name="description_comic_preferences_cover">Troque a capa pelas páginas do próprio quadrinho</string>
+    <string name="title_comic_preferences_danger">Zona de risco</string>
+    <string name="description_comic_preferences_danger">Ações que não dá para desfazer</string>
+    <string name="description_settings_volume_style">Escolha como os volumes são destacados: como capas ou banners</string>
+    <string name="description_comic_category">Atribua um marcador a este quadrinho</string>
+    <string name="label_comic_metadata_source_active">Fonte atual</string>
+    <string name="title_sync_comic_send">Enviar este quadrinho</string>
+    <string name="action_comic_preferences_sync">Sincronizar</string>
+    <string name="action_comic_preferences_syncing">Sincronizando</string>
+    <string name="action_comic_preferences_read">Ler arquivo</string>
+    <string name="action_comic_preferences_generate">Gerar</string>
+    <string name="action_comic_preferences_find">Buscar</string>
+    <string name="action_comic_preferences_clear">Limpar</string>
+    <string name="action_sync_comic_push_title">Enviar para dispositivo</string>
+    <string name="action_sync_comic_pull_title">Puxar de dispositivo</string>
+    <string name="label_sync_eyebrow">Seus dispositivos</string>
+    <string name="description_sync_this_device">Como os outros aparelhos encontram este</string>
+    <string name="description_sync_connect">Cole o código que aparece no outro dispositivo</string>
+    <string name="description_sync_peers">Dispositivos que já podem trocar quadrinhos e histórico com este</string>
+    <string name="label_sync_no_peers_title">Aguardando conexões</string>
+    <string name="description_relay_settings">Escolha como este dispositivo alcança outros fora da sua rede local</string>
+    <string name="label_relay_settings_custom_relays_count">%1$d configurado(s)</string>
+    <string name="action_relay_settings_manage">Gerenciar</string>
+    <string name="action_relay_settings_ticket">Ticket</string>
+    <string name="description_sync_activity_log">Histórico do que foi enviado e recebido</string>
+    <string name="action_sync_activity_log_open">Abrir</string>
+    <string name="label_sync_no_peers_hint">Compartilhe seu código ou cole o de outro dispositivo acima</string>
+    <string name="tutorial_setup_title">Configuração do Acerola</string>
+    <string name="tutorial_step_welcome">Boas-vindas</string>
+    <string name="tutorial_step_formats">Formatos</string>
+    <string name="tutorial_step_settings">Configurações</string>
+    <string name="tutorial_step_complete">Concluir</string>
+    <string name="tutorial_welcome_fast_title">Leitura veloz</string>
+    <string name="tutorial_welcome_fast_desc">CBZ, CBR e PDF</string>
+    <string name="tutorial_welcome_p2p_title">P2P seguro</string>
+    <string name="tutorial_welcome_p2p_desc">Sync com o desktop</string>
+    <string name="tutorial_welcome_local_title">100% local</string>
+    <string name="tutorial_welcome_local_desc">Privacidade total</string>
+    <string name="tutorial_action_start">Começar</string>
+    <string name="tutorial_desc_settings">Escolha a pasta onde seus quadrinhos estão guardados</string>
+    <string name="tutorial_checklist_title">Pronto para a melhor leitura</string>
+    <string name="tutorial_checklist_formats">CBZ, CBR e PDF prontos para indexação</string>
+    <string name="tutorial_checklist_folder">Pasta da biblioteca vinculada</string>
+    <string name="tutorial_checklist_sync">Sincronização com outros dispositivos disponível</string>
+    <string name="action_home_filter">Filtrar e ordenar</string>
+    <string name="action_home_browse_remote">Buscar em outro dispositivo</string>
+    <string name="label_template_eyebrow">Configurações</string>
+    <string name="description_template_screen">Padrões usados para reconhecer o número do capítulo e do volume pelo nome do arquivo ou da pasta</string>
+    <string name="title_template_chapters">Templates de capítulo</string>
+    <string name="title_template_volumes">Templates de volume</string>
+    <string name="label_template_empty_chapter">Nenhum template de capítulo personalizado ainda</string>
+    <string name="label_template_empty_volume">Nenhum template de volume personalizado ainda</string>
+    <string name="label_template_applies_to">Aplica-se a</string>
+    <string name="label_history_eyebrow">Sua leitura</string>
+    <string name="description_history_screen">O que você leu por último, para voltar de onde parou</string>
+    <string name="action_history_sync">Sincronizar</string>
+    <string name="description_history_empty_hint">O que você ler aparece aqui</string>
+    <string name="label_reader_layout_title">Layout de leitura</string>
+    <string name="action_sync_scan_short">Escanear</string>
 </resources>

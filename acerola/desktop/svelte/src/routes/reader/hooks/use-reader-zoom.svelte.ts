@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages';
+import { m } from '#lib/paraglide/messages.js';
 
 export type ReaderMode = 'vertical' | 'horizontal' | 'webtoon';
 
@@ -44,7 +44,7 @@ export function useReaderZoom() {
 
 	const zoomStatusLabel = $derived(
 		zoomMode
-			? m['pages.reader.zoom.scroll_status']({ zoom: zoomLabel })
+			? m['pages.reader.zoom.scrollStatus']({ zoom: zoomLabel })
 			: m['pages.reader.zoom.status']({ zoom: zoomLabel })
 	);
 
@@ -59,10 +59,10 @@ export function useReaderZoom() {
 		clampPan();
 	}
 
-	// A imagem em foco varia de tamanho/proporção por capítulo (1920x1080, 1720x1450, etc.) e é
-	// exibida com `object-contain`, então o retângulo realmente ocupado por ela dentro do viewport
-	// quase nunca é igual ao retângulo do viewport em si — usar o viewport puro como limite de pan
-	// deixava sobrar área vazia fora da imagem em quadrinhos com proporção diferente da tela.
+	// The focused image varies in size/ratio per chapter (1920x1080, 1720x1450, etc.) and is
+	// shown with `object-contain`, so the rectangle it actually occupies inside the viewport is
+	// almost never equal to the viewport rectangle itself — using the bare viewport as the pan
+	// limit left empty space outside the image on comics whose ratio differs from the screen.
 	function setFocusedImage(node: HTMLImageElement | null) {
 		if (focusedImage === node) return;
 
@@ -75,9 +75,9 @@ export function useReaderZoom() {
 		panY = 0;
 	}
 
-	// Calcula o retângulo que a imagem realmente ocupa dentro do viewport (mesma lógica do
-	// `object-contain` do CSS), usando o tamanho intrínseco da imagem — que independe de
-	// transform/scale, ao contrário de `getBoundingClientRect()` num elemento já escalado.
+	// Computes the rectangle the image actually occupies inside the viewport (same logic as
+	// CSS `object-contain`), using the image's intrinsic size — which doesn't depend on
+	// transform/scale, unlike `getBoundingClientRect()` on an already scaled element.
 	function fittedContentSize() {
 		const rect = viewport?.getBoundingClientRect();
 		const containerWidth = rect?.width ?? 0;
@@ -125,10 +125,10 @@ export function useReaderZoom() {
 		return Math.round(Math.max(MIN_ZOOM, Math.min(value, MAX_ZOOM)) * 100) / 100;
 	}
 
-	// O transform-origin do zoom sempre fica no centro do viewport, nunca no ponto exato do
-	// clique/scroll — `panBounds()` assume crescimento simétrico em torno do centro pra calcular
-	// os limites do pan, e ancorar num ponto fora do centro tornava o crescimento assimétrico,
-	// prendendo o usuário num "quadrado" de pan que não correspondia à imagem real.
+	// The zoom transform-origin always stays at the viewport center, never at the exact
+	// click/scroll point — `panBounds()` assumes symmetric growth around the center to compute
+	// the pan limits, and anchoring at an off-center point made the growth asymmetric, trapping
+	// the user in a pan "box" that didn't match the real image.
 	function zoomAnchorPoint() {
 		if (!viewport) {
 			return {

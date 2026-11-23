@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
-import { APK_BINARY_BASE_URL } from '$lib/constants/site';
-import { resolveLatestApkKey } from '$lib/server/apk-bucket';
+import { APK_BINARY_BASE_URL } from '#lib/constants/site.ts';
+import { resolveLatestApkKey } from '#lib/server/apk-bucket.ts';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ platform }) => {

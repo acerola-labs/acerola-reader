@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { SidebarGroup } from '$lib/content/docs';
+	import type { SidebarGroup } from '#lib/content/docs.ts';
 	import AcerolaMobileNav from './acerola-mobile-nav.svelte';
 
 	const groups: SidebarGroup[] = [
@@ -12,7 +12,11 @@
 					slug: 'getting-started',
 					component: {} as never,
 					raw: '',
-					frontmatter: { title: 'Primeiros passos', section: 'Primeiros passos', order: 1 }
+					frontmatter: {
+						title: 'Primeiros passos',
+						section: 'Primeiros passos',
+						order: 1
+					}
 				}
 			]
 		},
@@ -38,23 +42,23 @@
 			docs: {
 				description: {
 					component:
-						'Menu de navegacao em tela cheia (Sheet) usado em telas pequenas, com a mesma `Sidebar` da navegacao lateral desktop e os `NavControls` no rodape.'
+						'Full-screen navigation menu (Sheet) used on small screens, with the same `Sidebar` as the desktop side navigation and the `NavControls` in the footer.'
 				}
 			}
 		},
 		argTypes: {
-			open: { description: 'Controla a visibilidade do menu.', control: 'boolean' },
-			groups: { description: 'Secoes e documentos a exibir.', control: false },
-			activeSlug: { description: 'Slug do documento atualmente aberto.', control: 'text' }
+			open: { description: 'Controls the menu visibility.', control: 'boolean' },
+			groups: { description: 'Sections and documents to display.', control: false },
+			activeSlug: { description: 'Slug of the currently open document.', control: 'text' }
 		}
 	});
 </script>
 
 <script lang="ts">
-	// `open: true` como arg inicial faz o Sheet "nascer" já aberto — a lógica de "presence"
-	// do bits-ui que revela o conteúdo só roda numa transição fechado→aberto de verdade, então
-	// o painel nunca aparece (só o overlay em tela cheia, borrando a aba de Docs inteira atrás
-	// dele). Fechado por padrão; um botão real na story dispara a transição de abertura.
+	// `open: true` as the initial arg makes the Sheet start already open — bits-ui's "presence"
+	// logic that reveals the content only runs on a real closed→open transition, so the panel
+	// never shows up (only the full-screen overlay, blurring the whole Docs tab behind it).
+	// Closed by default; a real button in the story triggers the opening transition.
 	let open = $state(false);
 </script>
 
@@ -65,8 +69,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story:
-					'Fechado por padrão, numa viewport mobile fixa (o componente e `md:hidden` — sem isso a story so aparece dando zoom out no navegador). Clique no botao pra abrir e ver a navegacao completa e os controles.'
+				story: 'Closed by default, in a fixed mobile viewport (the component is `md:hidden` — without this the story only shows up by zooming out in the browser). Click the button to open it and see the full navigation and controls.'
 			}
 		}
 	}}
@@ -76,7 +79,7 @@
 			<button
 				type="button"
 				onclick={() => (open = true)}
-				class="hover:bg-surface-elevated rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+				class="hover:bg-surface-elevated rounded-inner border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
 			>
 				Abrir menu
 			</button>

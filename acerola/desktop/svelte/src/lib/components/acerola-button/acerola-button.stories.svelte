@@ -3,12 +3,12 @@
 	import AcerolaButton from './acerola-button.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaButton',
+		title: 'Primitives/AcerolaButton',
 		component: AcerolaButton,
 		tags: ['autodocs'],
 		argTypes: {
 			ui: {
-				description: 'Variação visual do botão',
+				description: 'Button visual variant',
 				control: 'object'
 			}
 		}

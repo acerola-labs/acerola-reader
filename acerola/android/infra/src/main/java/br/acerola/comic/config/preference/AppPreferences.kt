@@ -102,9 +102,9 @@ object ComicDirectoryPreference {
 }
 
 /**
- * `true` quando o usuário optou por pular a confirmação de "sincronizar usando dados móveis"
- * (ver `SyncViewModel`/`NetworkConnectivity.isOnCellularConnection`) — default `false`: por
- * padrão o app sempre pergunta antes de disparar uma sincronização P2P na rede celular.
+ * `true` when the user chose to skip the "sync using mobile data" confirmation
+ * (see `SyncViewModel`/`NetworkConnectivity.isOnCellularConnection`) — default `false`: by
+ * default the app always asks before triggering a P2P sync on the cellular network.
  */
 object MobileDataSyncPreference {
     private val Context.dataStore by preferencesDataStore(name = "mobile_data_sync_prefs")
@@ -117,8 +117,7 @@ object MobileDataSyncPreference {
         context.dataStore.edit { prefs -> prefs[ALWAYS_ALLOW] = value }
     }
 
-    fun alwaysAllowFlow(context: Context): Flow<Boolean> =
-        context.dataStore.data.map { prefs -> prefs[ALWAYS_ALLOW] ?: false }
+    fun alwaysAllowFlow(context: Context): Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[ALWAYS_ALLOW] ?: false }
 }
 
 object DeviceAliasPreference {
@@ -134,18 +133,18 @@ object DeviceAliasPreference {
         }
     }
 
-    /** `null` quando o usuário nunca definiu um apelido — quem chama deve cair pro nome
-     *  automático (`Build.MODEL`). */
+    /** `null` when the user never set a nickname — the caller should fall back to the
+     *  automatic name (`Build.MODEL`). */
     fun deviceAliasFlow(context: Context): Flow<String?> = context.dataStore.data.map { prefs -> prefs[DEVICE_ALIAS] }
 }
 
 /**
- * Apelido local por peer pareado (estilo agenda de contatos) — só existe neste dispositivo,
- * nunca é trocado no protocolo P2P. Fica em cima do `deviceName` default que o peer anuncia no
- * handshake, sem nunca sobrescrevê-lo: quem lê decide a prioridade de exibição (ver
- * `SyncScreen::PeerRow`). Uma chave por peer (`peer_nickname_<peerId>`) em vez de um único valor
- * serializado — Preferences DataStore não tem um tipo Map nativo, e isso evita depender de
- * serialização JSON só pra isso.
+ * Local nickname per paired peer (contact book style) — only exists on this device,
+ * never exchanged over the P2P protocol. It sits on top of the default `deviceName` the peer announces
+ * in the handshake, never overwriting it: the reader decides the display priority (see
+ * `SyncScreen::PeerRow`). One key per peer (`peer_nickname_<peerId>`) instead of a single serialized
+ * value — Preferences DataStore has no native Map type, and this avoids depending on
+ * JSON serialization just for this.
  */
 object PeerNicknamePreference {
     private val Context.dataStore by preferencesDataStore(name = "peer_nickname_prefs")
@@ -153,8 +152,8 @@ object PeerNicknamePreference {
 
     private fun keyFor(peerId: String) = stringPreferencesKey(name = "$KEY_PREFIX$peerId")
 
-    /** `nickname` nulo ou em branco limpa o apelido salvo (volta a cair pro `deviceName`
-     *  default). */
+    /** A null or blank `nickname` clears the saved nickname (falls back to the default
+     *  `deviceName` again). */
     suspend fun setNickname(
         context: Context,
         peerId: String,
@@ -170,7 +169,7 @@ object PeerNicknamePreference {
         }
     }
 
-    /** Mapa peerId -> apelido local salvo. */
+    /** Map of peerId -> saved local nickname. */
     fun nicknamesFlow(context: Context): Flow<Map<String, String>> =
         context.dataStore.data.map { prefs ->
             prefs
@@ -182,11 +181,11 @@ object PeerNicknamePreference {
 }
 
 /**
- * Configuração de relay combinável, espelhando `RelaySettings`/`RelaySettings::resolve` do
- * Desktop (`bios/scopes.rs`) — relay do Acerola e lista de relays próprios podem ser combinados
- * entre si (exceto a Iroh Services, exclusiva com as demais). Mudar qualquer fonte só tem
- * efeito no próximo início do app: `P2pService`/`NetworkCaseModule` só lê isso na construção do
- * `P2PNode`, a lib não suporta trocar relay em runtime.
+ * Combinable relay configuration, mirroring Desktop's `RelaySettings`/`RelaySettings::resolve`
+ * (`bios/scopes.rs`) — the Acerola relay and the list of custom relays can be combined
+ * with each other (except Iroh Services, exclusive with the others). Changing any source only takes
+ * effect on the next app start: `P2pService`/`NetworkCaseModule` only reads this when building the
+ * `P2PNode`, the lib does not support switching relay at runtime.
  */
 object RelayPreference {
     const val DEFAULT_ACEROLA_RELAY_URL = "https://relay.acerola.app"
@@ -196,15 +195,15 @@ object RelayPreference {
     private val USE_IROH_PUBLIC_NETWORK = booleanPreferencesKey(name = "use_iroh_public_network")
     private val CUSTOM_RELAY_URLS = stringSetPreferencesKey(name = "custom_relay_urls")
 
-    // Chave legada (de antes desta feature, URL única) — só lida quando nenhuma das chaves
-    // novas acima existe ainda, pra migrar pra dentro de `customRelayUrls`. Sem isso, quem já
-    // tinha configurado um relay próprio perderia essa escolha silenciosamente no primeiro boot
-    // após o update (mesmo cuidado do Desktop com `relay_url` em `settings.json`).
+    // Legacy key (from before this feature, single URL) — only read when none of the new
+    // keys above exist yet, to migrate into `customRelayUrls`. Without this, anyone who had
+    // already configured a custom relay would silently lose that choice on the first boot
+    // after the update (same care Desktop takes with `relay_url` in `settings.json`).
     private val LEGACY_RELAY_URL_OVERRIDE = stringPreferencesKey(name = "relay_url_override")
 
-    // "Relays Iroh" era uma lista separada, funcionalmente idêntica a `customRelayUrls` (as duas
-    // viravam o mesmo `RelayModeConfig::Custom`) — removida da UI, mas sempre mesclada aqui se
-    // alguém já tinha algo salvo, pra não perder a URL silenciosamente.
+    // "Iroh relays" was a separate list, functionally identical to `customRelayUrls` (both
+    // became the same `RelayModeConfig::Custom`) — removed from the UI, but always merged here if
+    // someone already had something saved, so the URL is not silently lost.
     private val LEGACY_IROH_RELAY_URLS = stringSetPreferencesKey(name = "iroh_relay_urls")
 
     data class RelaySettings(
@@ -243,8 +242,8 @@ object RelayPreference {
 
     fun relaySettingsFlow(context: Context): Flow<RelaySettings> = context.dataStore.data.map(::toRelaySettings)
 
-    /** Leitura pontual (sem coletar o `Flow`) — usada na inicialização síncrona do `P2PNode`
-     *  (ver `NetworkCaseModule`), mesmo padrão do antigo `relayUrlOverrideFlow(...).first()`. */
+    /** One-off read (without collecting the `Flow`) — used in the synchronous `P2PNode` startup
+     *  (see `NetworkCaseModule`), same pattern as the old `relayUrlOverrideFlow(...).first()`. */
     suspend fun currentRelaySettings(context: Context): RelaySettings = toRelaySettings(context.dataStore.data.first())
 
     private fun toRelaySettings(prefs: Preferences): RelaySettings {

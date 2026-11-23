@@ -8,10 +8,10 @@ use tokio_util::codec::{FramedRead, FramedWrite, LengthDelimitedCodec};
 
 use crate::infra::error::RpcError;
 
-/// Tamanho máximo de um frame (mensagens JSON e chunks de arquivo), em bytes.
+/// Maximum size of a frame (JSON messages and file chunks), in bytes.
 pub const MAX_FRAME_LEN: usize = 1024 * 1024;
-/// Tamanho de cada chunk ao transmitir um arquivo em streaming — mantém o uso de
-/// memória constante independente do tamanho do cbz/cbr sendo transferido.
+/// Size of each chunk when streaming a file — keeps memory usage constant
+/// regardless of the size of the cbz/cbr being transferred.
 pub const FILE_CHUNK_SIZE: usize = 256 * 1024;
 
 const FRAME_TIMEOUT: Duration = Duration::from_secs(30);
@@ -62,8 +62,8 @@ pub async fn read_bytes(reader: &mut FramedReader) -> Result<Vec<u8>, RpcError> 
     Ok(bytes.to_vec())
 }
 
-/// Envia o conteúdo de `path` em chunks de [`FILE_CHUNK_SIZE`], sem carregar o arquivo
-/// inteiro em memória — necessário pra cbz/cbr que podem ter centenas de MB.
+/// Sends the content of `path` in [`FILE_CHUNK_SIZE`] chunks, without loading the whole
+/// file into memory — needed for cbz/cbr files that can be hundreds of MB.
 pub async fn send_file_bytes(
     writer: &mut FramedWriter, path: &Path, expected_size: u64,
 ) -> Result<(), RpcError> {
@@ -84,11 +84,11 @@ pub async fn send_file_bytes(
     Ok(())
 }
 
-/// Recebe um arquivo em streaming direto pro disco (`dest`), calculando o SHA-256 no
-/// caminho pra não precisar reler o arquivo depois só pra verificar integridade. Mesmo
-/// algoritmo e formato do Android (hex minúsculo, sem separador), já que o resultado é
-/// comparado string-a-string contra o checksum anunciado no header pelo peer.
-/// Retorna o checksum calculado, que o chamador compara contra o anunciado no manifesto.
+/// Receives a file streaming it straight to disk (`dest`), computing the SHA-256 along
+/// the way so the file does not have to be re-read later just to verify integrity. Same
+/// algorithm and format as Android (lowercase hex, no separator), since the result is
+/// compared string-for-string against the checksum announced in the header by the peer.
+/// Returns the computed checksum, which the caller compares against the one announced in the manifest.
 pub async fn receive_file_to_disk(
     reader: &mut FramedReader, dest: &Path, expected_size: u64,
 ) -> Result<String, RpcError> {

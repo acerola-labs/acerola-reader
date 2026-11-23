@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { fireEvent } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AcerolaPeerPicker from './acerola-peer-picker.svelte';
-import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 
 describe('AcerolaPeerPicker', () => {
 	const mockPeers: PairedPeerPayload[] = [

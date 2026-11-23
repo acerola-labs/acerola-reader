@@ -1,15 +1,15 @@
 use serde::{Deserialize, Serialize};
 
-/// Um quadrinho do lado que respondeu, resumido a nome + contagem de capítulos — não o
-/// manifesto completo (`FileManifest`/`FileChapterInfo`), que carregaria checksum e nome de
-/// arquivo por capítulo à toa: o único propósito daqui é o usuário escolher QUAL quadrinho
-/// pedir via `acerola/sync-comic/1` depois, não decidir o que já está sincronizado.
+/// A comic on the replying side, summarized to name + chapter count — not the
+/// full manifest (`FileManifest`/`FileChapterInfo`), which would needlessly carry checksum and
+/// file name per chapter: the sole purpose here is for the user to choose WHICH comic
+/// to request via `acerola/sync-comic/1` later, not to decide what is already in sync.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct ComicSummaryEntry {
     pub comic_name: String,
     pub chapter_count: u32,
-    /// Reaproveita `ComicDirectory.lastModified` — sem hash novo. O peer compara contra a
-    /// versão já cacheada localmente pra decidir se precisa buscar uma capa nova via
+    /// Reuses `ComicDirectory.lastModified` — no new hash. The peer compares it against the
+    /// version already cached locally to decide whether it needs to fetch a new cover via
     /// `acerola/browse-cover/1`.
     pub cover_version: i64,
 }

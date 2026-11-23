@@ -1,13 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { READER_COMMANDS } from '$lib/contracts/reader/reader.commands';
-import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
+import { READER_COMMANDS } from '#lib/contracts/reader/reader.commands.ts';
+import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
 import type {
 	ReaderSessionPayload,
 	ReaderPagePayload
-} from '$lib/contracts/reader/reader.payloads';
-import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
+} from '#lib/contracts/reader/reader.payloads.ts';
+import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
 import ReaderPage from '../+page.svelte';
 
 const { mockGoto, mockReplaceState } = vi.hoisted(() => ({
@@ -128,8 +128,8 @@ describe('reader +page', () => {
 			save: vi.fn().mockResolvedValue(undefined)
 		});
 
-		// +page.svelte cria seu próprio IntersectionObserver pra rastrear qual página está
-		// visível — jsdom não implementa, então sem esse stub o mount inteiro quebra.
+		// +page.svelte creates its own IntersectionObserver to track which page is visible —
+		// jsdom doesn't implement it, so without this stub the whole mount breaks.
 		globalThis.IntersectionObserver = class {
 			constructor() {}
 			observe = vi.fn();
@@ -137,8 +137,8 @@ describe('reader +page', () => {
 			disconnect = vi.fn();
 		} as unknown as typeof IntersectionObserver;
 
-		// jsdom nesta versão expõe Element.prototype.animate mas devolve undefined em vez de
-		// um Animation — quebra qualquer componente bits-ui que anime (ToggleGroupItem aqui).
+		// jsdom in this version exposes Element.prototype.animate but returns undefined instead
+		// of an Animation — breaks any bits-ui component that animates (ToggleGroupItem here).
 		Element.prototype.animate = vi.fn().mockImplementation(() => ({
 			finished: Promise.resolve(),
 			cancel: vi.fn(),
@@ -200,6 +200,8 @@ describe('reader +page', () => {
 
 		renderReaderPage();
 
-		expect(await screen.findByText(/não foi possível abrir|unable to open/i)).toBeInTheDocument();
+		expect(
+			await screen.findByText(/não foi possível abrir|unable to open/i)
+		).toBeInTheDocument();
 	});
 });

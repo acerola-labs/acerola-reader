@@ -12,8 +12,8 @@ function snippet(text: string) {
 
 describe('Tabs (mdsvex)', () => {
 	beforeEach(() => {
-		// bits-ui anima a troca de aba — jsdom expõe Element.prototype.animate mas devolve
-		// undefined em vez de um Animation, quebrando o componente ao trocar de valor.
+		// bits-ui animates the tab switch — jsdom exposes Element.prototype.animate but returns
+		// undefined instead of an Animation, breaking the component when the value changes.
 		Element.prototype.animate = vi.fn().mockImplementation(() => ({
 			finished: Promise.resolve(),
 			cancel: vi.fn(),
@@ -52,7 +52,9 @@ describe('Tabs (mdsvex)', () => {
 
 	it('renders a single item as one tab, already showing its content', () => {
 		render(Tabs, {
-			props: { items: [{ value: 'npm', label: 'npm', content: snippet('npm install acerola') }] }
+			props: {
+				items: [{ value: 'npm', label: 'npm', content: snippet('npm install acerola') }]
+			}
 		});
 
 		expect(screen.getAllByRole('tab')).toHaveLength(1);

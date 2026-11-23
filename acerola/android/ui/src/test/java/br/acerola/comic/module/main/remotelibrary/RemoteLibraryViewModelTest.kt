@@ -38,21 +38,21 @@ class RemoteLibraryViewModelTest {
         every { p2pUseCase.getPairedPeers() } returns listOf(pairedPeer)
 
         viewModel = RemoteLibraryViewModel(p2pUseCase, p2pEventBus, syncComicWithPeerUseCase)
-        // `browseLibrary` disparado pelo `init` já resolve o peer (stub acima) — sem erro de
-        // "não pareado" competindo com os eventos que os testes abaixo esperam.
+        // `browseLibrary` fired by `init` already resolves the peer (stub above) — no "not
+        // paired" error competing with the events the tests below expect.
         viewModel.init(peerId = "peer-1", peerDisplayName = "Peer 1")
     }
 
-    /** `Thread.sleep` de verdade (não `delay()` — o trabalho que se está esperando roda em
-     *  `Dispatchers.IO` real, thread pool própria, não afetada pelo tempo virtual do
-     *  `TestDispatcher` deste teste). Necessário pro caminho `STARTED`: `syncComic` agenda um
-     *  `viewModelScope.launch` (timeout de 60s) logo depois de marcar `syncingComicName` — sem
-     *  esperar por esse `launch` já ter sido de fato disparado (não só a chamada mockada ter
-     *  sido observada por `coVerify`), o teste pode terminar e o `@get:Rule` resetar o
-     *  `Dispatchers.Main` ANTES dessa coroutine em `Dispatchers.IO` conseguir chegar lá — o que
-     *  crasha com "Dispatchers.Main was accessed... test dispatcher was unset" numa thread sem
-     *  handler, e esse erro não cai neste teste, cai no PRÓXIMO que rodar na mesma JVM (visto em
-     *  CI: apareceu como falha em `ReaderViewModelTest`, sem relação nenhuma). */
+    /** A real `Thread.sleep` (not `delay()` — the work being awaited runs on the real
+     *  `Dispatchers.IO`, its own thread pool, unaffected by this test's `TestDispatcher`
+     *  virtual time). Needed for the `STARTED` path: `syncComic` schedules a
+     *  `viewModelScope.launch` (60s timeout) right after setting `syncingComicName` — without
+     *  waiting for that `launch` to actually have been fired (not just the mocked call having
+     *  been observed by `coVerify`), the test may finish and the `@get:Rule` reset
+     *  `Dispatchers.Main` BEFORE that coroutine on `Dispatchers.IO` gets there — which
+     *  crashes with "Dispatchers.Main was accessed... test dispatcher was unset" on a thread with
+     *  no handler, and that error doesn't land on this test, it lands on the NEXT one running in
+     *  the same JVM (seen in CI: it showed up as a failure in `ReaderViewModelTest`, totally unrelated). */
     private fun awaitState(
         viewModel: RemoteLibraryViewModel,
         timeoutMs: Long = 2000,
@@ -98,9 +98,9 @@ class RemoteLibraryViewModelTest {
 
             viewModel.syncComic("One Piece")
 
-            // Confirma que a coroutine em `Dispatchers.IO` já rodou até o fim antes de checar
-            // "nada mais aconteceu" — sem isso as asserções abaixo poderiam passar só por ainda
-            // não ter dado tempo.
+            // Confirms the coroutine on `Dispatchers.IO` already ran to completion before checking
+            // "nothing else happened" — without this the assertions below could pass just because
+            // there wasn't enough time yet.
             coVerify(timeout = 2000) { syncComicWithPeerUseCase("peer-1", "One Piece", SyncDirection.PULL) }
 
             assertThat(viewModel.uiState.value.syncingComicName).isNull()

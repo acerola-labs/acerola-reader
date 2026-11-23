@@ -33,9 +33,9 @@ describe('native reader', () => {
 		await waitForText('0% lido');
 		await waitForText('Capítulos restantes indisponíveis');
 
-		// Os títulos desses botões têm o atalho de teclado embutido (ex.:
-		// "Página anterior (←)") — [title^=] casa só o prefixo, sem depender
-		// do texto exato do atalho.
+		// These buttons' titles embed the keyboard shortcut (e.g.
+		// "Página anterior (←)") — [title^=] matches only the prefix, without
+		// depending on the exact shortcut text.
 
 		const progress = await firstDisplayed('[role="progressbar"]');
 		expect(await progress.getAttribute('aria-valuenow')).toBe('0');
@@ -78,7 +78,7 @@ describe('native reader', () => {
 	it('opens fixture chapter, navigates pages and locks pagination while zoom is active', async () => {
 		const fixture = await openReaderWithFixture();
 
-		// Garante que estamos no modo Paginado (caso um teste anterior o tenha deixado em Webtoon)
+		// Make sure we are in Paged mode (in case a previous test left it in Webtoon)
 		try {
 			const paginadoBtn = await firstDisplayed('[title="Paginado horizontal"]', 2000);
 			if ((await paginadoBtn.getAttribute('data-state')) !== 'on') {
@@ -114,7 +114,7 @@ describe('native reader', () => {
 		await browser.waitUntil(async () => (await getPathname()) === '/home', {
 			timeout: 5_000,
 			interval: 100,
-			timeoutMsg: 'Botão Voltar do reader não retornou para Home.'
+			timeoutMsg: 'Reader Back button did not return to Home.'
 		});
 	});
 });

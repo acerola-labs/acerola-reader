@@ -1,66 +1,141 @@
+# Acerola standard: weekly PRs on `develop`, grouped, with the message in the project format.
+# One block per ecosystem and app folder.
 version: 2
 updates:
-  - package-ecosystem: "cargo"
-    directory: "/lib/p2p"
-    target-branch: "develop"
+  - package-ecosystem: 'gradle'
+    directory: '/acerola/android'
+    target-branch: 'develop'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "[chore](p2p)"
+      prefix: '[chore](deps)'
     labels:
-      - "dependencies"
-      - "rust"
-      - "chore"
-      - "p2p"
+      - 'dependencies'
+      - 'android'
     groups:
       dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "cargo"
-    directory: "/lib/relay"
-    target-branch: "develop"
+  - package-ecosystem: 'cargo'
+    directory: '/acerola/android/native/rust'
+    target-branch: 'develop'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "[chore](relay-lib)"
+      prefix: '[chore](deps)'
     labels:
-      - "dependencies"
-      - "rust"
-      - "chore"
-      - "relay-lib"
+      - 'dependencies'
+      - 'android'
     groups:
       dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "docker"
-    directory: "/lib/relay/.config/docker"
-    target-branch: "develop"
+  - package-ecosystem: 'npm'
+    directory: '/acerola/desktop'
+    target-branch: 'develop'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+    open-pull-requests-limit: 10
     commit-message:
-      prefix: "[chore](relay-lib)"
+      prefix: '[chore](deps)'
     labels:
-      - "dependencies"
-      - "chore"
-      - "relay-lib"
+      - 'dependencies'
+      - 'desktop'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    target-branch: "develop"
+  - package-ecosystem: 'cargo'
+    directory: '/acerola/desktop/src-tauri'
+    target-branch: 'develop'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+    open-pull-requests-limit: 10
     commit-message:
-      prefix: "[chore](monorepo)"
+      prefix: '[chore](deps)'
     labels:
-      - "dependencies"
-      - "github_actions"
-      - "chore"
-      - "monorepo"
+      - 'dependencies'
+      - 'desktop'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/docs/web'
+    target-branch: 'develop'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: '[chore](deps)'
+    labels:
+      - 'dependencies'
+      - 'web'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'cargo'
+    directory: '/lib/p2p'
+    target-branch: 'develop'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: '[chore](deps)'
+    labels:
+      - 'dependencies'
+      - 'p2p'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'cargo'
+    directory: '/lib/relay'
+    target-branch: 'develop'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: '[chore](deps)'
+    labels:
+      - 'dependencies'
+      - 'iroh'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'docker'
+    directory: '/lib/relay/.config/docker'
+    target-branch: 'develop'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: '[chore](deps)'
+    labels:
+      - 'dependencies'
+      - 'iroh'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    target-branch: 'develop'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: '[chore](ci)'
+    labels:
+      - 'dependencies'
+      - 'github_actions'
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'

@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaNetworkRelaySettingsCard,
-		title: 'Páginas/Network/AcerolaNetworkRelaySettingsCard',
+		title: 'Pages/Network/AcerolaNetworkRelaySettingsCard',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Configuração combinável de relay: relay do Acerola, Iroh Services (conta própria, autenticada por ticket) e lista de relays próprios cadastrados pelo usuário.'
+						'Composable relay configuration: Acerola relay, Iroh Services (own account, authenticated by ticket) and a list of custom relays registered by the user.'
 				}
 			}
 		}

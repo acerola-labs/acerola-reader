@@ -29,9 +29,9 @@ impl Bindable for ComicCategory {
     }
 }
 
-/// Serializa i64 como string no JSON para evitar perda de precisão no JavaScript.
-/// Números i64 podem exceder Number.MAX_SAFE_INTEGER (2^53 - 1) do JS,
-/// causando valores truncados e comparações que falham silenciosamente.
+/// Serializes i64 as a JSON string to avoid precision loss in JavaScript.
+/// i64 numbers can exceed JS Number.MAX_SAFE_INTEGER (2^53 - 1),
+/// causing truncated values and comparisons that silently fail.
 mod i64_as_string {
     use serde::{self, Deserialize, Deserializer, Serializer};
 

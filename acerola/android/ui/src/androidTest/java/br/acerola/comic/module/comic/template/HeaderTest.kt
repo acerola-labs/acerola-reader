@@ -47,10 +47,10 @@ class HeaderTest {
             }
         }
 
-        // Verifica se o título remoto é exibido com prioridade
+        // Checks that the remote title is shown with priority
         composeTestRule.onNodeWithText("Fantastic Comic").assertIsDisplayed()
 
-        // Verifica se a sinopse aparece
+        // Checks that the synopsis shows up
         composeTestRule.onNodeWithText("Some random synopsis").assertIsDisplayed()
     }
 }

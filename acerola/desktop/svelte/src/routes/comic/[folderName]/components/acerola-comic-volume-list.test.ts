@@ -8,7 +8,7 @@ vi.mock('svelte/transition', () => ({
 	slide: () => ({ duration: 0 })
 }));
 
-// Mock do animate para transições do Svelte no JSDOM
+// Mock of animate for Svelte transitions in JSDOM
 if (typeof window !== 'undefined' && !window.HTMLElement.prototype.animate) {
 	window.HTMLElement.prototype.animate = vi.fn().mockReturnValue({
 		finished: Promise.resolve(),

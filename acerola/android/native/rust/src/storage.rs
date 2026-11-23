@@ -16,10 +16,10 @@ const PEERS_KEY: &str = "peers";
 const DEVICE_INFO_KEY: &str = "device_info";
 const IROH_SERVICES_TICKET_KEY: &str = "iroh_services_ticket";
 
-/// Implementação de `P2PStorage` que persiste via [`SecureBlobStore`] (Kotlin,
-/// `EncryptedSharedPreferences` protegida pelo Android Keystore) em vez de arquivos em texto
-/// puro — ver `callbacks::SecureBlobStore`. Chaves: `"identity"` (seed do nó) e `"peers"`
-/// (cache de `PeerAddr` conhecidos, codificado como JSON antes de virar blob).
+/// `P2PStorage` implementation that persists via [`SecureBlobStore`] (Kotlin,
+/// `EncryptedSharedPreferences` protected by the Android Keystore) instead of plain-text
+/// files — see `callbacks::SecureBlobStore`. Keys: `"identity"` (node seed) and `"peers"`
+/// (cache of known `PeerAddr`s, encoded as JSON before becoming a blob).
 pub(crate) struct SecureP2pStorage {
     store: Arc<dyn SecureBlobStore>,
     peers_cache: RwLock<Vec<PeerAddr>>,
@@ -27,18 +27,18 @@ pub(crate) struct SecureP2pStorage {
 }
 
 impl SecureP2pStorage {
-    /// `legacy_dir`, se fornecido e ainda tiver `identity.seed`/`peers.json` (formato antigo,
-    /// texto puro, de antes da migração pro `SecureBlobStore`), tem seu conteúdo migrado pro
-    /// storage seguro numa única vez — sem isso, quem já tinha pareado dispositivos perderia a
-    /// identidade P2P atual no primeiro update e precisaria re-parear tudo do zero.
+    /// `legacy_dir`, if given and still holding `identity.seed`/`peers.json` (old plain-text
+    /// format, from before the migration to `SecureBlobStore`), has its content migrated to the
+    /// secure storage once — without this, anyone who had already paired devices would lose the
+    /// current P2P identity on the first update and need to re-pair everything from scratch.
     pub(crate) fn open(store: Arc<dyn SecureBlobStore>, legacy_dir: Option<&Path>) -> Self {
         if let Some(legacy_dir) = legacy_dir {
             Self::migrate_legacy_files(&store, legacy_dir);
         }
 
-        // Falha real de backend na carga inicial do cache de peers não é fatal (o node ainda
-        // sobe, só sem os endereços conhecidos) — mas precisa aparecer no log, não virar
-        // silenciosamente "nenhum peer conhecido".
+        // A real backend failure on the initial peer cache load is not fatal (the node still
+        // starts, just without the known addresses) — but it must show up in the log, not silently
+        // become "no known peers".
         let peers_cache = match store.load_blob(PEERS_KEY.to_string()) {
             Ok(Some(bytes)) => serde_json::from_slice(&bytes).unwrap_or_default(),
             Ok(None) => Vec::new(),
@@ -64,10 +64,10 @@ impl SecureP2pStorage {
         }
     }
 
-    /// Remove um peer do cache de endereços conhecidos — usado quando o usuário desempareia
-    /// um dispositivo pela UI. `get_paired_peers` (ver `api.rs`) lê exatamente desse cache,
-    /// não do `trust_store`, então sem isso o peer sumiria da confiança mas continuaria
-    /// aparecendo na lista de pareados.
+    /// Removes a peer from the known address cache — used when the user unpairs
+    /// a device from the UI. `get_paired_peers` (see `api.rs`) reads exactly from this cache,
+    /// not from `trust_store`, so without this the peer would vanish from trust but keep
+    /// showing up in the paired list.
     pub(crate) async fn remove_peer(&self, id: &str) -> Result<(), P2pError> {
         let mut peers = self.peers_cache.write().await;
         peers.retain(|cached| cached.id.id != id);
@@ -80,8 +80,8 @@ impl SecureP2pStorage {
             .save_blob(PEERS_KEY.to_string(), bytes)
             .map_err(|err| P2pError::StartupFailed(format!("failed to save peer cache: {err}")))?;
 
-        // Limpa também o nome persistido — sem isso, reparear o mesmo `id` de volta faria o
-        // nome antigo "ressuscitar" antes do próximo handshake atualizar de verdade.
+        // Also clears the persisted name — without this, re-pairing the same `id` would make the
+        // old name "come back" before the next handshake actually updates it.
         let mut device_info = self.device_info_cache.write().await;
         device_info.retain(|(cached_id, _)| cached_id.id != id);
 
@@ -96,10 +96,10 @@ impl SecureP2pStorage {
             })
     }
 
-    /// Persiste o ticket da conta do usuário em `services.iroh.computer` (colado por ele na
-    /// tela de configuração de rede) no mesmo cofre da identidade P2P — nunca em DataStore
-    /// (que fica sem criptografia por padrão). Só tem efeito no próximo início do app, mesma
-    /// regra das outras fontes de relay (a lib não suporta trocar relay em runtime).
+    /// Persists the user's account ticket on `services.iroh.computer` (pasted by them on the
+    /// network settings screen) in the same vault as the P2P identity — never in DataStore
+    /// (which is unencrypted by default). Only takes effect on the next app start, same
+    /// rule as the other relay sources (the lib does not support switching relay at runtime).
     pub(crate) fn save_iroh_services_ticket(&self, ticket: &str) -> Result<(), P2pError> {
         self.store
             .save_blob(
@@ -111,9 +111,9 @@ impl SecureP2pStorage {
             })
     }
 
-    /// `None` quando o usuário nunca colou um ticket, ou quando o blob existe mas não decodifica
-    /// como UTF-8 (corrompido) — trata como "não configurado" em vez de propagar erro, já que a
-    /// rede pública do Iroh indisponível não deveria travar o resto da rede P2P.
+    /// `None` when the user never pasted a ticket, or when the blob exists but does not decode
+    /// as UTF-8 (corrupted) — treated as "not configured" instead of propagating an error, since
+    /// an unavailable Iroh public network should not block the rest of the P2P network.
     pub(crate) fn load_iroh_services_ticket(&self) -> Result<Option<String>, P2pError> {
         let bytes = self
             .store
@@ -125,7 +125,7 @@ impl SecureP2pStorage {
         Ok(bytes.and_then(|bytes| String::from_utf8(bytes).ok()))
     }
 
-    /// Remove o ticket salvo — usado quando o usuário desliga a fonte ou substitui por um novo.
+    /// Removes the saved ticket — used when the user turns the source off or replaces it with a new one.
     pub(crate) fn clear_iroh_services_ticket(&self) -> Result<(), P2pError> {
         self.store
             .clear_blob(IROH_SERVICES_TICKET_KEY.to_string())
@@ -139,9 +139,9 @@ impl SecureP2pStorage {
         Self::migrate_legacy_file(store, &legacy_dir.join("peers.json"), PEERS_KEY);
     }
 
-    /// Só migra se o storage seguro confirmar (`Ok(None)`) que a chave está genuinamente
-    /// vazia — em caso de falha real de backend (`Err`), não migra nem apaga o arquivo
-    /// legado, pra não arriscar perder o único dado bom que ainda existe.
+    /// Only migrates if the secure storage confirms (`Ok(None)`) that the key is genuinely
+    /// empty — on a real backend failure (`Err`), it neither migrates nor deletes the legacy
+    /// file, so as not to risk losing the only good data that still exists.
     fn migrate_legacy_file(store: &Arc<dyn SecureBlobStore>, path: &Path, key: &str) {
         match store.load_blob(key.to_string()) {
             Ok(None) => {
@@ -154,7 +154,7 @@ impl SecureP2pStorage {
                 std::fs::remove_file(path).ok();
             }
             Ok(Some(_)) => {
-                // Já migrado numa execução anterior — só limpa o arquivo antigo.
+                // Already migrated in a previous run — just clean up the old file.
                 std::fs::remove_file(path).ok();
             }
             Err(err) => {
@@ -228,13 +228,13 @@ impl P2PStorage for SecureP2pStorage {
     }
 }
 
-/// Newtype local em volta de `Arc<SecureP2pStorage>` — as regras de coerência do Rust não
-/// deixam implementar uma trait estrangeira (`P2PStorage`, da `acerola-p2p`) direto pra
-/// `Arc<SecureP2pStorage>`, já que `Arc` também é estrangeiro (não é um tipo "fundamental"
-/// como `Box`). Com esse wrapper local, dá pra passar a MESMA instância pro builder (que
-/// exige posse) e manter outra referência viva no `P2PNode` pra consultar depois — ex: pra
-/// listar quem já foi pareado, já que a conexão do handshake em si é só um "toque" de ~2s
-/// (troca PING/PONG/DeviceInfo e fecha), não uma sessão persistente.
+/// Local newtype around `Arc<SecureP2pStorage>` — Rust's coherence rules do not
+/// allow implementing a foreign trait (`P2PStorage`, from `acerola-p2p`) directly for
+/// `Arc<SecureP2pStorage>`, since `Arc` is also foreign (it is not a "fundamental" type
+/// like `Box`). With this local wrapper, the SAME instance can be passed to the builder (which
+/// requires ownership) while another reference stays alive in `P2PNode` to query later — e.g. to
+/// list who was already paired, since the handshake connection itself is just a ~2s "touch"
+/// (exchanges PING/PONG/DeviceInfo and closes), not a persistent session.
 pub(crate) struct SharedSecureP2pStorage(pub(crate) Arc<SecureP2pStorage>);
 
 #[async_trait]
@@ -436,7 +436,7 @@ mod tests {
         storage.clear_iroh_services_ticket().unwrap();
         assert_eq!(storage.load_iroh_services_ticket().unwrap(), None);
 
-        // Chamar de novo sem nada salvo não é erro.
+        // Calling again with nothing saved is not an error.
         storage.clear_iroh_services_ticket().unwrap();
     }
 

@@ -16,7 +16,7 @@ async fn setup() -> Result<(
     let pool = setup_test_db_with_comic().await;
     let service = HistoryService::new(pool.clone());
 
-    // Insere capitulo basico no banco para satisfazer chaves estrangeiras
+    // Insert a basic chapter in the database to satisfy foreign keys
     query("INSERT INTO chapter_archive (id, chapter, path, chapter_sort, is_special, comic_directory_fk, last_modified) VALUES (1, '1', 'path', '1', 0, 1, 0)").execute(&pool).await.unwrap();
 
     let builder = tauri::test::mock_builder().invoke_handler(tauri::generate_handler![
@@ -35,7 +35,7 @@ async fn setup() -> Result<(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_updates_reading_history_successfully() -> Result<()> {
-    // Atualiza o historico de leitura com sucesso
+    // Updates the reading history successfully
     let (_pool, _app, webview) = setup().await?;
 
     let _: Value = invoke_ok(
@@ -60,7 +60,7 @@ async fn test_updates_reading_history_successfully() -> Result<()> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_gets_full_history() -> Result<()> {
-    // Obtem todos os itens de historico corretamente
+    // Gets every history item correctly
     let (_pool, _app, webview) = setup().await?;
 
     let _: Value = invoke_ok(
@@ -84,7 +84,7 @@ async fn test_gets_full_history() -> Result<()> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_clears_reading_history() -> Result<()> {
-    // Limpa o historico de leitura
+    // Clears the reading history
     let (_pool, _app, webview) = setup().await?;
 
     let _: Value = invoke_ok(

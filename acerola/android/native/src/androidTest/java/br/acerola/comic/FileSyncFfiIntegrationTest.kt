@@ -27,28 +27,28 @@ private val FILE_SYNC_ALPN = "acerola/sync-files/1".toByteArray()
 
 private fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString(separator = "") { "%02x".format(it) }
 
-/** Determinístico e variando com `seed` — capítulos diferentes não têm o mesmo conteúdo,
- *  pra não mascarar um bug de troca/mistura entre capítulos. */
+/** Deterministic and varying with `seed` — different chapters do not have the same content,
+ *  so a swap/mix-up bug between chapters is not masked. */
 private fun makePayload(
     size: Int,
     seed: Int,
 ): ByteArray = ByteArray(size) { i -> (((i.toLong() * 31 + seed) % 251)).toByte() }
 
 /**
- * Testes de integridade do protocolo `acerola/sync-files/1` que atravessam a FFI/JNA de
- * verdade — dois [P2pNode] reais, rodando o `libacerola.so` compilado pro dispositivo (não
- * um mock Rust puro como em `native/rust/.../exchange.rs::tests`), conectados um ao outro.
+ * Integrity tests of the `acerola/sync-files/1` protocol that really cross the FFI/JNA
+ * — two real [P2pNode]s, running the `libacerola.so` compiled for the device (not
+ * a pure Rust mock as in `native/rust/.../exchange.rs::tests`), connected to each other.
  *
- * Existe pra fechar uma lacuna deixada pelos testes puramente Rust (`exchange.rs`): aqueles
- * provam que a lógica de chunking/framing/checksum está correta DENTRO do Rust, mas não
- * conseguem pegar um bug que só existe na travessia real Kotlin<->Rust (marshaling de
- * String/ByteArray via UniFFI/JNA) — que é exatamente o trecho que ainda não tinha cobertura
- * nenhuma na investigação do bug de "checksum mismatch" em produção.
+ * Exists to close a gap left by the pure Rust tests (`exchange.rs`): those
+ * prove the chunking/framing/checksum logic is correct INSIDE Rust, but cannot
+ * catch a bug that only exists in the real Kotlin<->Rust crossing (marshaling of
+ * String/ByteArray via UniFFI/JNA) — which is exactly the part that still had no coverage
+ * at all in the investigation of the production "checksum mismatch" bug.
  *
- * [InMemoryFileSyncProvider] guarda bytes em memória em vez de tocar SAF de propósito —
- * isola "a FFI + protocolo Rust<->Kotlin corrompe o checksum" de "o SAF/ContentResolver tem
- * um bug", que é uma camada totalmente diferente ([FileSyncProviderImpl] real, não coberta
- * aqui).
+ * [InMemoryFileSyncProvider] keeps bytes in memory instead of touching SAF on purpose —
+ * it isolates "the FFI + Rust<->Kotlin protocol corrupts the checksum" from "SAF/ContentResolver has
+ * a bug", which is a totally different layer (the real [FileSyncProviderImpl], not covered
+ * here).
  */
 @RunWith(AndroidJUnit4::class)
 class FileSyncFfiIntegrationTest {
@@ -191,11 +191,11 @@ class FileSyncFfiIntegrationTest {
     }
 
     /**
-     * Dois nós reais, cada um oferecendo um capítulo que o outro não tem — dispara
-     * transferência bidirecional numa única sessão `acerola/sync-files/1`, atravessando a
-     * FFI/JNA de verdade nos dois sentidos (Kotlin->Rust ao montar o manifesto local,
-     * Rust->Kotlin ao declarar o checksum esperado pro lado que recebe). Compara tanto o
-     * checksum (SHA-256 real, mesmo algoritmo de produção) quanto os bytes byte-a-byte.
+     * Two real nodes, each offering a chapter the other does not have — triggers a
+     * bidirectional transfer in a single `acerola/sync-files/1` session, really crossing the
+     * FFI/JNA in both directions (Kotlin->Rust when building the local manifest,
+     * Rust->Kotlin when declaring the expected checksum to the receiving side). Compares both the
+     * checksum (real SHA-256, same algorithm as production) and the bytes byte by byte.
      */
     @Test
     fun realFfiRoundTrip_transfersRealBytesWithCorrectChecksum() {
@@ -289,12 +289,12 @@ class FileSyncFfiIntegrationTest {
     }
 
     /**
-     * Mesma ideia do teste de stress em `exchange.rs`, mas atravessando a FFI real: muitos
-     * capítulos de tamanhos variados numa única sessão sequencial. Alvo específico: um
-     * handle de leitura/escrita sendo reaproveitado incorretamente do lado Kotlin (os mapas
-     * `ConcurrentHashMap<Long, ...>` em [FileSyncProviderImpl] real usam o mesmo padrão de
-     * handle opaco que este mock) — se houvesse vazamento de estado entre capítulos
-     * consecutivos, apareceria aqui como bytes de um capítulo indo parar em outro.
+     * Same idea as the stress test in `exchange.rs`, but crossing the real FFI: many
+     * chapters of varied sizes in a single sequential session. Specific target: a
+     * read/write handle being incorrectly reused on the Kotlin side (the
+     * `ConcurrentHashMap<Long, ...>` maps in the real [FileSyncProviderImpl] use the same opaque
+     * handle pattern as this mock) — if there were a state leak between consecutive
+     * chapters, it would show up here as one chapter's bytes ending up in another.
      */
     @Test
     fun realFfiRoundTrip_stressManySequentialChaptersPreserveChecksumIntegrity() {

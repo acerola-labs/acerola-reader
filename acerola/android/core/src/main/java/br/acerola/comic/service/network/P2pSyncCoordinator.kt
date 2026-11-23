@@ -17,32 +17,32 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Espelham `SYNC_KIND_HISTORY`/`SYNC_KIND_FILES` de `SyncViewModel` (módulo `:ui`, não
- *  acessível daqui) — precisam continuar batendo com esses valores E com o `kind` gravado
- *  por `SyncHistoryLogUseCase`/lido de volta em `SyncViewModel.loadPersistedLog`. */
+/** Mirror `SYNC_KIND_HISTORY`/`SYNC_KIND_FILES` from `SyncViewModel` (`:ui` module, not
+ *  accessible from here) — they must keep matching those values AND the `kind` stored
+ *  by `SyncHistoryLogUseCase`/read back in `SyncViewModel.loadPersistedLog`. */
 private const val SYNC_KIND_HISTORY = "history"
 private const val SYNC_KIND_FILES = "files"
 
 /**
- * Contraparte application-scoped do que `SyncViewModel` fazia sozinha antes: persiste o
- * resultado de uma sessão P2P ([SyncHistoryLogUseCase]), dispara a notificação de
- * conclusão/erro, e liga/desliga [P2pSyncForegroundService] — tudo isso independente de
- * qualquer tela estar aberta.
+ * Application-scoped counterpart of what `SyncViewModel` used to do on its own: persists the
+ * result of a P2P session ([SyncHistoryLogUseCase]), fires the completion/error
+ * notification, and starts/stops [P2pSyncForegroundService] — all of it regardless of
+ * any screen being open.
  *
- * Antes, essas três responsabilidades viviam dentro de `SyncViewModel` (`hiltViewModel()`
- * escopada à `NavBackStackEntry` da tela de Sync). Como [P2pEventBus] é um `SharedFlow` SEM
- * replay, um evento emitido sem nenhum coletor ativo se perde pra sempre — bastava o usuário
- * disparar um sync e apertar "voltar" antes dele terminar pra `SyncViewModel` ser destruída,
- * a inscrição no bus morrer junto, e o resultado (inclusive a notificação) nunca chegar a
- * lugar nenhum. O mesmo buraco existia pra sync disparado das telas de Histórico/
- * Quadrinho/Biblioteca remota — só `SyncViewModel` persistia/notificava, as outras só
- * atualizavam o próprio estado local de UI.
+ * Before, these three responsibilities lived inside `SyncViewModel` (`hiltViewModel()`
+ * scoped to the Sync screen's `NavBackStackEntry`). Since [P2pEventBus] is a `SharedFlow` WITHOUT
+ * replay, an event emitted with no active collector is lost forever — it was enough for the user to
+ * trigger a sync and press "back" before it finished for `SyncViewModel` to be destroyed,
+ * the bus subscription to die with it, and the result (including the notification) to never reach
+ * anywhere. The same hole existed for syncs triggered from the History/
+ * Comic/Remote library screens — only `SyncViewModel` persisted/notified, the others only
+ * updated their own local UI state.
  *
- * Instanciado uma única vez (`@Singleton`, ver `NetworkCaseModule.provideP2pService`) assim
- * que o subsistema P2P existe — nunca atrelado ao ciclo de vida de nenhuma ViewModel.
- * `SyncViewModel` continua coletando o mesmo [P2pEventBus] pro estado de UI da PRÓPRIA tela
- * (log em memória, spinner dos botões); só a persistência/notificação/foreground service
- * saíram de lá pra cá.
+ * Instantiated only once (`@Singleton`, see `NetworkCaseModule.provideP2pService`) as soon
+ * as the P2P subsystem exists — never tied to any ViewModel's lifecycle.
+ * `SyncViewModel` keeps collecting the same [P2pEventBus] for its OWN screen's UI state
+ * (in-memory log, button spinners); only persistence/notification/foreground service
+ * moved from there to here.
  */
 @Singleton
 class P2pSyncCoordinator
@@ -55,17 +55,17 @@ class P2pSyncCoordinator
     ) {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-        /** `"$peerId:$kind"` de sessões em andamento — só controla o liga/desliga do
-         *  foreground service, não precisa de granularidade nenhuma além disso. */
+        /** `"$peerId:$kind"` of in-progress sessions — only controls starting/stopping the
+         *  foreground service, no finer granularity needed. */
         private val activeSessions = MutableStateFlow<Set<String>>(emptySet())
 
         init {
             scope.launch { p2pEventBus.events.collect(::handleEvent) }
 
-            // Ao contrário do que `SyncViewModel` fazia (ligado só aos syncs disparados PELA
-            // tela de Sync), aqui reage a QUALQUER sessão do app inteiro — sync disparado da
-            // Home/Histórico/Quadrinho/Biblioteca remota também passa a ganhar a isenção de
-            // Doze/App Standby, não só o que passa pela tela de Sync.
+            // Unlike what `SyncViewModel` did (tied only to syncs triggered FROM the
+            // Sync screen), this reacts to ANY session in the whole app — syncs triggered from
+            // Home/History/Comic/Remote library also get the Doze/App Standby
+            // exemption, not just those going through the Sync screen.
             scope.launch {
                 activeSessions
                     .map { it.isNotEmpty() }
@@ -111,9 +111,9 @@ class P2pSyncCoordinator
 
                 is P2pEvent.FileSyncManifestExchanged -> startSession(event.peerId, SYNC_KIND_FILES)
                 is P2pEvent.FileSyncChapterFailed ->
-                    // comicName/chapter vazios = falha da sessão INTEIRA, não de um capítulo
-                    // (ver protocol/files/mod.rs::run_and_report do lado Rust) — só esse caso
-                    // encerra a sessão.
+                    // Empty comicName/chapter = failure of the WHOLE session, not of a chapter
+                    // (see protocol/files/mod.rs::run_and_report on the Rust side) — only this case
+                    // ends the session.
                     if (event.comicName.isEmpty() && event.chapter.isEmpty()) {
                         endSession(event.peerId, SYNC_KIND_FILES)
                         syncHistoryLogUseCase.record(event.peerId, SYNC_KIND_FILES, "error", event.reason)
@@ -145,8 +145,8 @@ class P2pSyncCoordinator
                         event.sentCount,
                     )
                 }
-            // Sem toast/notificação própria pra isso — um total por sessão anexado à mesma
-            // notificação que já ia aparecer, em vez de uma notificação por capítulo em conflito.
+            // No dedicated toast/notification for this — a per-session total appended to the same
+            // notification that was already going to appear, instead of one notification per conflicting chapter.
             val content =
                 if (event.conflictsCount > 0) {
                     base +

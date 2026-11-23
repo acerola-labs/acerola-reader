@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
-import { _resetBookmarksState } from '$lib/hooks/store/use-bookmarks.svelte';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
+import { _resetBookmarksState } from '#lib/hooks/store/use-bookmarks.svelte.ts';
 import ConfigPage from '../+page.svelte';
 
 const { mockGoto } = vi.hoisted(() => ({ mockGoto: vi.fn() }));
@@ -24,9 +24,9 @@ vi.mock('@tauri-apps/api/event', () => ({
 
 const { mockStoreLoad } = vi.hoisted(() => ({ mockStoreLoad: vi.fn() }));
 
-// use-theme.svelte.ts instancia LazyStore no top-level do módulo (fora de qualquer hook) —
-// precisa continuar mockado aqui como no setup.ts global, já que o vi.mock deste arquivo
-// substitui o módulo inteiro em vez de estender o mock global.
+// use-theme.svelte.ts instantiates LazyStore at the module top level (outside any hook) —
+// it must stay mocked here like in the global setup.ts, since this file's vi.mock replaces
+// the whole module instead of extending the global mock.
 vi.mock('@tauri-apps/plugin-store', () => ({
 	load: mockStoreLoad,
 	LazyStore: class {
@@ -39,13 +39,13 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 	}
 }));
 
-describe('config +page (accordion)', () => {
+describe('config +page', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		_resetBookmarksState();
-		// Marcadores agora fica sempre aberta (flat) — `AcerolaBookmarkManager` monta de cara
-		// (não só depois de expandir uma categoria) e chama `loadBookmarks()` no `onMount`, então
-		// precisa de uma resposta em formato de lista aqui, senão `bookmarks` vira `undefined`.
+		// Bookmarks is now always open (flat) — `AcerolaBookmarkManager` mounts right away (not
+		// only after expanding a category) and calls `loadBookmarks()` in `onMount`, so it needs
+		// a list-shaped response here, otherwise `bookmarks` becomes `undefined`.
 		mockInvoke.mockImplementation((cmd: string) => {
 			if (
 				cmd === BOOKMARKS_COMMANDS.getCategories ||
@@ -63,61 +63,35 @@ describe('config +page (accordion)', () => {
 		});
 	});
 
-	// Aparência e Marcadores ficam sempre abertas (flat, sem clique) — só Arquivos/Biblioteca/
-	// Metadados colapsam por padrão. Mesmo mix de UI/UX da tela de Rede (nem toda seção precisa
-	// de um clique pra ver o conteúdo).
-	it('renders the flat categories already open and the collapsible ones collapsed by default', () => {
+	// No accordions anymore: every section (AcerolaSettingSection) renders open, with its rows
+	// (AcerolaSettingRow) visible right away — no click needed to reach a setting.
+	it('renders every section open with its settings visible', () => {
 		render(ConfigPage);
 
-		expect(screen.getByText(/^configuração dos arquivos$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^biblioteca$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^aparência$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^configuração de metadados$/i)).toBeInTheDocument();
-		expect(screen.getByText(/^marcadores$/i)).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^arquivos$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^biblioteca$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^metadados$/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /^marcadores$/i })).toBeInTheDocument();
 
-		// Aparência é flat — o grid de temas já vem visível, sem precisar clicar.
-		expect(screen.getByText(/catppuccin/i)).toBeInTheDocument();
-		// Biblioteca continua colapsável — conteúdo escondido até clicar.
-		expect(screen.queryByText(/^templates de nomenclatura$/i)).not.toBeInTheDocument();
+		// There is no theme switching section anymore — only the light/dark mode in the header.
+		expect(screen.queryByText(/^aparência$/i)).not.toBeInTheDocument();
+		// Rows of every section are already there, no expanding.
+		expect(screen.getByText(/^templates de nomenclatura$/i)).toBeInTheDocument();
+		expect(screen.getByText(/sincronização com mangadex/i)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /escolher pasta/i })).toBeInTheDocument();
 	});
 
-	it('expands a collapsible category inline instead of navigating', async () => {
-		const user = userEvent.setup();
+	it('does not navigate when just viewing the sections', () => {
 		render(ConfigPage);
 
-		await user.click(screen.getByText(/^configuração de metadados$/i));
-
-		expect(await screen.findByText(/sincronização com mangadex/i)).toBeInTheDocument();
 		expect(mockGoto).not.toHaveBeenCalled();
-
-		// aria-expanded no cabeçalho muda de forma síncrona — a remoção do conteúdo em si passa
-		// por transition:slide, cujo outro pode não completar em jsdom (sem layout real), então
-		// o sinal confiável aqui é o atributo, não o conteúdo.
-		await user.click(screen.getByText(/^configuração de metadados$/i));
-
-		expect(screen.getByText(/^configuração de metadados$/i).closest('button')).toHaveAttribute(
-			'aria-expanded',
-			'false'
-		);
 	});
 
-	it('keeps a flat section visible alongside an expanded collapsible category', async () => {
+	it('navigates to the templates route from the library "Open" button', async () => {
 		const user = userEvent.setup();
 		render(ConfigPage);
 
-		await user.click(screen.getByText(/^biblioteca$/i));
-
-		// Aparência (flat) nunca deixou de estar visível; Biblioteca (colapsável) agora também está.
-		expect(screen.getByText(/catppuccin/i)).toBeInTheDocument();
-		expect(await screen.findByText(/^templates de nomenclatura$/i)).toBeInTheDocument();
-	});
-
-	it('still navigates to the templates route from within library', async () => {
-		const user = userEvent.setup();
-		render(ConfigPage);
-
-		await user.click(screen.getByText(/^biblioteca$/i));
-		await user.click(await screen.findByText(/^templates de nomenclatura$/i));
+		await user.click(screen.getByRole('button', { name: /^abrir$/i }));
 
 		expect(mockGoto).toHaveBeenCalledWith('/config/templates');
 	});
