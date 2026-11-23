@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "identifier": "Acerola Reader",
+  "identifier": "app.acerola.reader",
   "productName": "Acerola Reader",
   "version": "1.0.2",
   "build": {
