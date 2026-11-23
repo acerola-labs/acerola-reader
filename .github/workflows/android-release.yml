@@ -108,8 +108,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add acerola/android/app/build.gradle.kts
           if ! git diff --staged --quiet; then
-            git commit -m "[chore](android): bump version to ${{ env.VERSION }} [skip ci]"
-            BUMP_SHA=$(git rev-parse HEAD)
+            git commit -m "[build](android): Versão ${{ env.VERSION }} [skip ci]"
             git checkout -- .
 
             until git push origin HEAD:main; do
@@ -117,16 +116,23 @@ jobs:
               git checkout -- .
               git rebase origin/main
             done
+            BUMP_SHA=$(git rev-parse HEAD)
 
+            # develop gets the very same commit when it has nothing main lacks, so both stay
+            # identical; only when develop is ahead the bump is cherry-picked on top of it.
             git fetch origin develop
-            git checkout -B develop origin/develop
-            git cherry-pick "$BUMP_SHA"
-            git checkout -- .
-            until git push origin develop; do
-              git fetch origin develop
+            if git merge-base --is-ancestor origin/develop "$BUMP_SHA"; then
+              git push origin "$BUMP_SHA:refs/heads/develop"
+            else
+              git checkout -B develop origin/develop
+              git cherry-pick "$BUMP_SHA"
               git checkout -- .
-              git rebase origin/develop
-            done
+              until git push origin develop; do
+                git fetch origin develop
+                git checkout -- .
+                git rebase origin/develop
+              done
+            fi
           fi
 
       - name: Upload APK to GitHub Release
