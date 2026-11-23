@@ -170,8 +170,7 @@
 		"command": {
 			"navigationGroup": "Navigation",
 			"libraryGroup": "Library",
-			"noResults": "No comics found",
-			"chapterCount": "{count} chapters"
+			"noResults": "No comics found"
 		},
 		"syncIndicator": {
 			"syncing": "Syncing with {peer}",
