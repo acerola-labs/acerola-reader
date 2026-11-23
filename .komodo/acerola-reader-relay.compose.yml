@@ -1,7 +1,8 @@
-# Acerola Relay on the hetzner Swarm (Komodo Stack hetzner_relay, see komodo.toml).
-# The route is relay.caddy, published by route.sh.
+# Acerola Relay on the hetzner Swarm (Komodo Stack hetzner_acerola-reader-relay, see komodo.toml).
+# The route is acerola-reader-relay.caddy, published by route.sh.
 # APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
-# Caddy (config) reaches the service as hetzner_relay_relay:80 over the edge network.
+# Caddy (config) reaches the service as hetzner_acerola-reader-relay_relay:80 over the edge
+# network. Port 80 is iroh-relay's default HTTP port (the 3000 standard would need a config file).
 services:
   relay:
     image: ${APP_IMAGE:?}
@@ -46,7 +47,7 @@ services:
         parallelism: 1
         order: stop-first
       labels:
-        acerola.app: relay
+        acerola.app: acerola-reader-relay
         acerola.server: hetzner
 
 volumes:

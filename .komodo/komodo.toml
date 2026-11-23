@@ -1,6 +1,7 @@
 # Komodo deploy of the acerola-reader apps on the hetzner server: the Acerola Relay (lib/relay)
 # and the docs site (docs/web). The Storybooks stay on Cloudflare Workers (web-deploy.yml).
-# Names follow <server>_<app>; Swarm completes the services with _<service> (hetzner_relay_relay).
+# Apps: acerola-reader-relay and acerola-reader-docs. Names follow <server>_<app>; Swarm completes
+# the services with _<service> (hetzner_acerola-reader-relay_relay).
 # Each app has its own <app>.compose.yml and <app>.caddy next to this file.
 #
 #   Sync       applies this file (GitHub webhook on push to main).
@@ -14,9 +15,9 @@
 #   Action     native Swarm rollback to the previous version.
 
 [[resource_sync]]
-name = "reader"
+name = "acerola-reader"
 description = "Aplica o deploy dos apps do acerola-reader (.komodo/komodo.toml)"
-tags = ["env:hetzner", "app:relay", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-relay", "app:acerola-reader-docs"]
 [resource_sync.config]
 git_provider = "github.com"
 repo = "vinicius-gpl/acerola-reader"
@@ -25,9 +26,9 @@ resource_path = [".komodo/komodo.toml"]
 delete = false
 
 [[repo]]
-name = "hetzner_relay"
+name = "hetzner_acerola-reader-relay"
 description = "Clone da main do acerola-reader no hetzner"
-tags = ["env:hetzner", "app:relay"]
+tags = ["env:hetzner", "app:acerola-reader-relay"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
@@ -37,78 +38,78 @@ webhook_enabled = false
 links = ["https://github.com/vinicius-gpl/acerola-reader/tree/main/lib/relay"]
 
 [[build]]
-name = "hetzner_relay"
+name = "hetzner_acerola-reader-relay"
 description = "Imagem do Acerola Relay, construída no próprio hetzner (sem registry)"
-tags = ["env:hetzner", "app:relay"]
+tags = ["env:hetzner", "app:acerola-reader-relay"]
 [build.config]
 builder = "hetzner"
-linked_repo = "hetzner_relay"
+linked_repo = "hetzner_acerola-reader-relay"
 webhook_enabled = false
 build_path = "lib/relay"
 dockerfile_path = ".config/docker/dockerfile"
-image_name = "relay"
+image_name = "acerola-reader-relay"
 image_tag = "hetzner"
 include_latest_tag = false
 include_version_tags = false
 include_commit_tag = true
 labels = """
 org.opencontainers.image.source=https://github.com/vinicius-gpl/acerola-reader
-acerola.app=relay
+acerola.app=acerola-reader-relay
 acerola.server=hetzner
 """
 links = ["https://relay.reader.acerola.app"]
 
 [[stack]]
-name = "hetzner_relay"
+name = "hetzner_acerola-reader-relay"
 description = "Acerola Relay no Swarm do hetzner"
-tags = ["env:hetzner", "app:relay"]
+tags = ["env:hetzner", "app:acerola-reader-relay"]
 [stack.config]
 swarm = "hetzner"
-project_name = "hetzner_relay"
-linked_repo = "hetzner_relay"
+project_name = "hetzner_acerola-reader-relay"
+linked_repo = "hetzner_acerola-reader-relay"
 webhook_enabled = false
 run_directory = ".komodo"
-file_paths = ["relay.compose.yml"]
+file_paths = ["acerola-reader-relay.compose.yml"]
 extra_args = ["--resolve-image", "never", "--detach=false"]
 links = ["https://relay.reader.acerola.app"]
-pre_deploy.command = "sh komodo.sh pre-deploy relay hetzner"
+pre_deploy.command = "sh komodo.sh pre-deploy acerola-reader-relay hetzner"
 compose_cmd_wrapper_include = ["config", "deploy"]
-compose_cmd_wrapper = "sh komodo.sh deploy relay hetzner [[COMPOSE_COMMAND]]"
-post_deploy.command = "sh komodo.sh post-deploy relay hetzner"
+compose_cmd_wrapper = "sh komodo.sh deploy acerola-reader-relay hetzner [[COMPOSE_COMMAND]]"
+post_deploy.command = "sh komodo.sh post-deploy acerola-reader-relay hetzner"
 
 [[procedure]]
-name = "hetzner_relay"
+name = "hetzner_acerola-reader-relay"
 description = "Publica a main do Acerola Relay no hetzner: Pull, Build e Deploy"
-tags = ["env:hetzner", "app:relay"]
+tags = ["env:hetzner", "app:acerola-reader-relay"]
 [procedure.config]
 webhook_enabled = true
 
 [[procedure.config.stage]]
 name = "Pull"
 executions = [
-  { execution.type = "PullRepo", execution.params.repo = "hetzner_relay" },
+  { execution.type = "PullRepo", execution.params.repo = "hetzner_acerola-reader-relay" },
 ]
 
 [[procedure.config.stage]]
 name = "Build"
 executions = [
-  { execution.type = "RunBuild", execution.params.build = "hetzner_relay" },
+  { execution.type = "RunBuild", execution.params.build = "hetzner_acerola-reader-relay" },
 ]
 
 [[procedure.config.stage]]
 name = "Deploy"
 executions = [
-  { execution.type = "DeployStack", execution.params.stack = "hetzner_relay" },
+  { execution.type = "DeployStack", execution.params.stack = "hetzner_acerola-reader-relay" },
 ]
 
 [[action]]
-name = "hetzner_relay_rollback"
+name = "hetzner_acerola-reader-relay_rollback"
 description = "Volta o Acerola Relay para a versão anterior (rollback do Swarm)"
-tags = ["env:hetzner", "app:relay"]
+tags = ["env:hetzner", "app:acerola-reader-relay"]
 [action.config]
 webhook_enabled = false
 file_contents = '''
-const stack = 'hetzner_relay';
+const stack = 'hetzner_acerola-reader-relay';
 await komodo.execute_server_terminal(
   {
     server: 'hetzner',
@@ -125,9 +126,9 @@ await komodo.execute_server_terminal(
 # comes from the Komodo Variables ACEROLA_READER_R2_ACCESS_KEY_ID / _SECRET_ACCESS_KEY.
 
 [[repo]]
-name = "hetzner_docs"
+name = "hetzner_acerola-reader-docs"
 description = "Clone da main do acerola-reader no hetzner (site de docs)"
-tags = ["env:hetzner", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-docs"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
@@ -137,82 +138,82 @@ webhook_enabled = false
 links = ["https://github.com/vinicius-gpl/acerola-reader/tree/main/docs/web"]
 
 [[build]]
-name = "hetzner_docs"
+name = "hetzner_acerola-reader-docs"
 description = "Imagem do site de docs, construída no próprio hetzner (sem registry)"
-tags = ["env:hetzner", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-docs"]
 [build.config]
 builder = "hetzner"
-linked_repo = "hetzner_docs"
+linked_repo = "hetzner_acerola-reader-docs"
 webhook_enabled = false
 build_path = "docs/web"
 dockerfile_path = ".config/docker/dockerfile"
-image_name = "docs"
+image_name = "acerola-reader-docs"
 image_tag = "hetzner"
 include_latest_tag = false
 include_version_tags = false
 include_commit_tag = true
 labels = """
 org.opencontainers.image.source=https://github.com/vinicius-gpl/acerola-reader
-acerola.app=docs
+acerola.app=acerola-reader-docs
 acerola.server=hetzner
 """
 links = ["https://docs.reader.acerola.app"]
 
 [[stack]]
-name = "hetzner_docs"
+name = "hetzner_acerola-reader-docs"
 description = "Site de docs do Acerola no Swarm do hetzner"
-tags = ["env:hetzner", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-docs"]
 [stack.config]
 swarm = "hetzner"
-project_name = "hetzner_docs"
-linked_repo = "hetzner_docs"
+project_name = "hetzner_acerola-reader-docs"
+linked_repo = "hetzner_acerola-reader-docs"
 webhook_enabled = false
 run_directory = ".komodo"
-file_paths = ["docs.compose.yml"]
+file_paths = ["acerola-reader-docs.compose.yml"]
 extra_args = ["--resolve-image", "never", "--detach=false"]
 links = ["https://docs.reader.acerola.app"]
-pre_deploy.command = "sh komodo.sh pre-deploy docs hetzner"
+pre_deploy.command = "sh komodo.sh pre-deploy acerola-reader-docs hetzner"
 compose_cmd_wrapper_include = ["config", "deploy"]
 compose_cmd_wrapper = '''
 R2_ACCESS_KEY_ID='[[ACEROLA_READER_R2_ACCESS_KEY_ID]]' \
 R2_SECRET_ACCESS_KEY='[[ACEROLA_READER_R2_SECRET_ACCESS_KEY]]' \
-sh komodo.sh deploy docs hetzner [[COMPOSE_COMMAND]]
+sh komodo.sh deploy acerola-reader-docs hetzner [[COMPOSE_COMMAND]]
 '''
-post_deploy.command = "sh komodo.sh post-deploy docs hetzner"
+post_deploy.command = "sh komodo.sh post-deploy acerola-reader-docs hetzner"
 
 [[procedure]]
-name = "hetzner_docs"
+name = "hetzner_acerola-reader-docs"
 description = "Publica a main do site de docs no hetzner: Pull, Build e Deploy"
-tags = ["env:hetzner", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-docs"]
 [procedure.config]
 webhook_enabled = true
 
 [[procedure.config.stage]]
 name = "Pull"
 executions = [
-  { execution.type = "PullRepo", execution.params.repo = "hetzner_docs" },
+  { execution.type = "PullRepo", execution.params.repo = "hetzner_acerola-reader-docs" },
 ]
 
 [[procedure.config.stage]]
 name = "Build"
 executions = [
-  { execution.type = "RunBuild", execution.params.build = "hetzner_docs" },
+  { execution.type = "RunBuild", execution.params.build = "hetzner_acerola-reader-docs" },
 ]
 
 [[procedure.config.stage]]
 name = "Deploy"
 executions = [
-  { execution.type = "DeployStack", execution.params.stack = "hetzner_docs" },
+  { execution.type = "DeployStack", execution.params.stack = "hetzner_acerola-reader-docs" },
 ]
 
 [[action]]
-name = "hetzner_docs_rollback"
+name = "hetzner_acerola-reader-docs_rollback"
 description = "Volta o site de docs para a versão anterior (rollback do Swarm)"
-tags = ["env:hetzner", "app:docs"]
+tags = ["env:hetzner", "app:acerola-reader-docs"]
 [action.config]
 webhook_enabled = false
 file_contents = '''
-const stack = 'hetzner_docs';
+const stack = 'hetzner_acerola-reader-docs';
 await komodo.execute_server_terminal(
   {
     server: 'hetzner',
