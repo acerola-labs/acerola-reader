@@ -1,0 +1,26 @@
+# Production image of the docs site. Built by Komodo on the hetzner server itself (no registry):
+# the image stays local and the Stack runs it. Build context: docs/web/.
+#
+# Two stages: the SvelteKit build (prerendered pages + Pagefind index) and a slim Node runtime.
+# Every package is a devDependency, so adapter-node bundles them all into build/ and the
+# runtime needs nothing else.
+
+# Debian (glibc) for the build: the native bits (rollup, Pagefind) ship as glibc binaries.
+FROM node:24.20.0-bookworm-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+# Caps the Node heap so the build does not take down the rest of the server.
+ENV NODE_OPTIONS=--max-old-space-size=1024
+RUN npm run build
+
+FROM node:24.20.0-alpine
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=3000
+COPY --from=build /app/package.json ./
+COPY --from=build /app/build ./build
+USER node
+EXPOSE 3000
+CMD ["node", "build"]
