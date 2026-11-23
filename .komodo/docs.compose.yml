@@ -1,0 +1,53 @@
+# Acerola docs site on the hetzner Swarm (Komodo Stack hetzner_docs, see komodo.toml).
+# APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
+# Caddy (config) reaches the service as hetzner_docs_web:3000 over the edge network; the route
+# is docs.caddy, published by route.sh.
+services:
+  web:
+    image: ${APP_IMAGE:?}
+    environment:
+      - ORIGIN=https://docs.reader.acerola.app
+      # R2 bucket of the APK releases, over its S3 API (the account id is not a secret).
+      - R2_ENDPOINT=https://f9b15349d71e7ce46b8c2061fc4da310.r2.cloudflarestorage.com
+      - R2_BUCKET=acerola-reader
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:?}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:?}
+    networks:
+      - edge
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      # start-first: the new task only takes over once healthy, so the site never goes down.
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        monitor: 30s
+      rollback_config:
+        parallelism: 1
+        order: start-first
+      labels:
+        acerola.app: docs
+        acerola.server: hetzner
+
+networks:
+  edge:
+    external: true
