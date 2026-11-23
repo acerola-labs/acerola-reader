@@ -101,6 +101,39 @@ jobs:
         run: mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk"
         working-directory: acerola/android
 
+      # The APK goes to R2 BEFORE anything is committed or published: if either upload fails, the
+      # release failed and nothing else runs (no version commit, no GitHub Release).
+      # Permanent copy per version, never overwritten nor deleted: the release history (same idea
+      # as a Linux distro package pool).
+      - name: Upload APK to R2 (versioned archive)
+        if: env.CHANNEL == 'prod'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: acerola/android
+          command: >
+            r2 object put acerola-reader/android/releases/acerola-${{ env.VERSION }}.apk
+            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
+            --content-type=application/vnd.android.package-archive
+            --remote
+
+      # `wrangler r2 object` has no `list`/delete-by-prefix subcommand, so this step does not clean
+      # older versions out of `android/latest/`: the docs/web /api/apk-latest route (which resolves
+      # the highest version in that folder) tolerates more than one APK there until a cleanup.
+      - name: Upload APK to R2 (latest)
+        if: env.CHANNEL == 'prod'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: acerola/android
+          command: >
+            r2 object put acerola-reader/android/latest/acerola-${{ env.VERSION }}.apk
+            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
+            --content-type=application/vnd.android.package-archive
+            --remote
+
       - name: Commit version bump
         working-directory: ${{ github.workspace }}
         run: |
@@ -143,35 +176,3 @@ jobs:
           name: "Acerola Android v${{ env.VERSION }}"
           generate_release_notes: true
           prerelease: ${{ env.CHANNEL != 'prod' }}
-
-      # Cópia permanente por versão — nunca sobrescrita nem apagada, é o histórico de
-      # releases (mesma ideia de um pool de pacotes de distro Linux).
-      - name: Upload APK to R2 (versioned archive)
-        if: env.CHANNEL == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: acerola/android
-          command: >
-            r2 object put acerola-reader/android/releases/acerola-${{ env.VERSION }}.apk
-            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
-            --content-type=application/vnd.android.package-archive
-            --remote
-
-      # `wrangler r2 object` não tem subcomando `list`/`delete-por-prefixo`, então este
-      # step não limpa versões antigas de `android/latest/` — a rota /api/apk-latest do
-      # docs/web (que resolve a maior versão presente nessa pasta) foi feita justamente
-      # pra tolerar mais de um APK ali até uma limpeza periódica acontecer.
-      - name: Upload APK to R2 (latest)
-        if: env.CHANNEL == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: acerola/android
-          command: >
-            r2 object put acerola-reader/android/latest/acerola-${{ env.VERSION }}.apk
-            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
-            --content-type=application/vnd.android.package-archive
-            --remote
