@@ -1,52 +1,48 @@
 package br.acerola.comic.common.ux.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
-import br.acerola.comic.common.ux.tokens.SizeTokens
+import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
-private val HeroShape = ShapeTokens.Huge
-private val IconShape = ShapeTokens.Large
-
+/**
+ * Brand list row, the desktop's `AcerolaHeroButton`: `rounded-tile bg-surface p-4`, a round 40dp
+ * icon in its [tone], the `font-black` title and a muted description, an [action] on the right and
+ * an optional [bottomContent] under it. No border: the surface separates it from the card.
+ */
 @Composable
 fun Acerola.Component.HeroButton(
     title: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
     description: String? = null,
-    iconTint: Color = MaterialTheme.colorScheme.onPrimary,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
+    tone: Tone = Tone.Neutral,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     action: @Composable (() -> Unit)? = null,
@@ -56,19 +52,11 @@ fun Acerola.Component.HeroButton(
         title = title,
         modifier = modifier,
         description = description,
-        iconBackground = iconBackground,
         onClick = onClick,
         onLongClick = onLongClick,
         action = action,
         bottomContent = bottomContent,
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(SizeTokens.IconMedium),
-            )
-        },
+        icon = { Acerola.Component.RoundIcon(icon = icon, tone = tone) },
     )
 }
 
@@ -78,299 +66,113 @@ fun Acerola.Component.HeroButton(
     title: String,
     modifier: Modifier = Modifier,
     description: String? = null,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    iconModifier: Modifier = Modifier.size(SizeTokens.ClickTarget),
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     action: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
     icon: @Composable () -> Unit,
 ) {
+    val brand = AcerolaExtendedTheme.colors
     val clickableModifier =
         if (onClick != null || onLongClick != null) {
-            Modifier.combinedClickable(
-                onClick = onClick ?: {},
-                onLongClick = onLongClick,
-            )
+            Modifier.combinedClickable(onClick = onClick ?: {}, onLongClick = onLongClick)
         } else {
             Modifier
         }
 
-    Surface(
-        shape = HeroShape,
-        border = BorderStroke(SizeTokens.BorderThin, MaterialTheme.colorScheme.outlineVariant),
-        color = MaterialTheme.colorScheme.surface,
+    ProvideSurfaceLevel(AcerolaSurfaceLevel.Surface) {
+        Column(
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .clip(AcerolaShapes.Tile)
+                    .background(brand.surface)
+                    .then(clickableModifier),
+        ) {
+            Row(
+                modifier = Modifier.padding(SpacingTokens.Large),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+            ) {
+                icon()
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+                        color = brand.foreground,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (description != null) {
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = brand.mutedForeground,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                action?.invoke()
+            }
+
+            if (bottomContent != null) {
+                Column(modifier = Modifier.padding(start = SpacingTokens.Large, end = SpacingTokens.Large, bottom = SpacingTokens.Large)) {
+                    bottomContent()
+                }
+            }
+        }
+    }
+}
+
+/** A compact row nested in a [HeroButton]'s `bottomContent`: round icon, title, description. */
+@Composable
+fun Acerola.Component.HeroNestedButton(
+    title: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    tone: Tone = Tone.Neutral,
+    onClick: () -> Unit,
+) {
+    val brand = AcerolaExtendedTheme.colors
+    Row(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(HeroShape)
-                .then(clickableModifier),
+                .clip(AcerolaShapes.Inner)
+                .clickable(onClick = onClick)
+                .padding(vertical = SpacingTokens.Small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
     ) {
-        HeroButtonContent(title, description, iconBackground, iconModifier, action, bottomContent, icon)
-    }
-}
-
-@Composable
-fun Acerola.Component.HeroNestedButton(
-    title: String,
-    modifier: Modifier = Modifier,
-    description: String? = null,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    onClick: () -> Unit,
-    icon: @Composable () -> Unit,
-) {
-    Surface(
-        onClick = onClick,
-        color = Color.Transparent,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Medium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Surface(
-                shape = ShapeTokens.MediumLarge,
-                color = iconBackground,
-                modifier = Modifier.size(40.dp),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    icon()
-                }
-            }
-            Spacer(modifier = Modifier.width(SpacingTokens.Large))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                if (description != null) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Acerola.Component.HeroNestedButton(
-    title: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    description: String? = null,
-    iconTint: Color = MaterialTheme.colorScheme.onPrimary,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    onClick: () -> Unit,
-) {
-    Acerola.Component.HeroNestedButton(
-        title = title,
-        description = description,
-        modifier = modifier,
-        iconBackground = iconBackground,
-        onClick = onClick,
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(SizeTokens.IconSmall),
+        Acerola.Component.RoundIcon(icon = icon, tone = tone)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+                color = brand.foreground,
             )
-        },
-    )
-}
-
-@Composable
-fun Acerola.Component.GroupedHeroButton(
-    title: String,
-    modifier: Modifier = Modifier,
-    description: String? = null,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    iconModifier: Modifier = Modifier.size(SizeTokens.ClickTarget),
-    onClick: (() -> Unit)? = null,
-    onLongClick: (() -> Unit)? = null,
-    action: @Composable (() -> Unit)? = null,
-    nestedItem: @Composable (() -> Unit)? = null,
-    icon: @Composable () -> Unit,
-) {
-    Acerola.Component.HeroButton(
-        title = title,
-        modifier = modifier,
-        description = description,
-        iconBackground = iconBackground,
-        iconModifier = iconModifier,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        action = action,
-        bottomContent = nestedItem,
-        icon = icon,
-    )
-}
-
-@Composable
-fun Acerola.Component.GroupedHeroButton(
-    title: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    description: String? = null,
-    iconTint: Color = MaterialTheme.colorScheme.onPrimary,
-    iconBackground: Color = MaterialTheme.colorScheme.primary,
-    onClick: (() -> Unit)? = null,
-    onLongClick: (() -> Unit)? = null,
-    action: @Composable (() -> Unit)? = null,
-    nestedItem: @Composable (() -> Unit)? = null,
-) {
-    Acerola.Component.HeroButton(
-        title = title,
-        icon = icon,
-        modifier = modifier,
-        description = description,
-        iconTint = iconTint,
-        iconBackground = iconBackground,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        action = action,
-        bottomContent = nestedItem,
-    )
-}
-
-@Composable
-private fun HeroButtonContent(
-    title: String,
-    description: String?,
-    iconBackground: Color,
-    iconModifier: Modifier,
-    action: @Composable (() -> Unit)?,
-    bottomContent: @Composable (() -> Unit)?,
-    icon: @Composable () -> Unit,
-) {
-    Column {
-        Row(
-            modifier = Modifier.padding(horizontal = SpacingTokens.ExtraLarge, vertical = SpacingTokens.Large),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Surface(
-                shape = IconShape,
-                color = iconBackground,
-                modifier = iconModifier,
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    icon()
-                }
-            }
-
-            Spacer(modifier = Modifier.width(SpacingTokens.Large))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                if (description != null) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-
-            if (action != null) {
-                Spacer(modifier = Modifier.width(SpacingTokens.Medium))
-                action()
+            if (description != null) {
+                Text(text = description, style = MaterialTheme.typography.bodyMedium, color = brand.mutedForeground)
             }
         }
+    }
+}
 
-        if (bottomContent != null) {
-            HorizontalDivider(
-                modifier =
-                    Modifier
-                        .padding(horizontal = SpacingTokens.ExtraLarge)
-                        .alpha(0.4f),
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HeroButtonPreview() {
+    AcerolaTheme {
+        Column(modifier = Modifier.padding(SpacingTokens.Large), verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
+            Acerola.Component.HeroButton(title = "Hero title", description = "Description", icon = Icons.Default.Star)
+            Acerola.Component.HeroButton(
+                title = "Hero title",
+                icon = Icons.Default.Star,
+                tone = Tone.Primary,
+                bottomContent = { Acerola.Component.HeroNestedButton(title = "Nested", icon = Icons.Default.Star, onClick = {}) },
             )
-            bottomContent()
         }
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun HeroButtonWithVectorPreview() {
-    AcerolaTheme {
-        Acerola.Component.HeroButton(
-            title = "Hero Title",
-            icon = Icons.Default.Star,
-        )
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun HeroButtonWithComposablePreview() {
-    AcerolaTheme {
-        Acerola.Component.HeroButton(
-            title = "Hero Title",
-            icon = { Icon(Icons.Default.Star, contentDescription = null) },
-        )
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun HeroNestedButtonWithComposablePreview() {
-    AcerolaTheme {
-        Acerola.Component.HeroNestedButton(
-            title = "Nested Title",
-            onClick = {},
-            icon = { Icon(Icons.Default.Star, contentDescription = null) },
-        )
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun HeroNestedButtonWithVectorPreview() {
-    AcerolaTheme {
-        Acerola.Component.HeroNestedButton(
-            title = "Nested Title",
-            icon = Icons.Default.Star,
-            onClick = {},
-        )
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun GroupedHeroButtonWithComposablePreview() {
-    AcerolaTheme {
-        Acerola.Component.GroupedHeroButton(
-            title = "Grouped Title",
-            icon = { Icon(Icons.Default.Star, contentDescription = null) },
-        )
-    }
-}
-
-@Preview(name = "Light", showBackground = true)
-@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun GroupedHeroButtonWithVectorPreview() {
-    AcerolaTheme {
-        Acerola.Component.GroupedHeroButton(
-            title = "Grouped Title",
-            icon = Icons.Default.Star,
-        )
     }
 }

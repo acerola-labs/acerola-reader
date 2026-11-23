@@ -3,21 +3,24 @@
 	import AcerolaShinyText from './acerola-shiny-text.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaShinyText',
+		title: 'Primitives/AcerolaShinyText',
 		component: AcerolaShinyText,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Texto com um brilho que varre da esquerda para a direita continuamente, como um leve efeito de destaque. Respeita `prefers-reduced-motion`.'
+						'Text with a shine that sweeps continuously from left to right, as a subtle highlight effect. Respects `prefers-reduced-motion`.'
 				}
 			}
 		},
 		argTypes: {
-			text: { description: 'Texto exibido.', control: 'text' },
-			speed: { description: 'Duracao de uma volta da animacao, em segundos.', control: 'number' },
-			class: { description: 'Classes extras aplicadas ao elemento.', control: 'text' }
+			text: { description: 'Displayed text.', control: 'text' },
+			speed: {
+				description: 'Duration of one animation loop, in seconds.',
+				control: 'number'
+			},
+			class: { description: 'Extra classes applied to the element.', control: 'text' }
 		}
 	});
 </script>
@@ -28,7 +31,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Velocidade padrao de 6 segundos por ciclo.'
+				story: 'Default speed of 6 seconds per cycle.'
 			}
 		}
 	}}
@@ -40,7 +43,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Velocidade customizada, util para chamar mais atencao em destaques curtos.'
+				story: 'Custom speed, useful to draw more attention to short highlights.'
 			}
 		}
 	}}

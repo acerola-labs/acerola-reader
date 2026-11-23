@@ -11,7 +11,7 @@ use crate::{
     infra::error::ComicError,
 };
 
-/// Comando Tauri para buscar quadrinhos com ordenação e filtros específicos.
+/// Tauri command that fetches comics with specific sorting and filters.
 #[tauri::command]
 pub async fn get_comic_summary_sorted<R: Runtime>(
     sort_by: String, sort_order: String, show_hidden: Option<bool>,
@@ -19,7 +19,7 @@ pub async fn get_comic_summary_sorted<R: Runtime>(
 ) -> Result<(), String> {
     let pool = pool.inner().clone();
 
-    // Parse do criteria de ordenação
+    // Parse the sort criteria
     let criteria = match (sort_by.as_str(), sort_order.as_str()) {
         ("title", "asc") => SortCriteria::TitleAsc,
         ("title", "desc") => SortCriteria::TitleDesc,
@@ -49,12 +49,12 @@ pub async fn get_comic_summary_sorted<R: Runtime>(
     Ok(())
 }
 
-/// Converte IDs recebidos como string em `i64` — os IDs de `comic_directory` são hashes de
-/// path (`path_hash`) que ocupam quase toda a faixa de `i64`, bem acima de
-/// `Number.MAX_SAFE_INTEGER` (2^53) do JavaScript. Recebê-los como `Vec<i64>` direto faz o
-/// frontend precisar converter uma string pra `Number` antes de mandar, arredondando o valor
-/// e batendo num `id` que não existe (era exatamente o bug: "0 quadrinho(s) excluído(s))" e
-/// nenhuma linha correspondente no banco). Mesma correção já aplicada em
+/// Converts IDs received as strings into `i64` — `comic_directory` IDs are path hashes
+/// (`path_hash`) that span almost the whole `i64` range, well above JavaScript's
+/// `Number.MAX_SAFE_INTEGER` (2^53). Receiving them directly as `Vec<i64>` forces the
+/// frontend to convert a string to `Number` before sending, rounding the value and hitting
+/// an `id` that does not exist (that was exactly the bug: "0 comic(s) deleted" and no
+/// matching row in the database). Same fix already applied to
 /// `clear_comics_metadata_batch`.
 fn parse_ids(ids: Vec<String>) -> Result<Vec<i64>, ErrorPayload> {
     ids.into_iter()
@@ -66,7 +66,7 @@ fn parse_ids(ids: Vec<String>) -> Result<Vec<i64>, ErrorPayload> {
         .collect()
 }
 
-/// Comando Tauri para atualizar visibilidade de múltiplos quadrinhos.
+/// Tauri command that updates the visibility of multiple comics.
 #[tauri::command]
 pub async fn update_comics_visibility(
     ids: Vec<String>, hidden: bool, pool: State<'_, SqlitePool>,
@@ -79,7 +79,7 @@ pub async fn update_comics_visibility(
         .map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para deletar múltiplos quadrinhos.
+/// Tauri command that deletes multiple comics.
 #[tauri::command]
 pub async fn delete_comics(
     ids: Vec<String>, pool: State<'_, SqlitePool>,
@@ -89,7 +89,7 @@ pub async fn delete_comics(
     service.delete_batch(&ids).await.map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para atualizar status de sincronização externa de um quadrinho.
+/// Tauri command that updates a comic's external sync status.
 #[tauri::command]
 pub async fn toggle_comic_external_sync(
     id: String, enabled: bool, pool: State<'_, SqlitePool>,
@@ -106,7 +106,7 @@ pub async fn toggle_comic_external_sync(
         .map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para reescanear pontualmente um único quadrinho (sync leve, sob demanda).
+/// Tauri command that rescans a single comic on demand (light sync).
 #[tauri::command]
 pub async fn rescan_comic(
     id: String, pool: State<'_, SqlitePool>, chapter_cache: State<'_, ChapterCacheService>,
@@ -118,15 +118,15 @@ pub async fn rescan_comic(
     let service = ComicService::new(pool.inner().clone());
     let result = service.rescan_comic(parsed_id).await.map_err(|error| ErrorPayload::from(&error));
 
-    // INFO: Rescan pode adicionar/remover/renomear arquivos de capítulo — o
-    // cache de get_comic_chapters (chapter_cache.rs) precisa esquecer esse
-    // comic pra não continuar servindo a lista antiga.
+    // INFO: A rescan may add/remove/rename chapter files — the
+    // get_comic_chapters cache (chapter_cache.rs) must forget this
+    // comic so it does not keep serving the old list.
     chapter_cache.invalidate_comic(parsed_id);
 
     result
 }
 
-/// Comando Tauri para gerar a capa de um quadrinho a partir da página do primeiro capítulo.
+/// Tauri command that generates a comic's cover from the first chapter's page.
 #[tauri::command]
 pub async fn regenerate_comic_cover(
     id: String, pool: State<'_, SqlitePool>,
@@ -143,8 +143,8 @@ pub async fn regenerate_comic_cover(
         .map_err(|error| ErrorPayload::from(&error))
 }
 
-/// Comando Tauri para gerar a capa de todos os volumes de um quadrinho a partir da página
-/// do primeiro capítulo de cada volume.
+/// Tauri command that generates the cover of every volume of a comic from the page
+/// of each volume's first chapter.
 #[tauri::command]
 pub async fn regenerate_volume_covers(
     id: String, pool: State<'_, SqlitePool>,

@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'p2p/**/v*'
+  # Republishes an existing tag: pick the tag in "Use workflow from".
+  workflow_dispatch:
+
+concurrency:
+  group: p2p-release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-release:
@@ -19,7 +25,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      # Acerola standard: only a tag on main publishes (format <app>/<channel>/vX.Y.Z, see CLAUDE.md).
+      - name: Check the version tag
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            echo "::error::Release only runs from a version tag, not from $GITHUB_REF_NAME."
+            exit 1
+          fi
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME is not on main. Tags come from the release flow."
+            exit 1
+          fi
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable

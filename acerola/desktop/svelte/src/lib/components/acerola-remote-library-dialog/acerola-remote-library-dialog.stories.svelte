@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import AcerolaRemoteLibraryDialog from './acerola-remote-library-dialog.svelte';
-	import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+	import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 
 	const comics: ComicSummary[] = [
 		{ comicName: 'One Piece', chapterCount: 1090, coverVersion: 1 },
@@ -11,13 +11,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaRemoteLibraryDialog,
-		title: 'Compositores/AcerolaRemoteLibraryDialog',
+		title: 'Composites/AcerolaRemoteLibraryDialog',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Diálogo que lista a biblioteca de quadrinhos de um peer remoto, com estados de carregamento, erro, vazio e sincronização.'
+						'Dialog listing the comic library of a remote peer, with loading, error, empty and syncing states.'
 				}
 			}
 		}
@@ -25,9 +25,9 @@
 </script>
 
 <script lang="ts">
-	// AcerolaRemoteLibraryDialog e totalmente controlado (state.open + events.onOpenChange) e
-	// nao tem trigger proprio — cada story precisa do seu proprio estado local e de um botao
-	// real pra abrir, senao a aba Docs mostra as 5 variantes com o dialog aberto ao mesmo tempo.
+	// AcerolaRemoteLibraryDialog is fully controlled (state.open + events.onOpenChange) and has
+	// no trigger of its own — each story needs its own local state and a real button to open
+	// it, otherwise the Docs tab shows all 5 variants with the dialog open at the same time.
 	let openDefault = $state(false);
 	let openLoading = $state(false);
 	let openError = $state(false);
@@ -41,7 +41,7 @@
 			<button
 				type="button"
 				onclick={() => (openDefault = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -54,7 +54,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: () => false
 				}}
-				events={{ onOpenChange: (isOpen) => (openDefault = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openDefault = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}
@@ -66,7 +69,7 @@
 			<button
 				type="button"
 				onclick={() => (openLoading = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -79,7 +82,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: () => false
 				}}
-				events={{ onOpenChange: (isOpen) => (openLoading = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openLoading = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}
@@ -91,7 +97,7 @@
 			<button
 				type="button"
 				onclick={() => (openError = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -117,7 +123,7 @@
 			<button
 				type="button"
 				onclick={() => (openEmpty = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -142,7 +148,7 @@
 			<button
 				type="button"
 				onclick={() => (openSyncing = true)}
-				class="bg-surface-elevated rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:opacity-80"
+				class="rounded-full bg-surface px-4 py-2 text-sm font-black text-foreground hover:brightness-110"
 			>
 				Open Dialog
 			</button>
@@ -155,7 +161,10 @@
 					coverPathFor: () => undefined,
 					isSyncing: (name) => name === 'One Piece'
 				}}
-				events={{ onOpenChange: (isOpen) => (openSyncing = isOpen), onSelectComic: () => {} }}
+				events={{
+					onOpenChange: (isOpen) => (openSyncing = isOpen),
+					onSelectComic: () => {}
+				}}
 			/>
 		</div>
 	{/snippet}

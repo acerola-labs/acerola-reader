@@ -43,7 +43,7 @@ class GlobalProgressViewModelTest {
         return GlobalProgressViewModel(workManager)
     }
 
-    // Testes de isIndexing
+    // isIndexing tests
 
     @Test
     fun `isIndexing should be true when library sync is RUNNING`() =
@@ -120,7 +120,7 @@ class GlobalProgressViewModelTest {
             assertTrue(vm.isIndexing.first())
         }
 
-    // Testes de progress
+    // progress tests
 
     @Test
     fun `progress should return null when there is no RUNNING work`() =

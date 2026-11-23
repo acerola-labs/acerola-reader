@@ -4,16 +4,16 @@
 	import type { AcerolaSelectOption } from './acerola-select.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaSelect',
+		title: 'Primitives/AcerolaSelect',
 		component: AcerolaSelect,
 		tags: ['autodocs'],
 		argTypes: {
 			data: {
-				description: 'Array de opcoes ({ value, label })',
+				description: 'Array of options ({ value, label })',
 				control: 'object'
 			},
-			state: { description: 'Valor selecionado atualmente', control: 'object' },
-			ui: { description: 'Configuração visual e placeholder', control: 'object' }
+			state: { description: 'Currently selected value', control: 'object' },
+			ui: { description: 'Visual configuration and placeholder', control: 'object' }
 		}
 	});
 
@@ -33,7 +33,7 @@
 />
 
 <Story
-	name="Com valor predefinido"
+	name="With preset value"
 	args={{
 		data: { options: defaultOptions },
 		state: { value: 'manga' }
@@ -41,7 +41,7 @@
 />
 
 <Story
-	name="Placeholder customizado"
+	name="Custom placeholder"
 	args={{
 		data: { options: defaultOptions },
 		ui: { placeholder: 'Escolha um formato' }

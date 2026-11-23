@@ -11,10 +11,10 @@ import br.acerola.comic.module.main.Main
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Tela cheia de histórico de transferências P2P, aberta a partir do hero button da aba de
- * Rede — mesmo padrão de [br.acerola.comic.module.main.remotelibrary.RemoteLibraryActivity]
- * (Activity própria, não uma rota dentro do NavHost do `MainActivity`). Sem dados via Intent:
- * a própria [TransferLogViewModel] busca o histórico persistido sozinha.
+ * Full-screen P2P transfer history, opened from the Network tab's hero button — same pattern
+ * as [br.acerola.comic.module.main.remotelibrary.RemoteLibraryActivity]
+ * (its own Activity, not a route inside `MainActivity`'s NavHost). No data via Intent:
+ * [TransferLogViewModel] fetches the persisted history on its own.
  */
 @AndroidEntryPoint
 class TransferLogActivity(

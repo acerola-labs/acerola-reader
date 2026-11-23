@@ -31,10 +31,10 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 /**
- * Biblioteca remota de UM peer só (escolhido antes de abrir esta tela, via `PeerPickerSheet`) —
- * versão enxuta do que [br.acerola.comic.module.main.sync.SyncViewModel] já faz pra
- * `browseLibrary`/`fetchCoversFor`/`syncComic`, sem o resto do estado de pareamento/QR/log que
- * não faz sentido aqui.
+ * Remote library of a SINGLE peer (picked before opening this screen, via `PeerPickerSheet`) —
+ * a lean version of what [br.acerola.comic.module.main.sync.SyncViewModel] already does for
+ * `browseLibrary`/`fetchCoversFor`/`syncComic`, without the rest of the pairing/QR/log state that
+ * doesn't make sense here.
  */
 @HiltViewModel
 class RemoteLibraryViewModel
@@ -52,18 +52,18 @@ class RemoteLibraryViewModel
 
         private var peerId: String? = null
 
-        /** `comicName` -> última versão de capa confirmada nesta sessão — nunca rebaixa a mesma
-         *  versão duas vezes (mesma ideia do `knownCoverVersions` de
-         *  [br.acerola.comic.module.main.sync.SyncViewModel], mas escopado a UM peer só, então a
-         *  chave é só o nome do quadrinho). */
+        /** `comicName` -> latest cover version confirmed in this session — never downloads the same
+         *  version twice (same idea as `knownCoverVersions` in
+         *  [br.acerola.comic.module.main.sync.SyncViewModel], but scoped to a SINGLE peer, so the
+         *  key is just the comic name). */
         private val knownCoverVersions = ConcurrentHashMap<String, Long>()
 
-        /** Rede real pode nunca devolver `FileSyncComplete`/`FileSyncChapterFailed` (peer sumiu,
-         *  ou uma busca de blob de capa/banner trava sem nunca resolver — ver
-         *  `exchange::receive_extra_from_blob` do lado Rust) — sem isso o card ficaria com o
-         *  spinner de loading pra sempre, exigindo fechar e abrir o app. Mesmo mecanismo que
-         *  [br.acerola.comic.module.main.sync.SyncViewModel.syncComic] já usa
-         *  (`SYNC_IN_FLIGHT_TIMEOUT_MS`), só que esta tela não tinha nenhum. */
+        /** A real network may never deliver `FileSyncComplete`/`FileSyncChapterFailed` (peer vanished,
+         *  or a cover/banner blob fetch hangs without ever resolving — see
+         *  `exchange::receive_extra_from_blob` on the Rust side) — without this the card would keep
+         *  the loading spinner forever, requiring the app to be closed and reopened. Same mechanism
+         *  [br.acerola.comic.module.main.sync.SyncViewModel.syncComic] already uses
+         *  (`SYNC_IN_FLIGHT_TIMEOUT_MS`), except this screen had none. */
         private var syncTimeoutJob: Job? = null
 
         init {
@@ -72,8 +72,8 @@ class RemoteLibraryViewModel
             }
         }
 
-        /** Chamado pela `Screen` assim que `peerId` é conhecido — idempotente pra recomposição
-         *  não disparar `browseLibrary` de novo à toa. */
+        /** Called by the `Screen` as soon as `peerId` is known — idempotent so recomposition
+         *  doesn't fire `browseLibrary` again for nothing. */
         fun init(
             peerId: String,
             peerDisplayName: String,
@@ -83,6 +83,13 @@ class RemoteLibraryViewModel
             knownCoverVersions.clear()
             _uiState.value = RemoteLibraryUiState(peerDisplayName = peerDisplayName)
             browseLibrary(peerId)
+        }
+
+        /** "Try again" of the error screen: asks the peer for its library once more. */
+        fun retry() {
+            val id = peerId ?: return
+            _uiState.update { it.copy(loaded = false, errorMessage = null, errorType = null) }
+            browseLibrary(id)
         }
 
         private fun browseLibrary(peerId: String) {
@@ -100,9 +107,9 @@ class RemoteLibraryViewModel
         fun syncComic(comicName: String) {
             val peerId = peerId ?: return
             if (_uiState.value.syncingComicName != null) {
-                // Toque no card enquanto ele só mostra o spinner de loading — sem cancelamento
-                // real disponível no fluxo P2P hoje, o mínimo é avisar por que o toque não fez
-                // nada, em vez de ignorar em silêncio.
+                // Tap on the card while it only shows the loading spinner — with no real
+                // cancellation available in the P2P flow today, the least we can do is explain why
+                // the tap did nothing, instead of silently ignoring it.
                 viewModelScope.launch {
                     _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.message_sync_comic_already_syncing)))
                 }
@@ -117,8 +124,8 @@ class RemoteLibraryViewModel
             )
 
             viewModelScope.launch(Dispatchers.IO) {
-                // Vem da navegação da biblioteca remota — o usuário só pode escolher um
-                // quadrinho que ainda não tem, então é sempre pull.
+                // Comes from browsing the remote library — the user can only pick a
+                // comic they don't have yet, so it's always a pull.
                 when (syncComicWithPeerUseCase(peerId, comicName, SyncDirection.PULL)) {
                     SyncWithPeerResult.NOT_PAIRED ->
                         _uiEvents.send(UserMessage.Raw(UiText.StringResource(R.string.error_sync_comic_peer_not_paired)))
@@ -143,9 +150,9 @@ class RemoteLibraryViewModel
             syncTimeoutJob = null
         }
 
-        /** Dispara `acerola/browse-cover/1` em paralelo pra cada quadrinho da lista — streams são
-         *  baratas numa conexão já pooled por `(peer, alpn)`, então não há necessidade de
-         *  serializar (mesma lógica de [br.acerola.comic.module.main.sync.SyncViewModel]). */
+        /** Fires `acerola/browse-cover/1` in parallel for each comic in the list — streams are
+         *  cheap on a connection already pooled by `(peer, alpn)`, so there's no need to
+         *  serialize (same logic as [br.acerola.comic.module.main.sync.SyncViewModel]). */
         private fun fetchCoversFor(comics: List<ComicSummary>) {
             val peerId = peerId ?: return
             viewModelScope.launch(Dispatchers.IO) {
@@ -178,7 +185,7 @@ class RemoteLibraryViewModel
                             _uiState.update { it.copy(coverPaths = it.coverPaths + (event.comicName to path)) }
                         }
                     }
-                is P2pEvent.CoverBrowseError -> Unit // best-effort — o item continua sem thumb
+                is P2pEvent.CoverBrowseError -> Unit // best-effort — the item just stays without a thumb
 
                 is P2pEvent.FileSyncComplete ->
                     if (event.peerId == currentPeerId) {
@@ -186,8 +193,8 @@ class RemoteLibraryViewModel
                         _uiState.update { it.copy(syncingComicName = null) }
                     }
                 is P2pEvent.FileSyncChapterFailed ->
-                    // comicName/chapter vazios = falha da sessão inteira, não de um capítulo
-                    // (ver protocol::files::run_and_report_scoped do lado Rust).
+                    // Empty comicName/chapter = failure of the whole session, not of one chapter
+                    // (see protocol::files::run_and_report_scoped on the Rust side).
                     if (event.peerId == currentPeerId && event.comicName.isEmpty() && event.chapter.isEmpty()) {
                         clearSyncTimeout()
                         _uiState.update { it.copy(syncingComicName = null) }

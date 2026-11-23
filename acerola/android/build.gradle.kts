@@ -13,9 +13,9 @@ plugins {
     alias(libs.plugins.kover)
 }
 
-// O plugin precisa estar aplicado em cada módulo (senão ele não publica a variante
-// "kover" que o root consome) e a dependência abaixo é o que faz o root mesclar
-// os relatórios de todos eles num único XML em build/reports/kover/.
+// The plugin must be applied in each module (otherwise it does not publish the "kover"
+// variant the root consumes) and the dependency below is what makes the root merge
+// all their reports into a single XML in build/reports/kover/.
 dependencies {
     kover(project(":app"))
     kover(project(":ui"))

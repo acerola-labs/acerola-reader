@@ -4,15 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_KEYS } from '$lib/constants/store-plugin';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import type { PairedPeerPayload } from '$lib/contracts/network/network.payloads';
+import { STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import type { PairedPeerPayload } from '#lib/contracts/network/network.payloads.ts';
 import {
 	InvalidConnectionCodeError,
 	encodeConnectionCode,
 	type LocalPeerAddr
-} from '$lib/utils/connection-code.utils';
+} from '#lib/utils/connection-code.util.ts';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { usePeerConnection } from './use-peer-connection.svelte';
 
@@ -99,8 +99,8 @@ function defaultInvokeImpl(overrides: Record<string, unknown> = {}) {
 describe('usePeerConnection', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		// `loadLocalInfo` agora também lê `peer_nicknames` do store — cada teste que precisa
-		// de asserts sobre o store chama `mockStore()` de novo, sobrescrevendo este default.
+		// `loadLocalInfo` now also reads `peer_nicknames` from the store — each test that needs
+		// store asserts calls `mockStore()` again, overriding this default.
 		mockStore();
 	});
 
@@ -132,9 +132,9 @@ describe('usePeerConnection', () => {
 		const hook = await renderHook();
 
 		const pending = hook.startListening();
-		// `startListening` passa por 3 `await listen(...)` sequenciais antes de chegar no
-		// `invoke(getPairedPeers)` — espera com um macrotask (não só microtasks) pra garantir
-		// que o `invoke` real já rodou e capturou `resolveGetPairedPeers` antes de desmontar.
+		// `startListening` goes through 3 sequential `await listen(...)` before reaching
+		// `invoke(getPairedPeers)` — wait with a macrotask (not just microtasks) to ensure the
+		// real `invoke` already ran and captured `resolveGetPairedPeers` before unmounting.
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		hook.stopListening();
@@ -233,7 +233,7 @@ describe('usePeerConnection', () => {
 		});
 		expect(hook.getKnownAddr('remote-1')).toEqual([4, 5]);
 		expect(hook.connecting).toBe(false);
-		// O handshake refresca status + peers pareados de fato, não só marca connecting.
+		// The handshake really refreshes status + paired peers, not just marks connecting.
 		expect(invokeMock).toHaveBeenCalledWith(NETWORK_COMMANDS.getNetworkStatus);
 		expect(invokeMock).toHaveBeenCalledWith(NETWORK_COMMANDS.getPairedPeers);
 	});
@@ -271,7 +271,10 @@ describe('usePeerConnection', () => {
 			InvalidConnectionCodeError
 		);
 		expect(hook.connecting).toBe(false);
-		expect(invokeMock).not.toHaveBeenCalledWith(NETWORK_COMMANDS.connectToPeer, expect.anything());
+		expect(invokeMock).not.toHaveBeenCalledWith(
+			NETWORK_COMMANDS.connectToPeer,
+			expect.anything()
+		);
 	});
 
 	it('resets connecting to false when the connect command fails', async () => {
@@ -361,7 +364,13 @@ describe('usePeerConnection', () => {
 		callbacks.get(NETWORK_EVENTS.status)?.({
 			payload: {
 				mode: 'local',
-				peers: [{ peerId: 'peer-4', alpn: 'x', device: { name: 'Live Name', os: '', version: '' } }]
+				peers: [
+					{
+						peerId: 'peer-4',
+						alpn: 'x',
+						device: { name: 'Live Name', os: '', version: '' }
+					}
+				]
 			}
 		});
 
@@ -381,7 +390,11 @@ describe('usePeerConnection', () => {
 			payload: {
 				mode: 'local',
 				peers: [
-					{ peerId: 'someone-else', alpn: 'x', device: { name: 'Other', os: '', version: '' } }
+					{
+						peerId: 'someone-else',
+						alpn: 'x',
+						device: { name: 'Other', os: '', version: '' }
+					}
 				]
 			}
 		});
@@ -427,7 +440,9 @@ describe('usePeerConnection', () => {
 
 		expect(hook.peerNicknames).toEqual({ 'peer-7': 'Meu Notebook' });
 		expect(hook.peerLabel('peer-7')).toBe('Meu Notebook');
-		expect(store.set).toHaveBeenCalledWith(STORE_KEYS.peerNicknames, { 'peer-7': 'Meu Notebook' });
+		expect(store.set).toHaveBeenCalledWith(STORE_KEYS.peerNicknames, {
+			'peer-7': 'Meu Notebook'
+		});
 		expect(store.save).toHaveBeenCalledOnce();
 	});
 

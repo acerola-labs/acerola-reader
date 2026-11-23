@@ -10,12 +10,12 @@ use crate::infra::{
     },
 };
 
-/// Extrai os bytes da primeira página (em ordem natural) de um arquivo de capítulo CBZ/CBR.
+/// Extracts the bytes of the first page (in natural order) of a CBZ/CBR chapter file.
 ///
-/// Usado pela geração manual de capa (ver [`crate::core::services::comic::ComicService`]) quando
-/// o usuário opta por usar a página do capítulo como capa do quadrinho/volume.
-/// Não deve ser chamado a partir de contexto async diretamente — é uma operação bloqueante de I/O
-/// (mesma razão pela qual o `ReaderService` roda suas leituras de arquivo em `spawn_blocking`).
+/// Used by manual cover generation (see [`crate::core::services::comic::ComicService`]) when
+/// the user chooses to use the chapter page as the comic/volume cover.
+/// Must not be called directly from an async context — it is a blocking I/O operation
+/// (same reason `ReaderService` runs its file reads in `spawn_blocking`).
 pub fn extract_first_page(archive_path: &Path) -> Result<(Vec<u8>, ImageFileFormat), ComicError> {
     let extension = archive_path
         .extension()
@@ -32,9 +32,9 @@ pub fn extract_first_page(archive_path: &Path) -> Result<(Vec<u8>, ImageFileForm
     }
 }
 
-/// Persiste os bytes extraídos como `cover.{jpg,png}` dentro do diretório informado,
-/// substituindo qualquer `cover.jpg`/`cover.jpeg`/`cover.png` pré-existente na pasta
-/// (inclusive com uma extensão diferente da gerada agora, para não deixar arquivo órfão).
+/// Persists the extracted bytes as `cover.{jpg,png}` inside the given directory,
+/// replacing any pre-existing `cover.jpg`/`cover.jpeg`/`cover.png` in the folder
+/// (even with an extension different from the one generated now, so no file is orphaned).
 pub async fn persist_cover(
     directory: &Path, bytes: Vec<u8>, format: ImageFileFormat,
 ) -> Result<String, ComicError> {

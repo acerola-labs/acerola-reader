@@ -11,10 +11,10 @@ use crate::{
     },
 };
 
-/// Serviço responsável pelo CRUD de templates de nomenclatura definidos pelo usuário.
-/// Toda a validação e o parsing de padrões continuam na camada `infra::pattern` — este
-/// serviço apenas orquestra persistência e as regras de negócio em torno dela (unicidade
-/// de label e proteção dos templates padrão contra remoção).
+/// Service responsible for CRUD of user-defined naming templates.
+/// All pattern validation and parsing stays in the `infra::pattern` layer — this
+/// service only orchestrates persistence and the business rules around it (label
+/// uniqueness and protecting the default templates from removal).
 pub struct ArchiveTemplateService {
     repo: ArchiveTemplateRepository,
 }
@@ -24,8 +24,8 @@ impl ArchiveTemplateService {
         Self { repo: ArchiveTemplateRepository::new(pool) }
     }
 
-    /// Lista todos os templates (padrão do sistema + criados pelo usuário), com os
-    /// padrão sempre no topo para deixar claro que são a referência inalterável.
+    /// Lists every template (system defaults + user-created), with the defaults
+    /// always on top to make clear they are the unchangeable reference.
     pub async fn list_templates(&self) -> Result<Vec<ArchiveTemplate>, ComicError> {
         let mut templates = self.repo.base.find_all().await?;
         templates
@@ -33,9 +33,9 @@ impl ArchiveTemplateService {
         Ok(templates)
     }
 
-    /// Cria um novo template do usuário, validando o padrão com as mesmas regras usadas
-    /// pelo scanner (`validate_chapter_template`/`validate_volume_template`) antes de
-    /// persistir, para nunca deixar um padrão quebrado entrar no banco.
+    /// Creates a new user template, validating the pattern with the same rules used
+    /// by the scanner (`validate_chapter_template`/`validate_volume_template`) before
+    /// persisting, so a broken pattern never gets into the database.
     pub async fn create_template(
         &self, label: String, pattern: String, sort_type: SortType,
     ) -> Result<ArchiveTemplate, ComicError> {
@@ -59,9 +59,9 @@ impl ArchiveTemplateService {
         Ok(self.repo.base.insert(&template).await?)
     }
 
-    /// Remove um template criado pelo usuário. Templates padrão (`is_default`) nunca podem
-    /// ser removidos por aqui — é essa garantia que mantém o parser sempre com um fallback
-    /// conhecido, independentemente do que o usuário crie ou apague.
+    /// Removes a user-created template. Default templates (`is_default`) can never be
+    /// removed here — this guarantee is what keeps the parser always with a known
+    /// fallback, regardless of what the user creates or deletes.
     pub async fn delete_template(&self, id: i64) -> Result<(), ComicError> {
         let templates = self.repo.base.find_all().await?;
         let target =

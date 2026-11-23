@@ -1,15 +1,15 @@
 use acerola_p2p::api::error::P2pError;
 
-/// Executa uma chamada FFI síncrona (implementada em Kotlin — I/O de arquivo via SAF, query
-/// Room via `runBlocking`) numa thread do pool de *blocking* do Tokio, sem travar as worker
-/// threads do runtime async. Nenhuma chamada a `Arc<dyn FileSyncProvider>`/
-/// `Arc<dyn HistorySyncProvider>` deve rodar direto dentro de uma `async fn` — o Kotlin por
-/// trás dessas traits faz I/O bloqueante de verdade (Room, SAF/DocumentFile, hash de arquivo),
-/// e travar uma worker thread do reactor com isso pode saturar o runtime inteiro sob
-/// concorrência. `JoinError` (panic ou cancelamento da blocking task) vira
-/// `P2pError::StreamFailed` — não há uma variante mais específica em `ConnectionError` pra
-/// isso, e semanticamente essa falha invalida a sessão de stream corrente do mesmo jeito que
-/// um erro de I/O de rede.
+/// Runs a synchronous FFI call (implemented in Kotlin — file I/O via SAF, Room
+/// query via `runBlocking`) on a thread of Tokio's *blocking* pool, without blocking the async
+/// runtime's worker threads. No call to `Arc<dyn FileSyncProvider>`/
+/// `Arc<dyn HistorySyncProvider>` should run directly inside an `async fn` — the Kotlin behind
+/// those traits does real blocking I/O (Room, SAF/DocumentFile, file hashing),
+/// and blocking a reactor worker thread with that can saturate the whole runtime under
+/// concurrency. `JoinError` (panic or cancellation of the blocking task) becomes
+/// `P2pError::StreamFailed` — there is no more specific variant in `ConnectionError` for
+/// it, and semantically this failure invalidates the current stream session the same way
+/// a network I/O error does.
 pub(crate) async fn run_blocking<F, T>(f: F) -> Result<T, P2pError>
 where
     F: FnOnce() -> T + Send + 'static,
@@ -32,10 +32,10 @@ mod tests {
 
     use super::*;
 
-    /// Com só 1 worker thread, se a chamada bloqueante rodasse direto no runtime async (sem
-    /// spawn_blocking), a task de "tick" nem teria chance de progredir enquanto a chamada de
-    /// 300ms está em andamento — essa é a assinatura exata do bug relatado (runtime travado
-    /// durante sync-files).
+    /// With only 1 worker thread, if the blocking call ran directly on the async runtime (without
+    /// spawn_blocking), the "tick" task would not even get a chance to progress while the
+    /// 300ms call is in progress — that is the exact signature of the reported bug (runtime frozen
+    /// during sync-files).
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn run_blocking_does_not_starve_concurrent_async_work() {
         let ticks = Arc::new(AtomicU32::new(0));
@@ -53,11 +53,11 @@ mod tests {
         let (blocking_result, _) = tokio::join!(blocking, ticker);
         assert!(blocking_result.is_ok());
 
-        // Se a chamada bloqueante tivesse travado o único worker thread, `ticks` teria ficado
-        // perto de 0 até o `sleep` de 300ms liberar o worker.
+        // If the blocking call had blocked the only worker thread, `ticks` would have stayed
+        // near 0 until the 300ms `sleep` released the worker.
         assert!(
             ticks.load(Ordering::SeqCst) >= 15,
-            "async ticker foi travado pela chamada bloqueante (starvation)"
+            "async ticker was blocked by the blocking call (starvation)"
         );
     }
 

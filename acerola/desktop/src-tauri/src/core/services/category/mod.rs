@@ -8,18 +8,18 @@ use crate::{
     infra::error::DbError,
 };
 
-/// Serviço responsável pelas regras de negócio de categorias (marcadores).
+/// Service responsible for the category (bookmark) business rules.
 pub struct CategoryService {
     repo: CategoryRepository,
 }
 
 impl CategoryService {
-    /// Inicializa o serviço de categorias.
+    /// Creates the category service.
     pub fn new(pool: SqlitePool) -> Self {
         Self { repo: CategoryRepository::new(pool) }
     }
 
-    /// Cria uma nova categoria (marcador) com nome e cor.
+    /// Creates a new category (bookmark) with a name and color.
     pub async fn create_category(&self, name: String, color: i64) -> Result<Category, DbError> {
         let category = Category { id: None, name, color };
         self.repo.base.insert(&category).await
@@ -30,28 +30,28 @@ impl CategoryService {
         self.repo.base.find_all().await
     }
 
-    /// Deleta uma categoria pelo seu ID.
+    /// Deletes a category by its ID.
     pub async fn delete_category(&self, id: i64) -> Result<(), DbError> {
         self.repo.base.delete(id).await
     }
 
-    /// Atribui uma categoria a um quadrinho, garantindo que seja única por quadrinho.
+    /// Assigns a category to a comic, ensuring it is unique per comic.
     pub async fn assign_category_to_comic(
         &self, comic_id: i64, category_id: i64,
     ) -> Result<ComicCategory, DbError> {
-        // Garante que qualquer associação anterior seja removida
+        // Ensures any previous association is removed
         self.repo.remove_category_from_comic(comic_id).await?;
 
         let assignment = ComicCategory { id: None, comic_directory_fk: comic_id, category_id };
         self.repo.comic_category_base.insert(&assignment).await
     }
 
-    /// Remove o marcador de um quadrinho.
+    /// Removes a comic's bookmark.
     pub async fn remove_category_from_comic(&self, comic_id: i64) -> Result<(), DbError> {
         self.repo.remove_category_from_comic(comic_id).await
     }
 
-    /// Busca a categoria associada a um quadrinho específico.
+    /// Fetches the category associated with a specific comic.
     pub async fn get_comic_category(&self, comic_id: i64) -> Result<Option<Category>, DbError> {
         self.repo.get_comic_category(comic_id).await
     }

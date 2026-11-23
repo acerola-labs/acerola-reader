@@ -14,11 +14,11 @@ use crate::{
     },
 };
 
-/// Responsável por indexar capítulos individuais no banco de dados.
+/// Responsible for indexing individual chapters in the database.
 ///
-/// Recebe um arquivo de capítulo, extrai seus metadados e o persiste.
-/// Chamado pelo [`super::comic_scanner_engine::ComicScannerService`] durante qualquer
-/// forma de scan de biblioteca.
+/// Receives a chapter file, extracts its metadata and persists it.
+/// Called by [`super::comic_scanner_engine::ComicScannerService`] during any
+/// kind of library scan.
 pub struct ChapterScannerService {
     chapter_repo: ChapterRepository,
 }
@@ -28,18 +28,18 @@ impl ChapterScannerService {
         Self { chapter_repo: ChapterRepository::new(pool) }
     }
 
-    /// Remove todos os capítulos indexados de um quadrinho. Usado pelo rescan profundo
-    /// para invalidar o estado atual antes de re-escanear a pasta do zero.
+    /// Removes every indexed chapter of a comic. Used by the deep rescan
+    /// to invalidate the current state before rescanning the folder from scratch.
     pub async fn delete_by_comic(&self, comic_id: i64) -> Result<(), ComicError> {
         self.chapter_repo.delete_by_comic(comic_id).await?;
         Ok(())
     }
 
-    /// Remove do banco os capítulos de `comic_id` que não apareceram em `discovered_ids`.
+    /// Removes from the database the chapters of `comic_id` that did not show up in `discovered_ids`.
     ///
-    /// `scan_chapter` sozinho só sabe inserir/atualizar — chamado pelo rescan leve
-    /// (que não invalida tudo antes, ao contrário do rescan profundo) pra refletir
-    /// arquivos apagados via explorador de arquivos.
+    /// `scan_chapter` alone only knows how to insert/update — called by the light rescan
+    /// (which does not invalidate everything first, unlike the deep rescan) to reflect
+    /// files deleted via the file explorer.
     pub async fn reconcile_removed(
         &self, comic_id: i64, discovered_ids: &HashSet<i64>,
     ) -> Result<(), ComicError> {
@@ -54,15 +54,15 @@ impl ChapterScannerService {
         Ok(())
     }
 
-    /// Indexa um único arquivo de capítulo no banco de dados.
+    /// Indexes a single chapter file in the database.
     ///
-    /// Extrai nome, hash rápido (`nome|tamanho|modificado`) e `chapter_sort` a partir do
-    /// template detectado. Se nenhum template for fornecido, usa [`ChapterArchive::fallback_sort`].
+    /// Extracts name, quick hash (`name|size|modified`) and `chapter_sort` from the
+    /// detected template. If no template is provided, uses [`ChapterArchive::fallback_sort`].
     ///
-    /// O checksum só é (re)calculado no scan — nunca no sync — e só quando necessário:
-    /// capítulo novo, capítulo com `last_modified` alterado, ou capítulo já indexado mas
-    /// ainda sem checksum (backfill de bibliotecas escaneadas antes dessa lógica existir).
-    /// Um capítulo inalterado com checksum já em cache nem toca o banco de novo.
+    /// The checksum is only (re)computed during the scan — never during sync — and only when needed:
+    /// a new chapter, a chapter with a changed `last_modified`, or an already-indexed chapter
+    /// still without a checksum (backfill for libraries scanned before this logic existed).
+    /// An unchanged chapter with a cached checksum does not even touch the database again.
     #[rustfmt::skip]
     pub async fn scan_chapter(
         &self,
@@ -138,12 +138,12 @@ fn modified_secs(meta: &std::fs::Metadata) -> i64 {
     meta.modified().map(|time| time.duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs() as i64).unwrap_or(0)
 }
 
-/// Calcula o SHA-256 do arquivo em streaming, em buffer de 8KB (sem carregar o cbz/cbr
-/// inteiro em memória), rodando em `spawn_blocking` pois é I/O síncrono de CPU-bound hashing.
-/// Mesmo algoritmo e formato de saída do Android (`FileHash.kt::sha256()`), pra bater
-/// string-a-string entre os dois lados do protocolo P2P: hex minúsculo, sem separador.
+/// Computes the file's SHA-256 in streaming, with an 8KB buffer (without loading the whole
+/// cbz/cbr into memory), running in `spawn_blocking` since it is synchronous CPU-bound hashing I/O.
+/// Same algorithm and output format as Android (`FileHash.kt::sha256()`), to match
+/// string-for-string between both sides of the P2P protocol: lowercase hex, no separator.
 ///
-/// Usado tanto pra verificar integridade após transferências P2P quanto pra dedup best-effort.
+/// Used both to verify integrity after P2P transfers and for best-effort dedup.
 async fn compute_checksum(path: &Path) -> Result<String, ComicError> {
     use std::io::Read;
 

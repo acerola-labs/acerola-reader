@@ -19,16 +19,16 @@ use crate::{
     },
 };
 
-/// Monta e aplica manifestos de histórico de leitura entre dois devices.
+/// Builds and applies reading history manifests between two devices.
 ///
-/// A identidade cross-device é a chave natural `(comic.name, chapter.chapter_sort)` —
-/// **não** o rótulo do capítulo (`chapter`). O rótulo é texto livre por device (cada um
-/// nomeia o arquivo como quiser: "Cap 1", "Capítulo 01", etc.), então não serve como
-/// chave entre dois devices independentes; `chapter_sort` é o valor normalizado que os
-/// dois lados derivam do nome do arquivo, e é também o que o Android usa pra resolver o
-/// `chapter_archive_id` local depois de aplicar um manifesto recebido — usar outra coisa
-/// aqui faz o histórico sincronizar "com sucesso" mas gravar no capítulo errado (ou em
-/// nenhum).
+/// The cross-device identity is the natural key `(comic.name, chapter.chapter_sort)` —
+/// **not** the chapter label (`chapter`). The label is free text per device (each one
+/// names the file however it wants: "Cap 1", "Capítulo 01", etc.), so it does not work as a
+/// key between two independent devices; `chapter_sort` is the normalized value both
+/// sides derive from the file name, and it is also what Android uses to resolve the local
+/// `chapter_archive_id` after applying a received manifest — using anything else
+/// here makes history sync "successfully" but write to the wrong chapter (or to
+/// none).
 #[derive(Clone)]
 pub struct HistorySyncService {
     comic_repo: ComicRepository,
@@ -47,7 +47,7 @@ impl HistorySyncService {
         }
     }
 
-    /// Monta o manifesto local completo (progresso de leitura + marcadores de lido).
+    /// Builds the full local manifest (reading progress + read markers).
     pub async fn build_manifest(&self) -> Result<HistoryManifest, ComicError> {
         let entries = self
             .reading_repo
@@ -74,10 +74,10 @@ impl HistorySyncService {
         Ok(HistoryManifest { entries, read_markers })
     }
 
-    /// Monta a entrada de progresso de UM único quadrinho, sem marcadores de "lido" — usado
-    /// pelo push individual (`acerola/sync-history-entry/1`), que existe pra não precisar do
-    /// manifesto da biblioteca inteira só pra levar o progresso de um quadrinho que acabou de
-    /// mudar. `None` quando o quadrinho não existe localmente ou nunca teve progresso salvo.
+    /// Builds the progress entry of ONE single comic, without "read" markers — used by
+    /// the individual push (`acerola/sync-history-entry/1`), which exists so the whole library
+    /// manifest is not needed just to carry the progress of a comic that just changed.
+    /// `None` when the comic does not exist locally or never had saved progress.
     pub async fn build_entry_for_comic(
         &self, comic_name: &str,
     ) -> Result<Option<HistoryEntry>, ComicError> {
@@ -100,13 +100,13 @@ impl HistorySyncService {
         }))
     }
 
-    /// Monta o manifesto restrito a um subconjunto de capítulos de UM quadrinho — usado pelo
-    /// envio explícito de capítulo(s) selecionado(s) pra um peer (`acerola/sync-history-entry/1`).
-    /// Recebe `chapter_archive_id`s (mesma unidade que o resto da UI local, ex.:
-    /// `markChaptersReadBatch`) e resolve pra `chapter_sort` via [`Self::resolve_chapter_sorts`] —
-    /// só esse último é comparável entre os dois devices, então é o que efetivamente viaja no
-    /// manifesto. IDs que não existem ou pertencem a outro quadrinho são ignorados
-    /// silenciosamente.
+    /// Builds the manifest restricted to a subset of chapters of ONE comic — used by the
+    /// explicit send of selected chapter(s) to a peer (`acerola/sync-history-entry/1`).
+    /// Receives `chapter_archive_id`s (the same unit as the rest of the local UI, e.g.
+    /// `markChaptersReadBatch`) and resolves them to `chapter_sort` via [`Self::resolve_chapter_sorts`] —
+    /// only the latter is comparable between both devices, so it is what actually travels in
+    /// the manifest. IDs that do not exist or belong to another comic are silently
+    /// ignored.
     pub async fn build_manifest_for_chapters(
         &self, comic_name: &str, chapter_ids: &[i64],
     ) -> Result<HistoryManifest, ComicError> {
@@ -137,11 +137,11 @@ impl HistorySyncService {
         Ok(HistoryManifest { entries, read_markers })
     }
 
-    /// Entrada de progresso do capítulo "atual" (o de `reading_history`) de um quadrinho, só se
-    /// esse capítulo estiver entre os `chapter_sorts` selecionados — `None` em qualquer guarda
-    /// que falhe (sem progresso salvo, capítulo não encontrado, ou capítulo não selecionado).
-    /// Extraído de [`Self::build_manifest_for_chapters`] pra manter guardas encadeadas em vez de
-    /// `if let` aninhado.
+    /// Progress entry of a comic's "current" chapter (the one in `reading_history`), only if
+    /// that chapter is among the selected `chapter_sorts` — `None` on any failing guard
+    /// (no saved progress, chapter not found, or chapter not selected).
+    /// Extracted from [`Self::build_manifest_for_chapters`] to keep chained guards instead of
+    /// nested `if let`.
     async fn current_progress_entry_if_selected(
         &self, comic_name: &str, comic_id: i64, chapter_sorts: &[String],
     ) -> Result<Option<HistoryEntry>, ComicError> {
@@ -164,12 +164,12 @@ impl HistorySyncService {
         }))
     }
 
-    /// Resolve `chapter_archive_id`s locais pra `chapter_sort` (a chave comparável entre
-    /// devices) — usado tanto por [`Self::build_manifest_for_chapters`] quanto pelo protocolo
-    /// `acerola/sync-history-entry/1` pra montar o `HistoryEntryRequest` (primeira mensagem do
-    /// contrato, declarando o escopo antes do manifesto em si). IDs que não existem ou
-    /// pertencem a outro quadrinho são ignorados silenciosamente; quadrinho inexistente
-    /// devolve lista vazia.
+    /// Resolves local `chapter_archive_id`s to `chapter_sort` (the key comparable across
+    /// devices) — used both by [`Self::build_manifest_for_chapters`] and by the
+    /// `acerola/sync-history-entry/1` protocol to build the `HistoryEntryRequest` (first message
+    /// of the contract, declaring the scope before the manifest itself). IDs that do not exist or
+    /// belong to another comic are silently ignored; a nonexistent comic
+    /// returns an empty list.
     pub async fn resolve_chapter_sorts(
         &self, comic_name: &str, chapter_ids: &[i64],
     ) -> Result<Vec<String>, ComicError> {
@@ -192,12 +192,12 @@ impl HistorySyncService {
         Ok(chapter_sorts)
     }
 
-    /// Aplica o manifesto recebido do peer localmente: last-write-wins por `updated_at`
-    /// no progresso de leitura, união nos marcadores de "lido". Só toca em quadrinhos que
-    /// já existem localmente — histórico não cria quadrinho novo, isso é papel do sync de
-    /// arquivos. Retorna quantas entradas/marcadores foram de fato aplicados — é o que dá ao
-    /// chamador (`acerola/sync-history-entry/1`) um sinal real de validação, em vez de "a
-    /// sessão não caiu" (ver `HistoryEntryAck`).
+    /// Applies the manifest received from the peer locally: last-write-wins by `updated_at`
+    /// for reading progress, union for "read" markers. Only touches comics that
+    /// already exist locally — history does not create new comics, that is file sync's
+    /// job. Returns how many entries/markers were actually applied — that is what gives the
+    /// caller (`acerola/sync-history-entry/1`) a real validation signal, instead of "the
+    /// session did not drop" (see `HistoryEntryAck`).
     pub async fn apply_manifest(
         &self, manifest: &HistoryManifest,
     ) -> Result<ApplyManifestStats, ComicError> {
@@ -261,19 +261,19 @@ impl HistorySyncService {
         Ok(ApplyManifestStats { entries_applied, markers_applied })
     }
 
-    /// Verifica só a existência do quadrinho (sem tocar em progresso/lido) — usado pelo
-    /// contrato de `acerola/sync-history-entry/1` pra validar ANTES de responder "aplicado com
-    /// sucesso": sem isso, um manifesto vazio (nenhum capítulo selecionado tinha progresso/
-    /// marcador) não dava nenhum sinal de erro mesmo quando o peer nunca teve esse quadrinho.
+    /// Only checks that the comic exists (without touching progress/read) — used by the
+    /// `acerola/sync-history-entry/1` contract to validate BEFORE answering "applied
+    /// successfully": without this, an empty manifest (no selected chapter had progress/
+    /// marker) gave no error signal even when the peer never had that comic.
     pub async fn comic_exists(&self, comic_name: &str) -> Result<bool, ComicError> {
         Ok(self.comic_repo.find_by_name(comic_name).await?.is_some())
     }
 }
 
-/// Resultado de [`HistorySyncService::apply_manifest`] — quantas entradas de progresso e
-/// quantos marcadores de "lido" foram de fato escritos localmente (não só "a sessão não deu
-/// erro"). Espelhado no Android por `HistorySyncStats` (`protocol/history/model.rs`), que já
-/// tinha esse formato mais rico — este tipo alinha o Desktop ao mesmo padrão.
+/// Result of [`HistorySyncService::apply_manifest`] — how many progress entries and
+/// how many "read" markers were actually written locally (not just "the session had no
+/// error"). Mirrored on Android by `HistorySyncStats` (`protocol/history/model.rs`), which
+/// already had this richer shape — this type aligns Desktop with the same pattern.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct ApplyManifestStats {
     pub entries_applied: u32,
@@ -318,7 +318,7 @@ mod tests {
         let manifest = service.build_manifest().await.unwrap();
         assert_eq!(manifest.entries.len(), 1);
         assert_eq!(manifest.entries[0].comic_name, "Test");
-        // Carrega chapter_sort ("1"), não o rótulo ("Cap 1") — é a chave cross-device.
+        // Loads chapter_sort ("1"), not the label ("Cap 1") — it is the cross-device key.
         assert_eq!(manifest.entries[0].chapter, "1");
     }
 

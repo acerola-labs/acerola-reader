@@ -4,12 +4,12 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaStepFormats,
-		title: 'Páginas/Onboarding/AcerolaStepFormats',
+		title: 'Pages/Onboarding/AcerolaStepFormats',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Passo de onboarding que apresenta os formatos de arquivo suportados.'
+					component: 'Onboarding step that presents the supported file formats.'
 				}
 			}
 		}

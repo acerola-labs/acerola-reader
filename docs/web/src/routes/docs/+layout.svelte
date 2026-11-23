@@ -1,8 +1,8 @@
 <script lang="ts">
-	import AcerolaSidebar from '$lib/components/acerola-sidebar/acerola-sidebar.svelte';
-	import AcerolaToc from '$lib/components/acerola-toc/acerola-toc.svelte';
-	import { getSidebar } from '$lib/content/docs';
-	import { getLocale } from '$lib/paraglide/runtime';
+	import AcerolaSidebar from '#lib/components/acerola-sidebar/acerola-sidebar.svelte';
+	import AcerolaToc from '#lib/components/acerola-toc/acerola-toc.svelte';
+	import { getSidebar } from '#lib/content/docs.ts';
+	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 

@@ -1,31 +1,48 @@
-# Como Contribuir
+# Como contribuir
 
-O Acerola é um monorepo — cada plataforma tem sua própria stack, seus próprios comandos de build/teste e seu próprio guia de contribuição detalhado. Este arquivo só existe para te apontar para o guia certo.
+Este projeto segue o padrão Acerola, o mesmo de todos os repositórios Acerola. As regras completas
+estão nas skills em `.claude/skills/` (`acerola-design`, `acerola-project`, `acerola-git`) e o que
+só vale aqui está no [`CLAUDE.md`](CLAUDE.md).
 
-| Plataforma | Guia completo |
-| --- | --- |
-| Desktop (Rust + Tauri + Svelte) | [acerola/desktop/CONTRIBUTING.md](acerola/desktop/CONTRIBUTING.md) |
-| P2P — biblioteca compartilhada (Rust) | [lib/p2p/CONTRIBUTING.md](lib/p2p/CONTRIBUTING.md) |
-| Android (Kotlin) | sem guia próprio ainda — abra uma issue antes de um PR |
-| Relay (ainda não iniciado) | sem guia próprio ainda — abra uma issue antes de um PR |
-| Relay lib — vendorizado do iroh (Rust) | sem guia próprio ainda — abra uma issue antes de um PR |
+O Acerola Reader é um monorepo: cada app tem a sua stack, os seus comandos e o seu guia.
 
-## Ferramentas necessárias
+| App | Local de commit | Guia |
+| --- | --- | --- |
+| Android (Kotlin + Compose) | `android` | sem guia próprio ainda: abra uma issue antes do PR |
+| Desktop (Rust + Tauri + Svelte) | `desktop` | [acerola/desktop/CONTRIBUTING.md](acerola/desktop/CONTRIBUTING.md) |
+| Portal web e documentação | `web` | sem guia próprio ainda: abra uma issue antes do PR |
+| P2P, biblioteca compartilhada (Rust) | `p2p` | [lib/p2p/CONTRIBUTING.md](lib/p2p/CONTRIBUTING.md) |
+| Relay | `relay` | sem guia próprio ainda: abra uma issue antes do PR |
+| Relay lib, vendorizado do iroh (Rust) | `iroh` | sem guia próprio ainda: abra uma issue antes do PR |
 
-- [`cargo-make`](https://github.com/sagiegurari/cargo-make) (`cargo install cargo-make`) — precisa estar instalado pra um desenvolvimento melhor. Além de ser usado internamente por cada crate Rust (veja o guia de cada plataforma), a raiz do monorepo tem seu próprio [`makefile.toml`](makefile.toml) com tarefas de manutenção do repo inteiro:
-  - `cargo make clean` — remove o `target/` de todos os crates Rust do monorepo (`lib/p2p`, `lib/relay`, `acerola/desktop/src-tauri`, `acerola/android/native/rust`) de uma vez, sem precisar entrar em cada pasta.
+## Preparar a máquina
 
-- [`lefthook`](https://github.com/evilmartians/lefthook) (`cargo install lefthook`) — gerenciador de Git hooks. Após instalar, rode uma vez na raiz do repo:
-  ```sh
-  lefthook install
-  ```
-  Isso ativa a validação automática da mensagem de commit (veja a convenção abaixo).
+1. Node 22 ou mais novo (os scripts do padrão são `.mjs`) e
+   [lefthook](https://github.com/evilmartians/lefthook) (`scoop install lefthook`,
+   `winget install evilmartians.lefthook` ou `npm i -g lefthook`).
+2. Na raiz: `node scripts/git/setup-git.mjs`. Grava o Git-Flow, o template de commit e instala os hooks.
+3. [`cargo-make`](https://github.com/sagiegurari/cargo-make) (`cargo install cargo-make`): cada
+   crate Rust usa o seu `makefile.toml`, e o da raiz tem as tarefas do monorepo inteiro
+   (`cargo make clean` apaga o `target/` de todos os crates de uma vez).
+4. Cada app: siga o guia da tabela acima.
 
-## Regras que valem para o monorepo inteiro
+## Fluxo
 
-- **Escopo por PR**: um PR deve tocar uma única plataforma (`acerola/android/`, `acerola/desktop/`, `acerola/relay/`, `lib/p2p/` ou `lib/relay/`), salvo mudanças de fato compartilhadas (docs raiz, `LICENSE`, `PRIVACY_POLICY.md`).
-- **Convenção de commit**: `[tag](escopo): descrição`, por exemplo `[fix](desktop): corrige leak de conexão no reader`. O `tag` pode ser `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `style`, `chore`, `ci` ou `merge`; o `escopo` é `android`, `desktop`, `p2p`, `relay` (para `acerola/relay/`), `iroh` (para `lib/relay/`, o código vendorizado do iroh), `web` (para `docs/web/`) ou `monorepo` para mudanças na raiz.
-- **Testes**: cada plataforma tem seu próprio runner e sua própria automação via `cargo-make`/Gradle/Vitest — veja o guia específico antes de rodar testes manualmente.
-- **`lib/p2p` é dependência `path` local**: `acerola/android` e `acerola/desktop` consomem `lib/p2p` por caminho relativo no `Cargo.toml`, não por `git`. Uma mudança em `lib/p2p/` já vale pros dois consumidores no mesmo PR — não precisa publicar nem rodar `cargo update` em outro repo.
+- Branch `feature/<nome>` ou `bugfix/<nome>` a partir da `develop`. A `main` e a `develop` são travadas.
+- Commit `[tipo](local): Mensagem`, um local por commit. Locais em `acerola.config.json`.
+- PR para a `develop`, um app por PR (salvo mudança de fato compartilhada), com o template
+  preenchido e prints no claro e no escuro quando mexer em tela.
+- `lib/p2p` é dependência por caminho do Android e do desktop: uma mudança ali já vale para os
+  dois no mesmo PR.
 
-Para o resto (arquitetura interna, padrões de código, setup do ambiente), siga o guia da plataforma que você está mexendo.
+## Antes do PR
+
+```bash
+node scripts/design/check-design.mjs
+node scripts/i18n/check-i18n.mjs
+# lint, tipos e testes de cada app (veja o guia do app)
+```
+
+## Licença
+
+Ao contribuir, você concorda que sua contribuição sai sob a [MPL-2.0](LICENSE).

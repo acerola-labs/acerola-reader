@@ -1,25 +1,27 @@
 <script module lang="ts">
-	import { Button, type ButtonProps } from '$lib/components/ui/button';
+	import { Button, type ButtonProps } from '#lib/components/ui/button/index.ts';
 
-	// Padrão "contorno": bg SÓLIDO colorido por padrão (não só no hover) com o ícone na cor
-	// de foreground por cima — o bg contorna o ícone, não o contrário. `accent` é pra ações
-	// sem significado semântico próprio (refresh, editar, navegar); as outras cores carregam
-	// o significado da própria ação (perigo, sucesso, dispensar/cancelar).
+	// "Outline" pattern: a SOLID colored bg by default (not only on hover) with the icon in the
+	// foreground color on top — the bg outlines the icon, not the other way around. `accent`
+	// is for actions without their own semantic meaning (refresh, edit, navigate); the other
+	// colors carry the action's own meaning (danger, success, dismiss/cancel).
 	export type AcerolaButtonIconTone = 'accent' | 'destructive' | 'success' | 'muted';
 
-	// hover:brightness-110 é o mesmo mecanismo usado no ícone do AcerolaHeroButton/
-	// AcerolaAccordionCard/AcerolaToggleCard — funciona igual pra qualquer cor de bg, sem
-	// precisar de uma variante /85 por tom. `!` (important) no bg/text base é necessário
-	// porque `tailwind-merge` não conhece os tokens de cor customizados deste projeto
-	// (accent-hero, chart-N, destructive-foreground) — sem isso, um `ui.variant` combinado
-	// (ex.: `outline` tem `bg-background` próprio) podia vencer no CSS final dependendo da
-	// ordem de geração do Tailwind, deixando o ícone invisível (bg escuro + texto escuro).
+	// hover:brightness-110 is the same mechanism used on the AcerolaHeroButton/
+	// AcerolaAccordionCard/AcerolaToggleCard icon — works the same for any bg color, without
+	// needing a /85 variant per tone. `!` (important) on the base bg/text is required because
+	// `tailwind-merge` doesn't know this project's custom color tokens (accent-hero, chart-N,
+	// destructive-foreground) — without it, a combined `ui.variant` (e.g. `outline` has its
+	// own `bg-background`) could win in the final CSS depending on Tailwind's generation
+	// order, leaving the icon invisible (dark bg + dark text).
 	const TONE_CLASS: Record<AcerolaButtonIconTone, string> = {
-		accent: 'bg-accent-hero! text-accent-hero-foreground! transition-[filter] hover:brightness-110',
+		// Brand book round button: bg-surface. `accent-hero` is one highlight per screen, never
+		// every icon button.
+		accent: 'bg-surface! text-foreground! transition-[filter] hover:brightness-110 in-data-[surface=surface]:bg-card!',
 		destructive:
-			'bg-destructive! text-destructive-foreground! transition-[filter] hover:brightness-110',
-		success: 'bg-chart-4! text-primary-foreground! transition-[filter] hover:brightness-110',
-		muted: 'bg-muted! text-muted-foreground! transition-[filter] hover:brightness-110'
+			'bg-destructive-soft! text-destructive! transition-[filter] hover:brightness-110',
+		success: 'bg-success-soft! text-success! transition-[filter] hover:brightness-110',
+		muted: 'bg-surface! text-muted-foreground! transition-[filter] hover:brightness-110 in-data-[surface=surface]:bg-card!'
 	};
 
 	export type AcerolaButtonIconProps = {
@@ -34,7 +36,7 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils/cn.utils';
+	import { cn } from '#lib/utils/cn.util.ts';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -53,9 +55,11 @@
 
 <Button
 	class={cn(
-		'size-10 rounded-xl p-0 enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
+		'size-11 p-0 enabled:cursor-pointer disabled:pointer-events-auto disabled:cursor-not-allowed',
 		ui?.tone && TONE_CLASS[ui.tone],
-		ui?.class
+		ui?.class,
+		// Acerola standard: a button is always round, whatever the call site passes.
+		'rounded-full'
 	)}
 	onclick={events?.onClick}
 	{...uiProps}

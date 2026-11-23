@@ -11,18 +11,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Canal de eventos do node P2P, ouvido por qualquer tela interessada.
+ * Event channel of the P2P node, listened to by any interested screen.
  *
- * Ser um singleton application-scoped (não pertencer a uma ViewModel) é necessário, mas NÃO
- * suficiente pra evitar perder eventos enquanto nenhuma tela está aberta: `_events` tem
- * `replay = 0`, então um valor emitido sem nenhum coletor inscrito é descartado pra sempre —
- * `extraBufferCapacity` só amortece rajadas pra coletores JÁ inscritos, não alimenta
- * retroativamente um que se inscreve depois. Quem de fato garante que "sync complete"/"peer
- * trusted for the first time" sobrevivem a nenhuma tela de sync estar aberta é o
- * [P2pSyncCoordinator], um coletor sempre ativo, instanciado uma única vez a partir de
- * [br.acerola.comic.usecase.NetworkCaseModule] — nunca atrelado ao ciclo de vida de nenhuma
- * ViewModel. ViewModels escopadas a tela também podem coletar [events] pro próprio estado
- * local de UI, mas não podem ser a ÚNICA ouvinte de nada que precise sobreviver à navegação.
+ * Being an application-scoped singleton (not owned by a ViewModel) is necessary, but NOT
+ * enough to avoid losing events while no screen is open: `_events` has
+ * `replay = 0`, so a value emitted with no subscribed collector is discarded forever —
+ * `extraBufferCapacity` only buffers bursts for ALREADY subscribed collectors, it does not
+ * retroactively feed one that subscribes later. What actually guarantees that "sync complete"/"peer
+ * trusted for the first time" survive no sync screen being open is
+ * [P2pSyncCoordinator], an always-active collector, instantiated only once from
+ * [br.acerola.comic.usecase.NetworkCaseModule] — never tied to any
+ * ViewModel's lifecycle. Screen-scoped ViewModels may also collect [events] for their own
+ * local UI state, but they cannot be the ONLY listener of anything that must survive navigation.
  */
 @Singleton
 class P2pEventBus

@@ -16,8 +16,12 @@ on:
       - 'lib/p2p/**'
       - '.github/workflows/p2p-tests.yml'
   schedule:
-    - cron: '0 0 * * 0' # Semanal (todo domingo à meia-noite)
+    - cron: '0 0 * * 0' # Weekly (Sunday at midnight)
   workflow_dispatch:
+
+concurrency:
+  group: p2p-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test-build:

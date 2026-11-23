@@ -96,7 +96,7 @@ impl AnilistClient {
         }
     }
 
-    // TODO: Validar de usar post ao invez de um cliente graphql aqui não é melhor.
+    // TODO: Check whether using a plain POST instead of a GraphQL client here would be better.
     pub async fn search_manga_by_title(
         &self, title: &str,
     ) -> Result<AnilistResponse<AnilistSearchData>, String> {

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card/index';
-	import { card3D } from '$lib/actions/card-3d';
 	import type { Component, Snippet } from 'svelte';
 
 	let {
@@ -14,37 +12,30 @@
 		icon?: Component;
 		children?: Snippet;
 	} = $props();
-
-	let cardEl = $state<HTMLDivElement | null>(null);
-
-	$effect(() => {
-		if (!cardEl) return;
-		const action = card3D(cardEl, { maxRotation: 5, hoverScale: 1.02 });
-		return () => action?.destroy?.();
-	});
 </script>
 
-<Card.Root
-	bind:ref={cardEl}
-	class="items-center gap-4 p-6 text-center ring-1 ring-border transition-all hover:shadow-lg hover:ring-primary/40"
->
+<!-- Acerola card (brand book `.ac-card`): solid block, rounded-card, no border, shadow-lift;
+     round icon in primary-soft, font-black title, one muted phrase. -->
+<article data-slot="card" class="grid content-start gap-4 rounded-card bg-card p-5 shadow-lift">
 	{#if icon}
 		{@const Icon = icon}
-		<div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-			<Icon class="h-8 w-auto max-w-10 text-foreground" />
-		</div>
+		<span
+			class="flex size-11 items-center justify-center rounded-full bg-primary-soft text-primary"
+		>
+			<Icon size={20} />
+		</span>
 	{/if}
 
-	<Card.Header class="w-full items-center gap-1 p-0 text-center">
-		<Card.Title class="text-base font-bold">{title}</Card.Title>
+	<div class="grid gap-1">
+		<h3 class="m-0 text-lg font-black tracking-tight text-foreground">{title}</h3>
 		{#if description}
-			<Card.Description class="text-sm">{description}</Card.Description>
+			<p class="m-0 text-sm text-pretty text-muted-foreground">{description}</p>
 		{/if}
-	</Card.Header>
+	</div>
 
 	{#if children}
-		<Card.Content class="w-full p-0">
+		<div class="text-sm text-muted-foreground [&>p]:my-0">
 			{@render children()}
-		</Card.Content>
+		</div>
 	{/if}
-</Card.Root>
+</article>

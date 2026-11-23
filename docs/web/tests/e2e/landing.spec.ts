@@ -11,9 +11,13 @@ test.describe('landing page', () => {
 		await page.goto('/');
 
 		await expect(page).toHaveTitle('Acerola — Docs');
-		await expect(page.getByRole('heading', { level: 1 })).toContainText(
-			'Leia seus quadrinhos e mangás em qualquer dispositivo. Sem conta, sem nuvem.'
-		);
+		// As on the brand book, the h1 is the hero lettering; the claim is the line below it.
+		await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Acerola');
+		await expect(
+			page.getByText(
+				'Leia seus quadrinhos e mangás em qualquer dispositivo. Sem conta, sem nuvem.'
+			)
+		).toBeVisible();
 		await expect(page.getByRole('link', { name: 'Começar' })).toBeVisible();
 		await expect(page.getByRole('link', { name: 'Ver no GitHub' })).toBeVisible();
 

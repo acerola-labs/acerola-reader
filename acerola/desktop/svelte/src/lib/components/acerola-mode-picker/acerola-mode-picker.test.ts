@@ -22,22 +22,18 @@ describe('AcerolaModePicker', () => {
 	it('calls setMode when clicked', async () => {
 		const setModeSpy = vi.fn();
 
-		vi.doMock('$lib/hooks/use-theme.svelte', () => ({
+		vi.doMock('#lib/hooks/theme/use-theme.svelte.ts', () => ({
 			useTheme: () => ({
-				get theme() {
-					return 'catppuccin';
-				},
 				get mode() {
 					return 'dark';
 				},
-				setTheme: vi.fn(),
 				setMode: setModeSpy
 			})
 		}));
 
 		render(AcerolaModePicker);
 		await fireEvent.click(screen.getByRole('button'));
-		// O componente usa o singleton — verificamos que não quebrou
+		// The component uses the singleton — we check that it didn't break
 		expect(screen.getByRole('button')).toBeInTheDocument();
 	});
 });

@@ -15,7 +15,7 @@ const FRAME_READ_TIMEOUT: Duration = Duration::from_secs(15);
 
 use crate::protocol::framing::{Recv, Writer};
 
-/// Fina camada sobre `framing::write_json`/`read_json` — ver comentário equivalente em
+/// Thin layer over `framing::write_json`/`read_json` — see the equivalent comment in
 /// `protocol/files/exchange.rs`.
 async fn write_json<T: serde::Serialize>(writer: &mut Writer, value: &T) -> Result<(), P2pError> {
     crate::protocol::framing::write_json(writer, value).await
@@ -25,10 +25,10 @@ async fn read_json<T: serde::de::DeserializeOwned>(reader: &mut Recv) -> Result<
     crate::protocol::framing::read_json(reader, FRAME_READ_TIMEOUT).await
 }
 
-/// Papel inbound: lê `CoverRequest`, resolve a capa local (`CoverBrowseProvider::get_local_cover`)
-/// e responde `unavailable`/`not_modified`/`changed` — só publica no blob store local
-/// (`ChapterTransfer::publish`) quando a versão realmente mudou, pra não pagar o custo de hash
-/// numa capa que o outbound já tem.
+/// Inbound role: reads `CoverRequest`, resolves the local cover (`CoverBrowseProvider::get_local_cover`)
+/// and replies `unavailable`/`not_modified`/`changed` — only publishes to the local blob store
+/// (`ChapterTransfer::publish`) when the version really changed, to avoid paying the hashing cost
+/// on a cover the outbound already has.
 pub(super) async fn run_inbound(
     provider: &Arc<dyn CoverBrowseProvider>,
     transfer: &Arc<dyn ChapterTransfer>,
@@ -65,17 +65,17 @@ pub(super) async fn run_inbound(
     write_json(writer, &response).await
 }
 
-/// Resultado de uma sessão outbound — o que o chamador (`mod.rs::CoverBrowseOutbound::handle`)
-/// precisa pra decidir o evento certo pro Kotlin.
+/// Result of an outbound session — what the caller (`mod.rs::CoverBrowseOutbound::handle`)
+/// needs to decide the right event for Kotlin.
 pub(super) enum CoverOutcome {
     NotModified { cover_version: i64 },
     Unavailable,
     Fetched { cover_version: i64, bytes: Vec<u8> },
 }
 
-/// Papel outbound: escreve `CoverRequest`, lê a resposta e — só se `status == "changed"` — busca
-/// os bytes de verdade via `ChapterTransfer::fetch_reader` (que já verifica integridade via
-/// BLAKE3 antes de devolver o leitor).
+/// Outbound role: writes `CoverRequest`, reads the reply and — only if `status == "changed"` — fetches
+/// the actual bytes via `ChapterTransfer::fetch_reader` (which already verifies integrity via
+/// BLAKE3 before returning the reader).
 pub(super) async fn run_outbound(
     comic_name: String,
     known_version: Option<i64>,
@@ -159,7 +159,7 @@ mod tests {
             _cover_version: i64,
             _bytes: Vec<u8>,
         ) -> String {
-            unreachable!("save_remote_cover roda só do lado outbound, não usado nestes testes")
+            unreachable!("save_remote_cover only runs on the outbound side, not used in these tests")
         }
     }
 
@@ -214,7 +214,7 @@ mod tests {
         );
 
         let (inbound_result, outbound_result) = tokio::join!(inbound_fut, outbound_fut);
-        inbound_result.expect("inbound deveria completar sem erro");
+        inbound_result.expect("inbound should complete without error");
         outbound_result
     }
 
@@ -229,7 +229,7 @@ mod tests {
 
         match outcome {
             CoverOutcome::NotModified { cover_version } => assert_eq!(cover_version, 42),
-            _ => panic!("esperava NotModified"),
+            _ => panic!("expected NotModified"),
         }
     }
 
@@ -263,7 +263,7 @@ mod tests {
                 assert_eq!(cover_version, 7);
                 assert_eq!(bytes, cover_bytes);
             }
-            _ => panic!("esperava Fetched"),
+            _ => panic!("expected Fetched"),
         }
     }
 }

@@ -2,7 +2,7 @@
 	import MonitorIcon from '@lucide/svelte/icons/monitor';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SunIcon from '@lucide/svelte/icons/sun';
-	import type { ThemeModeOption } from '$lib/hooks/theme/use-theme.svelte';
+	import type { ThemeModeOption } from '#lib/hooks/theme/use-theme.svelte.ts';
 	import type { Component } from 'svelte';
 
 	const MODE_CONFIG: Record<ThemeModeOption, { icon: Component; next: ThemeModeOption }> = {
@@ -13,9 +13,9 @@
 </script>
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index';
-	import { useTheme } from '$lib/hooks/theme/use-theme.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { useTheme } from '#lib/hooks/theme/use-theme.svelte.ts';
+	import { m } from '#lib/paraglide/messages.js';
 
 	const themeCtx = useTheme();
 
@@ -27,8 +27,8 @@
 <Button
 	variant="ghost"
 	size="icon"
-	title={m['theme_picker.title']()}
-	aria-label={m['theme_picker.title']()}
+	title={m['themePicker.title']()}
+	aria-label={m['themePicker.title']()}
 	onclick={nextMode}
 >
 	{#key themeCtx.mode}

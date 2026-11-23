@@ -20,8 +20,8 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import * as Tooltip from '$lib/components/ui/tooltip/index';
-	import { slidingIndicator } from '$lib/utils/sliding-indicator.utils';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import { slidingIndicator } from '#lib/utils/sliding-indicator.util.ts';
 
 	let { data, brand }: AcerolaSidebarProps & AcerolaSidebarSnippets = $props();
 </script>
@@ -31,14 +31,12 @@
 		aria-label="Navigation"
 		use:slidingIndicator={{
 			selector: '[aria-current="page"]',
-			indicatorClass: 'rounded-xl bg-primary shadow-lg'
+			indicatorClass: 'rounded-full bg-primary'
 		}}
-		class="flex w-[4.6rem] shrink-0 flex-col items-center gap-1 border-r border-surface/30 bg-mantle/40 py-4 backdrop-blur-xl"
+		class="flex w-[4.6rem] shrink-0 flex-col items-center gap-2 bg-mantle py-4"
 	>
 		{#if brand}
-			<div
-				class="mb-4 flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full"
-			>
+			<div class="mb-4 flex size-10 shrink-0 items-center justify-center">
 				{@render brand()}
 			</div>
 		{/if}
@@ -52,10 +50,10 @@
 							{...props}
 							aria-label={item.label}
 							aria-current={page.url.pathname === item.href ? 'page' : undefined}
-							class="relative flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors [&_svg]:size-6 {page
+							class="relative flex size-11 shrink-0 items-center justify-center rounded-full transition-colors [&_svg]:size-5 {page
 								.url.pathname === item.href
 								? 'text-primary-foreground'
-								: 'text-foreground hover:bg-surface/80'}"
+								: 'text-muted-foreground hover:bg-surface hover:text-foreground'}"
 						>
 							<item.icon />
 						</a>

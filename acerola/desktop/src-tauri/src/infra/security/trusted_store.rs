@@ -6,10 +6,10 @@ use tokio::sync::RwLock;
 
 use super::{decrypt, encrypt};
 
-/// Implementação de `TrustedPeerStore` (lista TOFU de confiança) com criptografia em
-/// repouso — ver `infra::security` pro esquema. `trusted.enc` guarda os ids
-/// confiáveis; `blocked.enc` os bloqueados (carregado uma vez, `TrustedPeerStore` não
-/// expõe uma forma de escrever nele — mesma limitação que a implementação anterior).
+/// `TrustedPeerStore` implementation (TOFU trust list) with encryption at
+/// rest — see `infra::security` for the scheme. `trusted.enc` holds the trusted
+/// ids; `blocked.enc` the blocked ones (loaded once, `TrustedPeerStore` does not
+/// expose a way to write to it — same limitation as the previous implementation).
 pub struct SecureTrustedStore {
     trusted_path: PathBuf,
     master_key: [u8; 32],
@@ -33,10 +33,10 @@ impl SecureTrustedStore {
         })
     }
 
-    /// Diferente da versão anterior, decrypt/parse falhando vira `Err` — não pode virar
-    /// "conjunto vazio" em silêncio, porque `insert` reescreve o arquivo inteiro com o que
-    /// estiver em memória: um cache vazio por engano apaga toda a lista de confiança (TOFU)
-    /// anterior assim que o próximo peer conhecido reconectar.
+    /// Unlike the previous version, a failing decrypt/parse becomes `Err` — it must not
+    /// silently become an "empty set", because `insert` rewrites the whole file with whatever
+    /// is in memory: a mistakenly empty cache wipes the whole previous trust list (TOFU)
+    /// as soon as the next known peer reconnects.
     fn read_set(path: &std::path::Path, master_key: &[u8; 32]) -> std::io::Result<HashSet<String>> {
         match std::fs::read(path) {
             Ok(encrypted) => {
@@ -66,8 +66,8 @@ impl SecureTrustedStore {
         std::fs::write(path, encrypt(&self.master_key, &json))
     }
 
-    /// Remove um peer da lista de confiança (TOFU) — usado por "desparear". Idempotente: id
-    /// desconhecido não é erro, só não reescreve o arquivo à toa.
+    /// Removes a peer from the trust list (TOFU) — used by "unpair". Idempotent: an
+    /// unknown id is not an error, it just does not rewrite the file needlessly.
     pub async fn remove(&self, id: &str) -> std::io::Result<()> {
         let mut trusted = self.trusted.write().await;
         if !trusted.remove(id) {
@@ -165,14 +165,14 @@ mod tests {
         let store = SecureTrustedStore::open(dir.path(), [1u8; 32]).unwrap();
         store.insert("trusted-peer").await;
 
-        // Regressão: chave errada (keyring resolveu outra chave nessa execução) tinha que
-        // falhar aqui, não abrir com uma lista de confiança vazia como se ninguém nunca
-        // tivesse sido aprovado — TOFU voltaria a "confiar automaticamente" em qualquer um
-        // de novo, e o próximo `insert` apagaria a lista antiga do disco.
+        // Regression: a wrong key (the keyring resolved another key in this run) had to
+        // fail here, not open with an empty trust list as if nobody had ever
+        // been approved — TOFU would go back to "automatically trusting" anyone
+        // again, and the next `insert` would wipe the old list from disk.
         let reopen_result = SecureTrustedStore::open(dir.path(), [2u8; 32]);
         assert!(
             reopen_result.is_err(),
-            "abrir com a chave errada deveria falhar, não degradar em silêncio"
+            "opening with the wrong key should fail, not silently degrade"
         );
 
         let reopened_with_correct_key = SecureTrustedStore::open(dir.path(), [1u8; 32]).unwrap();

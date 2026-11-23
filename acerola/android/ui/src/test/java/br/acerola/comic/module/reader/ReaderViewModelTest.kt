@@ -111,7 +111,7 @@ class ReaderViewModelTest {
 
             viewModel.openChapter(1L, chapter1, 0)
 
-            // Simula visualização de 7 páginas (70% de 10)
+            // Simulates viewing 7 pages (70% of 10)
             for (i in 0..6) {
                 viewModel.onPageVisible(1L, "1", 1L, i)
             }

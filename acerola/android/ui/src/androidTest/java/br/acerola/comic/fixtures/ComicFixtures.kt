@@ -16,7 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 /**
- * Fixtures reutilizáveis para testes de Quadrinhos na camada de apresentação.
+ * Reusable fixtures for Comic tests in the presentation layer.
  */
 object ComicFixtures {
     fun createMangaUiState(

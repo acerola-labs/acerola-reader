@@ -1,0 +1,151 @@
+/* Acerola brand tokens: the source of truth for color, shape, shadow and typography in every
+ * Acerola app (reader, sync, ticket…). The standard is acerola-sync:
+ *
+ * - colors: exact copy of acerola-sync/extension/svelte/src/theme/colors/catppuccin.css
+ *   (Latte in light, Mocha in dark; one palette, only the mode changes);
+ * - shape and shadow: acerola-sync/extension/svelte/src/theme/tokens.css;
+ * - fonts: acerola-sync/extension/svelte/src/theme/tailwind.css (DM Sans and Noto Serif).
+ *
+ * Dark is the default; light with data-theme="light" on <html>.
+ * Rules: color by token only; `*-soft` is background and `*` is text in the same tone; no colored borders. */
+
+:root,
+[data-theme='dark'] {
+	--crust: #0e0e15;
+	--mantle: #13131c;
+	--base: #181824;
+	--surface: #222332;
+
+	--subtext: #94a3b8;
+
+	--background: #11111a;
+	--foreground: #f1f5f9;
+	--card: #181824;
+	--card-foreground: #f1f5f9;
+	--popover: #181824;
+	--popover-foreground: #f1f5f9;
+	--primary: #cba6f7;
+	--primary-foreground: #11111a;
+	--secondary: #222332;
+	--secondary-foreground: #f1f5f9;
+	--muted: #1e1e2d;
+	--muted-foreground: #94a3b8;
+	--accent: #222332;
+	--accent-foreground: #f1f5f9;
+	--accent-hero: #f5c2e7;
+	--accent-hero-foreground: var(--primary-foreground);
+	--destructive: #f38ba8;
+	--destructive-foreground: var(--primary-foreground);
+	--border: #2b2c3d;
+	--input: #222332;
+	--ring: #cba6f7;
+
+	--success: #34d399;
+	--success-soft: #022c22;
+	--warning: #fbbf24;
+	--warning-soft: #451a03;
+	--info: #60a5fa;
+	--info-soft: #172554;
+	--destructive-soft: #4c0519;
+	--primary-soft: #2e1065;
+
+	--chart-1: #f38ba8;
+	--chart-2: #fab387;
+	--chart-3: #f9e2af;
+	--chart-4: #a6e3a1;
+	--chart-5: #74c7ec;
+
+	--sidebar: #13131c;
+	--sidebar-foreground: #f1f5f9;
+	--sidebar-primary: #cba6f7;
+	--sidebar-primary-foreground: #11111a;
+	--sidebar-accent: #222332;
+	--sidebar-accent-foreground: #f1f5f9;
+	--sidebar-border: #2b2c3d;
+	--sidebar-ring: #cba6f7;
+
+	color-scheme: dark;
+}
+
+[data-theme='light'] {
+	--crust: #e2e8f0;
+	--mantle: #f1f5f9;
+	--base: #f8fafc;
+	--surface: #e2e8f0;
+
+	--subtext: #64748b;
+
+	--background: #f8fafc;
+	--foreground: #0f172a;
+	--card: #ffffff;
+	--card-foreground: #0f172a;
+	--popover: #ffffff;
+	--popover-foreground: #0f172a;
+	--primary: #7c3aed;
+	--primary-foreground: #ffffff;
+	--secondary: #f1f5f9;
+	--secondary-foreground: #0f172a;
+	--muted: #f1f5f9;
+	--muted-foreground: #64748b;
+	--accent: #f1f5f9;
+	--accent-foreground: #0f172a;
+	--accent-hero: #ea76cb;
+	--accent-hero-foreground: var(--primary-foreground);
+	--destructive: #e11d48;
+	--destructive-foreground: var(--primary-foreground);
+	--border: #e2e8f0;
+	--input: #e2e8f0;
+	--ring: #7c3aed;
+
+	--success: #047857;
+	--success-soft: #d1fae5;
+	--warning: #b45309;
+	--warning-soft: #fef3c7;
+	--info: #1d4ed8;
+	--info-soft: #dbeafe;
+	--destructive-soft: #ffe4e6;
+	--primary-soft: #ede9fe;
+
+	--chart-1: #e11d48;
+	--chart-2: #f97316;
+	--chart-3: #eab308;
+	--chart-4: #10b981;
+	--chart-5: #0ea5e9;
+
+	--sidebar: #f8fafc;
+	--sidebar-foreground: #0f172a;
+	--sidebar-primary: #7c3aed;
+	--sidebar-primary-foreground: #ffffff;
+	--sidebar-accent: #f1f5f9;
+	--sidebar-accent-foreground: #0f172a;
+	--sidebar-border: #e2e8f0;
+	--sidebar-ring: #7c3aed;
+
+	color-scheme: light;
+}
+
+/* Shape, shadow, scrim, fonts and motion: they do not change with the mode. */
+:root {
+	--radius-sheet: 32px; /* panel / full sheet */
+	--radius-card: 28px; /* large card, toast, site notice */
+	--radius-tile: 24px; /* number block, list row, cover */
+	--radius-inner: 16px; /* something inside a card: small cover, field, site icon */
+	--radius-full: 9999px; /* pill, chip, round button, progress bar */
+	--radius-huge: 2.5rem;
+
+	--shadow-float: 0 16px 40px -12px rgb(0 0 0 / 0.55);
+	--shadow-lift: 0 10px 24px -10px rgb(0 0 0 / 0.45);
+
+	/* Dark scrim over cover/art and the text on top: the same in both modes on purpose. */
+	--scrim: #000000;
+	--on-scrim: #ffffff;
+
+	--font-sans: 'DM Sans Variable', 'DM Sans', system-ui, sans-serif;
+	--font-heading: 'Noto Serif Variable', 'Noto Serif', serif;
+	/* Brand only: lettering, hero, splash, cover. Never in a button, tab, field or list. */
+	--font-display: 'Titan One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+
+	--control-height: 44px;
+	--ease-brand: cubic-bezier(0.32, 0.72, 0, 1);
+	--duration-brand: 320ms;
+}

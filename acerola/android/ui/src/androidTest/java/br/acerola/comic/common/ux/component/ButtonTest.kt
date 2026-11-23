@@ -2,7 +2,6 @@ package br.acerola.comic.common.ux.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -49,11 +48,11 @@ class ButtonTest {
             Acerola.Component.Button(
                 text = "Save",
                 onClick = {},
-                icon = { Icon(Icons.Default.Add, contentDescription = "Icon") },
+                icon = Icons.Default.Add,
             )
         }
 
+        // The leading icon is decorative: the button's accessible name is its text.
         composeTestRule.onNodeWithText("Save").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Icon").assertIsDisplayed()
     }
 }

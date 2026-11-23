@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import LandingPage from './+page.svelte';
 
-// FaultyTerminal usa a lib `ogl` pra desenhar um shader WebGL no hero — jsdom não tem WebGL,
-// e o próprio time já documentou (ver faulty-terminal.svelte) instabilidade desse efeito sob
-// GPU virtual/software mesmo no Chromium headless do Playwright. Mockamos a lib inteira aqui:
-// o objetivo deste teste é a composição da landing page, não o shader em si.
+// FaultyTerminal uses the `ogl` lib to draw a WebGL shader in the hero — jsdom has no WebGL,
+// and the team has already documented (see faulty-terminal.svelte) this effect being unstable
+// under a virtual/software GPU even in Playwright's headless Chromium. We mock the whole lib
+// here: this test is about the landing page's composition, not the shader itself.
 vi.mock('ogl', () => {
 	class FakeRenderer {
 		gl = {

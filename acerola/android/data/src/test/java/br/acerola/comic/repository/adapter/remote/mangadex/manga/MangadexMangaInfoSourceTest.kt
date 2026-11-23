@@ -94,7 +94,7 @@ class MangadexMangaInfoSourceTest {
             val result = repository.searchInfo("Naruto")
 
             assertTrue(result.isLeft())
-            // Valida se o erro mapeado é ConnectionFailed e não Unknown
+            // Validates the mapped error is ConnectionFailed and not Unknown
             result.onLeft { error ->
                 assertTrue(error is NetworkError)
             }

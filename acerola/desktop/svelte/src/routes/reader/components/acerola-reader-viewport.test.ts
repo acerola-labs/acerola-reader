@@ -52,7 +52,9 @@ function props(mode: ReaderMode = 'vertical', zoomController = zoom()) {
 describe('AcerolaReaderViewport', () => {
 	it('renders content and registers viewport on mount and destroy', () => {
 		const zoomController = zoom();
-		const { unmount } = render(AcerolaReaderViewport, { props: props('vertical', zoomController) });
+		const { unmount } = render(AcerolaReaderViewport, {
+			props: props('vertical', zoomController)
+		});
 
 		expect(screen.getByTestId('reader-content')).toHaveTextContent('Reader content');
 		expect(zoomController.setViewport).toHaveBeenCalledWith(screen.getByRole('main'));
@@ -69,7 +71,9 @@ describe('AcerolaReaderViewport', () => {
 		] as const;
 
 		for (const entry of cases) {
-			const { container, unmount } = render(AcerolaReaderViewport, { props: props(entry.mode) });
+			const { container, unmount } = render(AcerolaReaderViewport, {
+				props: props(entry.mode)
+			});
 			const main = screen.getByRole('main');
 			const layer = container.querySelector('main > div');
 

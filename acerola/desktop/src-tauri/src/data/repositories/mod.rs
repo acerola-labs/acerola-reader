@@ -154,7 +154,7 @@ mod tests {
         fn bind_update<'query>(
             &'query self, query: Query<'query, Sqlite, SqliteArguments<'query>>,
         ) -> Query<'query, Sqlite, SqliteArguments<'query>> {
-            query.bind(&self.name).bind(self.id) // name no SET, id no WHERE
+            query.bind(&self.name).bind(self.id) // name in SET, id in WHERE
         }
     }
 
@@ -170,7 +170,7 @@ mod tests {
         (pool, repo)
     }
 
-    /// INFO: Casos de sucesso, testes perfeitos
+    /// INFO: Success cases, happy-path tests
     #[tokio::test]
     async fn test_find_all() {
         let (pool, repo) = setup().await;
@@ -223,7 +223,7 @@ mod tests {
         assert_eq!(result.len(), 0);
     }
 
-    /// INFO: Casos de erros
+    /// INFO: Error cases
     #[tokio::test]
     async fn test_error_on_duplicate_insert() {
         let (_, repo) = setup().await;
@@ -235,7 +235,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::UniqueViolation)),
-            "Deveria ter retornado UniqueViolation, mas veio: {:?}",
+            "Should have returned UniqueViolation, but got: {:?}",
             result
         );
     }
@@ -249,7 +249,7 @@ mod tests {
 
         assert!(
             matches!(result, Err(DbError::NotFound)),
-            "Deveria ter retornado NotFound, mas veio: {:?}",
+            "Should have returned NotFound, but got: {:?}",
             result
         );
     }

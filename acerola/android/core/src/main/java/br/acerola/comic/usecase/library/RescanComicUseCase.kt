@@ -6,7 +6,7 @@ import br.acerola.comic.error.message.LibrarySyncError
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * UseCase para rescanear quadrinhos da biblioteca.
+ * UseCase to rescan the library's comics.
  */
 class RescanComicUseCase(
     private val comicRepository: ComicSingleSyncGateway,

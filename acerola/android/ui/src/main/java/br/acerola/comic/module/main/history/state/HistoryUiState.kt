@@ -11,7 +11,7 @@ data class HistoryItemState(
 
 data class HistoryUiState(
     val items: List<HistoryItemState> = emptyList(),
-    /** Peers pareados pro `PeerPickerSheet` de sync de histórico — mesmo componente reusado
-     *  pelo sync de quadrinho individual (Comic Detail / Home). */
+    /** Paired peers for the history sync `PeerPickerSheet` — same component reused
+     *  by individual comic sync (Comic Detail / Home). */
     val pairedPeers: List<PairedPeer> = emptyList(),
 )

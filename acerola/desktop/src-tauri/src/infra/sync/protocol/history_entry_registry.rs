@@ -3,21 +3,21 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-/// Escopo de UM push de histórico: o quadrinho e os capítulos (`chapter_archive_id`, mesma
-/// unidade usada pelo resto da UI local, ex.: `markChaptersReadBatch`) selecionados pelo
-/// usuário pra enviar — o manifesto trocado (`acerola/sync-history-entry/1`) fica restrito a
-/// isso, nunca a biblioteca inteira. `HistorySyncService::build_manifest_for_chapters` resolve
-/// os IDs pra `chapter_sort` (a chave comparável entre devices) antes de montar o manifesto.
+/// Scope of ONE history push: the comic and the chapters (`chapter_archive_id`, the same
+/// unit used by the rest of the local UI, e.g. `markChaptersReadBatch`) selected by the
+/// user to send — the exchanged manifest (`acerola/sync-history-entry/1`) is restricted to
+/// that, never the whole library. `HistorySyncService::build_manifest_for_chapters` resolves
+/// the IDs to `chapter_sort` (the key comparable across devices) before building the manifest.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HistoryEntryScope {
     pub comic_name: String,
     pub chapter_ids: Vec<i64>,
 }
 
-/// Mesmo side-channel de `PendingComicSyncRegistry`, só que pro push de histórico restrito a
-/// capítulo(s) selecionado(s) (`acerola/sync-history-entry/1`): o comando Tauri
-/// `sync_history_entry` grava o [`HistoryEntryScope`] antes de chamar `connect()`, e
-/// `HistoryEntrySyncOutbound` consome (`take`) esse valor assim que a sessão começa.
+/// Same side channel as `PendingComicSyncRegistry`, but for the history push restricted to
+/// selected chapter(s) (`acerola/sync-history-entry/1`): the Tauri command
+/// `sync_history_entry` writes the [`HistoryEntryScope`] before calling `connect()`, and
+/// `HistoryEntrySyncOutbound` consumes (`take`) that value as soon as the session starts.
 #[derive(Default)]
 pub struct PendingHistoryEntryRegistry {
     pending: Mutex<HashMap<String, HistoryEntryScope>>,
@@ -35,8 +35,8 @@ impl PendingHistoryEntryRegistry {
             .insert(peer_id, scope);
     }
 
-    /// Consome (remove) o escopo pendente pro peer — cada chamada de `connect()` só serve
-    /// pra uma sessão.
+    /// Consumes (removes) the pending scope for the peer — each `connect()` call only serves
+    /// one session.
     pub fn take(&self, peer_id: &str) -> Option<HistoryEntryScope> {
         self.pending.lock().expect("pending history entry registry mutex poisoned").remove(peer_id)
     }

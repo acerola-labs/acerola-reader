@@ -10,10 +10,10 @@ use crate::{
     infra::error::ReaderError,
 };
 
-// INFO: Janela deslizante — não "o capítulo inteiro". Cobre o raio de prefetch
-// (radius 2 = 5 páginas) com folga pra scroll rápido sem acumular capítulos
-// grandes (webtoon) inteiros em RAM (cada página decodificada pode passar de
-// 40MB em bitmap).
+// INFO: Sliding window — not "the whole chapter". Covers the prefetch radius
+// (radius 2 = 5 pages) with headroom for fast scrolling without keeping large
+// chapters (webtoon) entirely in RAM (each decoded page can exceed
+// 40MB as a bitmap).
 pub(super) const DEFAULT_CACHE_CAPACITY: usize = 20;
 
 pub(super) struct ReaderSession {

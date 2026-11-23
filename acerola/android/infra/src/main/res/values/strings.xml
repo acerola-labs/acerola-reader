@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">acerola</string>
-    <string name="title_file_system_access_error">Erro de acesso a pasta</string>
+    <string name="title_file_system_access_error">Erro de acesso à pasta</string>
     <string name="description_file_system_access_error">Não foi possível acessar a pasta.</string>
     <string name="title_generic_internal_error">Erro interno desconhecido</string>
     <string name="description_generic_internal_error">Ocorreu um erro interno inesperado.</string>
@@ -9,27 +9,26 @@
     <string name="title_error_mangadex_sync">Erro ao sincronizar metadados</string>
     <string name="message_error_mangadex_sync_unknown">Falha desconhecida no serviço de
         sincronização.</string>
-    <string name="title_http_error">Erro de Comunicação</string>
+    <string name="title_http_error">Erro de comunicação</string>
     <string name="description_http_error_rate_limit">Muitas requisições. Tente novamente em breve.</string>
-    <string name="description_not_found">Não foi possivel encontar os dados que foram buscados.</string>
+    <string name="description_not_found">Não foi possível encontrar os dados buscados.</string>
     <string name="description_http_error_generic">Erro de comunicação com o MangaDex.</string>
-    <string name="title_network_error">Erro de Conexão</string>
+    <string name="title_network_error">Erro de conexão</string>
     <string name="description_network_error">Não foi possível estabelecer comunicação com o
         servidor. Verifique sua internet e tente novamente.</string>
     <string name="description_malformed_library">A sua biblioteca local está malformada, verifique
         nome de pastas e arquivos</string>
     <string name="title_dao_error">Erro em operação no banco de dados</string>
-    <string name="description_dao_error">Ouve algum erro na operação do banco de dados, porem
-        desconhecido.</string>
+    <string name="description_dao_error">Houve um erro desconhecido na operação do banco de dados.</string>
     <string name="error_timeout">A conexão expirou. Tente novamente.</string>
     <string name="error_sync_session_busy">Já existe uma sincronização em andamento com esse dispositivo.</string>
     <string name="error_sync_timeout">A sincronização demorou demais e foi cancelada — o dispositivo pode ter ficado offline.</string>
     <string name="error_sync_connection_lost">A conexão com o dispositivo caiu durante a sincronização. Tente novamente.</string>
     <string name="error_sync_checksum_mismatch">O arquivo recebido não bateu com o checksum esperado — pode ter sido corrompido na transferência.</string>
     <string name="error_sync_comic_not_found">O outro dispositivo ainda não tem esse quadrinho.</string>
-    <string name="error_server">Erro no servidor (Código: %1$d).</string>
+    <string name="error_server">Erro no servidor (código: %1$d).</string>
     <string name="error_unauthorized">Acesso não autorizado.</string>
-    <string name="error_http">Erro HTTP (Código: %1$d).</string>
+    <string name="error_http">Erro HTTP (código: %1$d).</string>
     <string name="validation_empty_field">Campo não pode estar vazio.</string>
     <string name="validation_invalid_format">Formato inválido para %1$s.</string>
     <string name="validation_out_of_range">Valor para %1$s deve estar entre %2$d e %3$d, mas foi
@@ -54,7 +53,7 @@
 
     <!-- Notification Channels -->
     <string name="error_sync_disabled">A sincronização externa está desativada para este quadrinho.</string>
-    <string name="sync_notification_channel_name">Sincronização de Biblioteca</string>
+    <string name="sync_notification_channel_name">Sincronização da biblioteca</string>
     <string name="sync_notification_channel_description">Notificações de progresso de sincronização
         de quadrinhos</string>
 

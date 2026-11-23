@@ -15,19 +15,19 @@ describe('native home', () => {
 
 		await waitForText('Acerola');
 
-		// O dock só expõe os links depois de expandido (modo hover) — os
-		// rótulos "Início"/"Histórico"/"Configurações" só existem como
-		// aria-label, não como texto visível (ver acerola-dock.svelte).
+		// The dock only exposes the links once expanded (hover mode) — the
+		// "Início"/"Histórico"/"Configurações" labels only exist as
+		// aria-label, not as visible text (see acerola-dock.svelte).
 		await expandDock();
 		expect(await (await browser.$('[aria-label="Início"]')).isExisting()).toBe(true);
 		expect(await (await browser.$('[aria-label="Histórico"]')).isExisting()).toBe(true);
 		expect(await (await browser.$('[aria-label="Configurações"]')).isExisting()).toBe(true);
 
-		// Abre o dialog de busca
+		// Open the search dialog
 		const searchButton = await firstDisplayed('button[aria-label="Buscar quadrinho..."]');
 		await searchButton.click();
 
-		// Verifica se o dialog de busca abriu
+		// Check that the search dialog opened
 		await browser.waitUntil(
 			async () => {
 				const searchDialog = await browser.$('[role="dialog"]');
@@ -36,7 +36,7 @@ describe('native home', () => {
 			{
 				timeout: 5_000,
 				interval: 100,
-				timeoutMsg: 'Dialog de busca não abriu.'
+				timeoutMsg: 'Search dialog did not open.'
 			}
 		);
 
@@ -54,7 +54,7 @@ describe('native home', () => {
 			{
 				timeout: 10_000,
 				interval: 100,
-				timeoutMsg: 'Home não exibiu loading, estado vazio ou cards.'
+				timeoutMsg: 'Home did not show loading, empty state or cards.'
 			}
 		);
 	});
@@ -68,7 +68,7 @@ describe('native home', () => {
 		await browser.waitUntil(async () => (await getPathname()) === '/config', {
 			timeout: 10_000,
 			interval: 100,
-			timeoutMsg: 'Sidebar não navegou para Configurações.'
+			timeoutMsg: 'Sidebar did not navigate to Settings.'
 		});
 		await waitForText('Configurações');
 
@@ -77,7 +77,7 @@ describe('native home', () => {
 		await browser.waitUntil(async () => (await getPathname()) === '/home', {
 			timeout: 10_000,
 			interval: 100,
-			timeoutMsg: 'Sidebar não voltou para Home.'
+			timeoutMsg: 'Sidebar did not go back to Home.'
 		});
 		expect(await (await browser.$('[aria-label="Início"]')).isExisting()).toBe(true);
 	});

@@ -44,7 +44,7 @@ class ZoomablePageImageTest {
             click(center)
         }
 
-        // Aguarda reconhecimento do gesto
+        // Waits for the gesture to be recognized
         composeTestRule.waitUntil(timeoutMillis = 3000) {
             tappedArea == br.acerola.comic.module.reader.state.TapArea.CENTER
         }

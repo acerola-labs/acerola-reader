@@ -3,26 +3,32 @@
 	import AcerolaCopyCard from './acerola-copy-card.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaCopyCard',
+		title: 'Primitives/AcerolaCopyCard',
 		component: AcerolaCopyCard,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Card compacto para um valor curto que o usuário provavelmente vai querer copiar (e-mail, ID, endpoint), com botão de copiar dedicado em vez de depender de selecionar o texto manualmente.'
+						'Compact card for a short value the user will likely want to copy (email, ID, endpoint), with a dedicated copy button instead of relying on selecting the text manually.'
 				}
 			}
 		},
 		argTypes: {
-			label: { description: 'Rótulo acima do valor.', control: 'text' },
+			label: { description: 'Label above the value.', control: 'text' },
 			value: {
-				description: 'Valor exibido e copiado para a área de transferência.',
+				description: 'Value displayed and copied to the clipboard.',
 				control: 'text'
 			},
-			href: { description: 'Se definido, o valor vira um link (ex.: mailto:).', control: 'text' },
-			copyLabel: { description: 'Texto acessível do botão antes de copiar.', control: 'text' },
-			copiedLabel: { description: 'Texto acessível do botão logo após copiar.', control: 'text' }
+			href: {
+				description: 'If set, the value becomes a link (e.g. mailto:).',
+				control: 'text'
+			},
+			copyLabel: { description: 'Accessible button text before copying.', control: 'text' },
+			copiedLabel: {
+				description: 'Accessible button text right after copying.',
+				control: 'text'
+			}
 		}
 	});
 </script>
@@ -31,7 +37,7 @@
 	name="Default"
 	args={{ label: 'Contato', value: 'contact@acerola.app' }}
 	parameters={{
-		docs: { description: { story: 'Valor exibido como texto simples, com botão de copiar.' } }
+		docs: { description: { story: 'Value displayed as plain text, with a copy button.' } }
 	}}
 />
 
@@ -45,7 +51,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'O valor também é um link clicável (ex.: `mailto:`) além de copiável.'
+				story: 'The value is also a clickable link (e.g. `mailto:`) besides being copyable.'
 			}
 		}
 	}}

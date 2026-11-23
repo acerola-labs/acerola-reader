@@ -55,7 +55,7 @@ pub async fn get_local_id(
     service.local_id()
 }
 
-/// Endereço completo pra gerar o código/QR de pareamento (ver [`NetworkServiceApi::local_addr`]).
+/// Full address to generate the pairing code/QR (see [`NetworkServiceApi::local_addr`]).
 #[tauri::command]
 pub async fn get_local_addr(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -63,8 +63,8 @@ pub async fn get_local_addr(
     service.local_addr()
 }
 
-/// Nome/OS/versão deste dispositivo, pra exibir algo legível na tela de Rede em vez do
-/// peer id cru.
+/// Name/OS/version of this device, to show something readable on the Network screen instead
+/// of the raw peer id.
 #[tauri::command]
 pub async fn get_local_device_info(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -72,10 +72,10 @@ pub async fn get_local_device_info(
     Ok(DeviceInfoPayload::from(service.local_device_info().await?))
 }
 
-/// Define um apelido customizado pro dispositivo local (estilo LocalSend, em vez do hostname
-/// automático) — vale a partir do próximo handshake, sem precisar reiniciar o app. Persistência
-/// entre reinícios é responsabilidade do frontend (`settings.json`, chave `device_alias`), que
-/// `bios::network::setup_network` relê no próximo boot.
+/// Sets a custom alias for the local device (LocalSend style, instead of the automatic
+/// hostname) — applies from the next handshake on, without restarting the app. Persisting it
+/// across restarts is the frontend's job (`settings.json`, key `device_alias`), which
+/// `bios::network::setup_network` re-reads on the next boot.
 #[tauri::command]
 pub async fn set_local_device_name(
     service: State<'_, Arc<dyn NetworkServiceApi>>, name: String,
@@ -88,8 +88,8 @@ pub async fn set_local_device_name(
     service.set_local_device_name(trimmed.to_string()).await
 }
 
-/// Retorna a configuração de relay combinável atual (relay do Acerola / próprio(s) /
-/// Iroh / rede pública Iroh), lida de `settings.json`.
+/// Returns the current combinable relay configuration (Acerola relay / own /
+/// Iroh / Iroh public network), read from `settings.json`.
 #[tauri::command]
 pub async fn get_relay_info<R: Runtime>(
     app: AppHandle<R>, service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -99,10 +99,10 @@ pub async fn get_relay_info<R: Runtime>(
     Ok(RelayInfo::new(read_relay_settings(&app_data_directory), has_ticket))
 }
 
-/// Salva o ticket da conta do usuário em `services.iroh.computer` (colado por ele na tela de
-/// configuração de rede) no cofre criptografado — nunca em `settings.json`. Valida o formato
-/// antes de persistir. Não aplica sozinho a config nova — o frontend chama
-/// [`apply_relay_settings`] logo em seguida, mesmo fluxo de qualquer outra mudança de relay.
+/// Saves the ticket of the user's `services.iroh.computer` account (pasted on the network
+/// settings screen) in the encrypted vault — never in `settings.json`. Validates the format
+/// before persisting. Does not apply the new config by itself — the frontend calls
+/// [`apply_relay_settings`] right after, same flow as any other relay change.
 #[tauri::command]
 pub async fn set_iroh_services_ticket(
     service: State<'_, Arc<dyn NetworkServiceApi>>, ticket: String,
@@ -110,7 +110,7 @@ pub async fn set_iroh_services_ticket(
     service.set_iroh_services_ticket(ticket).await
 }
 
-/// Remove o ticket salvo — usado quando o usuário desliga a fonte ou substitui por um novo.
+/// Removes the saved ticket — used when the user turns the source off or replaces it with a new one.
 #[tauri::command]
 pub async fn clear_iroh_services_ticket(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -118,10 +118,10 @@ pub async fn clear_iroh_services_ticket(
     service.clear_iroh_services_ticket().await
 }
 
-/// Relê `settings.json` + o ticket do cofre e reinicia o módulo P2P inteiro com a config de
-/// relay resolvida (ver `NetworkServiceApi::restart`), sem precisar reiniciar o app — o
-/// frontend chama isso depois de QUALQUER mudança nas fontes de relay (toggle do Acerola/Iroh,
-/// add/remove de URL própria, salvar/remover ticket).
+/// Re-reads `settings.json` + the vault ticket and restarts the whole P2P module with the
+/// resolved relay config (see `NetworkServiceApi::restart`), without restarting the app — the
+/// frontend calls this after ANY change to the relay sources (Acerola/Iroh toggle,
+/// add/remove own URL, save/remove ticket).
 #[tauri::command]
 pub async fn apply_relay_settings(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -129,11 +129,11 @@ pub async fn apply_relay_settings(
     service.apply_relay_settings().await
 }
 
-/// Reinicia o módulo P2P por completo (desliga o node atual, sobe um novo com a mesma
-/// identidade/storage) sob demanda — botão "Reiniciar" na tela de Rede, estilo LocalSend. Mesma
-/// operação que [`apply_relay_settings`] já dispara automaticamente numa troca de relay; exposto
-/// separado pro usuário poder forçar um reset mesmo sem mudar nada (ex.: conexão presa depois de
-/// uma troca de rede física, sem precisar fechar e reabrir o app inteiro).
+/// Fully restarts the P2P module (shuts down the current node, starts a new one with the same
+/// identity/storage) on demand — the "Restart" button on the Network screen, LocalSend style.
+/// Same operation [`apply_relay_settings`] already triggers automatically on a relay change;
+/// exposed separately so the user can force a reset even without changing anything (e.g. a
+/// connection stuck after a physical network change, without closing and reopening the app).
 #[tauri::command]
 pub async fn restart_p2p(service: State<'_, Arc<dyn NetworkServiceApi>>) -> Result<(), String> {
     service.restart().await
@@ -151,9 +151,9 @@ pub async fn connect_to_peer(
     Ok(())
 }
 
-/// Todo peer já pareado alguma vez, com o último endereço conhecido — sobrevive a restart e
-/// independe de conexão ativa agora (ver [`NetworkServiceApi::paired_peers`]). É essa lista,
-/// não `get_network_status`, que deve alimentar "disparar sync com X" na UI.
+/// Every peer ever paired, with the last known address — survives restarts and does not
+/// depend on an active connection right now (see [`NetworkServiceApi::paired_peers`]). It is
+/// this list, not `get_network_status`, that must feed "start sync with X" in the UI.
 #[tauri::command]
 pub async fn get_paired_peers(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -161,9 +161,9 @@ pub async fn get_paired_peers(
     Ok(service.paired_peers().await?.into_iter().map(PairedPeerPayload::from).collect())
 }
 
-/// Desempareia um peer — some da lista de pareados e da confiança (TOFU). Se ele tentar se
-/// conectar de novo depois, passa pelo mesmo fluxo de confirmação de um dispositivo nunca
-/// visto (ver [`NetworkServiceApi::remove_peer`]).
+/// Unpairs a peer — it disappears from the paired list and from trust (TOFU). If it tries to
+/// connect again later, it goes through the same confirmation flow as a never-seen device
+/// (see [`NetworkServiceApi::remove_peer`]).
 #[tauri::command]
 pub async fn remove_paired_peer(
     service: State<'_, Arc<dyn NetworkServiceApi>>, peer_id: String,
@@ -171,9 +171,9 @@ pub async fn remove_paired_peer(
     service.remove_peer(peer_id).await
 }
 
-/// Dispara uma sessão de sync de histórico com um peer já pareado. O progresso e a
-/// conclusão chegam pro frontend via os eventos `sync:history:*`, emitidos direto pelo
-/// protocolo (ver `infra::sync::protocol::history_handler`) assim que a conexão é aceita.
+/// Starts a history sync session with an already-paired peer. Progress and completion
+/// reach the frontend via the `sync:history:*` events, emitted directly by the
+/// protocol (see `infra::sync::protocol::history_handler`) as soon as the connection is accepted.
 #[tauri::command]
 pub async fn sync_history(
     service: State<'_, Arc<dyn NetworkServiceApi>>, peer_id: String, addrs: Vec<u8>,
@@ -185,12 +185,12 @@ pub async fn sync_history(
     Ok(())
 }
 
-/// Dispara o push do(s) capítulo(s) selecionado(s) (progresso + marcador de "lido") de UM
-/// único quadrinho pra um peer já pareado — mais leve que `sync_history` (que troca a
-/// biblioteca inteira nos dois sentidos). Usado tanto pelo envio de um capítulo só quanto de
-/// vários selecionados de uma vez. Registra o [`HistoryEntryScope`] no
-/// `PendingHistoryEntryRegistry` antes de conectar, mesma técnica de `sync_comic`. Progresso
-/// via os eventos `sync:history-entry:*`.
+/// Pushes the selected chapter(s) (progress + "read" marker) of ONE single comic to an
+/// already-paired peer — lighter than `sync_history` (which exchanges the whole library in
+/// both directions). Used both for sending a single chapter and several selected at once.
+/// Registers the [`HistoryEntryScope`] in the `PendingHistoryEntryRegistry` before
+/// connecting, same technique as `sync_comic`. Progress via the
+/// `sync:history-entry:*` events.
 #[tauri::command]
 pub async fn sync_history_entry(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -199,9 +199,9 @@ pub async fn sync_history_entry(
 ) -> Result<(), String> {
     use acerola_p2p::api::peer::{PeerAddr, PeerIdentity};
 
-    // Mesmo padrão de `history_mark_chapters_read_batch`: o frontend trata IDs de capítulo
-    // como string (`ChapterId` em `use-chapter-selection.svelte.ts`), o parse pra `i64` (o
-    // que `HistorySyncService` de fato espera) acontece aqui.
+    // Same pattern as `history_mark_chapters_read_batch`: the frontend treats chapter IDs
+    // as strings (`ChapterId` in `use-chapter-selection.svelte.ts`), the parse to `i64` (what
+    // `HistorySyncService` actually expects) happens here.
     let chapter_ids = chapter_ids
         .into_iter()
         .map(|id| id.parse::<i64>().map_err(|error| error.to_string()))
@@ -214,8 +214,8 @@ pub async fn sync_history_entry(
     Ok(())
 }
 
-/// Dispara uma sessão de sync de arquivos com um peer já pareado. Progresso via os
-/// eventos `sync:files:*`.
+/// Starts a file sync session with an already-paired peer. Progress via the
+/// `sync:files:*` events.
 #[tauri::command]
 pub async fn sync_files(
     service: State<'_, Arc<dyn NetworkServiceApi>>, peer_id: String, addrs: Vec<u8>,
@@ -227,7 +227,7 @@ pub async fn sync_files(
     Ok(())
 }
 
-/// Dispara histórico e arquivos em sequência contra o mesmo peer.
+/// Runs history and files in sequence against the same peer.
 #[tauri::command]
 pub async fn sync_all(
     service: State<'_, Arc<dyn NetworkServiceApi>>, peer_id: String, addrs: Vec<u8>,
@@ -245,12 +245,12 @@ pub async fn sync_all(
     Ok(())
 }
 
-/// Dispara uma sessão de sync individual de UM quadrinho com um peer já pareado — funciona
-/// tanto pra "empurrar" (eu tenho, o peer não) quanto pra "puxar" (o peer tem, eu não), ver o
-/// comentário de design em `infra::sync::protocol::comic_handler`. Registra o `comic_name` no
-/// `PendingComicSyncRegistry` antes de conectar, porque o `Handler` (`ComicSyncOutbound`) é um
-/// singleton do boot e não recebe esse parâmetro por chamada de `connect()`. Progresso via os
-/// eventos `sync:comic:*`.
+/// Starts an individual sync session of ONE comic with an already-paired peer — works both
+/// to "push" (I have it, the peer doesn't) and to "pull" (the peer has it, I don't), see the
+/// design comment in `infra::sync::protocol::comic_handler`. Registers the `comic_name` in
+/// `PendingComicSyncRegistry` before connecting, because the `Handler` (`ComicSyncOutbound`) is a
+/// boot-time singleton and does not receive this parameter per `connect()` call. Progress via
+/// the `sync:comic:*` events.
 #[tauri::command]
 pub async fn sync_comic(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -259,10 +259,10 @@ pub async fn sync_comic(
 ) -> Result<(), String> {
     use acerola_p2p::api::peer::{PeerAddr, PeerIdentity};
 
-    // Mesmo padrão de `sync_history_entry`: o frontend trata IDs de capítulo como string
-    // (`ChapterId` em `use-chapter-selection.svelte.ts`), o parse pra `i64`
-    // (`chapter_archive.id`) acontece aqui. Lista vazia = quadrinho inteiro (botão
-    // "Sincronizar com dispositivo"), não escopada a nenhum capítulo específico.
+    // Same pattern as `sync_history_entry`: the frontend treats chapter IDs as strings
+    // (`ChapterId` in `use-chapter-selection.svelte.ts`), the parse to `i64`
+    // (`chapter_archive.id`) happens here. Empty list = whole comic (the
+    // "Sync with device" button), not scoped to any specific chapter.
     let chapter_ids = chapter_ids
         .into_iter()
         .map(|id| id.parse::<i64>().map_err(|error| error.to_string()))
@@ -275,9 +275,9 @@ pub async fn sync_comic(
     Ok(())
 }
 
-/// Consulta a biblioteca remota de um peer já pareado (só títulos + contagem de capítulos, sem
-/// transferir nada) — pré-requisito pra escolher um quadrinho pra puxar (`sync_comic`). O
-/// resultado chega pro frontend via o evento `library:query:result`.
+/// Queries the remote library of an already-paired peer (titles + chapter count only, no
+/// transfer) — prerequisite for choosing a comic to pull (`sync_comic`). The result reaches
+/// the frontend via the `library:query:result` event.
 #[tauri::command]
 pub async fn query_remote_library(
     service: State<'_, Arc<dyn NetworkServiceApi>>, peer_id: String, addrs: Vec<u8>,
@@ -289,15 +289,15 @@ pub async fn query_remote_library(
     Ok(())
 }
 
-/// Busca a capa (thumbnail) de UM quadrinho remoto — `known_version` é a versão já cacheada
-/// localmente (`None` se nunca buscou essa capa antes). Mesmo padrão fire-and-forget de
-/// `sync_comic`: enfileira `(comic_name, known_version)` em `PendingCoverRequestRegistry` antes
-/// de conectar, porque o `Handler` (`CoverBrowseOutbound`) é um singleton do boot e não recebe
-/// esse parâmetro por chamada de `connect()`. `use-remote-library.svelte.ts::fetchCoversFor`
-/// chama este comando em paralelo (um por quadrinho da lista) pro mesmo peer — por isso o
-/// registry é uma fila por peer (`push`/`take` FIFO), não um slot único que uma chamada
-/// sobrescreveria a da outra (bug reportado/corrigido em 22/08/2026, ver doc do registry).
-/// Resultado via `browse:cover:result`/`browse:cover:error`.
+/// Fetches the cover (thumbnail) of ONE remote comic — `known_version` is the version already
+/// cached locally (`None` if this cover was never fetched). Same fire-and-forget pattern as
+/// `sync_comic`: enqueues `(comic_name, known_version)` in `PendingCoverRequestRegistry` before
+/// connecting, because the `Handler` (`CoverBrowseOutbound`) is a boot-time singleton and does
+/// not receive this parameter per `connect()` call. `use-remote-library.svelte.ts::fetchCoversFor`
+/// calls this command in parallel (one per comic in the list) for the same peer — that is why
+/// the registry is a per-peer queue (`push`/`take` FIFO), not a single slot where one call would
+/// overwrite the other (bug reported/fixed on 2026-08-22, see the registry docs).
+/// Result via `browse:cover:result`/`browse:cover:error`.
 #[tauri::command]
 pub async fn query_remote_cover(
     service: State<'_, Arc<dyn NetworkServiceApi>>,
@@ -313,9 +313,9 @@ pub async fn query_remote_cover(
     Ok(())
 }
 
-/// Últimas sessões de sync (histórico e arquivos) persistidas — sobrevive a restart,
-/// diferente do log ao vivo em memória do frontend (`use-network-sync.svelte.ts`), que só
-/// tem os eventos da sessão atual do app.
+/// Last persisted sync sessions (history and files) — survives restarts, unlike the
+/// frontend's in-memory live log (`use-network-sync.svelte.ts`), which only has the events
+/// of the app's current session.
 #[tauri::command]
 pub async fn get_sync_history_log(
     repo: State<'_, SyncHistoryLogRepository>,
@@ -323,8 +323,8 @@ pub async fn get_sync_history_log(
     repo.find_recent(SYNC_HISTORY_LOG_LIMIT).await.map_err(|error| error.to_string())
 }
 
-/// Apaga todo o histórico de sync persistido — botão "Limpar" na tela de Rede. Irreversível,
-/// a UI já confirma com o usuário antes de chamar.
+/// Deletes the whole persisted sync history — the "Clear" button on the Network screen.
+/// Irreversible, the UI already confirms with the user before calling.
 #[tauri::command]
 pub async fn clear_sync_history_log(
     repo: State<'_, SyncHistoryLogRepository>,
@@ -332,11 +332,11 @@ pub async fn clear_sync_history_log(
     repo.delete_all().await.map_err(|error| error.to_string())
 }
 
-/// Se `true`, a chave mestra que criptografa identidade/peers/confiança caiu pro fallback
-/// em arquivo local por falta de um keyring do SO utilizável — ver
-/// `infra::security::get_or_create_master_key`. Consultado sob demanda (em vez de só
-/// confiar no evento `security:keyring_unavailable`) porque `setup_network` roda numa task
-/// separada que pode terminar antes do frontend montar e começar a ouvir eventos.
+/// If `true`, the master key that encrypts identity/peers/trust fell back to a local file
+/// because no usable OS keyring was available — see
+/// `infra::security::get_or_create_master_key`. Queried on demand (instead of relying only on
+/// the `security:keyring_unavailable` event) because `setup_network` runs in a separate task
+/// that may finish before the frontend mounts and starts listening for events.
 #[tauri::command]
 pub async fn get_security_status(source: State<'_, MasterKeySource>) -> Result<bool, String> {
     Ok(*source == MasterKeySource::FallbackFile)

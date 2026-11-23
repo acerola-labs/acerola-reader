@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/svelte';
+import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
-import { _resetBookmarksState } from '$lib/hooks/store/use-bookmarks.svelte';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
+import { _resetBookmarksState } from '#lib/hooks/store/use-bookmarks.svelte.ts';
 import AcerolaBookmarkManager from './acerola-bookmark-manager.svelte';
 
 const { mockInvoke } = vi.hoisted(() => ({ mockInvoke: vi.fn() }));
@@ -37,12 +37,12 @@ describe('AcerolaBookmarkManager', () => {
 		const user = userEvent.setup();
 		render(AcerolaBookmarkManager);
 
-		// Formulário de criação fica atrás de um card colapsado por padrão.
-		await user.click(screen.getByRole('button', { name: /Add Bookmark|Adicionar Marcador/i }));
-
-		const nameInput = await screen.findByLabelText(/nome|name/i);
+		// The creation form is always visible (no collapsed card in front of it).
+		const nameInput = screen.getByRole('textbox', { name: /nome do marcador|bookmark name/i });
 		await user.type(nameInput, 'Favoritos');
-		await user.click(screen.getByRole('button', { name: /criar|create/i }));
+		// The form submits on its submit button; user-event's click doesn't trigger jsdom's form
+		// submission here, `fireEvent.click` does (same as the connect card tests).
+		await fireEvent.click(screen.getByRole('button', { name: /criar|create/i }));
 
 		await waitFor(() =>
 			expect(mockInvoke).toHaveBeenCalledWith(

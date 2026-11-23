@@ -3,7 +3,7 @@
 	import AcerolaReaderModeToggle from './acerola-reader-mode-toggle.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Reader/AcerolaReaderModeToggle',
+		title: 'Pages/Reader/AcerolaReaderModeToggle',
 		component: AcerolaReaderModeToggle,
 		tags: ['autodocs'],
 		argTypes: {

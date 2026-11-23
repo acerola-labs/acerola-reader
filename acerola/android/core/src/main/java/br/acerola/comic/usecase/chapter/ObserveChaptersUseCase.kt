@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * UseCase genérico para operações simples de capítulos.
- * Mantido para compatibilidade com Reader e outras ViewModels.
+ * Generic UseCase for simple chapter operations.
+ * Kept for compatibility with Reader and other ViewModels.
  */
 open class ObserveChaptersUseCase<T>(
     private val readGateway: ChapterReadGateway<T>,

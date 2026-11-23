@@ -1,8 +1,8 @@
-name = "acerola-storybook-web"
+name = "acerola-reader-storybook-web"
 compatibility_date = "2024-09-23"
 
 routes = [
-	{ pattern = "storybook-web.acerola.app", custom_domain = true }
+	{ pattern = "storybook-web.reader.acerola.app", custom_domain = true }
 ]
 
 [assets]

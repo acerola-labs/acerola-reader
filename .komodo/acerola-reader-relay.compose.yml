@@ -1,0 +1,58 @@
+# Acerola Relay on the hetzner Swarm (Komodo Stack hetzner_acerola-reader-relay, see komodo.toml).
+# The route is acerola-reader-relay.caddy, published by route.sh.
+# APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
+# Caddy (config) reaches the service as hetzner_acerola-reader-relay_relay:80 over the edge
+# network. Port 80 is iroh-relay's default HTTP port (the 3000 standard would need a config file).
+services:
+  relay:
+    image: ${APP_IMAGE:?}
+    command: ["--config-path", "/config.toml"]
+    environment:
+      - IROH_RELAY_HTTP_BEARER_TOKEN=${RELAY_TOKEN:-}
+    ports:
+      # Host mode: QUIC needs the client's real address, which the ingress mesh would hide.
+      - target: 7824
+        published: 7824
+        protocol: udp
+        mode: host
+    volumes:
+      - certs:/certs
+    networks:
+      - edge
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      # stop-first: the host-mode UDP port can't be held by two tasks at once.
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+        monitor: 30s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        acerola.app: acerola-reader-relay
+        acerola.server: hetzner
+
+volumes:
+  certs:
+
+networks:
+  edge:
+    external: true

@@ -1,12 +1,12 @@
-# Gerenciamento de licenças
+# License management
 [licenses]
 version = 2
 confidence-threshold = 0.8 
 allow = [
-  # Licenças Principais do Projeto
+  # Project licenses
   "MPL-2.0",
   
-  # Licenças das Dependências (Iroh, etc)
+  # Dependency licenses (Iroh, etc)
   "Apache-2.0",
   "Apache-2.0 WITH LLVM-exception",
   "MIT",
@@ -20,18 +20,18 @@ allow = [
   "CC0-1.0",
   "CDLA-Permissive-2.0",
   
-  # Licenças permissivas específicas de dependências
+  # Dependency-specific permissive licenses
   "bzip2-1.0.6",
   "NCSA",
 ]
 
 [bans]
 deny = [
-  # Exemplo: proibir bibliotecas de C que dificultam compilação cross-platform
-  {name = "openssl", reason = "Use rustls para segurança nativa em Rust"},
+  # Example: ban C libraries that make cross-platform builds harder
+  {name = "openssl", reason = "Use rustls for native Rust security"},
   {name = "native-tls", reason = "Use rustls"},
 ] 
-multiple-versions = "warn" # Avisa se houver duplicatas de bibliotecas
+multiple-versions = "warn" # Warn on duplicate library versions
 skip = [] 
 wildcards = "allow" 
 
@@ -39,7 +39,7 @@ wildcards = "allow"
 version = 2
 db-urls = ["https://github.com/rustsec/advisory-db"]
 ignore = [
-  # "RUSTSEC-202X-XXXX", # Adicione IDs aqui para ignorar avisos específicos
+  # "RUSTSEC-202X-XXXX", # Add IDs here to ignore specific advisories
 ] 
 unmaintained = "all"
 unsound = "all"

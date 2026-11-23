@@ -28,10 +28,10 @@ class MetadataExportSettingsTest {
             }
         }
 
-        // Verifica se o título e a descrição da configuração aparecem
+        // Checks that the setting's title and description show up
         composeTestRule.onNodeWithText("Gerar ComicInfo.xml", substring = true).assertIsDisplayed()
 
-        // Clica no switch usando matcher de Role
+        // Clicks the switch using a Role matcher
         composeTestRule
             .onNode(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch))
             .performClick()

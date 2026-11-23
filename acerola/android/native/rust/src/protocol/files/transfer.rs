@@ -1,9 +1,9 @@
-//! Abstração de transferência de bytes de um capítulo entre peers, usada pela fase 3 de
-//! `exchange.rs` (`publish_chapter_to_blob`/`receive_chapter_from_blob`). Existe como trait (em
-//! vez de `Arc<BlobContext>` direto) só pra manter os testes de `exchange.rs` rápidos e sem
-//! rede real — `InMemoryChapterTransfer` simula o par publish/fetch com um `HashMap`
-//! compartilhado entre os dois lados do teste, o mesmo espírito do `InMemoryFileSyncProvider`
-//! já usado ali. Em produção, `BlobChapterTransfer` é a única implementação usada.
+//! Abstraction for transferring a chapter's bytes between peers, used by phase 3 of
+//! `exchange.rs` (`publish_chapter_to_blob`/`receive_chapter_from_blob`). Exists as a trait
+//! (instead of a direct `Arc<BlobContext>`) only to keep the `exchange.rs` tests fast and free of
+//! a real network — `InMemoryChapterTransfer` simulates the publish/fetch pair with a `HashMap`
+//! shared between both sides of the test, same spirit as the `InMemoryFileSyncProvider`
+//! already used there. In production, `BlobChapterTransfer` is the only implementation used.
 
 use std::sync::Arc;
 
@@ -15,24 +15,24 @@ use crate::protocol::blob_context::BlobContext;
 
 #[async_trait]
 pub(crate) trait ChapterTransfer: Send + Sync {
-    /// Publica os bytes localmente (`P2pBlobStore::put`) e devolve o hash de blob (hex) —
-    /// vai no `FileHeader.blob_hash` que o outro lado usa pra buscar de volta.
+    /// Publishes the bytes locally (`P2pBlobStore::put`) and returns the blob hash (hex) —
+    /// it goes into `FileHeader.blob_hash`, which the other side uses to fetch it back.
     async fn publish(&self, bytes: Vec<u8>) -> Result<String, P2pError>;
 
-    /// Busca os bytes referenciados por `blob_hash` no `peer` informado (`P2pBlobStore::fetch`
-    /// seguido de `get`) e devolve um leitor — quem chama decide como consumir (chunk a chunk,
-    /// pra progresso incremental via `FileSyncProvider::write_chapter_chunk`).
+    /// Fetches the bytes referenced by `blob_hash` from the given `peer` (`P2pBlobStore::fetch`
+    /// followed by `get`) and returns a reader — the caller decides how to consume it (chunk by
+    /// chunk, for incremental progress via `FileSyncProvider::write_chapter_chunk`).
     async fn fetch_reader(
         &self,
         blob_hash: &str,
         peer: &PeerIdentity,
     ) -> Result<Box<dyn AsyncRead + Send + Unpin>, P2pError>;
 
-    /// RTT medido com `peer` agora, usado só pra dimensionar quantos capítulos buscar em
-    /// paralelo em `exchange.rs::receive_files` (ver doc lá) — `None` quando não há como medir
-    /// (sem conexão viva, ou implementação de teste que não simula rede de verdade) cai no
-    /// paralelismo mínimo, nunca em erro. Espelha `ChapterTransfer::latency` do Desktop
-    /// (`infra/sync/protocol/transfer.rs`) — mesmo contrato, plataformas diferentes.
+    /// RTT measured with `peer` now, used only to size how many chapters to fetch in
+    /// parallel in `exchange.rs::receive_files` (see docs there) — `None` when it cannot be measured
+    /// (no live connection, or a test implementation that does not simulate a real network) falls
+    /// back to minimum parallelism, never to an error. Mirrors Desktop's `ChapterTransfer::latency`
+    /// (`infra/sync/protocol/transfer.rs`) — same contract, different platforms.
     async fn latency(&self, peer: &PeerIdentity) -> Option<std::time::Duration>;
 }
 
@@ -50,12 +50,12 @@ impl BlobChapterTransfer {
 impl ChapterTransfer for BlobChapterTransfer {
     async fn publish(&self, bytes: Vec<u8>) -> Result<String, P2pError> {
         let store = self.context.blob_store().await?;
-        // `P2pBlobStore::put` já retorna `ConnectionError` (= `P2pError`, mesmo tipo — ver
-        // `acerola_p2p::api::error`), já classificado corretamente na origem
-        // (`classify_connection_error`/`classify_get_error` em `lib/p2p`). Propaga direto em vez
-        // de achatar em `StreamFailed(err.to_string())` — isso jogava fora a classificação e
-        // obrigava `classify_sync_error` (`mod.rs`) a adivinhar a causa via substring matching
-        // no texto, frágil e sem garantia de cobrir os casos reais.
+        // `P2pBlobStore::put` already returns `ConnectionError` (= `P2pError`, same type — see
+        // `acerola_p2p::api::error`), already correctly classified at the source
+        // (`classify_connection_error`/`classify_get_error` in `lib/p2p`). Propagate it directly
+        // instead of flattening into `StreamFailed(err.to_string())` — that threw away the
+        // classification and forced `classify_sync_error` (`mod.rs`) to guess the cause via
+        // substring matching on the text, fragile and with no guarantee of covering real cases.
         let hash = store.put(bytes).await?;
         Ok(hash.to_string())
     }
@@ -66,14 +66,14 @@ impl ChapterTransfer for BlobChapterTransfer {
         peer: &PeerIdentity,
     ) -> Result<Box<dyn AsyncRead + Send + Unpin>, P2pError> {
         let store = self.context.blob_store().await?;
-        // Formato do hash é local/estático (não vem da rede) — sem paralelo em `ConnectionError`
-        // além do genérico `StreamFailed`, mantém `.map_err` só aqui.
+        // The hash format is local/static (does not come from the network) — no counterpart in
+        // `ConnectionError` beyond the generic `StreamFailed`, so `.map_err` is kept only here.
         let hash = blob_hash
             .parse()
             .map_err(|_| P2pError::StreamFailed(format!("invalid blob hash: {blob_hash}")))?;
         let addr = self.context.resolve_addr(peer).await?;
 
-        // Ver comentário em `publish` — propaga o `ConnectionError` estruturado direto.
+        // See the comment in `publish` — propagates the structured `ConnectionError` directly.
         store.fetch(&hash, &addr).await?;
         store.get(&hash).await
     }
@@ -86,17 +86,17 @@ impl ChapterTransfer for BlobChapterTransfer {
 #[cfg(test)]
 pub(crate) struct InMemoryChapterTransfer {
     blobs: std::sync::Mutex<std::collections::HashMap<String, Vec<u8>>>,
-    /// `None` por padrão (mesmo sentido de "sem conexão real pra medir" da doc do trait) —
-    /// testes que exercitam o dimensionamento de paralelismo por latência usam `set_latency`
-    /// pra simular um RTT específico sem precisar de rede de verdade.
+    /// `None` by default (same meaning as "no real connection to measure" in the trait docs) —
+    /// tests exercising latency-based parallelism sizing use `set_latency`
+    /// to simulate a specific RTT without needing a real network.
     latency: std::sync::Mutex<Option<std::time::Duration>>,
 }
 
 #[cfg(test)]
 impl InMemoryChapterTransfer {
-    /// Cria um par de handles que compartilham o mesmo `HashMap` interno — simula dois lados
-    /// distintos publicando/buscando no MESMO "store de rede" (o hash de um lado já está
-    /// disponível pro outro, exatamente como conteúdo content-addressed real seria).
+    /// Creates a pair of handles sharing the same internal `HashMap` — simulates two distinct
+    /// sides publishing/fetching from the SAME "network store" (one side's hash is already
+    /// available to the other, exactly as real content-addressed content would be).
     pub(crate) fn shared_pair() -> (Arc<dyn ChapterTransfer>, Arc<dyn ChapterTransfer>) {
         let shared = Arc::new(InMemoryChapterTransfer {
             blobs: std::sync::Mutex::new(std::collections::HashMap::new()),
@@ -137,10 +137,10 @@ impl ChapterTransfer for InMemoryChapterTransfer {
                 P2pError::StreamFailed(format!("unknown blob hash in test transfer: {blob_hash}"))
             })?;
 
-        // `tokio::io::duplex` já implementa `AsyncRead`/`AsyncWrite` — mais simples que
-        // implementar um `poll_read` manual só pra teste. Escreve tudo e fecha (EOF) antes de
-        // devolver a ponta de leitura; o buffer é dimensionado pro tamanho exato do payload
-        // pra não bloquear a escrita.
+        // `tokio::io::duplex` already implements `AsyncRead`/`AsyncWrite` — simpler than
+        // implementing a manual `poll_read` just for tests. Writes everything and closes (EOF) before
+        // returning the read end; the buffer is sized to the payload's exact size
+        // so the write does not block.
         use tokio::io::AsyncWriteExt;
         let (mut writer, reader) = tokio::io::duplex(bytes.len().max(1));
         tokio::spawn(async move {

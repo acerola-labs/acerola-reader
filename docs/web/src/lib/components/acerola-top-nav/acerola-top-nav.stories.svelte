@@ -10,13 +10,13 @@
 			docs: {
 				description: {
 					component:
-						'Cabecalho fixo do topo com o menu mobile, logo, navegacao de docs, gatilho de busca e os controles de idioma/tema. `onOpenSearch`/`onOpenMobileNav` sao callbacks acionados pelos respectivos botoes.'
+						'Fixed top header with the mobile menu, logo, docs navigation, search trigger and the language/theme controls. `onOpenSearch`/`onOpenMobileNav` are callbacks fired by their respective buttons.'
 				}
 			}
 		},
 		argTypes: {
-			onOpenSearch: { description: 'Chamado ao clicar em qualquer gatilho de busca.' },
-			onOpenMobileNav: { description: 'Chamado ao clicar no botao de menu (mobile).' }
+			onOpenSearch: { description: 'Called when any search trigger is clicked.' },
+			onOpenMobileNav: { description: 'Called when the (mobile) menu button is clicked.' }
 		}
 	});
 </script>
@@ -25,6 +25,6 @@
 	name="Default"
 	args={{ onOpenSearch: () => {}, onOpenMobileNav: () => {} }}
 	parameters={{
-		docs: { description: { story: 'Cabecalho completo como aparece em qualquer pagina de docs.' } }
+		docs: { description: { story: 'Full header as it appears on any docs page.' } }
 	}}
 />

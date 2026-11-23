@@ -1,23 +1,23 @@
 package br.acerola.comic.error.exception
 
 /**
- * Exceções técnicas que indicam BUGS ou estados impossíveis.
- * Não devem ser capturadas para lógica de negócio.
- * São destinadas apenas a logging/Crashlytics.
+ * Technical exceptions that indicate BUGS or impossible states.
+ * They must not be caught for business logic.
+ * They are meant only for logging/Crashlytics.
  *
- * @param message Mensagem detalhada sobre a causa da exceção.
- * @param cause Causa raiz da exceção, se houver.
+ * @param message Detailed message about the cause of the exception.
+ * @param cause Root cause of the exception, if any.
  */
 sealed class TechnicalException(
     message: String,
     cause: Throwable? = null,
 ) : RuntimeException(message, cause) {
     /**
-     * Indica um estado inválido que nunca deveria ocorrer em um código correto.
-     * Ex: Um serviço não inicializado antes de ser usado, uma configuração interna inválida.
+     * Indicates an invalid state that should never happen in correct code.
+     * E.g.: a service not initialized before use, an invalid internal configuration.
      *
-     * @param message Mensagem detalhada sobre o estado inválido.
-     * @param cause Causa raiz da exceção.
+     * @param message Detailed message about the invalid state.
+     * @param cause Root cause of the exception.
      */
     class InvalidStateException(
         message: String,
@@ -25,11 +25,11 @@ sealed class TechnicalException(
     ) : TechnicalException(message, cause)
 
     /**
-     * Indica uma violação de contrato, geralmente relacionada a argumentos inválidos passados a um método.
-     * Ex: Um ID negativo onde apenas IDs positivos são esperados, uma string vazia onde conteúdo é mandatório.
+     * Indicates a contract violation, usually related to invalid arguments passed to a method.
+     * E.g.: a negative ID where only positive IDs are expected, an empty string where content is mandatory.
      *
-     * @param message Mensagem detalhada sobre a violação do contrato.
-     * @param cause Causa raiz da exceção.
+     * @param message Detailed message about the contract violation.
+     * @param cause Root cause of the exception.
      */
     class ContractViolationException(
         message: String,
@@ -37,11 +37,11 @@ sealed class TechnicalException(
     ) : TechnicalException(message, cause)
 
     /**
-     * Sinaliza que uma operação não é suportada ou não é permitida no contexto atual.
-     * Ex: Tentar realizar uma operação de escrita em um objeto que é somente leitura.
+     * Signals that an operation is not supported or not allowed in the current context.
+     * E.g.: trying to perform a write operation on a read-only object.
      *
-     * @param message Mensagem detalhada sobre a operação não suportada.
-     * @param cause Causa raiz da exceção.
+     * @param message Detailed message about the unsupported operation.
+     * @param cause Root cause of the exception.
      */
     class UnsupportedOperationException(
         message: String,
@@ -50,10 +50,10 @@ sealed class TechnicalException(
 }
 
 /**
- * Ajuda a garantir pré-condições, lançando [ContractViolationException] se a condição for falsa.
+ * Helps enforce preconditions, throwing [ContractViolationException] if the condition is false.
  *
- * @param value Condição booleana que deve ser verdadeira.
- * @param lazyMessage Função que retorna a mensagem de erro se a condição for falsa.
+ * @param value Boolean condition that must be true.
+ * @param lazyMessage Function that returns the error message if the condition is false.
  */
 inline fun require(
     value: Boolean,
@@ -65,11 +65,11 @@ inline fun require(
 }
 
 /**
- * Ajuda a garantir que um valor não seja nulo, lançando [InvalidStateException] se for nulo.
+ * Helps ensure a value is not null, throwing [InvalidStateException] if it is null.
  *
- * @param value O valor a ser verificado.
- * @param lazyMessage Função que retorna a mensagem de erro se o valor for nulo.
- * @return O valor não nulo.
+ * @param value The value to check.
+ * @param lazyMessage Function that returns the error message if the value is null.
+ * @return The non-null value.
  */
 inline fun <T : Any> requireNotNull(
     value: T?,

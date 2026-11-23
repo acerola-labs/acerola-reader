@@ -24,7 +24,7 @@ class PaginationPreferenceTest {
         }
 
         composeTestRule.onNodeWithText("Capítulos pré-carregados", substring = true).assertIsDisplayed()
-        // "25" aparece duas vezes: na descrição do HeroItem (selecionado) e no RadioGroup
+        // "25" shows up twice: in the HeroItem description (selected) and in the RadioGroup
         composeTestRule.onAllNodesWithText("25", ignoreCase = true)[0].assertIsDisplayed()
         composeTestRule.onNodeWithText("50", ignoreCase = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("100", ignoreCase = true).assertIsDisplayed()

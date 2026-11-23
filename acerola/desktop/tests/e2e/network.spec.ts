@@ -14,11 +14,11 @@ import {
 	mockedTauriResponse
 } from '../../svelte/tests/mocks/tauri-playwright';
 
-// Substitui a antiga history-network.spec.ts: aquele teste esperava uma troca manual de
-// modo local/relay em `/history` (texto "Modo: local" + botão "Relay") que não existe mais
-// no app — `switch_to_local`/`switch_to_relay` não são chamados por nenhum componente hoje.
-// O status de rede (somente leitura) e a lista de peers pareados vivem em `/network`, que
-// não tinha nenhuma cobertura e2e até então.
+// Replaces the old history-network.spec.ts: that test expected a manual local/relay mode
+// switch in `/history` ("Modo: local" text + "Relay" button) that no longer exists in the
+// app — `switch_to_local`/`switch_to_relay` are not called by any component today.
+// The (read-only) network status and the paired peer list live in `/network`, which had
+// no e2e coverage until now.
 test.describe('network page', () => {
 	let consoleErrors: string[];
 
@@ -33,9 +33,9 @@ test.describe('network page', () => {
 			[NETWORK_COMMANDS.getRelayInfo]: e2eRelayInfo,
 			[NETWORK_COMMANDS.getPairedPeers]: [e2ePairedPeer],
 			[NETWORK_COMMANDS.getNetworkStatus]: mockedTauriResponse({
-				// `refreshStatus()` ignora o valor de retorno do invoke — o status só chega pelo
-				// evento `network:status`, exatamente como o backend real se comporta (ver o
-				// comentário em `network.events.ts` sobre esse evento nunca ser espontâneo).
+				// `refreshStatus()` ignores the invoke return value — the status only arrives via
+				// the `network:status` event, exactly like the real backend behaves (see the
+				// comment in `network.events.ts` about this event never being spontaneous).
 				events: [{ event: NETWORK_EVENTS.status, payload: { mode: 'local', peers: [] } }]
 			})
 		});

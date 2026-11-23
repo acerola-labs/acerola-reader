@@ -2,43 +2,43 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { error } from '@tauri-apps/plugin-log';
 import { SvelteSet } from 'svelte/reactivity';
-import { NETWORK_COMMANDS } from '$lib/contracts/network/network.commands';
-import { NETWORK_EVENTS } from '$lib/contracts/network/network.events';
-import { translateSyncMessage } from '$lib/contracts/errors/sync-error.i18n';
-import { m } from '$lib/paraglide/messages';
+import { NETWORK_COMMANDS } from '#lib/contracts/network/network.commands.ts';
+import { NETWORK_EVENTS } from '#lib/contracts/network/network.events.ts';
+import { translateSyncMessage } from '#lib/contracts/errors/sync-error.i18n.ts';
+import { m } from '#lib/paraglide/messages.js';
 
 export type TransferLogEntry = {
 	id: number;
-	/** Vazio quando a origem não é resolvível (ex.: `files:progress`, que não carrega peer id). */
+	/** Empty when the source can't be resolved (e.g. `files:progress`, which carries no peer id). */
 	peerId: string;
 	kind: 'history' | 'files' | 'comic' | 'historyEntry';
 	status: 'started' | 'progress' | 'complete' | 'error';
 	message: string;
 	timestamp: number;
-	/** Só presente em `kind: 'comic'` — o quadrinho escopado desta sessão (ver
-	 *  `comic_handler.rs::COMPLETE_EVENT`/`ERROR_EVENT`, payload `{peerId, comicName}` desde a
-	 *  extensão de cover/banner/ComicInfo.xml). Usado pela página do quadrinho pra saber se uma
-	 *  sessão concluída afeta o quadrinho atualmente aberto, sem precisar assumir que qualquer
-	 *  sync individual é sobre ele. */
+	/** Only present on `kind: 'comic'` — the comic this session is scoped to (see
+	 *  `comic_handler.rs::COMPLETE_EVENT`/`ERROR_EVENT`, payload `{peerId, comicName}` since the
+	 *  cover/banner/ComicInfo.xml extension). Used by the comic page to know whether a finished
+	 *  session affects the currently open comic, without assuming every individual sync is
+	 *  about it. */
 	comicName?: string;
-	/** Só presente em entradas `status: 'complete'` de `kind: 'files'`/`'comic'` — quantos
-	 *  capítulos já existiam localmente com um checksum diferente do peer (conflito de
-	 *  verdade, ver `FileSyncService::diff_wanted`). `0`/`undefined` quando não houve nenhum.
-	 *  Não dispara toast nem notificação separada — só aparece nesta linha do log de
-	 *  transferências, pra não gerar uma notificação por capítulo em conflito. */
+	/** Only present on `status: 'complete'` entries of `kind: 'files'`/`'comic'` — how many
+	 *  chapters already existed locally with a checksum different from the peer's (a real
+	 *  conflict, see `FileSyncService::diff_wanted`). `0`/`undefined` when there was none.
+	 *  Fires no toast or separate notification — it only shows on this transfer log line, so
+	 *  as not to raise one notification per conflicting chapter. */
 	conflicts?: number;
 };
 
 type SyncKind = TransferLogEntry['kind'];
 
-/// Direção explícita de um `syncComic` — espelha `SyncDirection` no backend
-/// (`infra/sync/messages.rs`), serializada em `snake_case` (`"push"`/`"pull"`) no payload do
-/// comando Tauri `sync_comic`.
+/// Explicit direction of a `syncComic` — mirrors `SyncDirection` in the backend
+/// (`infra/sync/messages.rs`), serialized as `snake_case` (`"push"`/`"pull"`) in the
+/// `sync_comic` Tauri command payload.
 export type SyncDirection = 'push' | 'pull';
 
-/// Espelha `SyncHistoryLogEntry` (`data/models/sync/sync_history_log.rs`, serializado
-/// `camelCase`) — uma linha do histórico persistido no SQLite, carregada uma vez ao montar
-/// a tela e combinada com os eventos ao vivo da sessão atual.
+/// Mirrors `SyncHistoryLogEntry` (`data/models/sync/sync_history_log.rs`, serialized
+/// `camelCase`) — one line of the history persisted in SQLite, loaded once when the screen
+/// mounts and combined with the live events of the current session.
 type PersistedSyncLogEntry = {
 	id: number;
 	peerId: string;
@@ -49,23 +49,23 @@ type PersistedSyncLogEntry = {
 };
 
 const MAX_LOG_ENTRIES = 200;
-// Rede real pode nunca devolver o evento de conclusão/erro (peer sumiu no meio da
-// sessão) — sem isso os botões daquele peer ficariam desabilitados pra sempre.
-// Janela de inatividade de 2 minutos, renovada a cada evento de progresso recebido
-// da rede pra transferências volumosas não estourarem falso positivo no meio.
+// A real network may never return the completion/error event (peer vanished mid
+// session) — without this that peer's buttons would stay disabled forever.
+// 2-minute inactivity window, renewed on every progress event received from the
+// network so large transfers don't hit a false positive midway.
 const IN_FLIGHT_TIMEOUT_MS = 120_000;
 
 function syncKey(peerId: string, kind: SyncKind): string {
 	return `${peerId}:${kind}`;
 }
 
-/// Converte uma linha persistida pro mesmo formato que os eventos ao vivo produzem — pra
-/// `describeEntry()` (na página) não precisar saber a diferença. Igual ao `push()` abaixo,
-/// `message` carrega o peer id pra status `started`/`complete`/`progress` (usado por
-/// `peers.peerLabel(...)`) e o texto de erro de verdade só pra `error`.
+/// Converts a persisted line into the same shape the live events produce — so
+/// `describeEntry()` (on the page) doesn't need to know the difference. Like `push()` below,
+/// `message` carries the peer id for `started`/`complete`/`progress` status (used by
+/// `peers.peerLabel(...)`) and the real error text only for `error`.
 function fromPersisted(row: PersistedSyncLogEntry): TransferLogEntry {
 	return {
-		// Negativo pra nunca colidir com os ids ao vivo (`nextId` começa em 0 e só cresce).
+		// Negative so it never collides with live ids (`nextId` starts at 0 and only grows).
 		id: -row.id,
 		peerId: row.peerId,
 		kind: row.kind as SyncKind,
@@ -75,33 +75,33 @@ function fromPersisted(row: PersistedSyncLogEntry): TransferLogEntry {
 	};
 }
 
-/// Dispara sessões de sync (histórico/arquivos) contra um peer já pareado e mantém um
-/// log reativo do progresso, alimentado pelos eventos `sync:history:*`/`sync:files:*` que
-/// os protocol handlers do Rust emitem direto (ver `infra::sync::protocol` no backend), mais
-/// o histórico persistido carregado uma vez em `startListening()` (sobrevive a restart —
-/// ver `get_sync_history_log`/`sync_history_log` no backend).
+/// Fires sync sessions (history/files) against an already paired peer and keeps a reactive
+/// progress log, fed by the `sync:history:*`/`sync:files:*` events that the Rust protocol
+/// handlers emit directly (see `infra::sync::protocol` in the backend), plus the persisted
+/// history loaded once in `startListening()` (survives restarts — see
+/// `get_sync_history_log`/`sync_history_log` in the backend).
 export function useNetworkSync() {
 	let log = $state<TransferLogEntry[]>([]);
 	let nextId = 0;
 	const unlisten: UnlistenFn[] = [];
 
-	// `loadPersistedLog` pode seguir rodando depois que `stopListening` já rodou (unmount no
-	// meio do await) — sem essa flag, a continuação tenta gravar em $state de uma instância já
-	// descartada (`useNetworkSync()` é sempre uma instância nova por mount).
+	// `loadPersistedLog` may keep running after `stopListening` already ran (unmount in the
+	// middle of the await) — without this flag, the continuation tries to write to the $state
+	// of an already discarded instance (`useNetworkSync()` is always a new instance per mount).
 	let disposed = false;
 
-	// Chaves `peerId:kind` com uma sessão de sync em andamento — usado só pra desabilitar
-	// os botões daquele peer/protocolo e evitar disparar uma segunda sessão concorrente
-	// pro mesmo par (peer, ALPN) (ver histórico de erro "stream closed before history
-	// manifest" causado por duas sessões simultâneas competindo pelo mesmo stream).
-	// Granularidade por `kind`, não só por peer: "Sync All" dispara histórico E arquivos
-	// pro mesmo peer, e os dois precisam poder rodar ao mesmo tempo sem se bloquear.
+	// `peerId:kind` keys with a sync session in progress — used only to disable that
+	// peer/protocol's buttons and avoid firing a second concurrent session for the same
+	// (peer, ALPN) pair (see the "stream closed before history manifest" error history,
+	// caused by two simultaneous sessions competing for the same stream).
+	// Per-`kind` granularity, not just per peer: "Sync All" fires history AND files for the
+	// same peer, and both must be able to run at once without blocking each other.
 	const syncingKeys = new SvelteSet<string>();
 	const inFlightTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-	// Resolvers de quem está esperando a conclusão *de verdade* de uma sessão (ver
-	// `syncComic`) — só é populado por chamadas que pedem essa espera, então settlePending
-	// é um no-op seguro pra `history`/`files`/`all`, que ninguém aguarda hoje.
+	// Resolvers for whoever is waiting for a session's *real* completion (see `syncComic`) —
+	// only populated by calls that ask for that wait, so settlePending is a safe no-op for
+	// `history`/`files`/`all`, which nobody awaits today.
 	const pendingSettlement = new Map<
 		string,
 		{ resolve: (message: string) => void; reject: (message: string) => void }
@@ -122,24 +122,24 @@ export function useNetworkSync() {
 			key,
 			setTimeout(() => {
 				clearSyncing(peerId, kind);
-				const message = m['tauri_errors.sync.timed_out.label']();
-				// `clearSyncing` só limpa `syncingKeys` (o que desbloqueia os botões) — sem
-				// transicionar a linha correspondente do log pra um status terminal, ela ficava
-				// presa em "started"/"progress" (spinner girando) pra sempre na tela de Rede
-				// mesmo com `isSyncing` já `false`, e `inFlightEntryId` nunca liberava a chave
-				// (só `updateInFlightEntry` faz isso, ao processar um status terminal).
+				const message = m['tauriErrors.sync.timedOut.label']();
+				// `clearSyncing` only clears `syncingKeys` (which unlocks the buttons) — without
+				// moving the matching log line to a terminal status, it stayed stuck on
+				// "started"/"progress" (spinning) forever on the Network screen even with
+				// `isSyncing` already `false`, and `inFlightEntryId` never released the key
+				// (only `updateInFlightEntry` does that, when processing a terminal status).
 				push(peerId, kind, 'error', message);
-				// Peer sumiu no meio da sessão sem emitir `complete`/`error` — sem isso, um
-				// `syncComic` aguardando a conclusão real ficaria pendurado pra sempre.
+				// Peer vanished mid session without emitting `complete`/`error` — without this, a
+				// `syncComic` awaiting the real completion would hang forever.
 				settlePending(key, false, message);
 			}, IN_FLIGHT_TIMEOUT_MS)
 		);
 	}
 
-	/// Reseta a contagem regressiva de timeout de inatividade pra sessões ativas daquele `kind`.
-	/// Chamado a cada evento de progresso recebido pela rede (capítulo/arquivo ou itemLevel error)
-	/// pra garantir que transferências longas com muitos capítulos nunca estourem timeout enquanto
-	/// houver tráfego real fluindo.
+	/// Resets the inactivity timeout countdown for active sessions of that `kind`.
+	/// Called on every progress event received from the network (chapter/file or itemLevel error)
+	/// to ensure long transfers with many chapters never time out while real traffic is
+	/// flowing.
 	function refreshInFlightTimeouts(kind: SyncKind) {
 		for (const key of syncingKeys) {
 			const [peerId, syncKind] = key.split(':') as [string, SyncKind];
@@ -166,39 +166,40 @@ export function useNetworkSync() {
 		return syncingKeys.has(syncKey(peerId, kind));
 	}
 
-	/// Extrai o `peerId` do payload de um evento `sync:*:error` — esses eventos carregam
-	/// `{"peerId": ..., "message": ..., "comicName"?: ...}` (ver
-	/// `history_handler.rs`/`file_handler.rs`/`comic_handler.rs`), ao contrário de `started`,
-	/// que carrega o `peerId` puro como string.
+	/// Extracts the `peerId` from a `sync:*:error` event payload — these events carry
+	/// `{"peerId": ..., "message": ..., "comicName"?: ...}` (see
+	/// `history_handler.rs`/`file_handler.rs`/`comic_handler.rs`), unlike `started`, which
+	/// carries the bare `peerId` as a string.
 	function parseErrorPayload(payload: string): {
 		peerId?: string;
 		message: string;
 		comicName?: string;
 		code?: string;
-		/** `true` pros 5 pontos de falha POR ITEM em `receive_files`/`receive_extras` (blob
-		 *  ausente, fetch falhou, checksum não bate, pasta indisponível, persistência falhou) —
-		 *  ver `item_error_payload` no backend. Esses eventos NUNCA devem tocar/terminar a linha
-		 *  de status da sessão em andamento (`started`/`progress`), só aparecer como sua própria
-		 *  entrada permanente no log — sem essa distinção, um único checksum mismatch no meio de
-		 *  uma sincronização de 20 capítulos marcava a sessão inteira como "erro" na tela, mesmo
-		 *  ela continuando (e completando) normalmente logo em seguida. */
+		/** `true` for the 5 PER-ITEM failure points in `receive_files`/`receive_extras` (missing
+		 *  blob, fetch failed, checksum mismatch, folder unavailable, persistence failed) — see
+		 *  `item_error_payload` in the backend. These events must NEVER touch/finish the running
+		 *  session's status line (`started`/`progress`), only show up as their own permanent log
+		 *  entry — without this distinction, a single checksum mismatch in the middle of a
+		 *  20-chapter sync marked the whole session as "error" on screen, even though it kept
+		 *  going (and completed) normally right after. */
 		itemLevel?: boolean;
-		/** Só presente quando `itemLevel` é `true` — o capítulo ou o `kind` de extra
-		 *  (`cover`/`banner`/`comic_info`) que falhou, ver `item_error_payload`. */
+		/** Only present when `itemLevel` is `true` — the chapter or extra `kind`
+		 *  (`cover`/`banner`/`comic_info`) that failed, see `item_error_payload`. */
 		item?: string;
 	} {
 		try {
 			const parsed = JSON.parse(payload);
 			// Stryker disable next-line ConditionalExpression,LogicalOperator: `typeof
-			// parsed.message === 'string'` só é verdadeiro quando `parsed` já É um objeto de
-			// fato — nenhum primitivo vindo de `JSON.parse` (number, string, boolean) expõe uma
-			// propriedade `.message` do tipo string, então remover o check `typeof parsed ===
-			// 'object'` nunca muda o resultado pra esses casos. Trocar o `&&` antes dele por `||`
-			// também é equivalente: o único valor onde isso importaria é `parsed = null` (typeof
-			// null === 'object', mas falsy) — aí o mutante avalia `null.message`, que lança
-			// TypeError, capturado pelo catch logo abaixo, caindo no MESMO `return { message:
-			// payload }` do fallback normal. A saída observável é idêntica, só o caminho muda.
-			// Verificado empiricamente: aplicando cada mutante isoladamente, nenhum teste falha.
+			// parsed.message === 'string'` is only true when `parsed` already IS an actual object
+			// — no primitive from `JSON.parse` (number, string, boolean) exposes a string
+			// `.message` property, so removing the `typeof parsed === 'object'` check never
+			// changes the result for these cases. Swapping the `&&` before it for `||` is also
+			// equivalent: the only value where it would matter is `parsed = null` (typeof
+			// null === 'object', but falsy) — then the mutant evaluates `null.message`, which
+			// throws a TypeError, caught by the catch right below, landing on the SAME
+			// `return { message: payload }` as the normal fallback. The observable output is
+			// identical, only the path changes. Verified empirically: applying each mutant in
+			// isolation, no test fails.
 			if (parsed && typeof parsed === 'object' && typeof parsed.message === 'string') {
 				return {
 					peerId: parsed.peerId,
@@ -210,14 +211,14 @@ export function useNetworkSync() {
 				};
 			}
 		} catch {
-			// payload antigo/inesperado sem JSON — trata como mensagem crua.
+			// old/unexpected payload without JSON — treat it as a raw message.
 		}
 		return { message: payload };
 	}
 
-	/// Formata uma entrada de log pra um erro de item (`comicName`/`item` presentes) — sem os
-	/// dois (evento antigo/desconhecido sem esses campos), cai de volta na mensagem traduzida
-	/// crua.
+	/// Formats a log entry for an item error (`comicName`/`item` present) — without both
+	/// (old/unknown event lacking these fields), falls back to the raw translated
+	/// message.
 	function formatItemError(
 		comicName: string | undefined,
 		item: string | undefined,
@@ -227,11 +228,11 @@ export function useNetworkSync() {
 		return label ? `${label}: ${message}` : message;
 	}
 
-	/// Extrai `{peerId, comicName?, conflicts?}` do payload de `sync:comic:complete`/
-	/// `sync:files:complete` (ver `comic_handler.rs`/`file_handler.rs::COMPLETE_EVENT`) —
-	/// `comicName` só vem no de `comic`. `sync:history:complete`/`sync:historyEntry:complete`
-	/// continuam carregando só o `peerId` puro como string (nunca tiveram conceito de
-	/// conflito de arquivo), então o fallback cobre esses dois sem quebrar.
+	/// Extracts `{peerId, comicName?, conflicts?}` from the `sync:comic:complete`/
+	/// `sync:files:complete` payload (see `comic_handler.rs`/`file_handler.rs::COMPLETE_EVENT`) —
+	/// `comicName` only comes in the `comic` one. `sync:history:complete`/
+	/// `sync:historyEntry:complete` still carry only the bare `peerId` as a string (they never
+	/// had a file-conflict concept), so the fallback covers both without breaking.
 	function parseCompletePayload(payload: string): {
 		peerId: string;
 		comicName?: string;
@@ -247,19 +248,18 @@ export function useNetworkSync() {
 				};
 			}
 		} catch {
-			// `sync:history:complete`/`sync:historyEntry:complete`: payload é o peerId cru, não JSON.
+			// `sync:history:complete`/`sync:historyEntry:complete`: payload is the raw peerId, not JSON.
 		}
 		return { peerId: payload };
 	}
 
-	/// Uma sessão de sync tem UMA linha no log, que transiciona de estado (started -> progress
-	/// -> complete/error) em vez de empilhar uma linha nova por evento — sem isso, "started"
-	/// fica pra sempre como uma linha separada com spinner girando ao lado da linha "complete"
-	/// que já resolveu a mesma sessão. Chave `peerId:kind` (mesma granularidade de
-	/// `syncingKeys`). `files:progress` não carrega peer id no payload (ver o comentário do
-	/// tipo `TransferLogEntry`), então não dá pra correlacionar com a linha `started` de um
-	/// peer específico — continua criando linha própria, é limitação do protocolo, não bug
-	/// desta função.
+	/// A sync session has ONE log line, which transitions state (started -> progress ->
+	/// complete/error) instead of stacking a new line per event — without this, "started"
+	/// stays forever as a separate spinning line next to the "complete" line that already
+	/// resolved the same session. Key `peerId:kind` (same granularity as `syncingKeys`).
+	/// `files:progress` carries no peer id in its payload (see the `TransferLogEntry` type
+	/// comment), so it can't be correlated with a specific peer's `started` line — it keeps
+	/// creating its own line; that is a protocol limitation, not a bug in this function.
 	const inFlightEntryId = new Map<string, number>();
 
 	function isTerminalStatus(status: TransferLogEntry['status']): boolean {
@@ -267,14 +267,15 @@ export function useNetworkSync() {
 	}
 
 	function isOpenStatus(status: TransferLogEntry['status']): boolean {
-		// Stryker disable next-line ConditionalExpression,StringLiteral: o resultado desta
-		// função só é lido em `appendNewEntry`, sempre atrás de `peerId && isOpenStatus(status)`.
-		// Toda chamada de `push(...)` com `status: 'progress'` neste arquivo (filesProgress,
-		// comicProgress) passa `peerId: ''` de propósito — o protocolo não correlaciona eventos
-		// `*:progress` com um peer (ver o comentário de `inFlightEntryId` acima). Ou seja, sempre
-		// que `status === 'progress'` chega aqui, `peerId` já é falsy e curto-circuita
-		// `appendNewEntry` antes de isOpenStatus importar — forçar o branch 'progress' pra
-		// sempre-false ou trocar a string nunca muda nada observável. Verificado empiricamente.
+		// Stryker disable next-line ConditionalExpression,StringLiteral: this function's result
+		// is only read in `appendNewEntry`, always behind `peerId && isOpenStatus(status)`.
+		// Every `push(...)` call with `status: 'progress'` in this file (filesProgress,
+		// comicProgress) passes `peerId: ''` on purpose — the protocol doesn't correlate
+		// `*:progress` events with a peer (see the `inFlightEntryId` comment above). So whenever
+		// `status === 'progress'` gets here, `peerId` is already falsy and short-circuits
+		// `appendNewEntry` before isOpenStatus matters — forcing the 'progress' branch to
+		// always-false or changing the string never changes anything observable. Verified
+		// empirically.
 		return status === 'started' || status === 'progress';
 	}
 
@@ -296,10 +297,10 @@ export function useNetworkSync() {
 		};
 		if (isTerminalStatus(status)) {
 			inFlightEntryId.delete(key);
-			// Mover a entrada concluída/com erro pro topo do log garante que `sync.log[0]`
-			// (usado por Home, Histórico e Detalhe) veja o desfecho final mesmo se eventos
-			// de progresso tiverem sido adicionados antes, e mantém a lista de transferências
-			// ordenada com a finalização mais recente no topo.
+			// Moving the completed/errored entry to the top of the log ensures `sync.log[0]`
+			// (used by Home, History and Detail) sees the final outcome even if progress
+			// events were added before, and keeps the transfer list ordered with the most
+			// recent completion at the top.
 			log = [updated, ...log.filter((_, i) => i !== index)];
 		} else {
 			log[index] = updated;
@@ -325,18 +326,20 @@ export function useNetworkSync() {
 			comicName,
 			conflicts
 		};
-		// `files:progress`/`comic:progress` não carregam peer id (comentário de
-		// `inFlightEntryId` acima) — cada evento vira uma linha NOVA aqui, nunca some via
-		// `updateInFlightEntry`. Numa sincronização com muitos capítulos, isso enchia o cap de
-		// `MAX_LOG_ENTRIES` só de progresso e empurrava a linha "started" (a única com o
-		// `peerId` real, rastreada em `inFlightEntryId`) pra fora do array ANTES do evento
-		// `complete`/`error` chegar — a linha ficava girando (spinner de "sincronizando...")
-		// pra sempre na tela de Rede, mesmo com a sessão já terminada no backend. Protegendo as
-		// linhas ainda com transição pendente do corte evita esse vazamento; o array pode
-		// passar de `MAX_LOG_ENTRIES` por no máximo o número de sessões concorrentes ainda
-		// abertas, que é sempre pequeno.
+		// `files:progress`/`comic:progress` carry no peer id (see the `inFlightEntryId`
+		// comment above) — each event becomes a NEW line here, never cleared via
+		// `updateInFlightEntry`. In a sync with many chapters, this filled the
+		// `MAX_LOG_ENTRIES` cap with progress alone and pushed the "started" line (the only
+		// one with the real `peerId`, tracked in `inFlightEntryId`) out of the array BEFORE the
+		// `complete`/`error` event arrived — the line kept spinning ("syncing..." spinner)
+		// forever on the Network screen, even with the session already finished in the
+		// backend. Protecting lines with a pending transition from the cut avoids this leak;
+		// the array can exceed `MAX_LOG_ENTRIES` by at most the number of concurrent sessions
+		// still open, which is always small.
 		const pendingIds = new Set(inFlightEntryId.values());
-		log = [entry, ...log].filter((row, index) => index < MAX_LOG_ENTRIES || pendingIds.has(row.id));
+		log = [entry, ...log].filter(
+			(row, index) => index < MAX_LOG_ENTRIES || pendingIds.has(row.id)
+		);
 		if (peerId && isOpenStatus(status)) inFlightEntryId.set(key, entry.id);
 	}
 
@@ -351,12 +354,12 @@ export function useNetworkSync() {
 		const key = syncKey(peerId, kind);
 		const existingId = peerId ? inFlightEntryId.get(key) : undefined;
 		const existingIndex =
-			// Stryker disable next-line ConditionalExpression: toda entrada de `log` recebe
-			// `id: nextId++` (sempre um number) em `appendNewEntry` — nenhuma entrada jamais tem
-			// `id === undefined`. Então quando `existingId` é genuinamente `undefined`, forçar a
-			// condição pra `true` ainda roda `findIndex((entry) => entry.id === undefined)`, que
-			// sempre retorna `-1` — idêntico ao literal `-1` do branch `false`. Verificado
-			// empiricamente.
+			// Stryker disable next-line ConditionalExpression: every `log` entry gets
+			// `id: nextId++` (always a number) in `appendNewEntry` — no entry ever has
+			// `id === undefined`. So when `existingId` is genuinely `undefined`, forcing the
+			// condition to `true` still runs `findIndex((entry) => entry.id === undefined)`, which
+			// always returns `-1` — identical to the `false` branch's literal `-1`. Verified
+			// empirically.
 			existingId !== undefined ? log.findIndex((entry) => entry.id === existingId) : -1;
 
 		if (existingIndex !== -1) {
@@ -366,14 +369,14 @@ export function useNetworkSync() {
 		}
 	}
 
-	/// Rebusca as sessões persistidas e substitui só a parte do log que veio de lá (`id < 0`,
-	/// ver `fromPersisted`) — usado tanto no mount quanto pelo botão "Atualizar" da tela de
-	/// Rede. Preserva qualquer entrada AO VIVO ainda em `id >= 0` (sessão `started`/`progress`
-	/// desta execução do app): o repositório só guarda estados terminais
-	/// (`complete`/`error`, ver doc de `SyncHistoryLogEntry` no backend), então um refresh no
-	/// meio de uma sincronização não pode fazer a linha "sincronizando..." sumir da tela.
-	/// Propaga erro do `invoke` pro chamador decidir como mostrar (toast) — diferente do
-	/// carregamento inicial em `startListening`, que falha em silêncio.
+	/// Refetches the persisted sessions and replaces only the part of the log that came from
+	/// there (`id < 0`, see `fromPersisted`) — used both on mount and by the Network screen's
+	/// "Refresh" button. Keeps any LIVE entry still at `id >= 0` (a `started`/`progress`
+	/// session from this app run): the repository only stores terminal states
+	/// (`complete`/`error`, see the `SyncHistoryLogEntry` doc in the backend), so a refresh in
+	/// the middle of a sync must not make the "syncing..." line disappear from the screen.
+	/// Propagates the `invoke` error for the caller to decide how to show it (toast) — unlike
+	/// the initial load in `startListening`, which fails silently.
 	async function refreshLog() {
 		const rows = await invoke<PersistedSyncLogEntry[]>(NETWORK_COMMANDS.getSyncHistoryLog);
 		if (disposed) return;
@@ -381,9 +384,9 @@ export function useNetworkSync() {
 		log = [...liveEntries, ...rows.map(fromPersisted)];
 	}
 
-	/// Carrega as sessões persistidas assim que a tela abre — antes de qualquer evento ao vivo
-	/// chegar. Falha em silêncio: sem histórico persistido, a tela ainda funciona só com os
-	/// eventos da sessão atual.
+	/// Loads the persisted sessions as soon as the screen opens — before any live event
+	/// arrives. Fails silently: without persisted history, the screen still works with just
+	/// the current session's events.
 	async function loadPersistedLog() {
 		try {
 			await refreshLog();
@@ -393,9 +396,9 @@ export function useNetworkSync() {
 		}
 	}
 
-	/// Apaga de vez o histórico de transferências — tanto o persistido no SQLite
-	/// (`clear_sync_history_log`, irreversível) quanto a lista mostrada na tela. Propaga erro
-	/// do `invoke` pro chamador (mesmo padrão de `syncHistory`/`syncFiles`).
+	/// Permanently erases the transfer history — both the one persisted in SQLite
+	/// (`clear_sync_history_log`, irreversible) and the list shown on screen. Propagates the
+	/// `invoke` error to the caller (same pattern as `syncHistory`/`syncFiles`).
 	async function clearLog() {
 		await invoke(NETWORK_COMMANDS.clearSyncHistoryLog);
 		if (disposed) return;
@@ -434,9 +437,9 @@ export function useNetworkSync() {
 				const parsed = parseErrorPayload(event.payload);
 				if (parsed.itemLevel) {
 					refreshInFlightTimeouts('files');
-					// `peerId: ''` de propósito — mesmo truque que `progress` já usa pra nunca
-					// correlacionar com `inFlightEntryId` e clobberar a linha da sessão em
-					// andamento (ver doc de `itemLevel` em `parseErrorPayload`).
+					// `peerId: ''` on purpose — same trick `progress` already uses to never
+					// correlate with `inFlightEntryId` and clobber the running session's line
+					// (see the `itemLevel` doc in `parseErrorPayload`).
 					push(
 						'',
 						'files',
@@ -486,10 +489,10 @@ export function useNetworkSync() {
 				const parsed = parseErrorPayload(event.payload);
 				if (parsed.itemLevel) {
 					refreshInFlightTimeouts('comic');
-					// Mesmo raciocínio de `filesError` acima — um capítulo/extra que falhou
-					// dentro de um `sync-comic` não pode ser confundido com o erro final da
-					// sessão, nem resolver a promise de `syncComic()` (que só se importa com o
-					// desfecho de verdade da sessão inteira).
+					// Same reasoning as `filesError` above — a chapter/extra that failed inside
+					// a `sync-comic` must not be mistaken for the session's final error, nor
+					// resolve the `syncComic()` promise (which only cares about the real
+					// outcome of the whole session).
 					push(
 						'',
 						'comic',
@@ -519,17 +522,17 @@ export function useNetworkSync() {
 		inFlightTimeouts.forEach((timeout) => clearTimeout(timeout));
 		inFlightTimeouts.clear();
 		inFlightEntryId.clear();
-		// Sem isso, um `await syncComic(...)` cujo componente desmontou no meio da sessão
-		// ficaria pendurado pra sempre — os listeners que resolveriam essa promise acabaram
-		// de ser desregistrados acima.
+		// Without this, an `await syncComic(...)` whose component unmounted mid session would
+		// hang forever — the listeners that would resolve that promise were just unregistered
+		// above.
 		pendingSettlement.forEach(({ reject }) => reject('sync cancelled: listener stopped'));
 		pendingSettlement.clear();
 	}
 
-	/// Chama o comando Tauri de sync marcando/limpando a(s) chave(s) `peerId:kind` ao redor
-	/// da invocação em si — o clear "de verdade" (sessão concluída/com erro) acontece nos
-	/// listeners de evento acima; isto aqui só cobre o caso do comando falhar imediatamente
-	/// (peer não resolvido, canal fechado etc.), antes de qualquer evento de rede ser emitido.
+	/// Calls the Tauri sync command, marking/clearing the `peerId:kind` key(s) around the
+	/// invocation itself — the "real" clear (session completed/errored) happens in the event
+	/// listeners above; this only covers the command failing immediately (peer not resolved,
+	/// channel closed etc.), before any network event is emitted.
 	async function withSyncGuard(
 		peerId: string,
 		kinds: SyncKind[],
@@ -555,25 +558,28 @@ export function useNetworkSync() {
 	}
 
 	async function syncAll(peerId: string, addrs: number[]) {
-		await withSyncGuard(peerId, ['history', 'files'], NETWORK_COMMANDS.syncAll, { peerId, addrs });
+		await withSyncGuard(peerId, ['history', 'files'], NETWORK_COMMANDS.syncAll, {
+			peerId,
+			addrs
+		});
 	}
 
-	/// Sync individual de UM quadrinho (push ou pull, ver `comic_handler.rs` no backend) — o
-	/// `comicName` é o mesmo nome (`comic_directory.name`) usado como chave natural em todo o
-	/// resto do protocolo de sync de arquivos.
+	/// Individual sync of ONE comic (push or pull, see `comic_handler.rs` in the backend) — the
+	/// `comicName` is the same name (`comic_directory.name`) used as the natural key throughout
+	/// the rest of the file sync protocol.
 	///
-	/// `chapterIds` (mesmo `ChapterId` string da UI de seleção, ver `syncHistoryEntry`) escopa
-	/// a sessão a um subconjunto de capítulos — vazio (padrão) sincroniza o quadrinho inteiro,
-	/// comportamento de antes desta mudança usado pelo "Sincronizar com dispositivo". O botão
-	/// "Enviar" da seleção múltipla de capítulos usa a lista pra mandar só os arquivos
-	/// escolhidos, sem precisar mandar o resto do quadrinho.
+	/// `chapterIds` (same `ChapterId` string as the selection UI, see `syncHistoryEntry`) scopes
+	/// the session to a subset of chapters — empty (default) syncs the whole comic, the
+	/// behavior before this change, used by "Sync with device". The multi-chapter selection's
+	/// "Send" button uses the list to send only the chosen files, without sending the rest of
+	/// the comic.
 	///
-	/// Ao contrário de `syncHistory`/`syncFiles`/`syncAll`, a promise retornada só resolve
-	/// (ou rejeita) quando a sessão termina de verdade (`sync:comic:complete`/`error`, ou o
-	/// timeout de `markSyncing`) — o `invoke` do comando Tauri resolve assim que a conexão é
-	/// só enfileirada, muito antes do handshake/transferência acontecer, então usar aquela
-	/// promise direto pra decidir sucesso/erro (como a tela do quadrinho fazia antes) dispara
-	/// o toast de sucesso cedo demais e nunca mostra o de erro se a sessão falhar depois.
+	/// Unlike `syncHistory`/`syncFiles`/`syncAll`, the returned promise only resolves (or
+	/// rejects) when the session really ends (`sync:comic:complete`/`error`, or the
+	/// `markSyncing` timeout) — the Tauri command's `invoke` resolves as soon as the connection
+	/// is merely queued, long before the handshake/transfer happens, so using that promise
+	/// directly to decide success/error (as the comic screen used to) fires the success toast
+	/// too early and never shows the error one if the session fails later.
 	async function syncComic(
 		peerId: string,
 		addrs: number[],
@@ -582,10 +588,10 @@ export function useNetworkSync() {
 		chapterIds: string[] = []
 	): Promise<string> {
 		if (isSyncing(peerId, 'comic')) {
-			// Mesmo texto traduzido do `code: "busy"` que o backend manda — este guard é
-			// local (nem chega a abrir conexão), mas é o mesmo erro do ponto de vista do
-			// usuário, então usa a mesma mensagem em vez de um texto cru em inglês.
-			throw new Error(m['tauri_errors.sync.session_busy.label']());
+			// Same translated text as the `code: "busy"` the backend sends — this guard is
+			// local (it doesn't even open a connection), but it is the same error from the
+			// user's point of view, so it uses the same message instead of raw English text.
+			throw new Error(m['tauriErrors.sync.sessionBusy.label']());
 		}
 
 		const key = syncKey(peerId, 'comic');
@@ -609,14 +615,14 @@ export function useNetworkSync() {
 		return settlement;
 	}
 
-	/// Push do(s) capítulo(s) selecionado(s) (progresso + marcador de "lido") de UM quadrinho pra
-	/// um peer — mais leve que `syncComic`, que troca o quadrinho inteiro. Usado tanto pelo envio
-	/// de um capítulo só quanto de vários selecionados de uma vez. `chapterIds` são os mesmos
-	/// `ChapterId` (string) usados pelo resto da UI de seleção (ver `useChapterSelection` /
-	/// `markChaptersReadBatch`) — o backend faz o parse e resolve pra `chapter_sort` (a chave
-	/// comparável entre devices) antes de montar o manifesto. Mesmo padrão de espera de
-	/// conclusão real de `syncComic`: o `invoke` só enfileira a conexão, a promise
-	/// resolve/rejeita com `sync:history-entry:complete`/`error`.
+	/// Pushes the selected chapter(s) (progress + "read" marker) of ONE comic to a peer —
+	/// lighter than `syncComic`, which exchanges the whole comic. Used both for sending a
+	/// single chapter and several selected at once. `chapterIds` are the same `ChapterId`
+	/// (string) used by the rest of the selection UI (see `useChapterSelection` /
+	/// `markChaptersReadBatch`) — the backend parses and resolves them to `chapter_sort` (the
+	/// key comparable across devices) before building the manifest. Same real-completion wait
+	/// pattern as `syncComic`: the `invoke` only queues the connection, the promise
+	/// resolves/rejects with `sync:history-entry:complete`/`error`.
 	async function syncHistoryEntry(
 		peerId: string,
 		addrs: number[],
@@ -624,7 +630,7 @@ export function useNetworkSync() {
 		chapterIds: string[]
 	): Promise<string> {
 		if (isSyncing(peerId, 'historyEntry')) {
-			throw new Error(m['tauri_errors.sync.session_busy.label']());
+			throw new Error(m['tauriErrors.sync.sessionBusy.label']());
 		}
 
 		const key = syncKey(peerId, 'historyEntry');
@@ -647,30 +653,31 @@ export function useNetworkSync() {
 		return settlement;
 	}
 
-	/// Timestamp da última sessão concluída com sucesso pra esse peer (qualquer `kind`), ou
-	/// `undefined` se nunca sincronizou — usado pra mostrar "Última sync: ..." por peer.
+	/// Timestamp of the last successfully completed session for this peer (any `kind`), or
+	/// `undefined` if it never synced — used to show "Last sync: ..." per peer.
 	function lastSyncedAt(peerId: string): number | undefined {
-		return log.find((entry) => entry.peerId === peerId && entry.status === 'complete')?.timestamp;
+		return log.find((entry) => entry.peerId === peerId && entry.status === 'complete')
+			?.timestamp;
 	}
 
-	/// Sessão ao vivo mais recente ainda em andamento (`status: 'started'`), de QUALQUER peer —
-	/// usado pelo indicador global no header (`+layout.svelte`), que precisa saber "tem alguma
-	/// sincronização rolando agora" sem depender de nenhuma tela específica estar montada. Uma
-	/// linha só sai de `'started'` quando o evento `complete`/`error` chega e a transiciona pro
-	/// mesmo lugar (`updateInFlightEntry`) — nunca fica presa em `'progress'` porque eventos de
-	/// progresso não têm peer id pra correlacionar com ela (ver doc de `inFlightEntryId`), então
-	/// checar só `'started'` já cobre a sessão inteira, do início ao fim.
+	/// Most recent live session still in progress (`status: 'started'`), from ANY peer —
+	/// used by the global indicator in the header (`+layout.svelte`), which needs to know "is
+	/// any sync running now" without depending on any specific screen being mounted. A line
+	/// only leaves `'started'` when the `complete`/`error` event arrives and transitions it in
+	/// place (`updateInFlightEntry`) — it never gets stuck on `'progress'` because progress
+	/// events have no peer id to correlate with it (see the `inFlightEntryId` doc), so checking
+	/// only `'started'` already covers the whole session, start to end.
 	function activeSession(): { peerId: string; kind: SyncKind } | undefined {
 		const entry = log.find((row) => row.status === 'started');
 		return entry ? { peerId: entry.peerId, kind: entry.kind } : undefined;
 	}
 
-	/// Texto do progresso mais recente (`"{comicName} - {chapter}"`, ver `send_files`/
-	/// `receive_files` no backend) de QUALQUER sessão — como esses eventos não carregam peer id,
-	/// não dá pra saber com certeza a qual sessão pertencem se houver mais de uma rodando ao
-	/// mesmo tempo (`syncAll`, por exemplo); mesma limitação de protocolo já documentada em
-	/// `inFlightEntryId`, não uma piora introduzida aqui. Complementa `activeSession()`, não
-	/// substitui: `activeSession()` já é `undefined` sozinho quando não há nada rodando.
+	/// Text of the most recent progress (`"{comicName} - {chapter}"`, see `send_files`/
+	/// `receive_files` in the backend) of ANY session — since these events carry no peer id,
+	/// there's no telling for sure which session they belong to if more than one is running at
+	/// once (`syncAll`, for example); same protocol limitation already documented in
+	/// `inFlightEntryId`, not a regression introduced here. Complements `activeSession()`,
+	/// does not replace it: `activeSession()` is already `undefined` on its own when nothing runs.
 	function activeProgressMessage(): string | undefined {
 		return log.find((row) => row.status === 'progress')?.message;
 	}

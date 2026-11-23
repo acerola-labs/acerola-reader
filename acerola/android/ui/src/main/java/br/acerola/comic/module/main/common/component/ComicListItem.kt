@@ -1,8 +1,9 @@
 package br.acerola.comic.module.main.common.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,10 +46,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.ActionIcon
+import br.acerola.comic.common.ux.component.Badge
 import br.acerola.comic.common.ux.component.BookmarkRibbon
+import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.ImageCard
+import br.acerola.comic.common.ux.component.Tone
+import br.acerola.comic.common.ux.theme.AcerolaColors
+import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
+import br.acerola.comic.common.ux.theme.AcerolaShapes
+import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.ShapeTokens
+import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.dto.ComicDto
@@ -61,6 +70,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import coil.size.SizeResolver
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Main.Common.Component.ComicListItem(
     comic: ComicDto,
@@ -73,6 +83,7 @@ fun Main.Common.Component.ComicListItem(
     onLongClick: (() -> Unit)? = null,
     onPlayClick: (() -> Unit)? = null,
     onShowActions: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -116,285 +127,259 @@ fun Main.Common.Component.ComicListItem(
             ?.averageScore
             ?.let { it / 10f }
 
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(height = 128.dp)
-                .padding(all = SpacingTokens.ExtraSmall),
-    ) {
-        // Cover Box (80dp width)
-        Box(
+    // Brand list row: `rounded-tile bg-surface`, cover on the left, info, then the actions.
+    ProvideSurfaceLevel(AcerolaSurfaceLevel.Surface) {
+        Row(
             modifier =
-                Modifier
-                    .width(width = 80.dp)
-                    .fillMaxHeight(),
+                modifier
+                    .fillMaxWidth()
+                    .height(height = 128.dp)
+                    .clip(AcerolaShapes.Tile)
+                    .background(AcerolaExtendedTheme.colors.surface)
+                    .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+                    .padding(all = SpacingTokens.Small),
         ) {
-            Acerola.Component.ImageCard(
-                onClick = onClick,
-                onLongClick = onLongClick,
-                image = coverPainter,
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = SpacingTokens.ExtraSmall),
-            )
-
-            // Scrim only at the bottom for the source logo visibility
+            // Cover Box (72dp width)
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .height(SpacingTokens.Giant)
-                        .align(Alignment.BottomCenter)
-                        .padding(top = SpacingTokens.ExtraSmall)
-                        .clip(ShapeTokens.Medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.5f)),
-                            ),
-                        ),
-            )
-
-            // Bottom Right: Source Logo Overlay on Image
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(bottom = SpacingTokens.ExtraSmall, end = SpacingTokens.ExtraSmall),
-                contentAlignment = Alignment.BottomEnd,
+                        .width(width = 72.dp)
+                        .fillMaxHeight(),
             ) {
-                val sourceIcon =
-                    when (comic.remoteInfo?.syncSource) {
-                        MetadataSource.MANGADEX -> R.drawable.mangadex_v2
-                        MetadataSource.ANILIST -> R.drawable.anilist
-                        else -> null
-                    }
-                if (sourceIcon != null) {
-                    Icon(
-                        painter = painterResource(id = sourceIcon),
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(SizeTokens.IconExtraSmall),
-                    )
-                }
-            }
-
-            if (categoryColor != null) {
-                BookmarkRibbon(
-                    color = Color(categoryColor),
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopStart)
-                            .padding(start = SpacingTokens.Small)
-                            .width(SpacingTokens.Medium)
-                            .height(SpacingTokens.ExtraLarge),
+                Acerola.Component.ImageCard(
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                    image = coverPainter,
+                    shape = AcerolaShapes.Inner,
+                    modifier = Modifier.fillMaxSize(),
                 )
-            }
 
-            if (comic.directory.hidden) {
-                Icon(
-                    imageVector = Icons.Rounded.VisibilityOff,
-                    contentDescription = null,
-                    tint = Color.White,
+                // Scrim only at the bottom for the source logo visibility
+                Box(
                     modifier =
                         Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = SpacingTokens.ExtraSmall, start = SpacingTokens.ExtraSmall)
-                            .size(SizeTokens.IconExtraSmall)
+                            .fillMaxWidth()
+                            .height(SpacingTokens.Giant)
+                            .align(Alignment.BottomCenter)
+                            .clip(AcerolaShapes.Inner.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)))
                             .background(
-                                color = Color.Black.copy(alpha = 0.5f),
-                                shape = ShapeTokens.ExtraSmall,
-                            ).padding(2.dp),
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, AcerolaColors.Scrim.copy(alpha = 0.5f)),
+                                ),
+                            ),
                 )
-            }
 
-            if (isSelectionMode) {
-                if (isSelected) {
-                    Box(
+                // Bottom Right: Source Logo Overlay on Image
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(bottom = SpacingTokens.ExtraSmall, end = SpacingTokens.ExtraSmall),
+                    contentAlignment = Alignment.BottomEnd,
+                ) {
+                    val sourceIcon =
+                        when (comic.remoteInfo?.syncSource) {
+                            MetadataSource.MANGADEX -> R.drawable.mangadex_v2
+                            MetadataSource.ANILIST -> R.drawable.anilist
+                            else -> null
+                        }
+                    if (sourceIcon != null) {
+                        Icon(
+                            painter = painterResource(id = sourceIcon),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(SizeTokens.IconExtraSmall),
+                        )
+                    }
+                }
+
+                if (categoryColor != null) {
+                    BookmarkRibbon(
+                        color = Color(categoryColor),
                         modifier =
                             Modifier
-                                .fillMaxSize()
-                                .padding(top = SpacingTokens.ExtraSmall)
-                                .clip(ShapeTokens.Medium)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                                .align(Alignment.TopStart)
+                                .padding(start = SpacingTokens.Small)
+                                .width(SpacingTokens.Medium)
+                                .height(SpacingTokens.ExtraLarge),
+                    )
+                }
+
+                if (comic.directory.hidden) {
+                    Icon(
+                        imageVector = Icons.Rounded.VisibilityOff,
+                        contentDescription = null,
+                        tint = AcerolaColors.OnScrim,
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(bottom = SpacingTokens.ExtraSmall, start = SpacingTokens.ExtraSmall)
+                                .size(SizeTokens.IconExtraSmall)
+                                .background(
+                                    color = AcerolaColors.Scrim.copy(alpha = 0.5f),
+                                    shape = AcerolaShapes.Inner,
+                                ).padding(2.dp),
+                    )
+                }
+
+                if (isSelectionMode) {
+                    if (isSelected) {
                         Box(
                             modifier =
                                 Modifier
-                                    .size(38.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        shape = CircleShape,
-                                    ),
+                                    .fillMaxSize()
+                                    .clip(AcerolaShapes.Inner)
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.size(24.dp),
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(38.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            shape = CircleShape,
+                                        ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .clip(AcerolaShapes.Inner)
+                                    .background(AcerolaColors.Scrim.copy(alpha = 0.5f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(32.dp)
+                                        .background(color = AcerolaColors.OnScrim.copy(alpha = 0.2f), shape = CircleShape),
                             )
                         }
                     }
-                } else {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .padding(top = SpacingTokens.ExtraSmall)
-                                .clip(ShapeTokens.Medium)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .size(32.dp)
-                                    .background(
-                                        color = Color.Black.copy(alpha = 0.3f),
-                                        shape = CircleShape,
-                                    ).border(
-                                        width = 2.dp,
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        shape = CircleShape,
-                                    ),
-                        )
-                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.width(width = SpacingTokens.Medium))
+            Spacer(modifier = Modifier.width(width = SpacingTokens.Medium))
 
-        // Info Column
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxHeight()
-                    .weight(weight = 1f),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-
-            if (subtitle != null) {
+            // Info Column
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(weight = 1f),
+                verticalArrangement = Arrangement.Center,
+            ) {
                 Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = AcerolaExtendedTheme.colors.foreground,
                 )
-            }
 
-            Spacer(modifier = Modifier.height(SpacingTokens.Small))
-
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                // Completed status
-                if (isCompleted) {
+                if (subtitle != null) {
                     Text(
-                        text = stringResource(id = R.string.label_comic_status_read),
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier =
-                            Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = MaterialTheme.shapes.extraSmall,
-                                ).padding(horizontal = SpacingTokens.ExtraSmall, vertical = 2.dp),
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = AcerolaExtendedTheme.colors.mutedForeground,
                     )
                 }
 
-                // Rating
-                if (score != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Icon(
-                            imageVector = Icons.Rounded.Star,
-                            contentDescription = null,
-                            tint = Color(0xFFFFC107),
-                            modifier = Modifier.size(SpacingTokens.MediumLarge),
-                        )
-                        Text(
-                            text = score.toString(),
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(SpacingTokens.Small))
 
-                // Chapter Count
-                if (chapterCount > 0) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Icon(
-                            imageVector = Icons.Rounded.AutoStories,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(SpacingTokens.MediumLarge),
-                        )
-                        Text(
-                            text = chapterCount.toString(),
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                    // Completed status
+                    if (isCompleted) {
+                        Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_status_read), tone = Tone.Success)
                     }
-                }
 
-                // Pending sync conflicts — mesma receita do Rating/Chapter Count (ícone +
-                // texto sem chip preenchido): `error` sozinho sobre o fundo da linha já passa
-                // em todos os temas (verificado), um fundo atrás do ícone não passava no
-                // Catppuccin Light.
-                if (conflictCount > 0) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(SpacingTokens.MediumLarge),
-                        )
-                        Text(
-                            text = stringResource(id = R.string.label_comic_status_conflict),
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                    // Rating
+                    if (score != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Icon(
+                                imageVector = Icons.Rounded.Star,
+                                contentDescription = null,
+                                tint = AcerolaExtendedTheme.colors.warning,
+                                modifier = Modifier.size(SpacingTokens.MediumLarge),
+                            )
+                            Text(
+                                text = score.toString(),
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = AcerolaExtendedTheme.colors.mutedForeground,
+                            )
+                        }
+                    }
+
+                    // Chapter Count
+                    if (chapterCount > 0) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Icon(
+                                imageVector = Icons.Rounded.AutoStories,
+                                contentDescription = null,
+                                tint = AcerolaExtendedTheme.colors.mutedForeground,
+                                modifier = Modifier.size(SpacingTokens.MediumLarge),
+                            )
+                            Text(
+                                text = chapterCount.toString(),
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = AcerolaExtendedTheme.colors.mutedForeground,
+                            )
+                        }
+                    }
+
+                    // Pending sync conflicts — same recipe as Rating/Chapter Count (icon +
+                    // text with no filled chip): `error` alone over the row background already passes
+                    // in every theme (verified), a background behind the icon didn't pass in
+                    // Catppuccin Light.
+                    if (conflictCount > 0) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(SpacingTokens.MediumLarge),
+                            )
+                            Text(
+                                text = stringResource(id = R.string.label_comic_status_conflict),
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = AcerolaExtendedTheme.colors.mutedForeground,
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        if (onPlayClick != null) {
-            IconButton(
-                onClick = onPlayClick,
-                modifier =
-                    Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = SpacingTokens.Small)
-                        .background(
-                            color = MaterialTheme.colorScheme.secondary,
-                            shape = ShapeTokens.Medium,
-                        ),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
+            if (onPlayClick != null) {
+                Acerola.Component.IconButton(
+                    icon = Icons.Default.PlayArrow,
                     contentDescription = stringResource(id = R.string.description_icon_continue_reading),
-                    tint = MaterialTheme.colorScheme.onSecondary,
+                    onClick = onPlayClick,
+                    variant = ButtonVariant.Secondary,
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = SpacingTokens.Small),
                 )
             }
-        }
 
-        if (onShowActions != null) {
-            Acerola.Component.ActionIcon(
-                icon = Icons.Default.MoreVert,
-                onClick = onShowActions,
-                contentDescription = stringResource(id = R.string.description_icon_chapter_more_options),
-                modifier = Modifier.align(Alignment.CenterVertically),
-            )
+            if (onShowActions != null) {
+                Acerola.Component.ActionIcon(
+                    icon = Icons.Default.MoreVert,
+                    onClick = onShowActions,
+                    contentDescription = stringResource(id = R.string.description_icon_chapter_more_options),
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                )
+            }
         }
     }
 }

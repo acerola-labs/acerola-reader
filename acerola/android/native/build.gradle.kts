@@ -51,13 +51,13 @@ kotlin {
 dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
-    // Testes instrumentados que atravessam a FFI/JNA de verdade (binário .so real
-    // compilado pro dispositivo, não um mock Rust puro) — ver
+    // Instrumented tests that really cross the FFI/JNA (real .so binary
+    // compiled for the device, not a pure Rust mock) — see
     // src/androidTest/.../FileSyncFfiIntegrationTest.kt.
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.core.ktx)
-    // `androidx.test.ext:junit` não traz o `AndroidJUnitRunner` em si — sem isso o
-    // `testInstrumentationRunner` declarado acima falha com ClassNotFoundException.
+    // `androidx.test.ext:junit` does not bring `AndroidJUnitRunner` itself — without this the
+    // `testInstrumentationRunner` declared above fails with ClassNotFoundException.
     androidTestImplementation(libs.androidx.test.runner)
     implementation(libs.androidx.annotation)
     implementation(libs.kotlinx.coroutines.core)
@@ -72,7 +72,7 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 tasks.withType<Test>().configureEach {
-    // Garante que gere a lib e os bindings antes de rodar os testes unitários
+    // Ensures the lib and bindings are generated before running the unit tests
     dependsOn("generateBindings", "copyRustLib")
 
     systemProperty("java.library.path", "${project.projectDir}/src/main/jniLibs/arm64-v8a")
@@ -98,26 +98,26 @@ val cargo: String =
         ?: localProperties.getProperty("cargo.dir")
         ?: "cargo"
 
-// O build Rust/UniFFI inteiro (compilar, gerar bindings, copiar .so) é delegado ao
-// `cargo make` (ver `rust/Makefile.toml`) em vez de várias tasks `Exec` chamando `cargo`
-// direto — a lógica de cross-platform copy/mkdir fica no duckscript do cargo-make em vez
-// de `ifeq ($(OS),Windows_NT)` espalhado, e adicionar uma nova variante de build (ex.:
-// x86_64 pra emulador) é só uma task nova no Makefile.toml, não mexe no Gradle.
+// The whole Rust/UniFFI build (compile, generate bindings, copy .so) is delegated to
+// `cargo make` (see `rust/Makefile.toml`) instead of several `Exec` tasks calling `cargo`
+// directly — the cross-platform copy/mkdir logic lives in cargo-make's duckscript instead
+// of scattered `ifeq ($(OS),Windows_NT)`, and adding a new build variant (e.g.
+// x86_64 for the emulator) is just a new task in Makefile.toml, without touching Gradle.
 val cargoMake: String =
     project.findProperty("cargo.make.dir") as? String
         ?: System.getenv("CARGO_MAKE")
         ?: localProperties.getProperty("cargo.make.dir")
         ?: "cargo-make"
 
-// Valida que o `cargo-make` resolvido existe ANTES de qualquer task tentar usá-lo — sem
-// isso, a falha que aparece é um erro cru de processo nativo não encontrado, sem dizer
-// que era o cargo-make que faltava nem como configurar um caminho customizado.
+// Validates that the resolved `cargo-make` exists BEFORE any task tries to use it — without
+// this, the failure shown is a raw "native process not found" error, without saying
+// it was cargo-make that was missing nor how to configure a custom path.
 val validateCargoMake by
     tasks.registering {
         doFirst {
-            // `cargo-make.exe` espera receber `make` como primeiro argumento (é assim que o
-            // `cargo` internamente invoca qualquer plugin `cargo-XXX`) — chamar só
-            // `cargo-make --version` direto quebra com um erro de parser confuso.
+            // `cargo-make.exe` expects `make` as its first argument (that is how
+            // `cargo` internally invokes any `cargo-XXX` plugin) — calling just
+            // `cargo-make --version` directly breaks with a confusing parser error.
             val found =
                 runCatching {
                     ProcessBuilder(cargoMake, "make", "--version").redirectErrorStream(true).start().waitFor() == 0
@@ -125,9 +125,9 @@ val validateCargoMake by
 
             if (!found) {
                 throw GradleException(
-                    "cargo-make não encontrado (procurado em '$cargoMake'). Instale com " +
-                        "`cargo install cargo-make`, ou configure o caminho via a propriedade de " +
-                        "projeto `cargo.make.dir`, a env var CARGO_MAKE, ou `cargo.make.dir` em " +
+                    "cargo-make not found (looked in '$cargoMake'). Install it with " +
+                        "`cargo install cargo-make`, or set the path via the project property " +
+                        "`cargo.make.dir`, the CARGO_MAKE env var, or `cargo.make.dir` in " +
                         "local.properties.",
                 )
             }
@@ -152,9 +152,9 @@ tasks.register<Exec>("copyRustLib") {
     commandLine(cargoMake, "make", "--makefile", "makefile.toml", "copy-libs")
 }
 
-// Não entra no `preBuild`/`connectedAndroidTest` por padrão — só é necessária pra rodar
-// `connectedAndroidTest` num EMULADOR (x86_64), que não carrega o .so arm64-v8a padrão.
-// Rode manualmente antes: `./gradlew :native:buildRustEmulator`.
+// Not part of `preBuild`/`connectedAndroidTest` by default — only needed to run
+// `connectedAndroidTest` on an EMULATOR (x86_64), which does not load the default arm64-v8a .so.
+// Run it manually first: `./gradlew :native:buildRustEmulator`.
 tasks.register<Exec>("buildRustEmulator") {
     dependsOn(validateCargoMake)
     workingDir = file("rust")

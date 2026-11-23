@@ -40,7 +40,7 @@ class ComicMetadataViewModel
         private val clearMetadataUseCase: ClearMetadataUseCase,
         @param:MangadexCase private val observeLibraryUseCase: ObserveLibraryUseCase<ComicMetadataDto>,
     ) : ViewModel() {
-        private val _workerIndexing = MutableStateFlow(false)
+        private val workerIndexing = MutableStateFlow(false)
 
         val activeSyncSource: StateFlow<String?> =
             workManager
@@ -70,7 +70,7 @@ class ComicMetadataViewModel
         val isIndexing: StateFlow<Boolean> =
             combine(
                 observeLibraryUseCase.isIndexing,
-                _workerIndexing,
+                workerIndexing,
             ) { repoIndexing, workerBusy ->
                 repoIndexing || workerBusy
             }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -208,7 +208,7 @@ class ComicMetadataViewModel
 
                 val workName = if (directoryId == -1L) "metadata_sync_library_$source" else "metadata_sync_${source}_$directoryId"
 
-                _workerIndexing.value = true
+                workerIndexing.value = true
 
                 workManager.enqueueUniqueWork(
                     workName,
@@ -224,7 +224,7 @@ class ComicMetadataViewModel
             viewModelScope.launch {
                 workManager.getWorkInfoByIdFlow(workerId).collect { workInfo ->
                     if (workInfo != null) {
-                        _workerIndexing.value = !workInfo.state.isFinished
+                        workerIndexing.value = !workInfo.state.isFinished
 
                         if (workInfo.state == WorkInfo.State.FAILED) {
                             val errorMessage = workInfo.outputData.getString(WorkerContract.KEY_ERROR)

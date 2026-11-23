@@ -6,14 +6,14 @@ order: 1
 ---
 
 <script>
-	import Callout from '$lib/components/acerola-callout/acerola-callout.svelte';
-	import Steps from '$lib/mdsvex/steps.svelte';
-	import CardGrid from '$lib/mdsvex/card-grid.svelte';
-	import PlatformCard from '$lib/mdsvex/platform-card.svelte';
-	import AcerolaMicrosoftStoreButton from '$lib/components/acerola-microsoft-store-button/acerola-microsoft-store-button.svelte';
-	import AcerolaApkDownloadButton from '$lib/components/acerola-apk-download-button/acerola-apk-download-button.svelte';
-	import MicrosoftStoreIcon from '$lib/assets/icons/microsoft-store.svg?component';
-	import AndroidIcon from '$lib/assets/icons/android.svg?component';
+	import Callout from '#lib/components/acerola-callout/acerola-callout.svelte';
+	import Steps from '#lib/mdsvex/steps.svelte';
+	import CardGrid from '#lib/mdsvex/card-grid.svelte';
+	import PlatformCard from '#lib/mdsvex/platform-card.svelte';
+	import AcerolaMicrosoftStoreButton from '#lib/components/acerola-microsoft-store-button/acerola-microsoft-store-button.svelte';
+	import AcerolaApkDownloadButton from '#lib/components/acerola-apk-download-button/acerola-apk-download-button.svelte';
+	import MicrosoftStoreIcon from '#lib/assets/icons/microsoft-store.svg?component';
+	import AndroidIcon from '#lib/assets/icons/android.svg?component';
 </script>
 
 O Acerola é um leitor de quadrinhos e mangás locais com sincronização **100% P2P** entre dispositivos — sem servidor central, sem conta, sem nuvem. Esta página cobre a instalação em cada plataforma e o primeiro pareamento entre dois dispositivos.

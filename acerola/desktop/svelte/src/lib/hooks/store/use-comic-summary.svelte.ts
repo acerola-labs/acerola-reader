@@ -2,25 +2,27 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import { toast } from 'svelte-sonner';
-import { HOME_COMMANDS } from '$lib/contracts/home/home.commands';
-import { HOME_EVENTS } from '$lib/contracts/home/home.events';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
+import { HOME_COMMANDS } from '#lib/contracts/home/home.commands.ts';
+import { HOME_EVENTS } from '#lib/contracts/home/home.events.ts';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
 import type {
 	ComicSummaryPayload,
 	MetadataSource,
 	SortBy,
 	SortOrder
-} from '$lib/contracts/home/home.payloads';
-import type { ErrorPayload } from '$lib/contracts/shared/shared.payloads';
-import { resolveErrorMessage } from '$lib/contracts/errors/errors.i18n';
-import { notificationStore } from '$lib/components/acerola-notification/acerola-notification.svelte';
-import { m } from '$lib/paraglide/messages';
+} from '#lib/contracts/home/home.payloads.ts';
+import type { ErrorPayload } from '#lib/contracts/shared/shared.payloads.ts';
+import { resolveErrorMessage } from '#lib/contracts/errors/errors.i18n.ts';
+import { notificationStore } from '#lib/components/acerola-notification/acerola-notification.svelte';
+import { m } from '#lib/paraglide/messages.js';
 import { error } from '@tauri-apps/plugin-log';
 
 const { notify } = notificationStore;
 
 let comics = $state<ComicSummaryPayload | undefined>(undefined);
 let loading = $state(false);
+/** The last fetch failed: the screen shows the error state with a retry. */
+let failed = $state(false);
 let sortBy = $state<SortBy>('title');
 let sortOrder = $state<SortOrder>('asc');
 let showHidden = $state(false);
@@ -32,6 +34,7 @@ let lastSearch: string | undefined = undefined;
 export function _resetComicSummaryState() {
 	comics = undefined;
 	loading = false;
+	failed = false;
 	sortBy = 'title';
 	sortOrder = 'asc';
 	showHidden = false;
@@ -53,6 +56,7 @@ export function useComicSummary() {
 		return new Promise<void>(async (resolve) => {
 			const unlisten = await listen<ComicSummaryPayload>(HOME_EVENTS.homeData, (event) => {
 				comics = event.payload;
+				failed = false;
 
 				debug(
 					`[useComicSummary] total=${event.payload.total} fetchedAt=${event.payload.fetchedAt} payload=${JSON.stringify(event.payload.comics.slice(0, 3))}`
@@ -65,8 +69,9 @@ export function useComicSummary() {
 
 			const unlistenErr = await listen<ErrorPayload>(HOME_EVENTS.homeError, (event) => {
 				const description = resolveErrorMessage(event.payload);
+				failed = true;
 
-				notify.error(m['hooks.comic_summary.error.title'](), {
+				notify.error(m['hooks.comicSummary.error.title'](), {
 					description,
 					duration: 0
 				});
@@ -94,8 +99,8 @@ export function useComicSummary() {
 
 	async function updateVisibility(ids: (string | number)[], hidden: boolean): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e atualizaria o quadrinho errado).
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and update the wrong comic).
 			const count = await invoke<number>(HOME_COMMANDS.updateComicsVisibility, {
 				ids: ids.map(String),
 				hidden
@@ -104,7 +109,9 @@ export function useComicSummary() {
 				const idStrs = new Set(ids.map(String));
 				comics = {
 					...comics,
-					comics: comics.comics.filter((c) => !idStrs.has(String(c.relations.directoryId))),
+					comics: comics.comics.filter(
+						(c) => !idStrs.has(String(c.relations.directoryId))
+					),
 					total: comics.total - count
 				};
 			} else {
@@ -119,9 +126,9 @@ export function useComicSummary() {
 
 	async function deleteComics(ids: (string | number)[]): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e não bateria com nenhum
-			// registro real, era exatamente o bug: "0 quadrinho(s) excluído(s)").
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and match no real record, which
+			// was exactly the bug: "0 quadrinho(s) excluído(s)").
 			const count = await invoke<number>(HOME_COMMANDS.deleteComics, {
 				ids: ids.map(String)
 			});
@@ -130,7 +137,9 @@ export function useComicSummary() {
 				const idStrs = new Set(ids.map(String));
 				comics = {
 					...comics,
-					comics: comics.comics.filter((c) => !idStrs.has(String(c.relations.directoryId))),
+					comics: comics.comics.filter(
+						(c) => !idStrs.has(String(c.relations.directoryId))
+					),
 					total: comics.total - count
 				};
 			}
@@ -143,8 +152,8 @@ export function useComicSummary() {
 
 	async function clearMetadata(ids: (string | number)[]): Promise<number> {
 		try {
-			// IDs são hashes i64 que podem passar de Number.MAX_SAFE_INTEGER — mandar como
-			// string preserva precisão (Number(id) arredondaria e apagaria o quadrinho errado).
+			// IDs are i64 hashes that can exceed Number.MAX_SAFE_INTEGER — sending them as
+			// strings keeps precision (Number(id) would round and wipe the wrong comic).
 			const count = await invoke<number>(METADATA_COMMANDS.clearComicsMetadataBatch, {
 				comicIds: ids.map(String)
 			});
@@ -183,6 +192,9 @@ export function useComicSummary() {
 		},
 		get loading() {
 			return loading;
+		},
+		get failed() {
+			return failed;
 		},
 		get sortBy() {
 			return sortBy;

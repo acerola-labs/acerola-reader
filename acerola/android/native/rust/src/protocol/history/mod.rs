@@ -17,16 +17,16 @@ use tokio::io::{AsyncRead, AsyncWrite};
 use crate::{callbacks::HistorySyncProvider, protocol::sync_error::classify_sync_error};
 
 pub(crate) const HISTORY_SYNC_ALPN: &[u8] = b"acerola/sync-history/1";
-/// Push individual de UMA entrada de histórico, sem trocar o manifesto da biblioteca inteira —
-/// ver `exchange::run_entry_exchange`. Complementar a `HISTORY_SYNC_ALPN`, não substitui.
+/// Individual push of ONE history entry, without exchanging the whole library manifest —
+/// see `exchange::run_entry_exchange`. Complements `HISTORY_SYNC_ALPN`, does not replace it.
 pub(crate) const HISTORY_ENTRY_SYNC_ALPN: &[u8] = b"acerola/sync-history-entry/1";
 
-/// `peer_id` -> `(comic_name, chapter_sorts)` pendente entre a chamada FFI `sync_history_entry`
-/// e `HistoryEntrySyncOutbound::handle` — mesma técnica de `protocol::files::PendingComicScope`.
+/// `peer_id` -> `(comic_name, chapter_sorts)` pending between the `sync_history_entry` FFI call
+/// and `HistoryEntrySyncOutbound::handle` — same technique as `protocol::files::PendingComicScope`.
 pub(crate) type PendingHistoryEntryScope = Arc<Mutex<HashMap<String, (String, Vec<String>)>>>;
 
-/// Papel outbound do protocolo `acerola/sync-history/1` — usado quando este lado é quem
-/// iniciou a conexão via `AcerolaP2p::connect`. Escreve seu manifesto primeiro (regra 4).
+/// Outbound role of the `acerola/sync-history/1` protocol — used when this side is the one that
+/// started the connection via `AcerolaP2p::connect`. Writes its manifest first (rule 4).
 pub(crate) struct HistorySyncOutbound {
     emit: EventEmitter,
     provider: Arc<dyn HistorySyncProvider>,
@@ -52,8 +52,8 @@ impl Handler for HistorySyncOutbound {
     }
 }
 
-/// Papel inbound do protocolo `acerola/sync-history/1` — usado quando o peer é quem iniciou
-/// a conexão. Lê o manifesto do peer primeiro (regra 4).
+/// Inbound role of the `acerola/sync-history/1` protocol — used when the peer is the one that
+/// started the connection. Reads the peer's manifest first (rule 4).
 pub(crate) struct HistorySyncInbound {
     emit: EventEmitter,
     provider: Arc<dyn HistorySyncProvider>,
@@ -85,9 +85,9 @@ fn error_payload(peer: &PeerIdentity, err: &P2pError) -> String {
     serde_json::json!({ "peerId": peer.id, "message": err.to_string(), "code": code }).to_string()
 }
 
-/// Papel outbound do protocolo `acerola/sync-history-entry/1` — `comic_name` vem de
-/// `PendingHistoryEntryScope`, gravado pela chamada FFI `sync_history_entry` antes de
-/// `connect()` (mesma técnica de `ComicSyncOutbound`/`PendingComicScope`).
+/// Outbound role of the `acerola/sync-history-entry/1` protocol — `comic_name` comes from
+/// `PendingHistoryEntryScope`, stored by the `sync_history_entry` FFI call before
+/// `connect()` (same technique as `ComicSyncOutbound`/`PendingComicScope`).
 pub(crate) struct HistoryEntrySyncOutbound {
     emit: EventEmitter,
     provider: Arc<dyn HistorySyncProvider>,
@@ -128,8 +128,8 @@ impl Handler for HistoryEntrySyncOutbound {
     }
 }
 
-/// Papel inbound do protocolo `acerola/sync-history-entry/1` — `comic_name` já vem dentro da
-/// própria entrada recebida, então não precisa de nenhum escopo prévio.
+/// Inbound role of the `acerola/sync-history-entry/1` protocol — `comic_name` already comes inside
+/// the received entry itself, so no prior scope is needed.
 pub(crate) struct HistoryEntrySyncInbound {
     emit: EventEmitter,
     provider: Arc<dyn HistorySyncProvider>,

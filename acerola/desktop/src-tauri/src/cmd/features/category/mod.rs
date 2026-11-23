@@ -7,7 +7,7 @@ use crate::{
     data::models::category::{category::Category, comic_category::ComicCategory},
 };
 
-/// Comando Tauri para criar uma nova categoria (marcador).
+/// Tauri command that creates a new category (bookmark).
 #[tauri::command]
 pub async fn create_category(
     name: String, color: i64, pool: State<'_, SqlitePool>,
@@ -23,14 +23,14 @@ pub async fn get_categories(pool: State<'_, SqlitePool>) -> Result<Vec<Category>
     service.get_categories().await.map_err(|error| ErrorPayload::from(&error.into()))
 }
 
-/// Comando Tauri para remover uma categoria.
+/// Tauri command that removes a category.
 #[tauri::command]
 pub async fn delete_category(id: i64, pool: State<'_, SqlitePool>) -> Result<(), ErrorPayload> {
     let service = CategoryService::new(pool.inner().clone());
     service.delete_category(id).await.map_err(|error| ErrorPayload::from(&error.into()))
 }
 
-/// Comando Tauri para vincular uma categoria a um quadrinho.
+/// Tauri command that links a category to a comic.
 #[tauri::command]
 pub async fn assign_category_to_comic(
     comic_id: String, category_id: i64, pool: State<'_, SqlitePool>,
@@ -46,7 +46,7 @@ pub async fn assign_category_to_comic(
         .map_err(|error| ErrorPayload::from(&error.into()))
 }
 
-/// Comando Tauri para remover a categoria atual de um quadrinho.
+/// Tauri command that removes a comic's current category.
 #[tauri::command]
 pub async fn remove_category_from_comic(
     comic_id: String, pool: State<'_, SqlitePool>,
@@ -62,7 +62,7 @@ pub async fn remove_category_from_comic(
         .map_err(|error| ErrorPayload::from(&error.into()))
 }
 
-/// Comando Tauri para buscar a categoria associada a um quadrinho.
+/// Tauri command that fetches the category associated with a comic.
 #[tauri::command]
 pub async fn get_comic_category(
     comic_id: String, pool: State<'_, SqlitePool>,
@@ -75,7 +75,7 @@ pub async fn get_comic_category(
     service.get_comic_category(comic_id).await.map_err(|error| ErrorPayload::from(&error.into()))
 }
 
-/// Comando Tauri para buscar todas as atribuições de categoria a quadrinhos.
+/// Tauri command that fetches every category assignment to comics.
 #[tauri::command]
 pub async fn get_all_comic_categories(
     pool: State<'_, SqlitePool>,

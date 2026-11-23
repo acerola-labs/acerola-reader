@@ -27,9 +27,9 @@ use crate::{
     },
 };
 
-/// Lado que RESPONDE: lê `CoverRequest`, resolve a capa local (`FileSyncService::get_local_cover`)
-/// e responde `unavailable`/`not_modified`/`changed` — só publica no blob store local
-/// (`ChapterTransfer::publish`) quando a versão realmente mudou.
+/// Side that ANSWERS: reads `CoverRequest`, resolves the local cover (`FileSyncService::get_local_cover`)
+/// and answers `unavailable`/`not_modified`/`changed` — only publishes to the local blob store
+/// (`ChapterTransfer::publish`) when the version really changed.
 pub struct CoverBrowseInbound {
     service: FileSyncService,
     transfer: Arc<dyn ChapterTransfer>,
@@ -86,19 +86,19 @@ impl Handler for CoverBrowseInbound {
     }
 }
 
-/// Lado que INICIA a busca: escreve `CoverRequest`, lê a resposta e — só se
-/// `status == "changed"` — busca os bytes de verdade via `ChapterTransfer::fetch_reader` (que já
-/// verifica integridade via BLAKE3 antes de devolver o leitor). O `comic_name`/`known_version`
-/// vêm de `PendingCoverRequestRegistry` (mesmo padrão de `ComicSyncOutbound`/
-/// `PendingComicSyncRegistry`) — o `Handler` é um singleton, não recebe parâmetro por chamada de
-/// `connect()`.
+/// Side that STARTS the fetch: writes `CoverRequest`, reads the answer and — only if
+/// `status == "changed"` — fetches the actual bytes via `ChapterTransfer::fetch_reader` (which already
+/// verifies integrity via BLAKE3 before returning the reader). The `comic_name`/`known_version`
+/// come from `PendingCoverRequestRegistry` (same pattern as `ComicSyncOutbound`/
+/// `PendingComicSyncRegistry`) — the `Handler` is a singleton, it receives no parameter per
+/// `connect()` call.
 pub struct CoverBrowseOutbound {
     emit: EventEmitter,
     transfer: Arc<dyn ChapterTransfer>,
     registry: Arc<PendingCoverRequestRegistry>,
-    /// Cache dedicado (nunca a árvore do usuário), `<app_data_dir>/remote_covers` — chave
-    /// `(peer_id, comic_name, cover_version)` embutida no nome do arquivo, pra nunca rebaixar a
-    /// mesma versão duas vezes.
+    /// Dedicated cache (never the user's tree), `<app_data_dir>/remote_covers` — the key
+    /// `(peer_id, comic_name, cover_version)` is embedded in the file name, so the same version
+    /// is never downloaded twice.
     cache_dir: PathBuf,
 }
 
@@ -174,10 +174,10 @@ impl CoverBrowseOutbound {
                     .await
                     .map_err(|err| P2pError::StreamFailed(err.to_string()))?;
 
-                // Grava num cache local (`<app_data_dir>/remote_covers`) e emite o CAMINHO, não
-                // os bytes — o Svelte já resolve caminhos locais pra `<img>` via
-                // `convertFileSrc`/`resolveArtworkPath` (`artwork.utils.ts`), mesmo padrão já
-                // usado pras capas locais.
+                // Writes to a local cache (`<app_data_dir>/remote_covers`) and emits the PATH, not
+                // the bytes — Svelte already resolves local paths for `<img>` via
+                // `convertFileSrc`/`resolveArtworkPath` (`artwork.utils.ts`), the same pattern already
+                // used for local covers.
                 let path = self.save_to_cache(&peer.id, comic_name, cover_version, &bytes).await?;
                 self.emit_result(peer, comic_name, "changed", Some(cover_version), Some(&path));
             },
@@ -254,8 +254,8 @@ mod tests {
     use super::*;
     use crate::infra::sync::protocol::transfer::InMemoryChapterTransfer;
 
-    // Mesmo alias usado em `comic_handler.rs`/`file_handler.rs` — evita o lint de
-    // `type_complexity` do clippy pro tipo de retorno de `mock_emitter` abaixo.
+    // Same alias used in `comic_handler.rs`/`file_handler.rs` — avoids clippy's
+    // `type_complexity` lint for the return type of `mock_emitter` below.
     type RecordedEvents = Arc<Mutex<Vec<(String, String)>>>;
 
     fn mock_emitter() -> (EventEmitter, RecordedEvents) {
@@ -327,8 +327,8 @@ mod tests {
         );
 
         let (inbound_result, outbound_result) = tokio::join!(inbound_fut, outbound_fut);
-        inbound_result.expect("inbound deveria completar sem erro");
-        outbound_result.expect("outbound deveria completar sem erro");
+        inbound_result.expect("inbound should complete without error");
+        outbound_result.expect("outbound should complete without error");
 
         let recorded = events.lock().unwrap().clone();
         recorded

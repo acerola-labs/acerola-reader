@@ -2,4 +2,3 @@
 /logs
 iroh.config.toml
 /.patchbay
-/.config/ansible/hosts.ini

@@ -27,7 +27,7 @@ class VolumeStylePreferenceTest {
             )
         }
 
-        // Clica na opção "Capas" (label_volume_style_cover)
+        // Clicks the "Capas" option (label_volume_style_cover)
         val coverLabel = context.getString(R.string.label_volume_style_cover)
         composeTestRule.onNodeWithText(coverLabel).performClick()
 

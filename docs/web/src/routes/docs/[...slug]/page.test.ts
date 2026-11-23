@@ -1,6 +1,6 @@
 import type { PageLoadEvent } from './$types';
 import { describe, expect, it } from 'vitest';
-import type { DocEntry, DocFrontmatter } from '$lib/content/docs';
+import type { DocEntry, DocFrontmatter } from '#lib/content/docs.ts';
 import { load } from './+page';
 
 // getLocale() resolves to the base locale ('pt-br') in this jsdom test environment, which is

@@ -46,4 +46,4 @@ flowchart LR
 - Licença: [LICENSE](LICENSE) (MPL-2.0, para todo o monorepo)
 - TODO centralizado do monorepo (todos os componentes): [TODO.md](TODO.md)
 - Assets usados nos READMEs (GitHub): [`docs/github/`](docs/github/)
-- Site de documentação: [docs.acerola.app](https://docs.acerola.app) (código em [`docs/web/`](docs/web/))
+- Site de documentação: [docs.reader.acerola.app](https://docs.reader.acerola.app) (código em [`docs/web/`](docs/web/))

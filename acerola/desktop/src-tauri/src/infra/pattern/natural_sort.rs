@@ -1,12 +1,12 @@
 use std::cmp::Ordering;
 
-/// Compara dois nomes de arquivo/entrada em ordem natural (`page2` antes de `page10`).
+/// Compares two file/entry names in natural order (`page2` before `page10`).
 pub fn natural_cmp(left: &str, right: &str) -> Ordering {
     natural_key(left).cmp(&natural_key(right))
 }
 
-/// Gera uma chave de ordenação onde sequências numéricas são normalizadas por tamanho fixo,
-/// para que a comparação lexicográfica resultante respeite a ordem numérica natural.
+/// Generates a sort key where numeric sequences are normalized to a fixed width,
+/// so the resulting lexicographic comparison respects natural numeric order.
 pub fn natural_key(value: &str) -> String {
     let mut output = String::with_capacity(value.len());
     let mut digits = String::new();

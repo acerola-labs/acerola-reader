@@ -37,9 +37,9 @@ class CoverBrowseProviderImpl
                 FfiCoverEntry(coverVersion = directory?.lastModified ?: 0L, bytes = bytes)
             }
 
-        // Cache dedicado (nunca a árvore do usuário) — chave `(peerId, comicName, coverVersion)`
-        // embutida no nome do arquivo, pra nunca rebaixar a mesma versão duas vezes (o chamador
-        // em Rust já decide isso ANTES de disparar a busca, isto aqui só persiste).
+        // Dedicated cache (never the user's tree) — `(peerId, comicName, coverVersion)` key
+        // embedded in the file name, so the same version is never downloaded twice (the caller
+        // in Rust already decides that BEFORE triggering the fetch, this only persists).
         override fun saveRemoteCover(
             peerId: String,
             comicName: String,

@@ -19,7 +19,11 @@ describe('AcerolaCallout', () => {
 
 	it('renders a custom title and honors the type prop', () => {
 		render(AcerolaCallout, {
-			props: { type: 'danger', title: 'Heads up', children: bodySnippet('Destructive action') }
+			props: {
+				type: 'danger',
+				title: 'Heads up',
+				children: bodySnippet('Destructive action')
+			}
 		});
 
 		expect(screen.getByText('Heads up')).toBeInTheDocument();

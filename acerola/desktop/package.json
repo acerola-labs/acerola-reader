@@ -3,6 +3,9 @@
 	"type": "module",
 	"version": "1.0.2",
 	"license": "MPL-2.0",
+	"imports": {
+		"#lib/*": "./svelte/src/lib/*"
+	},
 	"author": {
 		"name": "Vinícius Gabriel Pereira Leitão",
 		"email": "contact@acerola.app"
@@ -43,6 +46,7 @@
 		"rolldown": "1.2.5"
 	},
 	"dependencies": {
+		"@fontsource/titan-one": "^5.3.0",
 		"@formkit/auto-animate": "^0.10.0",
 		"@tauri-apps/api": "^2.11.1",
 		"@tauri-apps/plugin-dialog": "^2.6.0",

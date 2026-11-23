@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import AcerolaRemoteLibraryDialog, {
 	type AcerolaRemoteLibraryDialogProps
 } from './acerola-remote-library-dialog.svelte';
-import type { ComicSummary } from '$lib/contracts/network/network.payloads';
+import type { ComicSummary } from '#lib/contracts/network/network.payloads.ts';
 
 type DialogData = AcerolaRemoteLibraryDialogProps['data'];
 
@@ -62,7 +62,7 @@ describe('AcerolaRemoteLibraryDialog', () => {
 		expect(screen.getByText('Berserk')).toBeInTheDocument();
 	});
 
-	it('shows a loading message and hides the grid while loading', () => {
+	it('shows the skeleton grid and hides the comics while loading', () => {
 		render(AcerolaRemoteLibraryDialog, {
 			props: {
 				state: { open: true },
@@ -72,7 +72,9 @@ describe('AcerolaRemoteLibraryDialog', () => {
 		});
 
 		expect(
-			screen.getByText(/Querying device's library|Consultando biblioteca/i)
+			screen.getByRole('status', {
+				name: /Querying device's library|Consultando biblioteca/i
+			})
 		).toBeInTheDocument();
 		expect(screen.queryByText('One Piece')).not.toBeInTheDocument();
 	});
@@ -99,7 +101,9 @@ describe('AcerolaRemoteLibraryDialog', () => {
 			}
 		});
 
-		expect(screen.getByText(/No comics found|Nenhum quadrinho encontrado/i)).toBeInTheDocument();
+		expect(
+			screen.getByText(/No comics found|Nenhum quadrinho encontrado/i)
+		).toBeInTheDocument();
 	});
 
 	it('filters the comics grid by the search query', async () => {

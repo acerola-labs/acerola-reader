@@ -4,13 +4,13 @@
 
 	const { Story } = defineMeta({
 		component: AcerolaStepSettings,
-		title: 'Páginas/Onboarding/AcerolaStepSettings',
+		title: 'Pages/Onboarding/AcerolaStepSettings',
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Passo de onboarding para escolher o tema e a pasta da biblioteca. Usa os hooks de tema e seleção de pasta internamente (chamadas ao Tauri falham silenciosamente fora do app real).'
+						'Onboarding step to choose the theme and the library folder. Uses the theme and folder selection hooks internally (Tauri calls fail silently outside the real app).'
 				}
 			}
 		}

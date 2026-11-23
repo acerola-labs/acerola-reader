@@ -5,7 +5,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { error as tauriError } from '@tauri-apps/plugin-log';
 import HookHarness from '../../../../tests/harness/hooks/rune-wrapper.svelte';
 import { useBookmarks, _resetBookmarksState } from './use-bookmarks.svelte';
-import { BOOKMARKS_COMMANDS } from '$lib/contracts/bookmarks/bookmarks.commands';
+import { BOOKMARKS_COMMANDS } from '#lib/contracts/bookmarks/bookmarks.commands.ts';
 
 vi.mock('@tauri-apps/api/core', () => ({
 	invoke: vi.fn()
@@ -37,10 +37,10 @@ async function renderBookmarksHook() {
 }
 
 describe('useBookmarks', () => {
-	// Capturado no beforeAll, que roda antes do primeiro beforeEach disparar.
-	// É o único ponto de toda a suíte onde o state do hook reflete os valores
-	// iniciais de verdade do `$state(...)` do módulo, em vez dos valores escritos
-	// por `_resetBookmarksState()` (que todo outro teste observa depois do beforeEach).
+	// Captured in beforeAll, which runs before the first beforeEach fires.
+	// It is the only point in the whole suite where the hook's state reflects the
+	// module's real initial `$state(...)` values, instead of the values written by
+	// `_resetBookmarksState()` (which every other test observes after beforeEach).
 	let pristineBookmarksSnapshot: unknown;
 	let pristineAssignmentsSnapshot: unknown;
 	let pristineIsLoadingSnapshot: boolean;
@@ -54,9 +54,9 @@ describe('useBookmarks', () => {
 		pristineAssignmentsSnapshot = [...pristineHook.assignments];
 		pristineIsLoadingSnapshot = pristineHook.isLoading;
 
-		// isInitialized não tem getter, então observamos seu valor inicial de verdade
-		// indiretamente: se começou `false`, essa primeiríssima chamada de loadBookmarks()
-		// realmente busca os dados.
+		// isInitialized has no getter, so we observe its real initial value indirectly:
+		// if it started `false`, this very first loadBookmarks() call really fetches
+		// the data.
 		invokeMock.mockResolvedValueOnce([{ id: 99, name: 'Pristine', color: 1 }]);
 		invokeMock.mockResolvedValueOnce([]);
 
@@ -176,7 +176,7 @@ describe('useBookmarks', () => {
 		invokeMock.mockResolvedValueOnce([]);
 
 		const hook = await renderBookmarksHook();
-		await hook.loadBookmarks(); // Preenche a lista
+		await hook.loadBookmarks(); // Fills the list
 		expect(hook.bookmarks).toHaveLength(2);
 
 		invokeMock.mockResolvedValueOnce(undefined); // delete_category
@@ -210,8 +210,8 @@ describe('useBookmarks', () => {
 			categoryId: 1
 		});
 		expect(result).toEqual(assignment);
-		// A atribuição antiga da comic 123 some (substituída), mas a da 456 (outra comic)
-		// continua intacta.
+		// Comic 123's old assignment goes away (replaced), but 456's (another comic)
+		// stays intact.
 		expect(hook.assignments).toEqual([
 			{ id: 2, comic_directory_fk: 456, category_id: 9 },
 			assignment

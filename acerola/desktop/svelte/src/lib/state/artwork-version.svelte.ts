@@ -1,9 +1,9 @@
-// Contador global que qualquer tela lendo `resolveCover`/`resolveBanner` (`artwork.utils.ts`)
-// usa como cache-bust automático. Sem isso, cada tela precisava lembrar de setar seu próprio
-// timestamp local toda vez que uma operação pudesse ter baixado uma capa nova (sync MangaDex/
-// AniList, sync em lote, regenerar capa, sync P2P) — na prática várias esqueciam (ex.: sync
-// individual via MangaDex/AniList nunca bustava, a Home nunca bustava em lugar nenhum), e a
-// imagem antiga continuava em cache do WebView mesmo com o arquivo já sobrescrito no disco.
+// Global counter that any screen reading `resolveCover`/`resolveBanner` (`artwork.utils.ts`)
+// uses as an automatic cache-bust. Without it, each screen had to remember to set its own
+// local timestamp every time an operation might have downloaded a new cover (MangaDex/AniList
+// sync, batch sync, regenerate cover, P2P sync) — in practice several forgot (e.g. individual
+// MangaDex/AniList sync never busted, the Home never busted anywhere), and the old image
+// stayed in the WebView cache even with the file already overwritten on disk.
 let version = $state(0);
 
 export function bumpArtworkVersion(): void {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import { useOnboarding } from '$lib/hooks/onboarding/use-onboarding.svelte';
-	import { useLibraryScanner } from '$lib/hooks/store/use-comic-scanner.svelte';
-	import { DIRECTORY_SCAN_COMMANDS } from '$lib/contracts/library/library.commands';
-	import { useSelectFolder } from '$lib/hooks/store/use-select-folder.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { useOnboarding } from '#lib/hooks/onboarding/use-onboarding.svelte.ts';
+	import { useLibraryScanner } from '#lib/hooks/store/use-comic-scanner.svelte.ts';
+	import { DIRECTORY_SCAN_COMMANDS } from '#lib/contracts/library/library.commands.ts';
+	import { useSelectFolder } from '#lib/hooks/store/use-select-folder.svelte.ts';
 	import StepWelcome from './steps/acerola-step-welcome.svelte';
 	import StepLanguage from './steps/acerola-step-language.svelte';
 	import StepFormats from './steps/acerola-step-formats.svelte';
@@ -57,38 +57,58 @@
 	}
 
 	let currentStepIndex = $derived(onboarding.currentStep);
+	let progressPercent = $derived((currentStepIndex / (STEPS.length - 1)) * 100);
 </script>
 
-<div class="flex h-full w-full flex-col">
-	<div class="border-b border-border/30 bg-background/95 px-8 py-4">
-		<div class="flex items-center justify-center gap-2">
-			{#each STEPS as step, it}
-				<div
-					class="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all duration-300
-						{it === onboarding.currentStep
-						? 'bg-primary text-primary-foreground'
-						: it < onboarding.currentStep
-							? 'bg-muted text-muted-foreground'
-							: 'bg-transparent text-muted-foreground/50'}"
-				>
-					<span
-						class="flex size-5 items-center justify-center rounded-full
-						{it <= onboarding.currentStep ? 'bg-background/20' : 'bg-muted/30'}"
+<div class="relative flex h-full w-full flex-col overflow-hidden bg-background">
+	<!-- Stepper: solid header, steps as pills (current bg-primary, done bg-primary-soft). -->
+	<div class="relative z-10 bg-background px-6 py-4">
+		<div class="mx-auto flex max-w-4xl flex-col gap-3">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-muted-foreground">
+					{m['onboarding.setupTitle']()}
+				</span>
+				<span class="text-xs font-black text-muted-foreground tabular-nums">
+					{currentStepIndex + 1} / {STEPS.length} ({Math.round(progressPercent)}%)
+				</span>
+			</div>
+
+			<div class="flex w-full items-center gap-1 rounded-full bg-surface p-1">
+				{#each STEPS as step, it (it)}
+					{@const isCompleted = it < currentStepIndex}
+					{@const isCurrent = it === currentStepIndex}
+					<div
+						class={[
+							'flex h-9 flex-1 items-center justify-center gap-2 rounded-full px-3 text-xs font-bold transition-colors duration-300 ease-brand',
+							isCurrent
+								? 'bg-primary text-primary-foreground'
+								: isCompleted
+									? 'bg-primary-soft text-primary'
+									: 'text-muted-foreground'
+						]}
 					>
-						{it + 1}
-					</span>
-					<span class="hidden sm:inline">{step.label()}</span>
-				</div>
-				{#if it < STEPS.length - 1}
-					<div class="h-px w-8 bg-border/30"></div>
-				{/if}
-			{/each}
+						<span class="font-black tabular-nums">{it + 1}</span>
+						<span class="truncate max-sm:hidden">{step.label()}</span>
+					</div>
+				{/each}
+			</div>
+
+			<div class="h-1 w-full overflow-hidden rounded-full bg-surface">
+				<div
+					class="h-full rounded-full bg-primary transition-[width] duration-500 ease-brand"
+					style="width: {progressPercent}%;"
+				></div>
+			</div>
 		</div>
 	</div>
 
+	<!-- Step Content Container with dynamic fly animation -->
 	<div class="relative flex-1 overflow-hidden">
 		{#key currentStepIndex}
-			<div class="absolute inset-0 overflow-y-auto" in:fly={{ duration: 300, x: direction * 100 }}>
+			<div
+				class="absolute inset-0 overflow-y-auto"
+				in:fly={{ duration: 300, x: direction * 100 }}
+			>
 				{#if currentStepIndex === 0}
 					<StepWelcome onNext={handleNext} />
 				{:else if currentStepIndex === 1}

@@ -23,9 +23,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Responsabilidade única: IO puro sobre o filesystem.
- * Lista arquivos, filtra por extensão e detecta quais pastas são comics.
- * Não conhece Room nem qualquer conceito de sincronização.
+ * Single responsibility: pure IO over the filesystem.
+ * Lists files, filters by extension and detects which folders are comics.
+ * Knows nothing about Room nor any sync concept.
  */
 @Singleton
 class DirectoryScanner

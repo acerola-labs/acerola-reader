@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/cn.util';
+	import { cn, type WithElementRef } from '#lib/utils/cn.util.ts';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {
@@ -14,7 +14,7 @@
 	bind:this={ref}
 	data-slot="card-title"
 	class={cn(
-		'font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm',
+		'font-heading leading-snug font-medium text-base group-data-[size=sm]/card:text-sm',
 		className
 	)}
 	{...restProps}

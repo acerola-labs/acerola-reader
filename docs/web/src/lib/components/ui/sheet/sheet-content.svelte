@@ -5,8 +5,8 @@
 <script lang="ts">
 	import { Dialog as SheetPrimitive } from 'bits-ui';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { Button } from '$lib/components/ui/button/index';
-	import { cn, type WithoutChildrenOrChild } from '$lib/cn.util';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn, type WithoutChildrenOrChild } from '#lib/utils/cn.util.ts';
 	import SheetOverlay from './sheet-overlay.svelte';
 	import SheetPortal from './sheet-portal.svelte';
 	import type { Snippet } from 'svelte';
@@ -44,7 +44,12 @@
 		{#if showCloseButton}
 			<SheetPrimitive.Close data-slot="sheet-close">
 				{#snippet child({ props })}
-					<Button variant="ghost" class="absolute top-3 right-3" size="icon-sm" {...props}>
+					<Button
+						variant="ghost"
+						class="absolute top-3 right-3"
+						size="icon-sm"
+						{...props}
+					>
 						<XIcon />
 						<span class="sr-only">Close</span>
 					</Button>

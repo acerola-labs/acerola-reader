@@ -2,18 +2,18 @@
 	import { browser } from '$app/environment';
 	import { goto, replaceState } from '$app/navigation';
 	import { page } from '$app/state';
-	import type { ReaderChapterPayload } from '$lib/contracts/reader/reader.payloads';
-	import { useReader } from '$lib/hooks/store/use-reader.svelte';
-	import { useReaderMode } from '$lib/hooks/preferences/use-reader-mode.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import type { ReaderChapterPayload } from '#lib/contracts/reader/reader.payloads.ts';
+	import { useReader } from '#lib/hooks/store/use-reader.svelte.ts';
+	import { useReaderMode } from '#lib/hooks/preferences/use-reader-mode.svelte.ts';
+	import { m } from '#lib/paraglide/messages.js';
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
-	import { LIBRARY_EVENTS } from '$lib/contracts/library/chapter.events';
-	import { LIBRARY_COMMANDS } from '$lib/contracts/library/chapter.commands';
-	import { SESSION_KEYS } from '$lib/constants/session-keys';
+	import { LIBRARY_EVENTS } from '#lib/contracts/library/chapter.events.ts';
+	import { LIBRARY_COMMANDS } from '#lib/contracts/library/chapter.commands.ts';
+	import { SESSION_KEYS } from '#lib/constants/session-keys.ts';
 	import { onMount, tick, untrack } from 'svelte';
-	import { useReaderNavigation } from '$lib/hooks/store/use-reader-navigation.svelte';
-	import { useHistory } from '$lib/hooks/store/use-history.svelte';
+	import { useReaderNavigation } from '#lib/hooks/store/use-reader-navigation.svelte.ts';
+	import { useHistory } from '#lib/hooks/store/use-history.svelte.ts';
 	import ReaderCommandPalette from './components/acerola-reader-command-palette.svelte';
 	import ReaderFooter from './components/acerola-reader-footer.svelte';
 	import ReaderPages from './components/acerola-reader-pages.svelte';
@@ -51,10 +51,10 @@
 
 	const chapterProgressLabel = $derived.by(() => {
 		if (nav.chapterIndex === undefined || nav.totalChapters === undefined) {
-			return m['pages.reader.progress.chapter_unavailable']();
+			return m['pages.reader.progress.chapterUnavailable']();
 		}
 
-		return m['pages.reader.progress.chapter_count']({
+		return m['pages.reader.progress.chapterCount']({
 			current: nav.chapterIndex + 1,
 			total: nav.totalChapters
 		});
@@ -62,12 +62,12 @@
 
 	const chaptersRemainingLabel = $derived.by(() => {
 		if (nav.chaptersRemaining === undefined) {
-			return m['pages.reader.progress.remaining_unavailable']();
+			return m['pages.reader.progress.remainingUnavailable']();
 		}
 
 		return nav.chaptersRemaining === 1
-			? m['pages.reader.progress.remaining_one']()
-			: m['pages.reader.progress.remaining_many']({ count: nav.chaptersRemaining });
+			? m['pages.reader.progress.remainingOne']()
+			: m['pages.reader.progress.remainingMany']({ count: nav.chaptersRemaining });
 	});
 
 	const pageProgressPercent = $derived(
@@ -183,7 +183,9 @@
 					? rightRect.left + rightRect.width / 2
 					: rightRect.top + rightRect.height / 2;
 
-				return Math.abs(leftCenter - viewportCenter) - Math.abs(rightCenter - viewportCenter);
+				return (
+					Math.abs(leftCenter - viewportCenter) - Math.abs(rightCenter - viewportCenter)
+				);
 			})
 			.map(([pageIndex]) => pageIndex);
 	}
@@ -209,7 +211,7 @@
 		zoom.resetPan();
 
 		await tick();
-		// Se for um salto muito grande, não use scroll suave para evitar disparar o observer em dezenas de páginas intermediárias
+		// For a very large jump, don't smooth scroll, to avoid firing the observer on dozens of intermediate pages
 		scrollPageIntoView(targetPage, distance > 3 ? 'auto' : 'smooth');
 	}
 
@@ -223,14 +225,14 @@
 
 		try {
 			await reader.open(nav.chapter, nav.state.startPage ?? 0);
-			nav.state.startPage = undefined; // Reseta a página inicial para que as próximas aberturas comecem do 0
+			nav.state.startPage = undefined; // Reset the start page so the next openings start from 0
 			await tick();
 
-			// Pequeno atraso para garantir que o DOM está pronto e o IntersectionObserver pegue o estado inicial
+			// Small delay to make sure the DOM is ready and the IntersectionObserver picks up the initial state
 			setTimeout(() => {
 				scrollPageIntoView(reader.currentPage, 'auto');
 
-				// Outro tick para permitir que o observer registre o pulo antes de exibir a interface
+				// Another tick so the observer can register the jump before showing the interface
 				setTimeout(() => {
 					nav.initializing = false;
 				}, 50);
@@ -383,8 +385,8 @@
 		};
 	}
 
-	// Mantém a imagem "em foco" pro pan/zoom sempre em sincronia com a página atual do leitor —
-	// sem isso, trocar de página com zoom ativo continuaria limitando o pan pela imagem antiga.
+	// Keeps the "focused" image for pan/zoom always in sync with the reader's current page —
+	// without this, changing pages with zoom active would keep bounding the pan by the old image.
 	$effect(() => {
 		const currentPage = reader.currentPage;
 
@@ -417,13 +419,15 @@
 
 {#if nav.initializing}
 	<div
-		class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-base/95 backdrop-blur-xl transition-opacity duration-300"
+		class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-background transition-opacity duration-300"
 	>
 		<div class="flex flex-col items-center gap-4">
+			<!-- Loading skeleton in the shape of a page, never a loose spinner (Acerola standard). -->
 			<div
-				class="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"
+				class="aspect-2/3 h-[60vh] animate-pulse rounded-tile bg-surface"
+				aria-hidden="true"
 			></div>
-			<p class="animate-pulse text-sm font-black tracking-widest text-primary uppercase">
+			<p class="animate-pulse text-sm font-black text-muted-foreground" role="status">
 				{m['pages.reader.fallback.loading']()}
 			</p>
 		</div>
@@ -434,7 +438,7 @@
 	{#snippet toolbar()}
 		<ReaderToolbar
 			data={{
-				title: nav.chapter?.name ?? m['pages.reader.fallback.chapter_unavailable'](),
+				title: nav.chapter?.name ?? m['pages.reader.fallback.chapterUnavailable'](),
 				subtitle: readerSubtitle,
 				zoomLevel: zoom.zoomLevel,
 				zoomMode: zoom.zoomMode,

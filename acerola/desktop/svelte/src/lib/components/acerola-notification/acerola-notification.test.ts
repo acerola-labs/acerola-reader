@@ -19,13 +19,13 @@ describe('AcerolaNotification', () => {
 
 	it('does not show badge when there are no notifications', () => {
 		render(AcerolaNotification);
-		expect(document.querySelector('.bg-primary.rounded-full')).not.toBeInTheDocument();
+		expect(document.querySelector('span.bg-primary.rounded-full')).not.toBeInTheDocument();
 	});
 
 	it('shows badge when there are notifications', () => {
 		notificationStore.notify.success('Teste');
 		render(AcerolaNotification);
-		expect(document.querySelector('.bg-primary.rounded-full')).toBeInTheDocument();
+		expect(document.querySelector('span.bg-primary.rounded-full')).toBeInTheDocument();
 	});
 
 	it('opens popover and displays notification when clicking button', async () => {

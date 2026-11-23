@@ -3,13 +3,13 @@
 	import AcerolaComicPreferences from './acerola-comic-preferences.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicPreferences',
+		title: 'Pages/Comic/AcerolaComicPreferences',
 		component: AcerolaComicPreferences,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Painel de preferências da página do comic.'
+					component: 'Comic page preferences panel.'
 				}
 			}
 		}

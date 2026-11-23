@@ -1,7 +1,7 @@
-/// Resultado de `ChapterRepository::get_library_summary` — só SQL, sem tocar disco (nada de
-/// `tokio::fs::metadata` por capítulo), usado pelo protocolo `acerola/browse-library/1`
-/// (`LibraryBrowseInbound`) pra não estourar o timeout do protocolo em bibliotecas grandes.
-/// `cover_version` reaproveita `comic_directory.last_modified` — sem hash novo.
+/// Result of `ChapterRepository::get_library_summary` — SQL only, no disk access (no
+/// `tokio::fs::metadata` per chapter), used by the `acerola/browse-library/1` protocol
+/// (`LibraryBrowseInbound`) so large libraries don't blow the protocol timeout.
+/// `cover_version` reuses `comic_directory.last_modified` — no new hash.
 #[derive(Debug, sqlx::FromRow, Clone)]
 pub struct LibrarySummaryRow {
     pub comic_name: String,

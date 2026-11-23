@@ -1,20 +1,24 @@
 import { invoke } from '@tauri-apps/api/core';
 import { error } from '@tauri-apps/plugin-log';
-import { METADATA_COMMANDS } from '$lib/contracts/metadata/metadata.commands';
-import type { ComicMetadataEvent } from '$lib/contracts/metadata/metadata.payloads';
+import { METADATA_COMMANDS } from '#lib/contracts/metadata/metadata.commands.ts';
+import type { ComicMetadataEvent } from '#lib/contracts/metadata/metadata.payloads.ts';
 import { load } from '@tauri-apps/plugin-store';
-import { STORE_FILE, STORE_KEYS } from '$lib/constants/store-plugin';
-import { isSyncingAll } from '$lib/state/metadata-sync-all.svelte';
+import { STORE_FILE, STORE_KEYS } from '#lib/constants/store-plugin.ts';
+import { isSyncingAll } from '#lib/state/metadata-sync-all.svelte.ts';
 
 export function useMetadataSync() {
 	let isSyncing = $state(false);
 
-	async function syncMangadex(title: string, comicId: string): Promise<ComicMetadataEvent | null> {
+	async function syncMangadex(
+		title: string,
+		comicId: string
+	): Promise<ComicMetadataEvent | null> {
 		isSyncing = true;
 		try {
 			const store = await load(STORE_FILE);
 			const language = (await store.get<string>(STORE_KEYS.metadataLanguage)) || 'pt-br';
-			const generateComicInfo = (await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
+			const generateComicInfo =
+				(await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
 			const result = await invoke<ComicMetadataEvent>(METADATA_COMMANDS.syncMangadex, {
 				title,
 				comicId,
@@ -35,7 +39,8 @@ export function useMetadataSync() {
 		try {
 			const store = await load(STORE_FILE);
 			const language = (await store.get<string>(STORE_KEYS.metadataLanguage)) || 'pt-br';
-			const generateComicInfo = (await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
+			const generateComicInfo =
+				(await store.get<boolean>(STORE_KEYS.comicInfoPreference)) ?? false;
 			const result = await invoke<ComicMetadataEvent>(METADATA_COMMANDS.syncAnilist, {
 				title,
 				comicId,
@@ -80,9 +85,9 @@ export function useMetadataSync() {
 
 	return {
 		get isSyncing() {
-			// Também desabilita enquanto um sync em lote (tela de Config) estiver rodando —
-			// o lock de verdade é no backend (`SyncGuard`), isso só evita o usuário clicar e
-			// levar um toast de `SyncInProgress` por um comando que já sabíamos que ia falhar.
+			// Also disabled while a batch sync (Config screen) is running — the real lock is
+			// in the backend (`SyncGuard`), this just keeps the user from clicking and getting a
+			// `SyncInProgress` toast for a command we already knew would fail.
 			return isSyncing || isSyncingAll();
 		},
 		syncMangadex,

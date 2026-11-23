@@ -32,8 +32,8 @@ describe('AcerolaInput', () => {
 		expect(input).toHaveValue('quadrinhos');
 	});
 
-	it('applies rounded-lg class', () => {
+	it('is a brand pill field (rounded-full on bg-input)', () => {
 		render(AcerolaInput);
-		expect(screen.getByRole('textbox')).toHaveClass('rounded-lg');
+		expect(screen.getByRole('textbox')).toHaveClass('rounded-full', 'bg-input');
 	});
 });

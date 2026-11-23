@@ -3,19 +3,19 @@
 	import AcerolaInput from './acerola-input.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaInput',
+		title: 'Primitives/AcerolaInput',
 		component: AcerolaInput,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Campo de texto padrão da aplicação.'
+					component: 'Default text field of the application.'
 				}
 			}
 		},
 		argTypes: {
-			state: { description: 'Estado controlado do campo', control: 'object' },
-			ui: { description: 'Configuração visual do input', control: 'object' }
+			state: { description: 'Controlled field state', control: 'object' },
+			ui: { description: 'Input visual configuration', control: 'object' }
 		}
 	});
 </script>

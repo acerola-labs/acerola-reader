@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { cn, type WithoutChild } from '$lib/cn.util';
+	import { cn, type WithoutChild } from '#lib/utils/cn.util.ts';
 
 	let {
 		ref = $bindable(null),

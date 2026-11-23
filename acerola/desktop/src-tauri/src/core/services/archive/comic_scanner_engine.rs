@@ -37,19 +37,19 @@ use crate::{
     },
 };
 
-/// Orquestrador do escaneamento de bibliotecas de quadrinhos no sistema de arquivos.
+/// Orchestrates scanning comic libraries on the filesystem.
 ///
-/// Este serviço é responsável por percorrer diretórios, identificar pastas que representam
-/// obras (Comics), gerenciar capítulos e volumes, além de lidar com a conversão de formatos.
+/// This service walks directories, identifies folders that represent works (Comics),
+/// manages chapters and volumes, and also handles format conversion.
 ///
-/// ### IDs Determinísticos
-/// Utiliza IDs baseados em hash do caminho relativo para garantir consistência entre scans
-/// e facilitar futuras sincronizações sem depender do estado do banco de dados.
+/// ### Deterministic IDs
+/// Uses IDs based on a hash of the relative path to guarantee consistency across scans
+/// and ease future syncs without depending on the database state.
 ///
-/// ### Fluxo de Conversão
-/// Como parte do middleware de escaneamento, arquivos PDF são automaticamente interceptados,
-/// convertidos para CBZ e apenas o resultado da conversão é indexado, mantendo o banco
-/// de dados limpo com formatos otimizados para leitura.
+/// ### Conversion Flow
+/// As part of the scanning middleware, PDF files are automatically intercepted,
+/// converted to CBZ and only the conversion result is indexed, keeping the database
+/// clean with reading-optimized formats.
 pub struct ComicScannerService {
     path_guard: PathGuard,
     comic_repo: ComicRepository,
@@ -73,10 +73,10 @@ impl ComicScannerService {
         }
     }
 
-    /// Executa um escaneamento completo (Refresh), indexando novas pastas e capítulos.
+    /// Runs a full scan (Refresh), indexing new folders and chapters.
     ///
-    /// Utiliza a estratégia `INSERT OR IGNORE`, garantindo que itens já existentes
-    /// não sejam duplicados nem reprocessados desnecessariamente.
+    /// Uses the `INSERT OR IGNORE` strategy, ensuring existing items are
+    /// neither duplicated nor needlessly reprocessed.
     pub async fn refresh_library(
         &self, path: PathBuf, mut on_progress: impl FnMut(String),
         mut on_converting: impl FnMut(String),
@@ -97,7 +97,7 @@ impl ComicScannerService {
             }
         }
 
-        // Converte todos os PDFs de todos os diretórios em paralelo antes do scan
+        // Converts all PDFs from all directories in parallel before the scan
         self.pre_convert_all_pdfs(&entries, &mut on_converting).await;
 
         let repository = self.comic_repo.clone();
@@ -106,7 +106,7 @@ impl ComicScannerService {
         for entry in entries {
             let directory_path = entry.directory.to_string_lossy().to_string();
 
-            // Pula se o diretório atual for subdiretório de algum já processado como comic
+            // Skip if the current directory is a subdirectory of one already processed as a comic
             if processed_paths.iter().any(|processed| {
                 std::path::Path::new(&directory_path).starts_with(processed)
                     && directory_path != *processed
@@ -145,12 +145,12 @@ impl ComicScannerService {
         Ok(())
     }
 
-    /// Realiza um escaneamento incremental, detectando apenas modificações no disco.
+    /// Runs an incremental scan, detecting only changes on disk.
     ///
-    /// # Comportamento
-    /// - Adiciona novos quadrinhos.
-    /// - Atualiza quadrinhos cujas pastas tiveram data de modificação alterada.
-    /// - Remove do banco de dados registros cujas pastas não existem mais no disco.
+    /// # Behavior
+    /// - Adds new comics.
+    /// - Updates comics whose folders had their modification date changed.
+    /// - Removes from the database records whose folders no longer exist on disk.
     pub async fn incremental_scan(
         &self, path: PathBuf, mut on_progress: impl FnMut(String),
         mut on_converting: impl FnMut(String),
@@ -161,7 +161,7 @@ impl ComicScannerService {
         let mut discovered = self.collect_entries(path).await?;
         discovered.sort_by_key(|entry| entry.directory.clone());
 
-        // Converte todos os PDFs de todos os diretórios em paralelo antes do scan
+        // Converts all PDFs from all directories in parallel before the scan
         self.pre_convert_all_pdfs(&discovered, &mut on_converting).await;
 
         let indexed: Vec<ComicDirectory> = self.comic_repo.base.find_all().await?;
@@ -242,10 +242,10 @@ impl ComicScannerService {
         Ok(())
     }
 
-    /// Reconstrói a biblioteca do zero, ignorando o estado atual do banco de dados.
+    /// Rebuilds the library from scratch, ignoring the current database state.
     ///
-    /// Utiliza `DELETE` seguido de `INSERT` para todos os itens encontrados, o que
-    /// força a re-verificação de todos os arquivos e a atualização de todos os metadados.
+    /// Uses `DELETE` followed by `INSERT` for every item found, which
+    /// forces re-checking every file and updating all metadata.
     pub async fn rebuild_library(
         &self, path: PathBuf, mut on_progress: impl FnMut(String),
         mut on_converting: impl FnMut(String),
@@ -310,21 +310,20 @@ impl ComicScannerService {
         Ok(())
     }
 
-    /// Reescaneia pontualmente um único quadrinho já indexado, sem comparar contra o
-    /// restante da biblioteca — insere/atualiza o que for encontrado na pasta e remove
-    /// os capítulos cujo arquivo tenha sumido do disco.
+    /// Rescans a single already-indexed comic on demand, without comparing against the
+    /// rest of the library — inserts/updates whatever is found in the folder and removes
+    /// the chapters whose file disappeared from disk.
     pub async fn rescan_comic(
         &self, comic: ComicDirectory, on_progress: impl FnMut(String),
         on_converting: impl FnMut(String),
     ) -> Result<(), ComicError> {
-        self.scan_comic_path(PathBuf::from(&comic.path), comic.id, on_progress, on_converting)
-            .await
+        self.scan_comic_path(PathBuf::from(&comic.path), comic.id, on_progress, on_converting).await
     }
 
-    /// Núcleo compartilhado de [`Self::rescan_comic`]: processa apenas as entradas
-    /// encontradas dentro de `path`, sem tocar em quadrinhos de fora dele, e ao final remove
-    /// do banco qualquer capítulo de `comic_id` que não tenha sido redescoberto (arquivo
-    /// apagado via explorador de arquivos entre um rescan e outro).
+    /// Shared core of [`Self::rescan_comic`]: processes only the entries found inside
+    /// `path`, without touching comics outside it, and at the end removes from the database
+    /// any chapter of `comic_id` that was not rediscovered (file deleted via the file
+    /// explorer between one rescan and the next).
     async fn scan_comic_path(
         &self, path: PathBuf, comic_id: i64, mut on_progress: impl FnMut(String),
         mut on_converting: impl FnMut(String),
@@ -392,7 +391,7 @@ impl ComicScannerService {
         Ok(())
     }
 
-    /// Coleta entradas de diretório recursivamente através do ScannerEngine.
+    /// Recursively collects directory entries through the ScannerEngine.
     async fn collect_entries(&self, path: PathBuf) -> Result<Vec<DirectoryEntry>, ComicError> {
         let (tx, mut rx) = mpsc::channel(32);
         let scanner = ScannerEngine { max_depth: None };
@@ -414,10 +413,10 @@ impl ComicScannerService {
         Ok(entries)
     }
 
-    /// Processa uma única entrada de diretório, classificando arquivos e convertendo PDFs.
+    /// Processes a single directory entry, classifying files and converting PDFs.
     ///
-    /// Esta é a função principal que aplica a lógica de middleware para interceptar
-    /// formatos não suportados nativamente pelo banco de dados (PDF) e transformá-los.
+    /// This is the main function applying the middleware logic to intercept formats
+    /// not natively supported by the database (PDF) and transform them.
     async fn process_entry<F, Fut>(
         &self, entry: DirectoryEntry, templates: &[ArchiveTemplate], persist: F,
     ) -> Result<Option<Vec<i64>>, ComicError>
@@ -603,7 +602,7 @@ impl ComicScannerService {
         Ok(Some(discovered_ids))
     }
 
-    /// Coleta arquivos de um diretório específico de forma assíncrona.
+    /// Asynchronously collects files from a specific directory.
     async fn collect_files(&self, directory: &PathBuf) -> Result<Vec<PathBuf>, ComicError> {
         let mut entries = fs::read_dir(directory).await.map_err(ComicError::Io)?;
         let mut files = vec![];
@@ -635,7 +634,7 @@ impl ComicScannerService {
                     return None;
                 }
 
-                // Já foi pré-convertido pelo pre_convert_all_pdfs — inclui sem reprocessar
+                // Already pre-converted by pre_convert_all_pdfs — include without reprocessing
                 if cbz_path.exists() {
                     pre_converted.push((index, cbz_path));
                     return None;
@@ -697,11 +696,11 @@ impl ComicScannerService {
         all_results.into_iter().map(|(_, p)| p).collect()
     }
 
-    /// Pré-converte todos os PDFs encontrados em TODAS as entradas antes do scan principal.
+    /// Pre-converts every PDF found in ALL entries before the main scan.
     ///
-    /// Garante que PDFs de diretórios diferentes sejam processados em paralelo
-    /// (até [`PDF_CONVERSION_CONCURRENCY`] conversões simultâneas) em vez de aguardar
-    /// o processamento sequencial de cada entrada no loop principal.
+    /// Ensures PDFs from different directories are processed in parallel
+    /// (up to [`PDF_CONVERSION_CONCURRENCY`] simultaneous conversions) instead of waiting
+    /// for each entry to be processed sequentially in the main loop.
     async fn pre_convert_all_pdfs(
         &self, entries: &[DirectoryEntry], on_converting: &mut impl FnMut(String),
     ) {
@@ -887,7 +886,7 @@ mod tests {
         create_volume_dir(&root, "Berserk", "Vol. 01", &["Ch. 1.cbz", "Ch. 2.cbz"]).await;
         create_volume_dir(&root, "Berserk", "Vol. 02", &["Ch. 3.cbz"]).await;
 
-        // Popula os templates de volume
+        // Populate the volume templates
         let pool_ref = &pool;
         sqlx::query(include_str!(
             "../../../infra/db/migrations/seeds/001_seed_chapter_template.sql"
@@ -1011,7 +1010,7 @@ mod tests {
             .unwrap()
             .join("tests/wdio/comic/pdf/witchcraft.pdf");
 
-        // Configura o diretório com PDFs
+        // Set up the directory with PDFs
         let comic_dir = root.path().join("PdfComic");
         fs::create_dir_all(&comic_dir).await.unwrap();
         fs::copy(&fixture_pdf, comic_dir.join("root.pdf")).await.unwrap();
@@ -1020,7 +1019,7 @@ mod tests {
         fs::create_dir_all(&vol_dir).await.unwrap();
         fs::copy(&fixture_pdf, vol_dir.join("vol.pdf")).await.unwrap();
 
-        // Popula os templates para que o volume seja detectado
+        // Populate the templates so the volume is detected
         sqlx::query(include_str!(
             "../../../infra/db/migrations/seeds/001_seed_chapter_template.sql"
         ))
@@ -1030,18 +1029,18 @@ mod tests {
 
         service.refresh_library(root.path().to_path_buf(), |_| {}, |_| {}).await.unwrap();
 
-        // Verifica se os CBZs foram gerados
+        // Check that the CBZs were generated
         assert!(comic_dir.join("root.cbz").exists(), "root.cbz should have been generated");
         assert!(vol_dir.join("vol.cbz").exists(), "vol.cbz should have been generated");
 
-        // Verifica a indexação
+        // Check the indexing
         assert_eq!(count_comics(&pool).await, 1, "Comic should be indexed");
         assert_eq!(count_chapters(&pool).await, 2, "Both CBZs should be indexed as chapters");
         assert_eq!(count_volumes(&pool).await, 1, "Volume should be indexed");
     }
 
-    /// Cria um CBZ válido (zip real) com uma única página de imagem — usado pelos testes
-    /// de extração de capa, já que `create_comic_dir` grava bytes falsos que não abrem como zip.
+    /// Creates a valid CBZ (real zip) with a single image page — used by the cover
+    /// extraction tests, since `create_comic_dir` writes fake bytes that do not open as a zip.
     fn create_valid_cbz(path: &std::path::Path, page_name: &str, page_bytes: &[u8]) {
         use std::io::Write;
 

@@ -63,10 +63,10 @@ class ChapterSyncService
                 val existing = existingChaptersMap[fileUri]
                 if (existing != null && existing.lastModified == file.lastModified && existing.volumeFk == volumeId) {
                     chaptersToDelete.remove(existing)
-                    // Capítulo sem alteração, mas ainda sem checksum cacheado (biblioteca
-                    // indexada antes do checksum passar a ser calculado no scan, ou uma linha
-                    // corrompida por uma tentativa anterior) — preenche sem tratar como
-                    // novo/alterado, pra não duplicar linha nem remapear histórico à toa.
+                    // Unchanged chapter, but still without a cached checksum (library
+                    // indexed before the checksum started being computed during the scan, or a row
+                    // corrupted by a previous attempt) — fills it in without treating it as
+                    // new/changed, so no row is duplicated nor history needlessly remapped.
                     if (existing.checksum == null) {
                         val checksum = chapterIndexer.computeChecksum(fileUri)
                         if (checksum != null) chapterArchiveDao.update(existing.copy(checksum = checksum))

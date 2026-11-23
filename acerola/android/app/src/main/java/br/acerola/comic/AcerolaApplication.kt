@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import br.acerola.comic.coil.PageFetcherFactory
+import br.acerola.comic.common.activity.ErrorActivity
 import br.acerola.comic.service.reader.ReaderProcessor
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -20,6 +21,8 @@ class AcerolaApplication :
     lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
+        // First, so even a failure loading the native library lands on the error screen.
+        ErrorActivity.installCrashHandler(this)
         System.loadLibrary("acerola")
         super.onCreate()
     }

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import AcerolaNetworkTransfersLog from './acerola-network-transfers-log.svelte';
-import type { TransferLogEntry } from '$lib/hooks/store/use-network-sync.svelte';
+import type { TransferLogEntry } from '#lib/hooks/store/use-network-sync.svelte.ts';
 
 function entry(overrides: Partial<TransferLogEntry> = {}): TransferLogEntry {
 	return {
@@ -16,15 +16,8 @@ function entry(overrides: Partial<TransferLogEntry> = {}): TransferLogEntry {
 	};
 }
 
-// Expande o accordion clicando no cabeçalho — o mesmo gatilho que o usuário usa na tela de
-// Rede (ver acerola-network-transfers-log.svelte e acerola-network-relay-settings-card.test.ts,
-// mesmo padrão pro card vizinho de Configurações de Relay).
-async function expandCard(user: ReturnType<typeof userEvent.setup>) {
-	await user.click(screen.getByRole('button', { expanded: false }));
-}
-
 describe('AcerolaNetworkTransfersLog', () => {
-	it('shows the empty state as the header summary when there are no entries', () => {
+	it('shows the empty state when there are no entries', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: { entries: [], peerLabel: (id: string) => id }
@@ -34,7 +27,7 @@ describe('AcerolaNetworkTransfersLog', () => {
 		expect(screen.getByText(/No transfers|Nenhuma transfer/i)).toBeInTheDocument();
 	});
 
-	it('resolves the peer label for a "started" entry in the header summary', () => {
+	it('resolves the peer label for a "started" entry in its row', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
@@ -51,7 +44,9 @@ describe('AcerolaNetworkTransfersLog', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'files', status: 'progress', message: 'chapter1.cbz' })],
+					entries: [
+						entry({ kind: 'files', status: 'progress', message: 'chapter1.cbz' })
+					],
 					peerLabel: () => 'unused'
 				}
 			}
@@ -61,11 +56,13 @@ describe('AcerolaNetworkTransfersLog', () => {
 	});
 
 	it('falls back to the raw message when a kind has no formatter for that status', () => {
-		// 'history' não tem status 'progress' definido — describeEntry deve cair no fallback.
+		// 'history' has no 'progress' status defined — describeEntry must fall back.
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'history', status: 'progress', message: 'raw-fallback-text' })],
+					entries: [
+						entry({ kind: 'history', status: 'progress', message: 'raw-fallback-text' })
+					],
 					peerLabel: () => 'unused'
 				}
 			}
@@ -78,7 +75,14 @@ describe('AcerolaNetworkTransfersLog', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
-					entries: [entry({ kind: 'files', status: 'complete', message: 'peer-1', conflicts: 2 })],
+					entries: [
+						entry({
+							kind: 'files',
+							status: 'complete',
+							message: 'peer-1',
+							conflicts: 2
+						})
+					],
 					peerLabel: () => 'Meu Notebook'
 				}
 			}
@@ -100,21 +104,23 @@ describe('AcerolaNetworkTransfersLog', () => {
 		expect(screen.queryByText(/conflict|conflito/i)).not.toBeInTheDocument();
 	});
 
-	it('expands in line and lists every entry when the header is clicked', async () => {
-		const user = userEvent.setup();
+	it('lists every entry, always open (no accordion)', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: {
 					entries: [
 						entry({ id: 1, status: 'started', message: 'peer-1' }),
-						entry({ id: 2, kind: 'files', status: 'error', message: 'connection reset' })
+						entry({
+							id: 2,
+							kind: 'files',
+							status: 'error',
+							message: 'connection reset'
+						})
 					],
 					peerLabel: () => 'Meu Notebook'
 				}
 			}
 		});
-
-		await expandCard(user);
 
 		expect(screen.getByText(/connection reset/)).toBeInTheDocument();
 	});
@@ -128,23 +134,18 @@ describe('AcerolaNetworkTransfersLog', () => {
 				events: { onRefresh, onClear: vi.fn() }
 			}
 		});
-
-		await expandCard(user);
 		await user.click(screen.getByRole('button', { name: /Refresh|Atualizar/i }));
 
 		expect(onRefresh).toHaveBeenCalled();
 	});
 
-	it('hides the clear button when there are no entries', async () => {
-		const user = userEvent.setup();
+	it('hides the clear button when there are no entries', () => {
 		render(AcerolaNetworkTransfersLog, {
 			props: {
 				data: { entries: [], peerLabel: (id: string) => id },
 				events: { onRefresh: vi.fn(), onClear: vi.fn() }
 			}
 		});
-
-		await expandCard(user);
 
 		expect(screen.queryByRole('button', { name: /Clear|Limpar/i })).not.toBeInTheDocument();
 	});
@@ -162,11 +163,9 @@ describe('AcerolaNetworkTransfersLog', () => {
 			}
 		});
 
-		await expandCard(user);
-
-		// bits-ui AlertDialog.Trigger envolve o elemento filho em seu próprio <button>, então dois
-		// botões com o mesmo nome acessível existem — o gatilho externo é o índice 0 (mesmo padrão
-		// de `routes/history/__tests__/history.test.ts`).
+		// bits-ui AlertDialog.Trigger wraps the child element in its own <button>, so two buttons
+		// with the same accessible name exist — the outer trigger is index 0 (same pattern as
+		// `routes/history/__tests__/history.test.ts`).
 		const clearButtons = screen.getAllByRole('button', { name: /Clear|Limpar/i });
 		await user.click(clearButtons[0]);
 

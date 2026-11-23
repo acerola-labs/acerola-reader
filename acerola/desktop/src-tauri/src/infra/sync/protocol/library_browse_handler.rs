@@ -17,26 +17,26 @@ use crate::{
     },
 };
 
-/// Round-trip único (sem `FileSyncSessionGuard`: só lista títulos, não transfere nada, mesmo
-/// perfil de custo do `history_handler.rs`) pra descobrir o que existe na biblioteca remota
-/// antes de decidir sincronizar um quadrinho específico (`acerola/sync-comic/1`). Não persiste
-/// em `sync_history_log` — é uma consulta de navegação, não um sync de conteúdo.
+/// Single round-trip (no `FileSyncSessionGuard`: it only lists titles, transfers nothing, same
+/// cost profile as `history_handler.rs`) to find out what exists in the remote library
+/// before deciding to sync a specific comic (`acerola/sync-comic/1`). Does not persist
+/// to `sync_history_log` — it is a browsing query, not a content sync.
 ///
-/// O pedido em si não carrega nenhum dado (ver `LibraryBrowseRequest`) — mas precisa ser
-/// ESCRITO no wire por QUEM DISCA (`open_bi()`), não só "existir como intenção". Regra da
-/// própria `quinn`: quem chama `open_bi()` precisa escrever no `SendStream` antes do lado que
-/// aceita conseguir `accept_bi()` — sem isso o handler inbound nunca é sequer invocado. Era
-/// exatamente o bug reaberto em 22/08/2026 (timeout de 30s nos dois lados): esta função só
-/// lia, nunca escrevia.
+/// The request itself carries no data (see `LibraryBrowseRequest`) — but it must be
+/// WRITTEN to the wire by WHOEVER DIALS (`open_bi()`), not just "exist as an intent". A rule of
+/// `quinn` itself: whoever calls `open_bi()` must write to the `SendStream` before the accepting
+/// side can `accept_bi()` — without that the inbound handler is never even invoked. That was
+/// exactly the bug reopened on 2026-08-22 (30s timeout on both sides): this function only
+/// read, it never wrote.
 ///
-/// Importante: essa regra é sobre MATERIALIZAR o stream pro lado que aceita, não sobre o lado
-/// que aceita precisar LER o que foi escrito antes de responder — isso é uma decisão de
-/// protocolo separada, e `LibraryBrowseInbound` deliberadamente NÃO lê esse marcador (ver doc
-/// lá). Uma correção anterior, nesta mesma rodada, tentou fazer o inbound drenar o marcador
-/// antes de responder — isso quebrou a sessão inteira sempre que a materialização do stream
-/// atrasa (NAT traversal lento: a conexão "estabelece" a nível de handshake bem antes do path
-/// de dados ficar pronto pra carregar o marcador), porque acoplava a resposta do inbound a essa
-/// entrega, quando o inbound não precisa dela pra nada.
+/// Important: this rule is about MATERIALIZING the stream for the accepting side, not about the
+/// accepting side having to READ what was written before answering — that is a separate
+/// protocol decision, and `LibraryBrowseInbound` deliberately does NOT read this marker (see the
+/// docs there). A previous fix, in this same round, tried to make the inbound drain the marker
+/// before answering — that broke the whole session whenever the stream materialization
+/// was delayed (slow NAT traversal: the connection "establishes" at handshake level well before the
+/// data path is ready to carry the marker), because it coupled the inbound's answer to that
+/// delivery, when the inbound does not need it for anything.
 pub struct LibraryBrowseOutbound {
     emit: EventEmitter,
 }
@@ -66,13 +66,13 @@ impl Handler for LibraryBrowseOutbound {
 
         match self.run(&mut writer, &mut reader).await {
             Ok(response) => {
-                // `ComicSummaryEntry` (mensagem de wire, `snake_case`, compartilhada com o
-                // Android) não é o mesmo formato que o payload de evento pro frontend
-                // (`camelCase`, mesma convenção de `ConnectedPeerPayload`/`PairedPeerPayload` em
-                // `cmd/events/network`) — monta o JSON do evento à mão em vez de serializar a
-                // struct de wire direto, mesmo padrão já usado pelos eventos `sync:*:error`
-                // deste módulo (`serde_json::json!` ad-hoc, sem struct compartilhada entre
-                // `infra` e `cmd`).
+                // `ComicSummaryEntry` (wire message, `snake_case`, shared with
+                // Android) is not the same format as the event payload for the frontend
+                // (`camelCase`, same convention as `ConnectedPeerPayload`/`PairedPeerPayload` in
+                // `cmd/events/network`) — builds the event JSON by hand instead of serializing the
+                // wire struct directly, the same pattern already used by this module's `sync:*:error`
+                // events (ad-hoc `serde_json::json!`, no struct shared between
+                // `infra` and `cmd`).
                 let comics: Vec<serde_json::Value> = response
                     .comics
                     .iter()
@@ -105,17 +105,17 @@ impl Handler for LibraryBrowseOutbound {
     }
 }
 
-/// Lado que RESPONDE: monta o resumo da biblioteca local a partir do mesmo
-/// `FileSyncService::build_manifest()` usado pelo sync de arquivos (sem duplicar a lógica de
-/// listar quadrinhos/capítulos) e escreve assim que a conexão é aceita — NÃO espera nem lê o
-/// marcador que `LibraryBrowseOutbound` escreve (ver doc lá): aquele marcador existe só pra
-/// satisfazer a regra da `quinn` do lado de quem disca, não é algo que este lado precise
-/// consumir. Esperar por ele aqui acoplaria a resposta a quanto tempo o path P2P (NAT
-/// traversal/multipath) leva pra ficar pronto pra carregar dados de verdade — que pode ser bem
-/// mais que o handshake inicial da conexão (o "connection established" nos logs) — e foi
-/// exatamente essa espera desnecessária que quebrou a sessão inteira sempre que o outro lado
-/// dava timeout esperando uma resposta que nunca vinha porque este handler estava parado
-/// esperando ler algo que não precisava.
+/// Side that ANSWERS: builds the local library summary from the same
+/// `FileSyncService::build_manifest()` used by file sync (without duplicating the logic of
+/// listing comics/chapters) and writes as soon as the connection is accepted — it does NOT wait for nor read the
+/// marker `LibraryBrowseOutbound` writes (see the docs there): that marker only exists to
+/// satisfy `quinn`'s rule on the dialing side, it is not something this side needs
+/// to consume. Waiting for it here would couple the answer to how long the P2P path (NAT
+/// traversal/multipath) takes to be ready to carry real data — which can be much
+/// longer than the connection's initial handshake (the "connection established" in the logs) — and it was
+/// exactly that unnecessary wait that broke the whole session whenever the other side
+/// timed out waiting for an answer that never came because this handler was stuck
+/// waiting to read something it did not need.
 pub struct LibraryBrowseInbound {
     service: FileSyncService,
 }
@@ -125,17 +125,17 @@ impl LibraryBrowseInbound {
         Self { service }
     }
 
-    /// Timeout próprio, bem menor que o `FRAME_TIMEOUT` (30s) do outro lado — se a query travar
-    /// (ex: contenção no pool de conexões do SQLite por outra sessão de sync em andamento),
-    /// falha rápido e loga a causa em vez de deixar o outbound estourar o timeout de frame sem
-    /// nenhuma pista do que aconteceu deste lado. Ver nota no bug reaberto em 22/08/2026: o
-    /// handler nunca logava nada, então não dava pra saber se travava aqui ou na escrita.
+    /// Own timeout, much shorter than the other side's `FRAME_TIMEOUT` (30s) — if the query hangs
+    /// (e.g. contention in the SQLite connection pool due to another sync session in progress),
+    /// it fails fast and logs the cause instead of letting the outbound blow the frame timeout with
+    /// no clue about what happened on this side. See the note on the bug reopened on 2026-08-22: the
+    /// handler never logged anything, so there was no way to tell whether it hung here or on the write.
     const LIBRARY_SUMMARY_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
     async fn run(&self, writer: &mut FramedWriter) -> Result<(), P2pError> {
-        // SQL puro (`get_library_summary`), sem tocar disco — `build_manifest()` faz um
-        // `tokio::fs::metadata()` por capítulo só pra montar `size`, que essa resposta nem usa,
-        // e isso estourava o timeout do protocolo em bibliotecas grandes/discos lentos.
+        // Pure SQL (`get_library_summary`), no disk access — `build_manifest()` does a
+        // `tokio::fs::metadata()` per chapter just to fill `size`, which this answer does not even use,
+        // and that blew the protocol timeout on large libraries/slow disks.
         tracing::debug!(layer = "library_browse", "querying local library summary");
         let comics = match tokio::time::timeout(
             Self::LIBRARY_SUMMARY_TIMEOUT,
@@ -205,13 +205,13 @@ mod tests {
         (service, temp_dir)
     }
 
-    /// Round-trip real sobre um `tokio::io::duplex`: prova que o outbound escreve o
-    /// `LibraryBrowseRequest` (satisfaz a regra da `quinn` do lado de quem disca) e ainda lê a
-    /// resposta certinha, mesmo o inbound NUNCA lendo esse marcador — o inbound responde
-    /// direto, sem depender de decodificar nada do outro lado primeiro (ver doc de
-    /// `LibraryBrowseInbound`). Regressão de uma correção anterior nesta mesma rodada que fazia
-    /// o inbound drenar o marcador antes de responder, o que travava a sessão inteira sempre
-    /// que a entrega desse marcador atrasava (NAT traversal lento).
+    /// Real round-trip over a `tokio::io::duplex`: proves the outbound writes the
+    /// `LibraryBrowseRequest` (satisfies `quinn`'s rule on the dialing side) and still reads the
+    /// answer correctly, even with the inbound NEVER reading that marker — the inbound answers
+    /// directly, without depending on decoding anything from the other side first (see the docs of
+    /// `LibraryBrowseInbound`). Regression for a previous fix in this same round that made
+    /// the inbound drain the marker before answering, which hung the whole session whenever
+    /// that marker's delivery was delayed (slow NAT traversal).
     #[tokio::test]
     async fn outbound_writes_request_but_inbound_never_reads_it_and_still_responds() {
         let (service, _dir) = setup_service().await;

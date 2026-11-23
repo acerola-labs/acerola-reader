@@ -3,14 +3,14 @@
 	import AcerolaScrollProgress from './acerola-scroll-progress.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Primitivos/AcerolaScrollProgress',
+		title: 'Primitives/AcerolaScrollProgress',
 		component: AcerolaScrollProgress,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
 					component:
-						'Barra de progresso de rolagem / leitura fixa no topo da tela, com scrub suave via GSAP ScrollTrigger e gradiente adaptável ao tema ativo.'
+						'Scroll / reading progress bar fixed at the top of the screen, with smooth scrub via GSAP ScrollTrigger and a gradient that adapts to the active theme.'
 				}
 			}
 		}
@@ -22,7 +22,7 @@
 	parameters={{
 		docs: {
 			description: {
-				story: 'Barra de progresso de leitura fixa no topo.'
+				story: 'Reading progress bar fixed at the top.'
 			}
 		}
 	}}

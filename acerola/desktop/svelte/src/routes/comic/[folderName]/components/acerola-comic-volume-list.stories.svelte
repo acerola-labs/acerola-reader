@@ -3,13 +3,13 @@
 	import AcerolaComicVolumeList, { type Volume } from './acerola-comic-volume-list.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Páginas/Comic/AcerolaComicVolumeList',
+		title: 'Pages/Comic/AcerolaComicVolumeList',
 		component: AcerolaComicVolumeList,
 		tags: ['autodocs'],
 		parameters: {
 			docs: {
 				description: {
-					component: 'Lista expansível de volumes do comic.'
+					component: 'Expandable comic volume list.'
 				}
 			}
 		}
@@ -33,7 +33,9 @@
 			title: 'Volume 2',
 			totalChapters: 1,
 			hasMore: false,
-			chapters: [{ id: 'c3', title: 'Capítulo 3: O Desafio', fileName: '003.cbz', isRead: false }]
+			chapters: [
+				{ id: 'c3', title: 'Capítulo 3: O Desafio', fileName: '003.cbz', isRead: false }
+			]
 		}
 	];
 </script>

@@ -1,13 +1,13 @@
-// Só o método que os resolvers de /api/apk-latest e /api/apk-status usam — evita puxar
-// @cloudflare/workers-types inteiro por causa de um binding só.
+// Only the method the /api/apk-latest and /api/apk-status resolvers use, so tests can fake the
+// bucket without an S3 client (the real one is in r2.ts).
 export interface ApkBucket {
 	list(options: { prefix: string }): Promise<{ objects: { key: string }[] }>;
 }
 
-// android-release.yml sobe cada release prod pra `android/releases/acerola-{version}.apk`
-// (arquivo permanente) e também pra `android/latest/acerola-{version}.apk`, sem apagar a
-// versão anterior dessa segunda pasta. `latest/` pode então ter mais de um APK por um
-// tempo — resolve sempre a maior versão em vez de assumir uma chave fixa tipo `latest.apk`.
+// android-release.yml uploads each prod release to `android/releases/acerola-{version}.apk`
+// (permanent file) and also to `android/latest/acerola-{version}.apk`, without deleting the
+// previous version from that second folder. `latest/` may therefore hold more than one APK for
+// a while — always resolve the highest version instead of assuming a fixed key like `latest.apk`.
 export const LATEST_PREFIX = 'android/latest/';
 const KEY_PATTERN = /^android\/latest\/acerola-(\d+\.\d+\.\d+)\.apk$/;
 
@@ -22,8 +22,8 @@ function compareVersions(a: string, b: string): number {
 	return 0;
 }
 
-// Retorna a chave do APK de maior versão em `android/latest/`, ou null se a pasta
-// estiver vazia (ou só tiver arquivos que não casam com o padrão de nome esperado).
+// Returns the key of the highest-version APK in `android/latest/`, or null if the folder
+// is empty (or only holds files that don't match the expected name pattern).
 export async function resolveLatestApkKey(bucket: ApkBucket): Promise<string | null> {
 	const listed = await bucket.list({ prefix: LATEST_PREFIX });
 	const versions = listed.objects
