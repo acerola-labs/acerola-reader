@@ -1,6 +1,6 @@
-# Acerola Relay on the acerola Swarm (Komodo Stack acerola_relay, see komodo.toml).
+# Acerola Relay on the hetzner Swarm (Komodo Stack hetzner_relay, see komodo.toml).
 # APP_IMAGE comes from komodo.sh: the image the Komodo Build left on this same server.
-# Caddy (config) reaches the service as acerola_relay_relay:80 over the edge network.
+# Caddy (config) reaches the service as hetzner_relay_relay:80 over the edge network.
 services:
   relay:
     image: ${APP_IMAGE:?}
@@ -46,7 +46,7 @@ services:
         order: stop-first
       labels:
         acerola.app: relay
-        acerola.server: acerola
+        acerola.server: hetzner
 
 volumes:
   certs:
