@@ -1,4 +1,6 @@
-relay.{$DOMAIN} {
+# relay.acerola.app stays as an alias while released clients still default to it (Android
+# AppPreferences, lib/p2p relay_mode.rs); drop it once a release ships relay.reader.acerola.app.
+relay.reader.acerola.app, relay.acerola.app {
     header {
         Strict-Transport-Security "max-age=31536000;"
         X-Content-Type-Options "nosniff"
@@ -6,7 +8,8 @@ relay.{$DOMAIN} {
         X-Frame-Options "DENY"
     }
 
-    reverse_proxy acerola-relay:80 {
+    # Swarm service of the acerola_relay stack, over the edge network.
+    reverse_proxy acerola_relay_relay:80 {
         header_up Host {host}
         header_up X-Real-IP {remote}
         header_up X-Forwarded-For {remote}
