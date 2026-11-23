@@ -1,5 +1,8 @@
 # Base build image para Rust on Alpine
 FROM rust:alpine AS chef
+# One compile job at a time: the image is built on the server that runs the apps, and parallel
+# rustc jobs take all of its memory.
+ENV CARGO_BUILD_JOBS=1
 
 RUN apk add --no-cache musl-dev openssl-dev pkgconfig clang lld
 RUN cargo install cargo-chef
