@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 
 # The docs site runs on the hetzner server (Komodo, .komodo/komodo.toml): this workflow only bumps
-# its version on main, and that push triggers the hetzner_docs Procedure (Pull -> Build -> Deploy).
+# its version on main, and that push triggers the hetzner_acerola-reader-docs Procedure (Pull -> Build -> Deploy).
 # The Storybooks stay on Cloudflare Workers.
 jobs:
   release:
