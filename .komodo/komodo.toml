@@ -1,0 +1,118 @@
+# Komodo deploy of the Acerola Relay (lib/relay) on the acerola server.
+# Names follow <server>_<app>; Swarm completes the services with _<service> (acerola_relay_relay).
+#
+#   Sync       applies this file (GitHub webhook on push to main).
+#   Repo       clone of main on the acerola server; Build and Stack read from it.
+#   Build      lib/relay/.config/docker/dockerfile built ON the acerola server itself. No registry:
+#              the image stays local as relay:<short commit>-acerola.
+#   Stack      .komodo/compose.yml on the acerola Swarm; komodo.sh runs the deploy steps and
+#              route.sh publishes relay.reader.acerola.app on the server's Caddy (edge network).
+#   Procedure  Pull -> Build -> Deploy, triggered by the GitHub webhook
+#              (/listener/github/procedure/acerola_relay/main).
+#   Action     native Swarm rollback to the previous version.
+
+[[resource_sync]]
+name = "relay"
+description = "Aplica o deploy do Acerola Relay (.komodo/komodo.toml do acerola-reader)"
+tags = ["env:acerola", "app:relay"]
+[resource_sync.config]
+git_provider = "github.com"
+repo = "vinicius-gpl/acerola-reader"
+branch = "main"
+resource_path = [".komodo/komodo.toml"]
+delete = false
+
+[[repo]]
+name = "acerola_relay"
+description = "Clone da main do acerola-reader no acerola"
+tags = ["env:acerola", "app:relay"]
+[repo.config]
+server = "acerola"
+git_provider = "github.com"
+repo = "vinicius-gpl/acerola-reader"
+branch = "main"
+webhook_enabled = false
+links = ["https://github.com/vinicius-gpl/acerola-reader/tree/main/lib/relay"]
+
+[[build]]
+name = "acerola_relay"
+description = "Imagem do Acerola Relay, construída no próprio acerola (sem registry)"
+tags = ["env:acerola", "app:relay"]
+[build.config]
+builder = "acerola"
+linked_repo = "acerola_relay"
+webhook_enabled = false
+build_path = "lib/relay"
+dockerfile_path = ".config/docker/dockerfile"
+image_name = "relay"
+image_tag = "acerola"
+include_latest_tag = false
+include_version_tags = false
+include_commit_tag = true
+labels = """
+org.opencontainers.image.source=https://github.com/vinicius-gpl/acerola-reader
+acerola.app=relay
+acerola.server=acerola
+"""
+links = ["https://relay.reader.acerola.app"]
+
+[[stack]]
+name = "acerola_relay"
+description = "Acerola Relay no Swarm do acerola"
+tags = ["env:acerola", "app:relay"]
+[stack.config]
+swarm = "acerola"
+project_name = "acerola_relay"
+linked_repo = "acerola_relay"
+webhook_enabled = false
+run_directory = ".komodo"
+file_paths = ["compose.yml"]
+extra_args = ["--resolve-image", "never", "--detach=false"]
+links = ["https://relay.reader.acerola.app"]
+pre_deploy.command = "sh komodo.sh pre-deploy relay acerola"
+compose_cmd_wrapper_include = ["config", "deploy"]
+compose_cmd_wrapper = "sh komodo.sh deploy relay acerola [[COMPOSE_COMMAND]]"
+post_deploy.command = "sh komodo.sh post-deploy relay acerola"
+
+[[procedure]]
+name = "acerola_relay"
+description = "Publica a main do Acerola Relay no acerola: Pull, Build e Deploy"
+tags = ["env:acerola", "app:relay"]
+[procedure.config]
+webhook_enabled = true
+
+[[procedure.config.stage]]
+name = "Pull"
+executions = [
+  { execution.type = "PullRepo", execution.params.repo = "acerola_relay" },
+]
+
+[[procedure.config.stage]]
+name = "Build"
+executions = [
+  { execution.type = "RunBuild", execution.params.build = "acerola_relay" },
+]
+
+[[procedure.config.stage]]
+name = "Deploy"
+executions = [
+  { execution.type = "DeployStack", execution.params.stack = "acerola_relay" },
+]
+
+[[action]]
+name = "acerola_relay_rollback"
+description = "Volta o Acerola Relay para a versão anterior (rollback do Swarm)"
+tags = ["env:acerola", "app:relay"]
+[action.config]
+webhook_enabled = false
+file_contents = '''
+const stack = 'acerola_relay';
+await komodo.execute_server_terminal(
+  {
+    server: 'acerola',
+    command: `docker service ls -q --filter label=com.docker.stack.namespace=${stack} | xargs -r -n1 docker service rollback --detach=false`,
+    init: { command: 'sh' },
+  },
+  { onLine: (line) => console.log(line), onFinish: (code) => console.log(`exit ${code}`) },
+);
+'''
