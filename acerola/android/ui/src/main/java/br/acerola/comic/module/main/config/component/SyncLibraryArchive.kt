@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncButton
+import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
@@ -35,8 +35,8 @@ fun Main.Config.Component.SyncLibraryArchive(
             title = stringResource(id = R.string.description_text_home_quick_sync),
             description = stringResource(id = R.string.description_text_home_quick_sync_supporting),
             icon = Icons.Default.FolderCopy,
-            content = {
-                Acerola.Component.SyncButton(
+            control = {
+                Acerola.Component.SyncIconButton(
                     state = quickSyncState,
                     text = stringResource(id = R.string.action_config_sync),
                     loadingText = stringResource(id = R.string.action_config_syncing),
@@ -49,8 +49,8 @@ fun Main.Config.Component.SyncLibraryArchive(
             title = stringResource(id = R.string.description_text_home_deep_sync),
             description = stringResource(id = R.string.description_text_home_deep_sync_supporting),
             icon = Icons.Default.Storage,
-            content = {
-                Acerola.Component.SyncButton(
+            control = {
+                Acerola.Component.SyncIconButton(
                     state = deepScanState,
                     text = stringResource(id = R.string.action_config_rebuild),
                     loadingText = stringResource(id = R.string.action_config_syncing),

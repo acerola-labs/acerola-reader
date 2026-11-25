@@ -472,7 +472,6 @@
     <string name="title_config_metadata">Metadata</string>
     <string name="description_config_metadata">Where titles, covers and synopses come from</string>
     <string name="label_config_comic_folder_empty">No folder chosen</string>
-    <string name="description_config_metadata_language">Default language for titles and synopses</string>
     <string name="description_config_sync_mangadex">Syncs metadata with MangaDex</string>
     <string name="title_config_sync_anilist">Sync with AniList</string>
     <string name="description_config_sync_anilist">Syncs metadata with AniList</string>

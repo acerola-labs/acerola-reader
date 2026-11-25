@@ -4,12 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -21,7 +20,7 @@ import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.Badge
 import br.acerola.comic.common.ux.component.RoundIcon
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncButton
+import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.component.Tone
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
@@ -32,7 +31,7 @@ import br.acerola.comic.ui.R
 
 /**
  * MangaDex and AniList rows of the metadata section (shown while external sync is on), the
- * desktop's rows: logo, title, description and a "Sync" pill; the source that filled this comic
+ * desktop's rows: logo, title, description and a round sync button; the source that filled this comic
  * gets a "Current source" badge.
  */
 @Composable
@@ -80,17 +79,16 @@ fun Comic.Component.ComicInfoSync(
         title = stringResource(id = R.string.title_sync_comic_info),
         description = stringResource(id = R.string.description_sync_comic_info),
         leading = { Acerola.Component.RoundIcon(icon = Icons.Rounded.Description) },
-        content = {
-            ActionLine(isActive = remoteInfo?.syncSource == MetadataSource.COMIC_INFO) {
-                Acerola.Component.SyncButton(
-                    state = comicInfoState,
-                    text = stringResource(id = R.string.action_comic_preferences_read),
-                    loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
-                    onClick = onSyncComicInfo,
-                    enabled = comicInfoState != SyncActionVisualState.LOADING,
-                )
-            }
+        control = {
+            Acerola.Component.SyncIconButton(
+                state = comicInfoState,
+                text = stringResource(id = R.string.action_comic_preferences_read),
+                loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
+                onClick = onSyncComicInfo,
+                enabled = comicInfoState != SyncActionVisualState.LOADING,
+            )
         },
+        content = activeSourceBadge(isActive = remoteInfo?.syncSource == MetadataSource.COMIC_INFO),
     )
 }
 
@@ -108,33 +106,26 @@ private fun SourceRow(
         title = title,
         description = description,
         leading = { Image(painter = logo, contentDescription = null, modifier = Modifier.size(40.dp)) },
-        content = {
-            ActionLine(isActive = isActive) {
-                Acerola.Component.SyncButton(
-                    state = state,
-                    text = stringResource(id = R.string.action_comic_preferences_sync),
-                    loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
-                    onClick = onSync,
-                    enabled = enabled,
-                )
-            }
+        control = {
+            Acerola.Component.SyncIconButton(
+                state = state,
+                text = stringResource(id = R.string.action_comic_preferences_sync),
+                loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
+                onClick = onSync,
+                enabled = enabled,
+            )
         },
+        content = activeSourceBadge(isActive = isActive),
     )
 }
 
-// The row's action pill, with the "Current source" badge next to it when this source is active.
-@Composable
-private fun ActionLine(
-    isActive: Boolean,
-    action: @Composable () -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-        action()
-        if (isActive) {
-            Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_metadata_source_active), tone = Tone.Success)
-        }
+// The "Current source" badge under the row when this source filled the comic; nothing otherwise.
+private fun activeSourceBadge(isActive: Boolean): (@Composable ColumnScope.() -> Unit)? =
+    if (isActive) {
+        { Acerola.Component.Badge(text = stringResource(id = R.string.label_comic_metadata_source_active), tone = Tone.Success) }
+    } else {
+        null
     }
-}
 
 @Preview(name = "Light", showBackground = true)
 @Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)

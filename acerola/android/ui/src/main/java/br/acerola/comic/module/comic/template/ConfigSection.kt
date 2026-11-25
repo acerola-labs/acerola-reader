@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.LayersClear
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -16,8 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.Button
 import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.Dialog
 import br.acerola.comic.common.ux.component.DialogButton
 import br.acerola.comic.common.ux.component.SettingRow
@@ -212,9 +213,10 @@ fun Comic.Template.configSection(
                 description = stringResource(id = R.string.description_clear_metadata),
                 icon = Icons.Rounded.LayersClear,
                 tone = Tone.Destructive,
-                content = {
-                    Acerola.Component.Button(
-                        text = stringResource(id = R.string.action_comic_preferences_clear),
+                control = {
+                    Acerola.Component.IconButton(
+                        icon = Icons.Rounded.DeleteSweep,
+                        contentDescription = stringResource(id = R.string.action_comic_preferences_clear),
                         onClick = { showClearMetadataDialog = true },
                         variant = ButtonVariant.Destructive,
                     )

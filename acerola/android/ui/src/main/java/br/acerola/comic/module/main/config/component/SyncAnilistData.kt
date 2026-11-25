@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncButton
+import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.main.Main
 import br.acerola.comic.ui.R
@@ -35,8 +35,8 @@ fun Main.Config.Component.SyncAnilistData(
                 modifier = Modifier.size(40.dp),
             )
         },
-        content = {
-            Acerola.Component.SyncButton(
+        control = {
+            Acerola.Component.SyncIconButton(
                 state = state,
                 text = stringResource(id = R.string.action_config_sync),
                 loadingText = stringResource(id = R.string.action_config_syncing),

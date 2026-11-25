@@ -2,6 +2,7 @@ package br.acerola.comic.module.comic.component
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import br.acerola.comic.common.ux.theme.AcerolaTheme
@@ -34,7 +35,7 @@ class FileSyncActionsTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Sincronizar").performClick()
+        composeTestRule.onNodeWithContentDescription("Sincronizar").performClick()
         assert(clicked)
     }
 }

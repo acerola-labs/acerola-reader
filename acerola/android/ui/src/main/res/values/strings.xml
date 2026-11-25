@@ -557,7 +557,6 @@
     <string name="title_config_metadata">Metadados</string>
     <string name="description_config_metadata">De onde vêm títulos, capas e sinopses</string>
     <string name="label_config_comic_folder_empty">Nenhuma pasta escolhida</string>
-    <string name="description_config_metadata_language">Idioma padrão de títulos e sinopses</string>
     <string name="description_config_sync_mangadex">Sincroniza metadados com o MangaDex</string>
     <string name="title_config_sync_anilist">Sincronização com AniList</string>
     <string name="description_config_sync_anilist">Sincroniza metadados com o AniList</string>

@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -26,11 +27,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.theme.AcerolaDimens
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
@@ -125,6 +130,40 @@ fun Acerola.Component.SyncButton(
         loading = state == SyncActionVisualState.LOADING,
         icon = if (state == SyncActionVisualState.SUCCESS) Icons.Rounded.Check else Icons.Rounded.Sync,
     )
+}
+
+/**
+ * Icon-only [SyncButton] (`.ac-btn--icon`, 44dp) for the right side of a settings row, where a
+ * text pill doesn't fit on a phone: [icon] at rest, a spinner while [state] is loading and
+ * `success-soft` with a check right after. [text]/[loadingText] are its accessible name.
+ */
+@Composable
+fun Acerola.Component.SyncIconButton(
+    state: SyncActionVisualState,
+    text: String,
+    loadingText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector = Icons.Rounded.Sync,
+) {
+    val loading = state == SyncActionVisualState.LOADING
+    val description = if (loading) loadingText else text
+    Acerola.Component.ButtonSurface(
+        onClick = onClick,
+        modifier = modifier.size(AcerolaDimens.ControlHeight).semantics { contentDescription = description },
+        variant = if (state == SyncActionVisualState.SUCCESS) ButtonVariant.Success else ButtonVariant.Secondary,
+        enabled = enabled && !loading,
+        contentPadding = PaddingValues(),
+    ) {
+        when (state) {
+            SyncActionVisualState.LOADING -> Acerola.Component.Spinner(size = SizeTokens.IconExtraSmall)
+            SyncActionVisualState.SUCCESS ->
+                Icon(imageVector = Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
+            SyncActionVisualState.IDLE ->
+                Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
+        }
+    }
 }
 
 @Preview(name = "Light", showBackground = true)

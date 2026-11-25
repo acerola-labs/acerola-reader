@@ -9,8 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.Button
-import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.main.Main
@@ -26,12 +25,11 @@ fun Main.Config.Component.TemplateManager(
         description = stringResource(id = R.string.description_template_config_activity),
         icon = Icons.Default.Code,
         modifier = modifier,
-        content = {
-            Acerola.Component.Button(
-                text = stringResource(id = R.string.action_config_open),
+        control = {
+            Acerola.Component.IconButton(
+                icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = stringResource(id = R.string.action_config_open),
                 onClick = onManageTemplates,
-                variant = ButtonVariant.Secondary,
-                trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             )
         },
     )
