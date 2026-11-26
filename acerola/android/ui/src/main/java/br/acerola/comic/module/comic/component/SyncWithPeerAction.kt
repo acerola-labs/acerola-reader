@@ -1,8 +1,6 @@
 package br.acerola.comic.module.comic.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
@@ -13,11 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.Button
-import br.acerola.comic.common.ux.component.ButtonVariant
+import br.acerola.comic.common.ux.component.SettingAction
 import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.ui.R
 
@@ -42,24 +38,21 @@ fun Comic.Component.SyncWithPeerAction(
         description = stringResource(id = R.string.description_sync_comic_with_peer),
         icon = Icons.Rounded.PhoneAndroid,
         modifier = modifier,
-        content = {
-            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                Acerola.Component.Button(
+        actions =
+            listOf(
+                SettingAction(
                     text = stringResource(id = R.string.action_sync_comic_push),
-                    onClick = onPush,
-                    variant = ButtonVariant.Secondary,
                     icon = Icons.Rounded.CloudUpload,
-                    loading = loading,
-                )
-                Acerola.Component.Button(
+                    onClick = onPush,
+                    state = state,
+                ),
+                SettingAction(
                     text = stringResource(id = R.string.action_sync_comic_pull),
-                    onClick = onPull,
-                    variant = ButtonVariant.Secondary,
                     icon = Icons.Rounded.CloudDownload,
+                    onClick = onPull,
                     enabled = !loading,
-                )
-            }
-        },
+                ),
+            ),
     )
 }
 
