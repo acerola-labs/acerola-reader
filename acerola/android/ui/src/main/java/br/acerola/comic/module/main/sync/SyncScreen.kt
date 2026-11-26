@@ -26,8 +26,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -63,6 +61,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -104,7 +103,6 @@ import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.common.viewmodel.network.MobileDataSyncViewModel
-import br.acerola.comic.config.preference.RelayPreference
 import br.acerola.comic.logging.AcerolaLogger
 import br.acerola.comic.logging.LogSource
 import br.acerola.comic.module.main.Main
@@ -803,7 +801,7 @@ private fun RelaySettingsSection(
         when {
             relaySettings.useIrohPublicNetwork -> stringResource(id = R.string.label_relay_settings_summary_iroh_public)
             activeSourceCount == 0 -> stringResource(id = R.string.label_relay_settings_summary_mdns_only)
-            else -> stringResource(id = R.string.label_relay_settings_summary_active, activeSourceCount)
+            else -> pluralStringResource(id = R.plurals.label_relay_settings_summary_active, activeSourceCount, activeSourceCount)
         }
 
     Acerola.Component.SettingSection(
@@ -814,7 +812,7 @@ private fun RelaySettingsSection(
 
         Acerola.Component.ToggleCard(
             title = stringResource(id = R.string.label_relay_settings_use_acerola_relay),
-            subtitle = stringResource(id = R.string.label_relay_settings_use_acerola_relay_desc, RelayPreference.DEFAULT_ACEROLA_RELAY_URL),
+            subtitle = stringResource(id = R.string.label_relay_settings_use_acerola_relay_desc),
             active = relaySettings.useAcerolaRelay,
             enabled = !relaySettings.useIrohPublicNetwork,
             onClick = { pendingRelayAction = SyncAction.ToggleUseAcerolaRelay(!relaySettings.useAcerolaRelay) },
@@ -831,26 +829,18 @@ private fun RelaySettingsSection(
                 },
             icon = Icons.Default.SettingsSuggest,
             tone = if (relaySettings.customRelayUrls.isNotEmpty()) Tone.Primary else Tone.Neutral,
-            actions =
-                listOf(
-                    SettingAction(
-                        text = stringResource(id = R.string.action_relay_settings_manage),
-                        icon = if (customExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        onClick = { customExpanded = !customExpanded },
-                        iconPlacement = SettingActionIcon.End,
-                    ),
-                ),
-            content = {
-                if (customExpanded) {
-                    RelayUrlListEditor(
-                        urls = relaySettings.customRelayUrls,
-                        placeholder = stringResource(id = R.string.hint_relay_settings_custom_relay_add),
-                        removeContentDescription = stringResource(id = R.string.action_relay_settings_custom_relay_remove),
-                        enabled = !relaySettings.useIrohPublicNetwork,
-                        onAdd = { onAction(SyncAction.AddCustomRelayUrl(it)) },
-                        onRemove = { onAction(SyncAction.RemoveCustomRelayUrl(it)) },
-                    )
-                }
+            expanded = customExpanded,
+            onExpandedChange = { customExpanded = it },
+            expandLabel = stringResource(id = R.string.action_relay_settings_manage),
+            expandedContent = {
+                RelayUrlListEditor(
+                    urls = relaySettings.customRelayUrls,
+                    placeholder = stringResource(id = R.string.hint_relay_settings_custom_relay_add),
+                    removeContentDescription = stringResource(id = R.string.action_relay_settings_custom_relay_remove),
+                    enabled = !relaySettings.useIrohPublicNetwork,
+                    onAdd = { onAction(SyncAction.AddCustomRelayUrl(it)) },
+                    onRemove = { onAction(SyncAction.RemoveCustomRelayUrl(it)) },
+                )
             },
         )
 
@@ -871,25 +861,17 @@ private fun RelaySettingsSection(
                     enabled = relaySettings.hasIrohServicesTicket,
                 )
             },
-            actions =
-                listOf(
-                    SettingAction(
-                        text = stringResource(id = R.string.action_relay_settings_ticket),
-                        icon = if (ticketExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        onClick = { ticketExpanded = !ticketExpanded },
-                        iconPlacement = SettingActionIcon.End,
-                    ),
-                ),
-            content = {
-                if (ticketExpanded) {
-                    IrohServicesTicketEditor(
-                        hasTicket = relaySettings.hasIrohServicesTicket,
-                        hasError = irohServicesTicketError,
-                        onSave = { onAction(SyncAction.SetIrohServicesTicket(it)) },
-                        onRemove = { onAction(SyncAction.ClearIrohServicesTicket) },
-                        onDismissError = { onAction(SyncAction.DismissIrohServicesTicketError) },
-                    )
-                }
+            expanded = ticketExpanded,
+            onExpandedChange = { ticketExpanded = it },
+            expandLabel = stringResource(id = R.string.action_relay_settings_ticket),
+            expandedContent = {
+                IrohServicesTicketEditor(
+                    hasTicket = relaySettings.hasIrohServicesTicket,
+                    hasError = irohServicesTicketError,
+                    onSave = { onAction(SyncAction.SetIrohServicesTicket(it)) },
+                    onRemove = { onAction(SyncAction.ClearIrohServicesTicket) },
+                    onDismissError = { onAction(SyncAction.DismissIrohServicesTicketError) },
+                )
             },
         )
 

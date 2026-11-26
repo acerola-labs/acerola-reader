@@ -2,6 +2,7 @@ package br.acerola.comic.common.ux.component
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -39,6 +40,7 @@ import br.acerola.comic.common.ux.theme.AcerolaDimens
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
 import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaTheme
+import br.acerola.comic.common.ux.tokens.MotionTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 
 @Composable
@@ -157,12 +159,14 @@ fun Acerola.Component.SyncIconButton(
         enabled = enabled && !loading,
         contentPadding = PaddingValues(),
     ) {
-        when (state) {
-            SyncActionVisualState.LOADING -> Acerola.Component.Spinner(size = SizeTokens.IconExtraSmall)
-            SyncActionVisualState.SUCCESS ->
-                Icon(imageVector = Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
-            SyncActionVisualState.IDLE ->
-                Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
+        Crossfade(targetState = state, animationSpec = MotionTokens.brand(), label = "syncIconButtonState") { visualState ->
+            when (visualState) {
+                SyncActionVisualState.LOADING -> Acerola.Component.Spinner(size = SizeTokens.IconExtraSmall)
+                SyncActionVisualState.SUCCESS ->
+                    Icon(imageVector = Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
+                SyncActionVisualState.IDLE ->
+                    Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(SizeTokens.IconSmall))
+            }
         }
     }
 }

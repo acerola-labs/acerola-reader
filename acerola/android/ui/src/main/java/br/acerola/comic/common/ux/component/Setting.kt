@@ -1,6 +1,13 @@
 package br.acerola.comic.common.ux.component
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,15 +24,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +51,7 @@ import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
 import br.acerola.comic.common.ux.theme.raised
+import br.acerola.comic.common.ux.tokens.MotionTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
@@ -141,6 +153,9 @@ data class SettingAction(
  * icon in its [tone], the title (`font-black`) and a description of at most two lines, a [control]
  * on the right (switch, badge, menu), the row's [actions] (see [SettingAction]) and extra [content]
  * under it. Controls inside lift to `bg-card`.
+ *
+ * With [expanded] set, the row folds: tapping its header (named by [expandLabel]) calls
+ * [onExpandedChange], a chevron turns, and [expandedContent] opens and closes with the brand motion.
  */
 @Composable
 fun Acerola.Component.SettingRow(
@@ -153,6 +168,10 @@ fun Acerola.Component.SettingRow(
     enabled: Boolean = true,
     control: @Composable (() -> Unit)? = null,
     actions: List<SettingAction> = emptyList(),
+    expanded: Boolean? = null,
+    onExpandedChange: (Boolean) -> Unit = {},
+    expandLabel: String? = null,
+    expandedContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Acerola.Component.SettingRow(
@@ -163,6 +182,10 @@ fun Acerola.Component.SettingRow(
         enabled = enabled,
         control = control,
         actions = actions,
+        expanded = expanded,
+        onExpandedChange = onExpandedChange,
+        expandLabel = expandLabel,
+        expandedContent = expandedContent,
         content = content,
         leading =
             icon?.let {
@@ -181,9 +204,18 @@ fun Acerola.Component.SettingRow(
     leading: @Composable (() -> Unit)?,
     control: @Composable (() -> Unit)? = null,
     actions: List<SettingAction> = emptyList(),
+    expanded: Boolean? = null,
+    onExpandedChange: (Boolean) -> Unit = {},
+    expandLabel: String? = null,
+    expandedContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     val brand = AcerolaExtendedTheme.colors
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (expanded == true) 180f else 0f,
+        animationSpec = MotionTokens.brand(),
+        label = "setting_row_chevron",
+    )
     ProvideSurfaceLevel(AcerolaSurfaceLevel.Surface) {
         BoxWithConstraints(
             modifier =
@@ -191,15 +223,33 @@ fun Acerola.Component.SettingRow(
                     .fillMaxWidth()
                     .clip(AcerolaShapes.Tile)
                     .background(brand.surface)
-                    .then(if (onClick != null) Modifier.clickable(enabled = enabled, onClick = onClick) else Modifier)
-                    .padding(SpacingTokens.Large),
+                    .then(if (onClick != null) Modifier.clickable(enabled = enabled, onClick = onClick) else Modifier),
         ) {
             // By the row's own width, not the window's (like the error screen's container query).
-            val wide = maxWidth >= SettingRowWideWidth
+            val wide = maxWidth - SpacingTokens.Large * 2 >= SettingRowWideWidth
             val actionsBelow = !wide && actions.size > 1
+            val hasBody = actionsBelow || content != null
 
-            Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
+            Column {
+                // The header is the fold's touch target, so taps inside the open body don't close it.
                 Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (expanded != null) {
+                                    Modifier.clickable(enabled = enabled, onClickLabel = expandLabel, role = Role.Button) {
+                                        onExpandedChange(!expanded)
+                                    }
+                                } else {
+                                    Modifier
+                                },
+                            ).padding(
+                                start = SpacingTokens.Large,
+                                end = SpacingTokens.Large,
+                                top = SpacingTokens.Large,
+                                bottom = if (hasBody) SpacingTokens.Medium else SpacingTokens.Large,
+                            ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
                 ) {
@@ -231,13 +281,44 @@ fun Acerola.Component.SettingRow(
                             }
                         else -> SettingActionIconButton(actions.single())
                     }
-                }
-                if (actionsBelow) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                        actions.forEach { SettingActionPill(it, Modifier.weight(1f)) }
+                    if (expanded != null) {
+                        Icon(
+                            imageVector = Icons.Rounded.ExpandMore,
+                            contentDescription = null,
+                            tint = brand.mutedForeground,
+                            modifier = Modifier.size(SizeTokens.IconMedium).graphicsLayer { rotationZ = chevronRotation },
+                        )
                     }
                 }
-                content?.invoke(this)
+                if (hasBody) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .padding(start = SpacingTokens.Large, end = SpacingTokens.Large, bottom = SpacingTokens.Large)
+                                .animateContentSize(animationSpec = MotionTokens.brand()),
+                        verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+                    ) {
+                        if (actionsBelow) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                                actions.forEach { SettingActionPill(it, Modifier.weight(1f)) }
+                            }
+                        }
+                        content?.invoke(this)
+                    }
+                }
+                if (expandedContent != null) {
+                    AnimatedVisibility(
+                        visible = expanded == true,
+                        enter = fadeIn(MotionTokens.brand()) + expandVertically(MotionTokens.brand()),
+                        exit = fadeOut(MotionTokens.brand()) + shrinkVertically(MotionTokens.brand()),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(start = SpacingTokens.Large, end = SpacingTokens.Large, bottom = SpacingTokens.Large),
+                            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+                            content = expandedContent,
+                        )
+                    }
+                }
             }
         }
     }

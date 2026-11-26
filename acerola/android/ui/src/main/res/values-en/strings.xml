@@ -63,14 +63,17 @@
     <string name="title_relay_settings">Connection</string>
     <string name="label_relay_settings_summary_mdns_only">Local network only (mDNS): no relay on, only devices on the same network can connect.</string>
     <string name="label_relay_settings_summary_iroh_public">Using the Iroh public relay network.</string>
-    <string name="label_relay_settings_summary_active">%1$d relay source(s) on.</string>
+    <plurals name="label_relay_settings_summary_active">
+        <item quantity="one">%1$d relay source on.</item>
+        <item quantity="other">%1$d relay sources on.</item>
+    </plurals>
     <string name="label_relay_settings_use_acerola_relay">Use the Acerola relay</string>
-    <string name="label_relay_settings_use_acerola_relay_desc">Managed automatically (%1$s)</string>
-    <string name="label_relay_settings_use_iroh_public_network">Use Iroh Services (your own account)</string>
-    <string name="label_relay_settings_use_iroh_public_network_desc">Uses your Iroh account ticket, without the other sources</string>
-    <string name="label_relay_settings_exclusive_note">Off while Iroh Services is on.</string>
-    <string name="label_relay_settings_iroh_services_ticket_required_hint">Set up a ticket to turn this source on</string>
-    <string name="title_relay_settings_iroh_services_ticket">Iroh Services ticket</string>
+    <string name="label_relay_settings_use_acerola_relay_desc">Managed by Acerola</string>
+    <string name="label_relay_settings_use_iroh_public_network">Use the Iroh relay</string>
+    <string name="label_relay_settings_use_iroh_public_network_desc">With your account ticket, without the other sources</string>
+    <string name="label_relay_settings_exclusive_note">Off while the Iroh relay is on.</string>
+    <string name="label_relay_settings_iroh_services_ticket_required_hint">Tap to add your account ticket</string>
+    <string name="title_relay_settings_iroh_services_ticket">Iroh ticket</string>
     <string name="label_relay_settings_iroh_services_ticket_configured">Ticket set.</string>
     <string name="label_relay_settings_iroh_services_ticket_not_configured">No ticket set yet.</string>
     <string name="hint_relay_settings_iroh_services_ticket">Paste the ticket created at services.iroh.computer</string>

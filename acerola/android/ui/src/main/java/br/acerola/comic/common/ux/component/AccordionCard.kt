@@ -34,6 +34,7 @@ import br.acerola.comic.common.ux.theme.AcerolaShapes
 import br.acerola.comic.common.ux.theme.AcerolaSurfaceLevel
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.theme.ProvideSurfaceLevel
+import br.acerola.comic.common.ux.tokens.MotionTokens
 import br.acerola.comic.common.ux.tokens.SizeTokens
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 
@@ -55,7 +56,11 @@ fun Acerola.Component.AccordionCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val brand = AcerolaExtendedTheme.colors
-    val chevronRotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "accordion_chevron_rotation")
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = MotionTokens.brand(),
+        label = "accordion_chevron_rotation",
+    )
     val open = !collapsible || expanded
 
     Column(
@@ -65,7 +70,7 @@ fun Acerola.Component.AccordionCard(
                 .lift(AcerolaShapes.Card)
                 .clip(AcerolaShapes.Card)
                 .background(brand.card)
-                .animateContentSize(),
+                .animateContentSize(animationSpec = MotionTokens.brand()),
     ) {
         Row(
             modifier =

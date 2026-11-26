@@ -78,14 +78,17 @@
     <string name="title_relay_settings">Conexão</string>
     <string name="label_relay_settings_summary_mdns_only">Só rede local (mDNS) — nenhum relay ativo, só dispositivos na mesma rede conseguem conectar.</string>
     <string name="label_relay_settings_summary_iroh_public">Usando a rede pública de relays do Iroh.</string>
-    <string name="label_relay_settings_summary_active">%1$d fonte(s) de relay ativa(s).</string>
+    <plurals name="label_relay_settings_summary_active">
+        <item quantity="one">%1$d fonte de relay ativa.</item>
+        <item quantity="other">%1$d fontes de relay ativas.</item>
+    </plurals>
     <string name="label_relay_settings_use_acerola_relay">Usar o relay do Acerola</string>
-    <string name="label_relay_settings_use_acerola_relay_desc">Gerenciado automaticamente (%1$s)</string>
-    <string name="label_relay_settings_use_iroh_public_network">Usar a Iroh Services (conta própria)</string>
-    <string name="label_relay_settings_use_iroh_public_network_desc">Usa o ticket da sua conta Iroh, sem as outras fontes</string>
-    <string name="label_relay_settings_exclusive_note">Desabilitado enquanto a Iroh Services estiver ativa.</string>
-    <string name="label_relay_settings_iroh_services_ticket_required_hint">Configure um ticket para ativar essa fonte</string>
-    <string name="title_relay_settings_iroh_services_ticket">Ticket da Iroh Services</string>
+    <string name="label_relay_settings_use_acerola_relay_desc">Gerenciado pelo Acerola</string>
+    <string name="label_relay_settings_use_iroh_public_network">Usar o relay do Iroh</string>
+    <string name="label_relay_settings_use_iroh_public_network_desc">Com o ticket da sua conta, sem as outras fontes</string>
+    <string name="label_relay_settings_exclusive_note">Desligado enquanto o relay do Iroh estiver ativo.</string>
+    <string name="label_relay_settings_iroh_services_ticket_required_hint">Toque para adicionar o ticket da sua conta</string>
+    <string name="title_relay_settings_iroh_services_ticket">Ticket do Iroh</string>
     <string name="label_relay_settings_iroh_services_ticket_configured">Ticket configurado.</string>
     <string name="label_relay_settings_iroh_services_ticket_not_configured">Nenhum ticket configurado ainda.</string>
     <string name="hint_relay_settings_iroh_services_ticket">Cole aqui o ticket gerado em services.iroh.computer</string>
