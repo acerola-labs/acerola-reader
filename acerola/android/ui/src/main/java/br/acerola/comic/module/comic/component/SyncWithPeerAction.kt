@@ -1,8 +1,6 @@
 package br.acerola.comic.module.comic.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
@@ -13,11 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.IconButton
+import br.acerola.comic.common.ux.component.SettingAction
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
-import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.comic.Comic
 import br.acerola.comic.ui.R
 
@@ -42,24 +38,21 @@ fun Comic.Component.SyncWithPeerAction(
         description = stringResource(id = R.string.description_sync_comic_with_peer),
         icon = Icons.Rounded.PhoneAndroid,
         modifier = modifier,
-        control = {
-            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                val pushText = stringResource(id = R.string.action_sync_comic_push)
-                Acerola.Component.SyncIconButton(
-                    state = state,
-                    text = pushText,
-                    loadingText = pushText,
-                    onClick = onPush,
+        actions =
+            listOf(
+                SettingAction(
+                    text = stringResource(id = R.string.action_sync_comic_push),
                     icon = Icons.Rounded.CloudUpload,
-                )
-                Acerola.Component.IconButton(
+                    onClick = onPush,
+                    state = state,
+                ),
+                SettingAction(
+                    text = stringResource(id = R.string.action_sync_comic_pull),
                     icon = Icons.Rounded.CloudDownload,
-                    contentDescription = stringResource(id = R.string.action_sync_comic_pull),
                     onClick = onPull,
                     enabled = !loading,
-                )
-            }
-        },
+                ),
+            ),
     )
 }
 

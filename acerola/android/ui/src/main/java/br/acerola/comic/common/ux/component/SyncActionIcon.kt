@@ -146,13 +146,14 @@ fun Acerola.Component.SyncIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     icon: ImageVector = Icons.Rounded.Sync,
+    variant: ButtonVariant = ButtonVariant.Secondary,
 ) {
     val loading = state == SyncActionVisualState.LOADING
     val description = if (loading) loadingText else text
     Acerola.Component.ButtonSurface(
         onClick = onClick,
         modifier = modifier.size(AcerolaDimens.ControlHeight).semantics { contentDescription = description },
-        variant = if (state == SyncActionVisualState.SUCCESS) ButtonVariant.Success else ButtonVariant.Secondary,
+        variant = if (state == SyncActionVisualState.SUCCESS) ButtonVariant.Success else variant,
         enabled = enabled && !loading,
         contentPadding = PaddingValues(),
     ) {

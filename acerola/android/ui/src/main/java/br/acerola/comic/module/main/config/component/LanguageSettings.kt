@@ -10,8 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.mapper.LanguageMapper
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.LanguagePicker
+import br.acerola.comic.common.ux.component.SettingAction
+import br.acerola.comic.common.ux.component.SettingActionIcon
 import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.main.Main
@@ -32,19 +33,20 @@ fun Main.Config.Component.LanguageSettings(
         onLanguageSelected = onLanguageSelected,
         // The chosen language is the row's description, like the folder row shows the folder.
         trigger = { onClick ->
-            val title = stringResource(id = R.string.title_settings_metadata_language)
             Acerola.Component.SettingRow(
-                title = title,
+                title = stringResource(id = R.string.title_settings_metadata_language),
                 description = languageLabel,
                 icon = Icons.Filled.Translate,
                 modifier = modifier,
-                control = {
-                    Acerola.Component.IconButton(
-                        icon = Icons.Filled.ExpandMore,
-                        contentDescription = title,
-                        onClick = onClick,
-                    )
-                },
+                actions =
+                    listOf(
+                        SettingAction(
+                            text = languageLabel,
+                            icon = Icons.Filled.ExpandMore,
+                            onClick = onClick,
+                            iconPlacement = SettingActionIcon.End,
+                        ),
+                    ),
             )
         },
     )

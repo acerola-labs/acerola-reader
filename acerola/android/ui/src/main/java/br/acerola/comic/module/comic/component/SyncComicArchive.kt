@@ -19,8 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.SettingAction
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.comic.Comic
@@ -110,16 +110,17 @@ private fun ActionRow(
         title = title,
         description = description,
         icon = icon,
-        control = {
-            Acerola.Component.SyncIconButton(
-                state = state,
-                text = action,
-                loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
-                onClick = onClick,
-                enabled = enabled,
-                icon = actionIcon,
-            )
-        },
+        actions =
+            listOf(
+                SettingAction(
+                    text = action,
+                    icon = actionIcon,
+                    onClick = onClick,
+                    enabled = enabled,
+                    state = state,
+                    loadingText = stringResource(id = R.string.action_comic_preferences_syncing),
+                ),
+            ),
     )
 }
 

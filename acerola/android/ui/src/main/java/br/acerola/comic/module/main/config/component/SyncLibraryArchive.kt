@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FolderCopy
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.SettingAction
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.common.ux.tokens.SpacingTokens
 import br.acerola.comic.module.main.Main
@@ -29,35 +30,40 @@ fun Main.Config.Component.SyncLibraryArchive(
     modifier: Modifier = Modifier,
 ) {
     val anyLoading = deepScanState == SyncActionVisualState.LOADING || quickSyncState == SyncActionVisualState.LOADING
+    val syncingText = stringResource(id = R.string.action_config_syncing)
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
         Acerola.Component.SettingRow(
             title = stringResource(id = R.string.description_text_home_quick_sync),
             description = stringResource(id = R.string.description_text_home_quick_sync_supporting),
             icon = Icons.Default.FolderCopy,
-            control = {
-                Acerola.Component.SyncIconButton(
-                    state = quickSyncState,
-                    text = stringResource(id = R.string.action_config_sync),
-                    loadingText = stringResource(id = R.string.action_config_syncing),
-                    onClick = onQuickSync,
-                    enabled = !anyLoading,
-                )
-            },
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_config_sync),
+                        icon = Icons.Rounded.Sync,
+                        onClick = onQuickSync,
+                        enabled = !anyLoading,
+                        state = quickSyncState,
+                        loadingText = syncingText,
+                    ),
+                ),
         )
         Acerola.Component.SettingRow(
             title = stringResource(id = R.string.description_text_home_deep_sync),
             description = stringResource(id = R.string.description_text_home_deep_sync_supporting),
             icon = Icons.Default.Storage,
-            control = {
-                Acerola.Component.SyncIconButton(
-                    state = deepScanState,
-                    text = stringResource(id = R.string.action_config_rebuild),
-                    loadingText = stringResource(id = R.string.action_config_syncing),
-                    onClick = onDeepScan,
-                    enabled = !anyLoading,
-                )
-            },
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_config_rebuild),
+                        icon = Icons.Rounded.Sync,
+                        onClick = onDeepScan,
+                        enabled = !anyLoading,
+                        state = deepScanState,
+                        loadingText = syncingText,
+                    ),
+                ),
         )
     }
 }

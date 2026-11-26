@@ -3,6 +3,8 @@ package br.acerola.comic.module.main.config.component
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -11,8 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
+import br.acerola.comic.common.ux.component.SettingAction
 import br.acerola.comic.common.ux.component.SettingRow
-import br.acerola.comic.common.ux.component.SyncIconButton
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.main.Main
 import br.acerola.comic.ui.R
@@ -35,15 +37,17 @@ fun Main.Config.Component.SyncAnilistData(
                 modifier = Modifier.size(40.dp),
             )
         },
-        control = {
-            Acerola.Component.SyncIconButton(
-                state = state,
-                text = stringResource(id = R.string.action_config_sync),
-                loadingText = stringResource(id = R.string.action_config_syncing),
-                onClick = onRescan,
-                enabled = enabled && state != SyncActionVisualState.LOADING,
-            )
-        },
+        actions =
+            listOf(
+                SettingAction(
+                    text = stringResource(id = R.string.action_config_sync),
+                    icon = Icons.Rounded.Sync,
+                    onClick = onRescan,
+                    enabled = enabled && state != SyncActionVisualState.LOADING,
+                    state = state,
+                    loadingText = stringResource(id = R.string.action_config_syncing),
+                ),
+            ),
     )
 }
 

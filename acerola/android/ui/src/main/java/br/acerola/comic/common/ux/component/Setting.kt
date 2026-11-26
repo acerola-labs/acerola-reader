@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import br.acerola.comic.common.state.SyncActionVisualState
 import br.acerola.comic.common.ux.Acerola
 import br.acerola.comic.common.ux.modifier.lift
 import br.acerola.comic.common.ux.theme.AcerolaExtendedTheme
@@ -114,10 +117,30 @@ fun Acerola.Component.SettingSection(
     }
 }
 
+/** Where a [SettingAction]'s icon goes on the wide pill; the phone's round button always shows it. */
+enum class SettingActionIcon { Start, End, CompactOnly }
+
+/**
+ * One action of a [SettingRow]. A wide row shows it as the desktop's pill with [text]; on a phone
+ * one action becomes a round icon button (named by [text]) and two or more share the row's width.
+ * [state] gives it the sync spinner/check; [loadingText] replaces [text] while loading.
+ */
+data class SettingAction(
+    val text: String,
+    val icon: ImageVector,
+    val onClick: () -> Unit,
+    val enabled: Boolean = true,
+    val state: SyncActionVisualState = SyncActionVisualState.IDLE,
+    val loadingText: String = text,
+    val variant: ButtonVariant = ButtonVariant.Secondary,
+    val iconPlacement: SettingActionIcon = SettingActionIcon.Start,
+)
+
 /**
  * One setting, the desktop's `AcerolaSettingRow`: `rounded-tile bg-surface p-4`, a round 40dp
- * icon in its [tone], the title (`font-black`) and description, a [control] on the right
- * (switch, button) and extra [content] under it. Controls inside lift to `bg-card`.
+ * icon in its [tone], the title (`font-black`) and a description of at most two lines, a [control]
+ * on the right (switch, badge, menu), the row's [actions] (see [SettingAction]) and extra [content]
+ * under it. Controls inside lift to `bg-card`.
  */
 @Composable
 fun Acerola.Component.SettingRow(
@@ -129,6 +152,7 @@ fun Acerola.Component.SettingRow(
     onClick: (() -> Unit)? = null,
     enabled: Boolean = true,
     control: @Composable (() -> Unit)? = null,
+    actions: List<SettingAction> = emptyList(),
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Acerola.Component.SettingRow(
@@ -138,6 +162,7 @@ fun Acerola.Component.SettingRow(
         onClick = onClick,
         enabled = enabled,
         control = control,
+        actions = actions,
         content = content,
         leading =
             icon?.let {
@@ -155,11 +180,12 @@ fun Acerola.Component.SettingRow(
     enabled: Boolean = true,
     leading: @Composable (() -> Unit)?,
     control: @Composable (() -> Unit)? = null,
+    actions: List<SettingAction> = emptyList(),
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     val brand = AcerolaExtendedTheme.colors
     ProvideSurfaceLevel(AcerolaSurfaceLevel.Surface) {
-        Column(
+        BoxWithConstraints(
             modifier =
                 modifier
                     .fillMaxWidth()
@@ -167,35 +193,95 @@ fun Acerola.Component.SettingRow(
                     .background(brand.surface)
                     .then(if (onClick != null) Modifier.clickable(enabled = enabled, onClick = onClick) else Modifier)
                     .padding(SpacingTokens.Large),
-            verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
-            ) {
-                leading?.invoke()
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
-                        color = brand.foreground,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (description != null) {
+            // By the row's own width, not the window's (like the error screen's container query).
+            val wide = maxWidth >= SettingRowWideWidth
+            val actionsBelow = !wide && actions.size > 1
+
+            Column(verticalArrangement = Arrangement.spacedBy(SpacingTokens.Medium)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Medium),
+                ) {
+                    leading?.invoke()
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = brand.mutedForeground,
+                            text = title,
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Black),
+                            color = brand.foreground,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                         )
+                        if (description != null) {
+                            Text(
+                                text = description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = brand.mutedForeground,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    control?.invoke()
+                    when {
+                        actions.isEmpty() || actionsBelow -> Unit
+                        wide ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                                actions.forEach { SettingActionPill(it) }
+                            }
+                        else -> SettingActionIconButton(actions.single())
                     }
                 }
-                control?.invoke()
+                if (actionsBelow) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
+                        actions.forEach { SettingActionPill(it, Modifier.weight(1f)) }
+                    }
+                }
+                content?.invoke(this)
             }
-            content?.invoke(this)
         }
     }
 }
+
+@Composable
+private fun SettingActionPill(
+    action: SettingAction,
+    modifier: Modifier = Modifier,
+) {
+    val loading = action.state == SyncActionVisualState.LOADING
+    val success = action.state == SyncActionVisualState.SUCCESS
+    Acerola.Component.Button(
+        text = if (loading) action.loadingText else action.text,
+        onClick = action.onClick,
+        modifier = modifier,
+        variant = if (success) ButtonVariant.Success else action.variant,
+        enabled = action.enabled,
+        loading = loading,
+        icon =
+            when {
+                success -> Icons.Rounded.Check
+                action.iconPlacement == SettingActionIcon.Start -> action.icon
+                else -> null
+            },
+        trailingIcon = if (!success && action.iconPlacement == SettingActionIcon.End) action.icon else null,
+    )
+}
+
+@Composable
+private fun SettingActionIconButton(action: SettingAction) {
+    Acerola.Component.SyncIconButton(
+        state = action.state,
+        text = action.text,
+        loadingText = action.loadingText,
+        onClick = action.onClick,
+        enabled = action.enabled,
+        icon = action.icon,
+        variant = action.variant,
+    )
+}
+
+// From this row width on, the actions are the desktop's text pills on the right.
+private val SettingRowWideWidth = 560.dp
 
 /** Round icon badge (`size-10 rounded-full`) in a [tone]. */
 @Composable

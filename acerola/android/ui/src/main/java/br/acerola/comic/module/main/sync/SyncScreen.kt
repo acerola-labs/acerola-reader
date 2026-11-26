@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
@@ -84,12 +85,13 @@ import br.acerola.comic.common.ux.component.IconButton
 import br.acerola.comic.common.ux.component.Menu
 import br.acerola.comic.common.ux.component.MenuItem
 import br.acerola.comic.common.ux.component.ScreenHeader
+import br.acerola.comic.common.ux.component.SettingAction
+import br.acerola.comic.common.ux.component.SettingActionIcon
 import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.component.SettingSection
 import br.acerola.comic.common.ux.component.SnackbarVariant
 import br.acerola.comic.common.ux.component.Spinner
 import br.acerola.comic.common.ux.component.Switch
-import br.acerola.comic.common.ux.component.SyncButton
 import br.acerola.comic.common.ux.component.TextField
 import br.acerola.comic.common.ux.component.ToggleCard
 import br.acerola.comic.common.ux.component.Tone
@@ -359,6 +361,33 @@ private fun ThisDeviceSection(
                     tone = Tone.Success,
                 )
             },
+            // While renaming, the editor below takes the place of the two actions.
+            actions =
+                if (editingName) {
+                    emptyList()
+                } else {
+                    listOf(
+                        SettingAction(
+                            text = stringResource(id = if (idCopiedRecently) R.string.label_sync_copied else R.string.action_sync_copy_id),
+                            icon = Icons.Default.ContentCopy,
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(uiState.localId))
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                idCopiedRecently = true
+                                scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
+                            },
+                            state = if (idCopiedRecently) SyncActionVisualState.SUCCESS else SyncActionVisualState.IDLE,
+                        ),
+                        SettingAction(
+                            text = stringResource(id = R.string.action_sync_rename_peer),
+                            icon = Icons.Default.Edit,
+                            onClick = {
+                                nameDraft = uiState.localDeviceName
+                                editingName = true
+                            },
+                        ),
+                    )
+                },
             content = {
                 if (editingName) {
                     Acerola.Component.TextField(
@@ -381,29 +410,6 @@ private fun ThisDeviceSection(
                             text = stringResource(id = R.string.action_cancel),
                             onClick = { editingName = false },
                             variant = ButtonVariant.Secondary,
-                        )
-                    }
-                } else {
-                    Row(horizontalArrangement = Arrangement.spacedBy(SpacingTokens.Small)) {
-                        Acerola.Component.Button(
-                            text = stringResource(id = if (idCopiedRecently) R.string.label_sync_copied else R.string.action_sync_copy_id),
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(uiState.localId))
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                idCopiedRecently = true
-                                scope.launch { snackbarHostState.showSnackbar(copiedMessage, SnackbarVariant.Success) }
-                            },
-                            variant = if (idCopiedRecently) ButtonVariant.Success else ButtonVariant.Secondary,
-                            icon = if (idCopiedRecently) Icons.Default.Check else Icons.Default.ContentCopy,
-                        )
-                        Acerola.Component.Button(
-                            text = stringResource(id = R.string.action_sync_rename_peer),
-                            onClick = {
-                                nameDraft = uiState.localDeviceName
-                                editingName = true
-                            },
-                            variant = ButtonVariant.Secondary,
-                            icon = Icons.Default.Edit,
                         )
                     }
                 }
@@ -703,6 +709,26 @@ private fun PeerRow(
                 }
             }
         },
+        actions =
+            if (editingNickname) {
+                emptyList()
+            } else {
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_sync_all),
+                        icon = Icons.Rounded.Sync,
+                        onClick = { showSyncAllConfirm = true },
+                        enabled = !anySyncing,
+                        state =
+                            when {
+                                anySyncing -> SyncActionVisualState.LOADING
+                                showSuccess -> SyncActionVisualState.SUCCESS
+                                else -> SyncActionVisualState.IDLE
+                            },
+                        loadingText = stringResource(id = R.string.action_config_syncing),
+                    ),
+                )
+            },
         content = {
             if (isErrorIdle) {
                 Text(
@@ -740,19 +766,6 @@ private fun PeerRow(
                         variant = ButtonVariant.Secondary,
                     )
                 }
-            } else {
-                Acerola.Component.SyncButton(
-                    state =
-                        when {
-                            anySyncing -> SyncActionVisualState.LOADING
-                            showSuccess -> SyncActionVisualState.SUCCESS
-                            else -> SyncActionVisualState.IDLE
-                        },
-                    text = stringResource(id = R.string.action_sync_all),
-                    loadingText = stringResource(id = R.string.action_config_syncing),
-                    onClick = { showSyncAllConfirm = true },
-                    enabled = !anySyncing,
-                )
             }
         },
     )
@@ -818,13 +831,16 @@ private fun RelaySettingsSection(
                 },
             icon = Icons.Default.SettingsSuggest,
             tone = if (relaySettings.customRelayUrls.isNotEmpty()) Tone.Primary else Tone.Neutral,
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_relay_settings_manage),
+                        icon = if (customExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        onClick = { customExpanded = !customExpanded },
+                        iconPlacement = SettingActionIcon.End,
+                    ),
+                ),
             content = {
-                Acerola.Component.Button(
-                    text = stringResource(id = R.string.action_relay_settings_manage),
-                    onClick = { customExpanded = !customExpanded },
-                    variant = ButtonVariant.Secondary,
-                    trailingIcon = if (customExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                )
                 if (customExpanded) {
                     RelayUrlListEditor(
                         urls = relaySettings.customRelayUrls,
@@ -855,13 +871,16 @@ private fun RelaySettingsSection(
                     enabled = relaySettings.hasIrohServicesTicket,
                 )
             },
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_relay_settings_ticket),
+                        icon = if (ticketExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        onClick = { ticketExpanded = !ticketExpanded },
+                        iconPlacement = SettingActionIcon.End,
+                    ),
+                ),
             content = {
-                Acerola.Component.Button(
-                    text = stringResource(id = R.string.action_relay_settings_ticket),
-                    onClick = { ticketExpanded = !ticketExpanded },
-                    variant = ButtonVariant.Secondary,
-                    trailingIcon = if (ticketExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                )
                 if (ticketExpanded) {
                     IrohServicesTicketEditor(
                         hasTicket = relaySettings.hasIrohServicesTicket,
@@ -888,17 +907,17 @@ private fun RelaySettingsSection(
             title = stringResource(id = R.string.title_relay_settings_restart),
             description = stringResource(id = R.string.label_relay_settings_restart_desc),
             icon = Icons.Default.Refresh,
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_relay_settings_restart),
+                        icon = Icons.Default.Refresh,
+                        onClick = { onAction(SyncAction.RestartP2p) },
+                        state = if (relaySettings.restarting) SyncActionVisualState.LOADING else SyncActionVisualState.IDLE,
+                        loadingText = stringResource(id = R.string.action_relay_settings_restarting),
+                    ),
+                ),
             content = {
-                Acerola.Component.Button(
-                    text =
-                        stringResource(
-                            id = if (relaySettings.restarting) R.string.action_relay_settings_restarting else R.string.action_relay_settings_restart,
-                        ),
-                    onClick = { onAction(SyncAction.RestartP2p) },
-                    variant = ButtonVariant.Secondary,
-                    icon = Icons.Default.Refresh,
-                    loading = relaySettings.restarting,
-                )
                 if (relaySettings.restartError) {
                     Text(
                         text = stringResource(id = R.string.error_relay_settings_restart_failed),
@@ -1125,14 +1144,15 @@ private fun TransfersSection(uiState: SyncUiState) {
         Acerola.Component.SettingRow(
             title = summary,
             icon = Icons.Default.History,
-            content = {
-                Acerola.Component.Button(
-                    text = stringResource(id = R.string.action_sync_activity_log_open),
-                    onClick = { context.startActivity(Intent(context, TransferLogActivity::class.java)) },
-                    variant = ButtonVariant.Secondary,
-                    trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                )
-            },
+            actions =
+                listOf(
+                    SettingAction(
+                        text = stringResource(id = R.string.action_sync_activity_log_open),
+                        icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        onClick = { context.startActivity(Intent(context, TransferLogActivity::class.java)) },
+                        iconPlacement = SettingActionIcon.End,
+                    ),
+                ),
         )
     }
 }

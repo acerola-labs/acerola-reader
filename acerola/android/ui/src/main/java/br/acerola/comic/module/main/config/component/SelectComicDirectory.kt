@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import br.acerola.comic.common.ux.Acerola
-import br.acerola.comic.common.ux.component.IconButton
+import br.acerola.comic.common.ux.component.SettingAction
+import br.acerola.comic.common.ux.component.SettingActionIcon
 import br.acerola.comic.common.ux.component.SettingRow
 import br.acerola.comic.common.ux.theme.AcerolaTheme
 import br.acerola.comic.module.main.Main
@@ -37,13 +38,15 @@ fun Main.Config.Component.SelectComicDirectory(
         description = folderName ?: stringResource(id = R.string.label_config_comic_folder_empty),
         icon = Icons.Filled.Folder,
         modifier = modifier,
-        control = {
-            Acerola.Component.IconButton(
-                icon = Icons.Filled.FolderOpen,
-                contentDescription = stringResource(id = R.string.action_config_choose_folder),
-                onClick = { launcher.launch(input = null) },
-            )
-        },
+        actions =
+            listOf(
+                SettingAction(
+                    text = stringResource(id = R.string.action_config_choose_folder),
+                    icon = Icons.Filled.FolderOpen,
+                    onClick = { launcher.launch(input = null) },
+                    iconPlacement = SettingActionIcon.CompactOnly,
+                ),
+            ),
     )
 }
 

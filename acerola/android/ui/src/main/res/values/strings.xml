@@ -82,7 +82,7 @@
     <string name="label_relay_settings_use_acerola_relay">Usar o relay do Acerola</string>
     <string name="label_relay_settings_use_acerola_relay_desc">Gerenciado automaticamente (%1$s)</string>
     <string name="label_relay_settings_use_iroh_public_network">Usar a Iroh Services (conta própria)</string>
-    <string name="label_relay_settings_use_iroh_public_network_desc">Autenticado com o ticket da sua conta em services.iroh.computer; não combina com as outras fontes</string>
+    <string name="label_relay_settings_use_iroh_public_network_desc">Usa o ticket da sua conta Iroh, sem as outras fontes</string>
     <string name="label_relay_settings_exclusive_note">Desabilitado enquanto a Iroh Services estiver ativa.</string>
     <string name="label_relay_settings_iroh_services_ticket_required_hint">Configure um ticket para ativar essa fonte</string>
     <string name="title_relay_settings_iroh_services_ticket">Ticket da Iroh Services</string>
@@ -103,7 +103,7 @@
     <string name="label_relay_settings_switch_confirm_desc">Isso reconecta usando um relay diferente. Dispositivos pareados que não convergirem pro mesmo relay podem ficar inalcançáveis até que isso aconteça.</string>
     <string name="action_relay_settings_switch_confirm">Trocar relay</string>
     <string name="title_relay_settings_restart">Reiniciar módulo P2P</string>
-    <string name="label_relay_settings_restart_desc">Desliga e religa a conexão P2P do zero; útil se ela travou depois de trocar de rede ou de relay</string>
+    <string name="label_relay_settings_restart_desc">Use se a conexão travou ao trocar de rede ou de relay</string>
     <string name="action_relay_settings_restart">Reiniciar</string>
     <string name="action_relay_settings_restarting">Reiniciando…</string>
     <string name="error_relay_settings_restart_failed">Não foi possível reiniciar o módulo P2P.</string>
@@ -130,7 +130,7 @@
 
     <string name="title_config_sync_devices">Sincronização entre dispositivos</string>
     <string name="action_sync_comic_with_peer">Sincronizar com dispositivo</string>
-    <string name="description_sync_comic_with_peer">Sincroniza só este quadrinho com o dispositivo escolhido, sem mexer no resto da biblioteca</string>
+    <string name="description_sync_comic_with_peer">Envia ou puxa só este quadrinho, sem mexer no resto</string>
     <string name="action_sync_comic_push">Enviar</string>
     <string name="action_sync_comic_pull">Puxar</string>
     <string name="title_sync_peer_picker">Escolher dispositivo</string>
@@ -188,7 +188,7 @@
 
     <!-- Sync ("Network") screen: Connection section -->
     <string name="label_relay_settings_allow_mobile_data_sync">Sincronizar usando dados móveis</string>
-    <string name="label_relay_settings_allow_mobile_data_sync_desc">Desligado, o app pede confirmação antes de sincronizar pela rede celular</string>
+    <string name="label_relay_settings_allow_mobile_data_sync_desc">Desligado, o app pergunta antes de usar a rede celular</string>
 
     <!-- Icons -->
     <string name="description_icon_navigation_back">Ícone do botão que volta na pilha da navegação.</string>
@@ -247,7 +247,7 @@
     <string name="description_sync_anilist_remote_info">Busca metadados no AniList pelo título do quadrinho</string>
 
     <string name="title_sync_comic_info">ComicInfo.xml</string>
-    <string name="description_sync_comic_info">Extrair metadados do arquivo ComicInfo.xml da pasta local</string>
+    <string name="description_sync_comic_info">Lê os metadados do ComicInfo.xml da pasta</string>
     <string name="description_sync_chapters_internal">Sincronizar capítulos usando metadados internos</string>
 
     <string name="label_sync_progress">Sincronizando…</string>
@@ -276,15 +276,15 @@
     <string name="title_settings_file_config">Configurações dos arquivos</string>
     <string name="title_settings_sync_files">Sincronizar arquivos</string>
     <string name="title_sync_chapters">Sincronizar capítulos locais</string>
-    <string name="description_sync_chapters_local">Atualiza apenas os capítulos novos ou alterados nesta pasta</string>
+    <string name="description_sync_chapters_local">Atualiza só os capítulos novos ou alterados</string>
     <string name="description_sync_chapters_remote">Sincroniza numeração oficial e datas</string>
     <string name="title_sync_cover_banner">Buscar capa e banner</string>
     <string name="description_sync_cover_banner">Usa as imagens que já estão na pasta</string>
     <string name="title_extract_first_page_as_cover">Usar página do capítulo como capa</string>
-    <string name="description_extract_first_page_as_cover">Extrai a primeira página do primeiro capítulo e define como capa, substituindo a atual</string>
+    <string name="description_extract_first_page_as_cover">Usa a primeira página do primeiro capítulo como capa</string>
 
     <string name="title_extract_volume_covers">Gerar capas dos volumes</string>
-    <string name="description_extract_volume_covers">Usa a primeira página de cada volume como capa dele, substituindo as atuais</string>
+    <string name="description_extract_volume_covers">Usa a primeira página de cada volume como capa dele</string>
 
     <string name="description_icon_pagination_previous">Página anterior</string>
     <string name="description_icon_pagination_next">Próxima página</string>
@@ -371,7 +371,7 @@
     <string name="placeholder_category_name">Nome do marcador</string>
 
     <string name="label_config_external_sync">Sincronização externa</string>
-    <string name="description_config_external_sync">Permitir que este quadrinho seja atualizado nas sincronizações em lote</string>
+    <string name="description_config_external_sync">Atualizar este quadrinho nas sincronizações em lote</string>
 
         <!-- Chapter Naming Templates -->
     <string name="label_template_empty_state">Nenhum template criado</string>
@@ -407,7 +407,7 @@
     <string name="dialog_delete_title">Deletar quadrinho?</string>
     <string name="dialog_delete_message">Esta ação remove o quadrinho do banco de dados e apaga a pasta do dispositivo. Não pode ser desfeita.</string>
     <string name="action_clear_metadata">Limpar metadados</string>
-    <string name="description_clear_metadata">Apaga o ComicInfo.xml, a capa e o banner da pasta e remove os metadados sincronizados do banco</string>
+    <string name="description_clear_metadata">Apaga ComicInfo.xml, capa, banner e os metadados salvos</string>
     <string name="dialog_clear_metadata_title">Limpar metadados deste quadrinho?</string>
     <string name="dialog_clear_metadata_message">Isso apaga o ComicInfo.xml, a capa e o banner da pasta, além dos metadados sincronizados. Capítulos e volumes não são afetados. Não dá para desfazer.</string>
     <string name="label_selection_count">%1$d selecionado(s)</string>
