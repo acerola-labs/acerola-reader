@@ -19,7 +19,7 @@ order: 2
 1. Clone the repository and enter the desktop folder:
 
    ```bash
-   git clone https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader
+   git clone https://github.com/acerola-labs/acerola-reader
    cd acerola-reader/acerola/desktop
    ```
 

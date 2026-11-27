@@ -1,4 +1,4 @@
-export const GITHUB_URL = 'https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader';
+export const GITHUB_URL = 'https://github.com/acerola-labs/acerola-reader';
 export const GITHUB_EDIT_BASE = `${GITHUB_URL}/edit/main/docs/web/src/content/docs`;
 export const GITHUB_RELEASES_URL = `${GITHUB_URL}/releases/latest`;
 export const SITE_URL = 'https://docs.reader.acerola.app';

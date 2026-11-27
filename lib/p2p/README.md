@@ -73,7 +73,7 @@ Adicione ao seu `Cargo.toml`:
 
 ```toml
 [dependencies]
-acerola-p2p = { git = "https://github.com/Vinicius-Gabriel-P-Leitao/acerola-p2p" }
+acerola-p2p = { git = "https://github.com/acerola-labs/acerola-reader" }
 ```
 
 ---
@@ -183,7 +183,7 @@ Atrás da feature `iroh-blobs-adapter` (ativa `iroh` automaticamente), o `IrohTr
 
 ```toml
 [dependencies]
-acerola-p2p = { git = "https://github.com/Vinicius-Gabriel-P-Leitao/acerola-p2p", features = ["iroh-blobs-adapter"] }
+acerola-p2p = { git = "https://github.com/acerola-labs/acerola-reader", features = ["iroh-blobs-adapter"] }
 ```
 
 ```rust

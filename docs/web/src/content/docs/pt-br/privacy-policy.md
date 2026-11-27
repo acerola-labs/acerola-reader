@@ -16,7 +16,7 @@ order: 1
 
 <Callout type="note" title="Fonte de verdade">
 
-Esta página espelha o [`PRIVACY_POLICY.md`](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/blob/main/PRIVACY_POLICY.md) na raiz do repositório. Em caso de divergência, o arquivo no repositório é a versão oficial.
+Esta página espelha o [`PRIVACY_POLICY.md`](https://github.com/acerola-labs/acerola-reader/blob/main/PRIVACY_POLICY.md) na raiz do repositório. Em caso de divergência, o arquivo no repositório é a versão oficial.
 
 </Callout>
 
@@ -64,7 +64,7 @@ Em nenhum dos quatro modos o conteúdo da biblioteca (arquivos, progresso, hist�
 
 <Callout type="note" title="Confira você mesmo">
 
-Essa afirmação não pede confiança cega: o código do relay é aberto (MPL-2.0) e está em [`lib/relay/`](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/tree/main/lib/relay) no repositório — qualquer pessoa pode ler exatamente o que ele faz com o tráfego que passa por ele.
+Essa afirmação não pede confiança cega: o código do relay é aberto (MPL-2.0) e está em [`lib/relay/`](https://github.com/acerola-labs/acerola-reader/tree/main/lib/relay) no repositório — qualquer pessoa pode ler exatamente o que ele faz com o tráfego que passa por ele.
 
 </Callout>
 

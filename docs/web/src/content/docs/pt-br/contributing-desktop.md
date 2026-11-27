@@ -19,7 +19,7 @@ O `acerola/desktop` adota uma arquitetura em duas camadas: um **backend** em Rus
 1. Clone o repositório e entre na pasta do desktop:
 
    ```bash
-   git clone https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader
+   git clone https://github.com/acerola-labs/acerola-reader
    cd acerola-reader/acerola/desktop
    ```
 
