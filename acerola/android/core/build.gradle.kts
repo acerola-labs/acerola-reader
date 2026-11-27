@@ -19,7 +19,7 @@ android {
         minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "GITHUB_USER_AGENT", "\"github.com/Vinicius-Gabriel-P-Leitao/acerola\"")
+        buildConfigField("String", "GITHUB_USER_AGENT", "\"github.com/acerola-labs/acerola-reader\"")
         buildConfigField("String", "MANGADEX_UPLOAD_URL", "\"https://uploads.mangadex.org\"")
         buildConfigField("String", "MANGADEX_BASE_URL", "\"https://api.mangadex.org\"")
         buildConfigField(
