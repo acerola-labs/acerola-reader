@@ -43,7 +43,7 @@ Todos os dados gerados pelo uso do aplicativo (biblioteca, progresso de leitura,
 
 ## 3. Conectividade e sincronização entre dispositivos
 
-O Acerola sincroniza biblioteca, histórico e progresso de leitura diretamente entre os dispositivos do próprio usuário, sem passar por uma conta ou banco de dados central. Essa sincronização é opcional. Para como cada modo funciona tecnicamente, veja [Arquitetura](/docs/architecture) — aqui o foco é o que cada um implica em termos de dados:
+O Acerola sincroniza biblioteca, histórico e progresso de leitura diretamente entre os dispositivos do próprio usuário, sem passar por uma conta ou banco de dados central. Essa sincronização é opcional. Para como cada modo funciona tecnicamente, veja [Arquitetura](/pt-br/docs/architecture) — aqui o foco é o que cada um implica em termos de dados:
 
 <CardGrid>
 	<Card title="Somente descoberta local">

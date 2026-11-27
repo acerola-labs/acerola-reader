@@ -25,8 +25,8 @@ describe('AcerolaPrevNextNav', () => {
 		const prevLink = screen.getByRole('link', { name: /Anterior.*Primeiros passos/s });
 		const nextLink = screen.getByRole('link', { name: /Próximo.*Arquitetura/s });
 
-		expect(prevLink).toHaveAttribute('href', '/docs/getting-started');
-		expect(nextLink).toHaveAttribute('href', '/docs/architecture');
+		expect(prevLink).toHaveAttribute('href', '/pt-br/docs/getting-started');
+		expect(nextLink).toHaveAttribute('href', '/pt-br/docs/architecture');
 	});
 
 	it('renders only the next link when prev is null', () => {
@@ -37,7 +37,7 @@ describe('AcerolaPrevNextNav', () => {
 		expect(screen.queryByText('Anterior')).not.toBeInTheDocument();
 		expect(screen.getByRole('link', { name: /Arquitetura/ })).toHaveAttribute(
 			'href',
-			'/docs/architecture'
+			'/pt-br/docs/architecture'
 		);
 	});
 

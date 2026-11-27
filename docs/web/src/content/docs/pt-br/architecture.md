@@ -63,4 +63,4 @@ Os quatro formatos de conexão:
 	</Card>
 </CardGrid>
 
-Nos quatro casos o handshake e o transporte são os mesmos (QUIC + TLS 1.3 via iroh) — só muda quem intermedeia a conexão quando os dispositivos não estão na mesma rede. Detalhes sobre quais metadados cada modo expõe estão na [Política de Privacidade](/docs/privacy-policy).
+Nos quatro casos o handshake e o transporte são os mesmos (QUIC + TLS 1.3 via iroh) — só muda quem intermedeia a conexão quando os dispositivos não estão na mesma rede. Detalhes sobre quais metadados cada modo expõe estão na [Política de Privacidade](/pt-br/docs/privacy-policy).

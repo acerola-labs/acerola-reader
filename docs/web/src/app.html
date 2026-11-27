@@ -9,6 +9,44 @@
 			href="https://cdn.acerola.app/brand/logo/acerola-logo-foreground.svg"
 		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			// Theme and language shared by every Acerola site (lib/utils/preference.util.ts), applied
+			// before the first paint. Theme: the acerola-theme cookie, dark by default. Language: a
+			// prefixed path (/pt-br/…, /en/…) saves its locale in acerola-locale; a path with no
+			// prefix goes to the cookie's locale (pt-br without one).
+			(function () {
+				const cookie = (name) => {
+					const match = document.cookie.match(
+						new RegExp('(?:^|;\\s*)' + name + '=([^;]*)')
+					);
+					return match ? match[1] : null;
+				};
+
+				const theme = cookie('acerola-theme') === 'light' ? 'light' : 'dark';
+				document.documentElement.setAttribute('data-theme', theme);
+				document.documentElement.classList.toggle('dark', theme === 'dark');
+
+				const locales = ['pt-br', 'en'];
+				const path = location.pathname;
+				const prefix = locales.find(
+					(l) => path === '/' + l || path.startsWith('/' + l + '/')
+				);
+				if (prefix) {
+					const shared = /(^|\.)acerola\.app$/.test(location.hostname);
+					document.cookie =
+						'acerola-locale=' +
+						prefix +
+						'; path=/; max-age=34560000; samesite=lax' +
+						(shared ? '; domain=acerola.app; secure' : '');
+				} else {
+					const saved = cookie('acerola-locale');
+					const locale = locales.includes(saved) ? saved : locales[0];
+					location.replace(
+						'/' + locale + (path === '/' ? '' : path) + location.search + location.hash
+					);
+				}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 

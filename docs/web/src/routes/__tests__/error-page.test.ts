@@ -14,6 +14,6 @@ describe('+error page', () => {
 		).toBeInTheDocument();
 		expect(screen.getByText(m['error.eyebrow']({ status: 404 }))).toBeInTheDocument();
 		const homeLink = screen.getByRole('link', { name: m['error.actions.home']() });
-		expect(homeLink).toHaveAttribute('href', '/');
+		expect(homeLink).toHaveAttribute('href', '/pt-br/');
 	});
 });

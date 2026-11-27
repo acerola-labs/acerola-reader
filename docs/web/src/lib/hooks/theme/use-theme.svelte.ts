@@ -1,58 +1,34 @@
 import { browser } from '$app/environment';
-import { MODE_STORAGE_KEY } from '#lib/constants/themes.ts';
+import { THEME_COOKIE, writeCookie } from '#lib/utils/preference.util.ts';
 
 export type ThemeMode = 'light' | 'dark';
-export type ThemeModeOption = ThemeMode | 'system';
 
-const prefersDark = browser ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-
-let mode = $state<ThemeModeOption>('dark');
-let resolved = $state<ThemeMode>('dark');
-
-function resolveMode(modeOption: ThemeModeOption): ThemeMode {
-	switch (modeOption) {
-		case 'system':
-			return prefersDark?.matches ? 'dark' : 'light';
-		case 'light':
-		case 'dark':
-			return modeOption;
-	}
-}
+/** Dark is the brand default; app.html applies the shared cookie before the first paint. */
+let mode = $state<ThemeMode>('dark');
 
 function applyTheme() {
 	if (!browser) return;
 
-	resolved = resolveMode(mode);
-
 	const root = document.documentElement;
-	root.setAttribute('data-theme', resolved);
-	root.classList.toggle('dark', resolved === 'dark');
+	root.setAttribute('data-theme', mode);
+	root.classList.toggle('dark', mode === 'dark');
 }
 
 if (browser) {
-	const savedMode = localStorage.getItem(MODE_STORAGE_KEY) as ThemeModeOption | null;
-
-	if (savedMode) mode = savedMode;
-
-	applyTheme();
-
-	prefersDark?.addEventListener('change', () => {
-		if (mode === 'system') applyTheme();
-	});
+	mode = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 
+/** Page theme, shared by every Acerola site through the acerola-theme cookie. */
 export function useTheme() {
-	function setMode(newMode: ThemeModeOption) {
+	function setMode(newMode: ThemeMode) {
 		mode = newMode;
-		localStorage.setItem(MODE_STORAGE_KEY, newMode);
+		writeCookie(THEME_COOKIE, newMode);
 		applyTheme();
 	}
 
 	return {
 		setMode,
-		get resolved() {
-			return resolved;
-		},
+		toggle: () => setMode(mode === 'dark' ? 'light' : 'dark'),
 		get mode() {
 			return mode;
 		}

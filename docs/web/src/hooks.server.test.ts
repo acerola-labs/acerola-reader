@@ -8,6 +8,7 @@ vi.mock('#lib/paraglide/server.js', () => ({
 }));
 
 vi.mock('#lib/paraglide/runtime.js', () => ({
+	defineCustomServerStrategy: vi.fn(),
 	getTextDirection: (locale: string) => (locale === 'ar' ? 'rtl' : 'ltr')
 }));
 
