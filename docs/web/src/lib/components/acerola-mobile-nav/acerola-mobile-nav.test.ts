@@ -24,7 +24,7 @@ describe('AcerolaMobileNav', () => {
 
 		expect(await screen.findByRole('link', { name: 'Primeiros passos' })).toHaveAttribute(
 			'href',
-			'/docs/getting-started'
+			'/pt-br/docs/getting-started'
 		);
 		expect(screen.getByRole('button', { name: 'Mudar tema' })).toBeInTheDocument();
 	});

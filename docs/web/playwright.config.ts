@@ -40,7 +40,9 @@ export default defineConfig({
 	},
 	webServer: {
 		command: 'node build',
-		env: { HOST: '127.0.0.1', PORT: '5173' },
+		// ORIGIN: without it adapter-node assumes https, and the redirect of a path with no locale
+		// prefix (hooks.server.ts) would point to https://127.0.0.1.
+		env: { HOST: '127.0.0.1', PORT: '5173', ORIGIN: 'http://127.0.0.1:5173' },
 		url: 'http://127.0.0.1:5173',
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000

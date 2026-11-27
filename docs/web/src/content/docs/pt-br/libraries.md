@@ -111,7 +111,7 @@ O Acerola só existe porque se apoia num ecossistema enorme de software livre. E
 
 <Callout type="note" title="Escopo">
 
-A lista cobre as dependências diretas de cada projeto (não a árvore transitiva inteira) e as ferramentas de teste/lint não entram aqui — elas já aparecem na seção [Contribuindo](/docs/contributing-overview).
+A lista cobre as dependências diretas de cada projeto (não a árvore transitiva inteira) e as ferramentas de teste/lint não entram aqui — elas já aparecem na seção [Contribuindo](/pt-br/docs/contributing-overview).
 
 </Callout>
 

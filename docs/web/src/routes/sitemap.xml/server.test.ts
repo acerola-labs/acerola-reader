@@ -3,69 +3,83 @@ import { SITE_URL } from '#lib/constants/site.ts';
 import { getFlatOrder, FALLBACK_LOCALE } from '#lib/content/docs.ts';
 import { GET } from './+server';
 
-// This endpoint doesn't touch event.platform/Cloudflare bindings, so a minimal fake
-// RequestEvent is enough to exercise it directly, without spinning up a real request. Typed
-// off GET's own parameter (rather than the generic `RequestEvent` from '@sveltejs/kit', whose
-// default RouteId is the union of every route in the app) so it matches the `'/sitemap.xml'`
-// literal this specific handler expects.
-const fakeEvent = {} as Parameters<typeof GET>[0];
+// This endpoint only reads event.url, so a minimal fake RequestEvent is enough to exercise it
+// directly. Typed off GET's own parameter so it matches the '/sitemap.xml' route literal.
+const eventAt = (path: string) =>
+	({ url: new URL(`${SITE_URL}${path}`) }) as unknown as Parameters<typeof GET>[0];
 
-describe('GET /sitemap.xml', () => {
-	it('responds with an application/xml content type', async () => {
-		const response = await GET(fakeEvent);
+const parse = async (path: string) => {
+	const response = await GET(eventAt(path));
+	const body = await response.text();
+	return { response, body, doc: new DOMParser().parseFromString(body, 'application/xml') };
+};
+
+describe('GET /sitemap.xml (index)', () => {
+	it('lists one sitemap per locale', async () => {
+		const { response, doc } = await parse('/sitemap.xml');
+
 		expect(response.headers.get('Content-Type')).toBe('application/xml');
+		expect(doc.querySelector('parsererror')).toBeNull();
+		expect([...doc.querySelectorAll('sitemap > loc')].map((loc) => loc.textContent)).toEqual([
+			`${SITE_URL}/pt-br/sitemap.xml`,
+			`${SITE_URL}/en/sitemap.xml`
+		]);
+	});
+});
+
+describe('GET /<locale>/sitemap.xml', () => {
+	it('returns well-formed XML with one <url> per page (home + every doc)', async () => {
+		const { doc } = await parse('/en/sitemap.xml');
+
+		expect(doc.querySelector('parsererror')).toBeNull();
+		const docCount = getFlatOrder(FALLBACK_LOCALE).length;
+		expect(doc.querySelectorAll('url').length).toBe(1 + docCount);
 	});
 
-	it('returns well-formed XML with one <url> per page (home + every doc)', async () => {
-		const response = await GET(fakeEvent);
-		const body = await response.text();
+	it('lists the pages under its own locale prefix', async () => {
+		const { doc } = await parse('/en/sitemap.xml');
 
-		const doc = new DOMParser().parseFromString(body, 'application/xml');
-		expect(doc.querySelector('parsererror')).toBeNull();
-
-		const urls = doc.querySelectorAll('url');
-		const docCount = getFlatOrder(FALLBACK_LOCALE).length;
-		expect(urls.length).toBe(1 + docCount);
+		for (const loc of doc.querySelectorAll('url > loc')) {
+			expect(loc.textContent?.startsWith(`${SITE_URL}/en/`)).toBe(true);
+		}
 	});
 
 	it('gives the home page top priority and every other page a lower one', async () => {
-		const response = await GET(fakeEvent);
-		const body = await response.text();
-		const doc = new DOMParser().parseFromString(body, 'application/xml');
+		const { doc } = await parse('/pt-br/sitemap.xml');
 
 		const urls = [...doc.querySelectorAll('url')];
-		const home = urls.find((url) => url.querySelector('loc')?.textContent === SITE_URL + '/');
+		const home = urls.find(
+			(url) => url.querySelector('loc')?.textContent === `${SITE_URL}/pt-br/`
+		);
 		expect(home?.querySelector('priority')?.textContent).toBe('1.0');
 
 		const others = urls.filter((url) => url !== home);
 		expect(others.length).toBeGreaterThan(0);
 		for (const url of others) {
 			expect(url.querySelector('priority')?.textContent).toBe('0.8');
-			expect(url.querySelector('loc')?.textContent?.startsWith(SITE_URL)).toBe(true);
 		}
 	});
 
-	it('gives every page an x-default alternate, pointing at the fallback locale', async () => {
-		const response = await GET(fakeEvent);
-		const body = await response.text();
-		const doc = new DOMParser().parseFromString(body, 'application/xml');
+	it('gives every page an x-default alternate on the path with no prefix', async () => {
+		const { doc } = await parse('/pt-br/sitemap.xml');
 
-		const urls = [...doc.querySelectorAll('url')];
-		expect(urls.length).toBeGreaterThan(0);
-		for (const url of urls) {
+		for (const url of doc.querySelectorAll('url')) {
 			const alternates = [...url.getElementsByTagName('xhtml:link')];
-			const defaultAlternate = alternates.find(
-				(link) => link.getAttribute('hreflang') === 'x-default'
-			);
-			expect(defaultAlternate?.getAttribute('href')).toBe(
-				url.querySelector('loc')?.textContent
-			);
+			const hrefs = alternates.map((link) => link.getAttribute('href') ?? '');
+			const defaultHref = alternates
+				.find((link) => link.getAttribute('hreflang') === 'x-default')
+				?.getAttribute('href');
+
+			expect(defaultHref?.startsWith(SITE_URL)).toBe(true);
+			expect(defaultHref).not.toMatch(/\/(pt-br|en)(\/|$)/);
+			expect(
+				hrefs.filter((href) => href.includes('/en/') || href.endsWith('/en'))
+			).toHaveLength(1);
 		}
 	});
 
 	it('does not emit <lastmod> — no per-doc modification date is tracked, so a fabricated one would be misleading', async () => {
-		const response = await GET(fakeEvent);
-		const body = await response.text();
+		const { body } = await parse('/en/sitemap.xml');
 
 		expect(body).not.toContain('<lastmod>');
 	});

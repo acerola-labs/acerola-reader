@@ -222,5 +222,9 @@
 	"code": {
 		"copy": "Copy code",
 		"tabs": "Files"
+	},
+	"llms": {
+		"docs": "Documentation",
+		"locales": "Languages"
 	}
 }

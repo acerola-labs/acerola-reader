@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import svg from '@poppanator/sveltekit-svg';
 import { defineConfig } from 'vite';
+import { paraglide } from './paraglide.config.ts';
 
 export default defineConfig({
 	server: {
@@ -21,10 +22,6 @@ export default defineConfig({
 				plugins: ['preset-default']
 			}
 		}),
-		paraglideVitePlugin({
-			project: './project.inlang',
-			outdir: './src/lib/paraglide',
-			strategy: ['url', 'cookie', 'baseLocale']
-		})
+		paraglideVitePlugin(paraglide)
 	]
 });

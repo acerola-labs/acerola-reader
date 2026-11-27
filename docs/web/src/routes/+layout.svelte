@@ -7,7 +7,7 @@
 	import { GITHUB_URL, OG_IMAGE_URL, SITE_URL } from '#lib/constants/site.ts';
 	import { getSidebar } from '#lib/content/docs.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale, localizeHref, locales } from '#lib/paraglide/runtime.js';
+	import { deLocalizeHref, getLocale, localizeHref, locales } from '#lib/paraglide/runtime.js';
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
@@ -18,6 +18,8 @@
 
 	const groups = $derived(getSidebar(getLocale()));
 	const activeSlug = $derived(page.url.pathname.split('/docs/')[1] ?? '');
+	/** The page without the locale prefix, for the hreflang links. */
+	const path = $derived(deLocalizeHref(page.url.pathname));
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -84,14 +86,11 @@
 		<link
 			rel="alternate"
 			hreflang={loc}
-			href={localizeHref(page.url.pathname, { locale: loc })}
+			href="{SITE_URL}{localizeHref(path, { locale: loc })}"
 		/>
 	{/each}
-	<link
-		rel="alternate"
-		hreflang="x-default"
-		href={localizeHref(page.url.pathname, { locale: 'pt-br' })}
-	/>
+	<!-- The path with no prefix follows the visitor's acerola-locale cookie. -->
+	<link rel="alternate" hreflang="x-default" href="{SITE_URL}{path}" />
 
 	<!-- Open Graph Meta Tags -->
 	<meta property="og:site_name" content={m['site.name']()} />

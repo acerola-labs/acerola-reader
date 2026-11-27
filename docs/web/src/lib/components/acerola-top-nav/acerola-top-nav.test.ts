@@ -10,7 +10,7 @@ describe('AcerolaTopNav', () => {
 		expect(screen.getByText('Acerola')).toBeInTheDocument();
 		expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute(
 			'href',
-			'/docs/getting-started'
+			'/pt-br/docs/getting-started'
 		);
 		expect(screen.getAllByText('Pesquisar na documentação...').length).toBeGreaterThan(0);
 	});

@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"dev": "npm run paraglide:compile && vite dev",
-		"build": "npm run paraglide:compile && vite build && pagefind --site build/prerendered --output-path build/client/pagefind",
+		"build": "npm run paraglide:compile && vite build && pagefind --site build/prerendered --glob \"{pt-br.html,en.html,pt-br/**/*.html,en/**/*.html}\" --output-path build/client/pagefind",
 		"preview": "vite preview",
 		"start": "node build",
 		"deploy:storybook": "npm run build-storybook && npx wrangler deploy --config wrangler.storybook.toml",
@@ -17,7 +17,7 @@
 		"check:watch": "npm run paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide --strategy url cookie baseLocale",
+		"paraglide:compile": "node scripts/i18n.mjs",
 		"test": "npm run paraglide:compile && vitest run",
 		"test:watch": "npm run paraglide:compile && vitest",
 		"test:unit": "npm run paraglide:compile && vitest run --project=unit",

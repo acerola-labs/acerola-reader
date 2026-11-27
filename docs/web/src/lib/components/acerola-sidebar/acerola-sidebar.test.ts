@@ -51,11 +51,11 @@ describe('AcerolaSidebar', () => {
 		expect(screen.getByText('Conceitos')).toBeInTheDocument();
 		expect(screen.getByRole('link', { name: 'Guia de instalação' })).toHaveAttribute(
 			'href',
-			'/docs/getting-started'
+			'/pt-br/docs/getting-started'
 		);
 		expect(screen.getByRole('link', { name: 'Visão geral da arquitetura' })).toHaveAttribute(
 			'href',
-			'/docs/architecture'
+			'/pt-br/docs/architecture'
 		);
 	});
 
