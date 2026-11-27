@@ -10,7 +10,7 @@ order: 1
 	import LibraryTable from '#lib/mdsvex/library-table.svelte';
 
 	const desktopRust = [
-		{ name: 'acerola-p2p', url: 'https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/tree/main/lib/p2p', license: 'MPL-2.0' },
+		{ name: 'acerola-p2p', url: 'https://github.com/acerola-labs/acerola-reader/tree/main/lib/p2p', license: 'MPL-2.0' },
 		{ name: 'anyhow', url: 'https://github.com/dtolnay/anyhow', license: 'MIT OR Apache-2.0' },
 		{ name: 'async-trait', url: 'https://github.com/dtolnay/async-trait', license: 'MIT OR Apache-2.0' },
 		{ name: 'axum', url: 'https://github.com/tokio-rs/axum', license: 'MIT' },

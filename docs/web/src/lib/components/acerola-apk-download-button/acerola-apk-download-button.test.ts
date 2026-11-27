@@ -47,7 +47,7 @@ describe('AcerolaApkDownloadButton', () => {
 		await waitFor(() =>
 			expect(screen.getByRole('link')).toHaveAttribute(
 				'href',
-				'https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/releases/latest'
+				'https://github.com/acerola-labs/acerola-reader/releases/latest'
 			)
 		);
 

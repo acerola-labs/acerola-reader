@@ -16,7 +16,7 @@ order: 1
 
 <Callout type="note" title="Source of truth">
 
-This page mirrors [`PRIVACY_POLICY.md`](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/blob/main/PRIVACY_POLICY.md) at the root of the repository. In case of any discrepancy, the file in the repository is the official version. The policy is governed by Brazilian law (LGPD, Law No. 13.709/2018) — the legal citations below reference it directly.
+This page mirrors [`PRIVACY_POLICY.md`](https://github.com/acerola-labs/acerola-reader/blob/main/PRIVACY_POLICY.md) at the root of the repository. In case of any discrepancy, the file in the repository is the official version. The policy is governed by Brazilian law (LGPD, Law No. 13.709/2018) — the legal citations below reference it directly.
 
 </Callout>
 
@@ -57,7 +57,7 @@ In none of the four modes is library content (files, progress, history) ever sto
 
 <Callout type="note" title="See for yourself">
 
-This isn't asking for blind trust: the relay code is open source (MPL-2.0) and lives at [`lib/relay/`](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/tree/main/lib/relay) in the repository — anyone can read exactly what it does with the traffic that passes through it.
+This isn't asking for blind trust: the relay code is open source (MPL-2.0) and lives at [`lib/relay/`](https://github.com/acerola-labs/acerola-reader/tree/main/lib/relay) in the repository — anyone can read exactly what it does with the traffic that passes through it.
 
 </Callout>
 

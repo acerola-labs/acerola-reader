@@ -42,7 +42,7 @@ Escolha a plataforma que você usa:
 
 <Callout type="note" title="Baixando fora da Microsoft Store">
 
-O pacote da Microsoft Store é o único assinado com certificado confiável. Se você baixar o instalador (`.exe`/`.msi`/`.msix`) direto do [GitHub Releases](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/releases) em vez de usar a Store, o Windows SmartScreen vai avisar que o executável não é reconhecido — isso é esperado, não é sinal de malware. O APK do Android é sempre assinado, mesmo baixado direto do GitHub Releases; ele só ainda não está publicado na Play Store, então o Android também vai pedir para confirmar a instalação de fontes desconhecidas.
+O pacote da Microsoft Store é o único assinado com certificado confiável. Se você baixar o instalador (`.exe`/`.msi`/`.msix`) direto do [GitHub Releases](https://github.com/acerola-labs/acerola-reader/releases) em vez de usar a Store, o Windows SmartScreen vai avisar que o executável não é reconhecido — isso é esperado, não é sinal de malware. O APK do Android é sempre assinado, mesmo baixado direto do GitHub Releases; ele só ainda não está publicado na Play Store, então o Android também vai pedir para confirmar a instalação de fontes desconhecidas.
 
 </Callout>
 
@@ -51,7 +51,7 @@ O pacote da Microsoft Store é o único assinado com certificado confiável. Se 
 Prefere compilar você mesmo, ou precisa de macOS/Linux? O Acerola Desktop é um app Tauri — clone o repositório e rode direto:
 
 ```bash
-git clone https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader
+git clone https://github.com/acerola-labs/acerola-reader
 cd acerola-reader/acerola/desktop
 npm install
 npm run tauri dev
