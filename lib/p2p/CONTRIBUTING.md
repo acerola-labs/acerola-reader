@@ -78,8 +78,8 @@ Ideias para melhorar a performance, adicionar suporte a novos transports ou este
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/Vinicius-Gabriel-P-Leitao/acerola-p2p.git
-cd acerola-p2p
+git clone https://github.com/acerola-labs/acerola-reader.git
+cd acerola-reader/lib/p2p
 
 # 2. Verifique a compilação do workspace
 cargo make check
