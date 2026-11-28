@@ -52,13 +52,11 @@ Antes de mexer, carregue a skill certa e siga-a:
   `p2p` e canal `alpha`, `beta` ou `prod` (ex.: `desktop/prod/v1.0.2`), em vez de uma `vX.Y.Z` por
   repositório: cada app tem a sua versão e o seu canal. A tag continua sendo a única coisa que
   publica e precisa estar na `main`.
-- **Versão sai da tag** (Android, desktop e p2p): o workflow de release lê a versão da tag e grava
-  nos manifestos (`cargo make bump-<app>` no `makefile.toml`), com commit do bot na `main` e na
-  `develop`. Por isso ele não confere a tag contra o manifesto.
-- **Docs, como no padrão**: a versão entra no PR da release (`VERSION=X.Y.Z cargo make bump-docs` na
-  `release/docs-X.Y.Z`), porque a `main` exige PR com aprovação e o GitHub não aceita o bot do
-  Actions no bypass. O `web-deploy.yml` confere a tag `docs/<canal>/vX.Y.Z` contra o
-  `docs/web/package.json`; o merge na `main` faz o deploy (webhook da Procedure).
+- **Versão no PR da release, por app**: `VERSION=X.Y.Z cargo make bump-<app>` na
+  `release/<app>-X.Y.Z` (`bump-android` também sobe o `versionCode` em 1). Nenhum workflow faz
+  commit: a `main` exige PR com aprovação e o GitHub não aceita o bot do Actions no bypass. Cada
+  release confere a tag `<app>/<canal>/vX.Y.Z` contra os manifestos do app e cria a release do
+  GitHub com a mensagem da tag. As docs vão ao ar no merge na `main` (webhook da Procedure).
 - **Pastas**: os apps moram em `acerola/<app>/`; o portal fica em `docs/web/` com local de commit
   `web`; o front do desktop fica em `acerola/desktop/svelte/` (o `src-tauri/` é a outra metade);
   `monorepo` é o local da configuração da raiz e de `scripts/`, para manter o histórico.
