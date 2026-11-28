@@ -33,19 +33,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Install cargo-nextest
-        uses: taiki-e/install-action@cargo-nextest
+        run: |
+          rustup toolchain install stable --profile minimal --component clippy
+          rustup default stable
 
       - name: Cache Cargo
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: |
             ~/.cargo/registry
@@ -54,6 +50,13 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('lib/p2p/**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+
+      # After the cache restores ~/.cargo, so an installed tool is not reinstalled.
+      - name: Install cargo-make and cargo-nextest
+        shell: bash
+        run: |
+          command -v cargo-make >/dev/null || cargo install cargo-make --locked
+          command -v cargo-nextest >/dev/null || cargo install cargo-nextest --locked
 
       - name: Build
         run: cargo make --makefile makefile.toml build
@@ -73,27 +76,28 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        run: |
+          rustup toolchain install stable --profile minimal --component llvm-tools-preview
+          rustup default stable
 
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --locked
 
       - name: Generate Code Coverage
         run: cargo llvm-cov --all-features --lcov --output-path lcov.info
 
-
       - name: Check Minimum Coverage Gate (80%)
         run: cargo llvm-cov report --fail-under-lines 80
 
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v7
+      # Coverage stays as an artifact: acerola-labs only runs GitHub's own actions.
+      - name: Upload coverage report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          files: lib/p2p/lcov.info
-          flags: p2p
-          token: ${{ secrets.CODECOV_TOKEN }}
+          name: p2p-lcov
+          path: lib/p2p/lcov.info
 
   mutation-test:
     name: Cargo Mutants
@@ -105,10 +109,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
 
       - name: Install cargo-mutants
         run: cargo install --locked cargo-mutants
@@ -118,7 +124,7 @@ jobs:
 
       - name: Upload Mutants Report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: mutants-report
           path: lib/p2p/mutants-out/

@@ -11,6 +11,9 @@ concurrency:
   group: android-release-${{ github.ref }}
   cancel-in-progress: false
 
+# The version is written in the release PR (release/android-X.Y.Z, CLAUDE.md): the tag
+# android/<channel>/vX.Y.Z, made on that merge on main, must match build.gradle.kts.
+# Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
   release:
     name: Build & Release APK
@@ -20,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -40,43 +43,38 @@ jobs:
 
       - name: Extract version
         run: |
-          CHANNEL=$(echo "${{ github.ref_name }}" | cut -d'/' -f2)
-          VERSION=$(echo "${{ github.ref_name }}" | cut -d'/' -f3 | sed 's/^v//')
-          VERSION_CODE=$(git tag -l 'android/*/v*' | wc -l | tr -d ' ')
-          TAG_NAME="android/${CHANNEL}/v${VERSION}"
-          echo "CHANNEL=$CHANNEL" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          CHANNEL=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f2)
+          VERSION=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f3 | sed 's/^v//')
+          echo "CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Check the tag against build.gradle.kts
+        run: |
+          name=$(sed -n 's/^ *versionName = "\(.*\)"/\1/p' acerola/android/app/build.gradle.kts)
+          if [ "$name" != "$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME differs from build.gradle.kts versionName $name."
+            exit 1
+          fi
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.20.0
 
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Update build.gradle.kts
-        run: cargo make --makefile makefile.toml bump-android
-        env:
-          VERSION: ${{ env.VERSION }}
-          VERSION_CODE: ${{ env.VERSION_CODE }}
-
       - name: Set up JDK 21
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-linux-android
+        run: |
+          rustup toolchain install stable --profile minimal --target aarch64-linux-android
+          rustup default stable
 
       - name: Install cargo-ndk
-        run: cargo install cargo-ndk
+        run: cargo install cargo-ndk --locked
 
       - name: Decode keystore
         run: |
@@ -97,87 +95,38 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Rename APK
-        run: mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk"
+        run: mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/acerola-$VERSION.apk"
         working-directory: acerola/android
 
-      # The APK goes to R2 BEFORE anything is committed or published: if either upload fails, the
-      # release failed and nothing else runs (no version commit, no GitHub Release).
+      # The APK goes to R2 BEFORE the GitHub release: if either upload fails, the release failed.
       # Permanent copy per version, never overwritten nor deleted: the release history (same idea
       # as a Linux distro package pool).
-      - name: Upload APK to R2 (versioned archive)
+      # `wrangler r2 object` has no `list`/delete-by-prefix subcommand, so older versions stay in
+      # `android/latest/`: the docs/web /api/apk-latest route resolves the highest version there.
+      - name: Upload APK to R2
         if: env.CHANNEL == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: acerola/android
-          command: >
-            r2 object put acerola-reader/android/releases/acerola-${{ env.VERSION }}.apk
-            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
-            --content-type=application/vnd.android.package-archive
-            --remote
-
-      # `wrangler r2 object` has no `list`/delete-by-prefix subcommand, so this step does not clean
-      # older versions out of `android/latest/`: the docs/web /api/apk-latest route (which resolves
-      # the highest version in that folder) tolerates more than one APK there until a cleanup.
-      - name: Upload APK to R2 (latest)
-        if: env.CHANNEL == 'prod'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: acerola/android
-          command: >
-            r2 object put acerola-reader/android/latest/acerola-${{ env.VERSION }}.apk
-            --file=app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
-            --content-type=application/vnd.android.package-archive
-            --remote
-
-      - name: Commit version bump
-        working-directory: ${{ github.workspace }}
+        working-directory: acerola/android
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add acerola/android/app/build.gradle.kts
-          if ! git diff --staged --quiet; then
-            git commit -m "[build](android): Versão ${{ env.VERSION }} [skip ci]"
-            git checkout -- .
+          apk="app/build/outputs/apk/release/acerola-$VERSION.apk"
+          for folder in releases latest; do
+            npx --yes wrangler@4.169.0 r2 object put "acerola-reader/android/$folder/acerola-$VERSION.apk" \
+              --file="$apk" --content-type=application/vnd.android.package-archive --remote
+          done
 
-            # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-            for attempt in 1 2 3 4 5; do
-              git push origin HEAD:main && break
-              if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to main."; exit 1; fi
-              git fetch origin main
-              git checkout -- .
-              git rebase origin/main
-            done
-            BUMP_SHA=$(git rev-parse HEAD)
-
-            # develop gets the very same commit when it has nothing main lacks, so both stay
-            # identical; only when develop is ahead the bump is cherry-picked on top of it.
-            git fetch origin develop
-            if git merge-base --is-ancestor origin/develop "$BUMP_SHA"; then
-              git push origin "$BUMP_SHA:refs/heads/develop"
-            else
-              git checkout -B develop origin/develop
-              git cherry-pick "$BUMP_SHA"
-              git checkout -- .
-              # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-              for attempt in 1 2 3 4 5; do
-                git push origin develop && break
-                if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to develop."; exit 1; fi
-                git fetch origin develop
-                git checkout -- .
-                git rebase origin/develop
-              done
-            fi
+      # The notes are the tag message: what the version brings, for whoever uses it (acerola-git 2.1).
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          apk="acerola/android/app/build/outputs/apk/release/acerola-$VERSION.apk"
+          prerelease=""
+          if [ "$CHANNEL" != "prod" ]; then prerelease="--prerelease"; fi
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$apk" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$apk" --verify-tag $prerelease \
+              --title "Acerola Android $VERSION" --notes-from-tag
           fi
-
-      - name: Upload APK to GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          files: acerola/android/app/build/outputs/apk/release/acerola-${{ env.VERSION }}.apk
-          name: "Acerola Android v${{ env.VERSION }}"
-          generate_release_notes: true
-          prerelease: ${{ env.CHANNEL != 'prod' }}

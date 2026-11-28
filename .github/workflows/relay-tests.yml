@@ -25,20 +25,31 @@ jobs:
         working-directory: lib/relay
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          rustup default stable
 
       - name: Rust Cache
-        uses: swatinem/rust-cache@v2
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/cargo-nextest
+            ~/.cargo/registry
+            ~/.cargo/git
+            lib/relay/target
+          key: ${{ runner.os }}-relay-${{ hashFiles('lib/relay/**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-relay-
 
+      # After the cache restores ~/.cargo, so an installed tool is not reinstalled.
       - name: Install cargo-make and nextest
         run: |
-          cargo install cargo-make --debug
-          curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
+          command -v cargo-make >/dev/null || cargo install cargo-make --locked
+          command -v cargo-nextest >/dev/null || cargo install cargo-nextest --locked
 
       - name: Check Formatting
         run: cargo make --makefile makefile.toml format
