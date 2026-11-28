@@ -11,19 +11,20 @@ concurrency:
   group: p2p-release-${{ github.ref }}
   cancel-in-progress: false
 
+# The version is written in the release PR (release/p2p-X.Y.Z, CLAUDE.md): the tag p2p/<channel>/vX.Y.Z,
+# made on that merge on main, must match lib/p2p/Cargo.toml.
+# Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
   build-release:
     name: Build Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     defaults:
       run:
         working-directory: lib/p2p
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -41,74 +42,28 @@ jobs:
             exit 1
           fi
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Check the tag against Cargo.toml
+        run: |
+          VERSION=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f3 | sed 's/^v//')
+          cargo=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)
+          if [ "$cargo" != "$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME differs from lib/p2p/Cargo.toml version $cargo."
+            exit 1
+          fi
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24.20.0
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
 
       - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Extract version
-        shell: bash
-        run: |
-          VERSION=$(echo "${{ github.ref_name }}" | cut -d'/' -f3 | sed 's/^v//')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: Update version (Cargo.toml)
-        working-directory: ${{ github.workspace }}
-        run: cargo make --makefile makefile.toml bump-p2p
-        env:
-          VERSION: ${{ env.VERSION }}
+        run: cargo install cargo-make --locked
 
       - name: Build Release
         run: cargo make --makefile makefile.toml build-release
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: release-build
           path: lib/p2p/target/release/
-
-      - name: Commit version bump
-        working-directory: ${{ github.workspace }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add lib/p2p/Cargo.toml
-          if ! git diff --staged --quiet; then
-            git commit -m "[build](p2p): Versão ${{ env.VERSION }} [skip ci]"
-            git checkout -- .
-
-            # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-            for attempt in 1 2 3 4 5; do
-              git push origin HEAD:main && break
-              if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to main."; exit 1; fi
-              git fetch origin main
-              git checkout -- .
-              git rebase origin/main
-            done
-            BUMP_SHA=$(git rev-parse HEAD)
-
-            # develop gets the very same commit when it has nothing main lacks, so both stay
-            # identical; only when develop is ahead the bump is cherry-picked on top of it.
-            git fetch origin develop
-            if git merge-base --is-ancestor origin/develop "$BUMP_SHA"; then
-              git push origin "$BUMP_SHA:refs/heads/develop"
-            else
-              git checkout -B develop origin/develop
-              git cherry-pick "$BUMP_SHA"
-              git checkout -- .
-              # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-              for attempt in 1 2 3 4 5; do
-                git push origin develop && break
-                if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to develop."; exit 1; fi
-                git fetch origin develop
-                git checkout -- .
-                git rebase origin/develop
-              done
-            fi
-          fi
