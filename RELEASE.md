@@ -1,22 +1,14 @@
-# Release vX.Y.Z
+# Versões
 
-## Destaques
-- Resumo curto (1-3 linhas) do que essa release traz de mais importante.
+Cada app tem a sua versão, a sua tag (`<app>/<canal>/vX.Y.Z`) e o seu `RELEASE.md`:
 
-## 🚀 Novidades
-- Descrição curta da funcionalidade nova.
+| App | Versões |
+|---|---|
+| Android | [`acerola/android/RELEASE.md`](acerola/android/RELEASE.md) |
+| Desktop | [`acerola/desktop/RELEASE.md`](acerola/desktop/RELEASE.md) |
+| Docs | [`docs/web/RELEASE.md`](docs/web/RELEASE.md) |
+| P2P | [`lib/p2p/RELEASE.md`](lib/p2p/RELEASE.md) |
 
-## 🐛 Correções
-- Descrição curta do bug corrigido.
-
-## ♻️ Mudanças e melhorias
-- Descrição curta da mudança/refatoração/melhoria de performance.
-
-## ⚠️ Breaking Changes
-- Descrição do que quebra e como migrar.
-
-## 🧹 Chores / CI / Docs
-- Descrição curta de tarefa interna, CI ou documentação.
-
-## 📦 Dependências
-- Nome da dependência atualizada e versão.
+O texto da release do GitHub é a seção da versão no arquivo do app
+(`node scripts/release/release-notes.mjs X.Y.Z <arquivo>`). Como montar o texto do Android e do
+desktop está no topo do arquivo de cada um.
