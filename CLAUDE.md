@@ -67,6 +67,11 @@ Antes de mexer, carregue a skill certa e siga-a:
   commit: a `main` exige PR com aprovação e o GitHub não aceita o bot do Actions no bypass. Cada
   release confere a tag `<app>/<canal>/vX.Y.Z` contra os manifestos do app. As docs vão ao ar no
   merge na `main` (webhook da Procedure).
+- **`RELEASE.md` por app**, porque cada app tem a sua versão: `acerola/android/RELEASE.md`,
+  `acerola/desktop/RELEASE.md`, `docs/web/RELEASE.md` e `lib/p2p/RELEASE.md` (o da raiz só aponta
+  para eles). A seção `## X.Y.Z · data` entra na `release/X.Y.Z` e vira o texto da release do GitHub
+  (`release-notes.mjs X.Y.Z <arquivo>`); sem ela, a release não sai. Como montar o texto do Android
+  e do desktop está no topo do arquivo de cada um.
 - **Pastas**: os apps moram em `acerola/<app>/`; o portal fica em `docs/web/` com local de commit
   `web`; o front do desktop fica em `acerola/desktop/svelte/` (o `src-tauri/` é a outra metade);
   `monorepo` é o local da configuração da raiz e de `scripts/`, para manter o histórico.
