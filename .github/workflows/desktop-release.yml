@@ -65,6 +65,12 @@ jobs:
             fi
           done
 
+      # The release text is the version's section in acerola/desktop/RELEASE.md (acerola-git 5):
+      # without it the release stops here, before the build.
+      - name: Read the release notes
+        shell: bash
+        run: node ../../scripts/release/release-notes.mjs "$VERSION" RELEASE.md > release-notes.md
+
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
@@ -113,7 +119,6 @@ jobs:
           Rename-Item (Get-Item ".bin\windows\msi\*.msi").FullName "acerola-x64-${{ env.VERSION }}.msi"
           Rename-Item (Get-Item ".bin\windows\exe\*.exe").FullName "acerola-x64-${{ env.VERSION }}.exe"
 
-      # The notes are the tag message: what the version brings, for whoever uses it (acerola-git 2.1).
       - name: Publish the GitHub release
         shell: bash
         env:
@@ -127,8 +132,9 @@ jobs:
           prerelease=""
           if [ "$CHANNEL" != "prod" ]; then prerelease="--prerelease"; fi
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --title "Versão $VERSION" --notes-file release-notes.md
             gh release upload "$GITHUB_REF_NAME" "${files[@]}" --clobber
           else
             gh release create "$GITHUB_REF_NAME" "${files[@]}" --verify-tag $prerelease \
-              --title "Versão $VERSION" --notes-from-tag
+              --title "Versão $VERSION" --notes-file release-notes.md
           fi

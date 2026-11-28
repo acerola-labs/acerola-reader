@@ -15,7 +15,7 @@ concurrency:
 # hetzner_acerola-reader-docs Procedure (Pull -> Build -> Deploy). The version is written in the
 # release PR (release/X.Y.Z, CLAUDE.md). The tag docs/<channel>/vX.Y.Z, made on that merge:
 # 1. release: checks that it is on main and matches docs/web/package.json, and creates the GitHub
-#    release with the tag message as its notes;
+#    release with the version's section of docs/web/RELEASE.md as its notes;
 # 2. the Storybooks go to Cloudflare Workers.
 # Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
@@ -59,15 +59,16 @@ jobs:
             exit 1
           fi
 
-      # The notes are the tag message: what the version brings, for whoever uses it (acerola-git 2.1).
+      # The release text is the version's section in docs/web/RELEASE.md (acerola-git 5).
       - name: Publish the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          node scripts/release/release-notes.mjs "$VERSION" docs/web/RELEASE.md > release-notes.md
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --title "Versão $VERSION" --notes-from-tag
+            gh release edit "$GITHUB_REF_NAME" --title "Versão $VERSION" --notes-file release-notes.md
           else
-            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Versão $VERSION" --notes-from-tag
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Versão $VERSION" --notes-file release-notes.md
           fi
 
   deploy-storybook-web:
