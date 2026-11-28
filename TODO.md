@@ -37,15 +37,9 @@ Levantado em auditoria de release (11/09/2026), revisado em 18/09/2026.
   (`git tag -l`; `beta` só passou a existir em 12/09/2026). O upload pro Cloudflare R2
   (Android, só em `prod`) e o `prerelease=false` nunca rodaram de verdade. Fazer um dry-run
   antes de depender disso pro lançamento em si.
-- [ ] **`p2p-release.yml` não publica em lugar nenhum de verdade** — só sobe um
-  `actions/upload-artifact` de CI, não `cargo publish` nem GitHub Release. Confirmar se isso é
-  intencional (lib consumida só via path/git dependency) antes do beta.
 - [ ] **Android está fraco de testes — FFI, código em geral e testes instrumentados/emulador**
   — ver "Android > Testes" abaixo. **Auditoria adiada pra depois da leva funcional atual**
   (decisão de 18/09/2026), mas é o maior gap de qualidade entre os 4 componentes.
-- [ ] **Sistema de cobertura (Codecov) não recebe `wdio`, e2e (Playwright) nem testes
-  instrumentados/emulador do Android — só unit tests** — detalhes em "Android > Testes" e
-  "Desktop > Testes" abaixo. **Auditoria adiada**, mesma decisão acima.
 
 ---
 
@@ -252,9 +246,6 @@ Levantado em auditoria de release (11/09/2026), revisado em 18/09/2026.
   Isso combina com a ausência total de testes de UI instrumentados nas telas de rede —
   `SyncScreenTest`/`RemoteLibraryScreenTest`/`TransferLogScreenTest`/`TutorialScreenTest`
   (`androidTest`) não existem, enquanto todas as outras telas principais têm.
-- [ ] **Cobertura (Codecov) não recebe nada de instrumentado/emulador** — consequência direta do
-  item acima: `koverXmlReport` (usado no CI) só agrega os testes JVM de `./gradlew test`; sem
-  job de emulador, não existe relatório de instrumentado pra sequer tentar subir.
 
 ### Referência: itens que o doc dizia em aberto mas já estão corrigidos (auditoria 11/09/2026)
 
@@ -430,12 +421,6 @@ Levantado em auditoria de release (11/09/2026), revisado em 18/09/2026.
       completa em `tests/wdio/` (specs de navegação do reader, PDF, etc.) e o script
       `npm run test:wdio` (`package.json`), mas nenhum job de `desktop-tests.yml` chama isso.
       Hoje só roda manualmente, quando alguém lembra.
-- [ ] **Cobertura de e2e (Playwright) e `wdio` nunca chega no Codecov** — os jobs `e2e` de
-      `desktop-tests.yml`/`web-tests.yml` sobem o *relatório* do Playwright
-      (`playwright-report`) como artifact, mas isso é resultado de teste, não cobertura de
-      código — não há instrumentação de coverage nesses runs nem upload pro Codecov. Mesma
-      lacuna vale pro `wdio` (que nem roda no CI ainda, ver item acima). `codecov.yml` só tem
-      flags pra unit tests (`desktop-svelte`, `desktop-rust`, `docs-web`).
 
 ### Referência: itens que o doc dizia em aberto mas já estão corrigidos (auditoria 11/09/2026)
 
