@@ -6,15 +6,18 @@
 # ==========================================
 
 [tasks.bump-android]
-description = "Atualiza versionName/versionCode do Android a partir das env vars VERSION e VERSION_CODE"
+description = "Atualiza versionName do Android a partir da env var VERSION e sobe o versionCode em 1 (ou usa VERSION_CODE)"
 script_runner = "node"
 script_extension = "js"
 script = '''
 const fs = require("fs");
 const path = "acerola/android/app/build.gradle.kts";
 let content = fs.readFileSync(path, "utf8");
+// Play and the system only take a higher versionCode, so each release goes one above the last.
+const current = Number(content.match(/versionCode = (\d+)/)[1]);
+const code = process.env.VERSION_CODE || current + 1;
 content = content.replace(/versionName = ".*"/, `versionName = "${process.env.VERSION}"`);
-content = content.replace(/versionCode = \d+/, `versionCode = ${process.env.VERSION_CODE}`);
+content = content.replace(/versionCode = \d+/, `versionCode = ${code}`);
 fs.writeFileSync(path, content);
 '''
 
