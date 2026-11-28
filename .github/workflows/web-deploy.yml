@@ -14,10 +14,9 @@ concurrency:
 # Only the version tag publishes (acerola-git; tag format docs/<channel>/vX.Y.Z, see CLAUDE.md):
 # 1. release: writes the version from the tag into docs/web/package.json on main and develop (bot
 #    commit, [skip ci]) and creates the GitHub release with the tag message as its notes;
-# 2. deploy: runs the hetzner_acerola-reader-docs Procedure on Komodo (Pull -> Build -> Deploy)
-#    through the API and waits for it. The Procedure has no webhook: a push never publishes.
-#    Needs vars.KOMODO_URL and the secrets KOMODO_API_KEY and KOMODO_API_SECRET;
-# 3. the Storybooks go to Cloudflare Workers.
+# 2. the Storybooks go to Cloudflare Workers.
+# The docs site itself is deployed by Komodo: the bump push on main fires the webhook of the
+# hetzner_acerola-reader-docs Procedure (Pull -> Build -> Deploy).
 # Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
   release:
@@ -101,22 +100,6 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" --verify-tag --title "Docs $VERSION" --notes-from-tag
           fi
-
-  deploy:
-    name: Deploy with Komodo
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Run the Komodo Procedure
-        if: ${{ vars.KOMODO_URL != '' }}
-        env:
-          KOMODO_URL: ${{ vars.KOMODO_URL }}
-          KOMODO_API_KEY: ${{ secrets.KOMODO_API_KEY }}
-          KOMODO_API_SECRET: ${{ secrets.KOMODO_API_SECRET }}
-        run: sh scripts/release/komodo-deploy.sh hetzner_acerola-reader-docs
 
   deploy-storybook-web:
     name: Deploy Storybook (Web)
