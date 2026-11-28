@@ -189,8 +189,7 @@ name = "hetzner_acerola-reader-docs"
 description = "Publica a main do site de docs no hetzner: Pull, Build e Deploy"
 tags = ["env:hetzner", "app:acerola-reader-docs"]
 [procedure.config]
-# No webhook: the docs/<channel>/vX.Y.Z tag publishes, through web-deploy.yml (acerola-git).
-webhook_enabled = false
+webhook_enabled = true
 
 [[procedure.config.stage]]
 name = "Pull"
