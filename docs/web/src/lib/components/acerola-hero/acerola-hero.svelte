@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import { onMount, type Snippet } from 'svelte';
 	import gsap from 'gsap';
 
@@ -189,9 +190,7 @@
 		<a class="hero__scroll" href="#{data.next}">
 			{#if data.scroll}<span class="hero__scroll-label">{data.scroll}</span>{/if}
 			<span class="hero__mouse" aria-hidden="true"><span class="hero__wheel"></span></span>
-			<svg class="hero__chevron" viewBox="0 0 12 8" aria-hidden="true"
-				><path d="M1 1.5 6 6.5 11 1.5" /></svg
-			>
+			<span class="hero__chevron" aria-hidden="true"><ChevronDown size={16} /></span>
 		</a>
 	{/if}
 </section>
@@ -403,12 +402,8 @@
 		background: var(--primary);
 	}
 	.hero__chevron {
-		width: 0.75rem;
-		fill: none;
-		stroke: var(--primary);
-		stroke-width: 2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
+		display: flex;
+		color: var(--primary);
 	}
 	@media (min-width: 768px) {
 		.hero__scroll {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LanguagesIcon from '@lucide/svelte/icons/languages';
 	import AcerolaThemePicker from '#lib/components/acerola-theme-picker/acerola-theme-picker.svelte';
-	import GithubIcon from '#lib/icons/github.svelte';
+	import GithubIcon from '#lib/assets/icons/github.svg?component';
 	import { GITHUB_URL } from '#lib/constants/site.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale, locales, setLocale, type Locale } from '#lib/paraglide/runtime.js';
@@ -34,6 +34,6 @@
 		aria-label={m['nav.github']()}
 		class="flex size-11 items-center justify-center rounded-full bg-surface text-foreground"
 	>
-		<GithubIcon size={17} />
+		<GithubIcon class="size-[18px]" aria-hidden="true" />
 	</a>
 </div>
