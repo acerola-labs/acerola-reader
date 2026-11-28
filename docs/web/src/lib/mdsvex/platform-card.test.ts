@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import PlatformCard from './platform-card.svelte';
-import GithubIcon from '#lib/icons/github.svelte';
+import GithubIcon from '#lib/assets/icons/github.svg?component';
 
 function ctaSnippet(text: string) {
 	return createRawSnippet(() => ({

@@ -150,7 +150,7 @@
 
 		mermaid.initialize({
 			startOnLoad: false,
-			theme: themeCtx.resolved === 'dark' ? 'dark' : 'default',
+			theme: themeCtx.mode === 'dark' ? 'dark' : 'default',
 			themeVariables: {
 				primaryColor: background,
 				primaryTextColor: textColor,
@@ -264,7 +264,7 @@
 
 	$effect(() => {
 		// Re-render whenever the light/dark mode changes.
-		themeCtx.resolved;
+		themeCtx.mode;
 		renderMermaid();
 		addCodeCopyButtons();
 	});

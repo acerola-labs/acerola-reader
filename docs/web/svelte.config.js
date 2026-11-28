@@ -21,20 +21,16 @@ const config = {
 			$routes: 'src/routes'
 		},
 		prerender: {
-			// The locale toggle switches via `setLocale()`, not an `<a href>`, so the
-			// crawler never finds these on its own — list them explicitly.
+			// Each locale under its prefix (paraglide.config.ts). The locale toggle switches via
+			// `setLocale()`, not an `<a href>`, so each locale's root is listed, plus the files the
+			// crawler never finds through a link; from a root it follows the localized links.
 			entries: [
 				'*',
-				'/en',
-				'/en/docs/getting-started',
-				'/en/docs/architecture',
-				'/en/docs/storybook',
-				'/en/docs/contributing-overview',
-				'/en/docs/contributing-desktop',
-				'/en/docs/contributing-android',
-				'/en/docs/contributing-p2p',
-				'/en/docs/privacy-policy',
-				'/en/docs/libraries'
+				...['pt-br', 'en'].flatMap((locale) => [
+					`/${locale}`,
+					`/${locale}/sitemap.xml`,
+					`/${locale}/llms.txt`
+				])
 			]
 		}
 	}

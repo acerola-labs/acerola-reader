@@ -113,4 +113,4 @@ O Iroh opera sobre QUIC com TLS 1.3, então cada nó já prova criptograficament
 - Todo código precisa passar no Clippy sem avisos (`cargo make lint`).
 - Erros de infraestrutura e transporte usam `thiserror`, exportados como `P2pError`. Evite `.unwrap()`/`.expect()` em código de produção.
 
-Para a referência completa da API (builder, blobs, handlers, guards) com exemplos de código, veja o [README do pacote no GitHub](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/blob/main/lib/p2p/README.md).
+Para a referência completa da API (builder, blobs, handlers, guards) com exemplos de código, veja o [README do pacote no GitHub](https://github.com/acerola-labs/acerola-reader/blob/main/lib/p2p/README.md).

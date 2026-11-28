@@ -20,7 +20,8 @@ description = "Aplica o deploy dos apps do acerola-reader (.komodo/komodo.toml)"
 tags = ["env:hetzner", "app:acerola-reader-relay", "app:acerola-reader-docs"]
 [resource_sync.config]
 git_provider = "github.com"
-repo = "vinicius-gpl/acerola-reader"
+git_account = "acerola-labs"
+repo = "acerola-labs/acerola-reader"
 branch = "main"
 resource_path = [".komodo/komodo.toml"]
 delete = false
@@ -32,10 +33,11 @@ tags = ["env:hetzner", "app:acerola-reader-relay"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
-repo = "vinicius-gpl/acerola-reader"
+git_account = "acerola-labs"
+repo = "acerola-labs/acerola-reader"
 branch = "main"
 webhook_enabled = false
-links = ["https://github.com/vinicius-gpl/acerola-reader/tree/main/lib/relay"]
+links = ["https://github.com/acerola-labs/acerola-reader/tree/main/lib/relay"]
 
 [[build]]
 name = "hetzner_acerola-reader-relay"
@@ -53,7 +55,7 @@ include_latest_tag = false
 include_version_tags = false
 include_commit_tag = true
 labels = """
-org.opencontainers.image.source=https://github.com/vinicius-gpl/acerola-reader
+org.opencontainers.image.source=https://github.com/acerola-labs/acerola-reader
 acerola.app=acerola-reader-relay
 acerola.server=hetzner
 """
@@ -132,10 +134,11 @@ tags = ["env:hetzner", "app:acerola-reader-docs"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
-repo = "vinicius-gpl/acerola-reader"
+git_account = "acerola-labs"
+repo = "acerola-labs/acerola-reader"
 branch = "main"
 webhook_enabled = false
-links = ["https://github.com/vinicius-gpl/acerola-reader/tree/main/docs/web"]
+links = ["https://github.com/acerola-labs/acerola-reader/tree/main/docs/web"]
 
 [[build]]
 name = "hetzner_acerola-reader-docs"
@@ -153,7 +156,7 @@ include_latest_tag = false
 include_version_tags = false
 include_commit_tag = true
 labels = """
-org.opencontainers.image.source=https://github.com/vinicius-gpl/acerola-reader
+org.opencontainers.image.source=https://github.com/acerola-labs/acerola-reader
 acerola.app=acerola-reader-docs
 acerola.server=hetzner
 """

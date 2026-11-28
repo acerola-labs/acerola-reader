@@ -21,7 +21,7 @@
 		type FeatureItem,
 		type CodeTab
 	} from '#lib/components/acerola-marketing-feature-code/acerola-marketing-feature-code.svelte';
-	import GithubIcon from '#lib/icons/github.svelte';
+	import GithubIcon from '#lib/assets/icons/github.svg?component';
 	import { BRAND_MASCOT_URL, GITHUB_URL } from '#lib/constants/site.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { localizeHref } from '#lib/paraglide/runtime.js';
@@ -191,7 +191,7 @@ relay.reader.acerola.app {
 				variant="secondary"
 				size="lg"
 			>
-				<GithubIcon size={16} />
+				<GithubIcon class="size-4" aria-hidden="true" />
 				{m['landing.ctaGithub']()}
 			</Button>
 		</div>

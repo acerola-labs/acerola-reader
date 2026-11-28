@@ -170,8 +170,7 @@
 		"command": {
 			"navigationGroup": "Navegação",
 			"libraryGroup": "Biblioteca",
-			"noResults": "Nenhum quadrinho encontrado",
-			"chapterCount": "{count} capítulos"
+			"noResults": "Nenhum quadrinho encontrado"
 		},
 		"syncIndicator": {
 			"syncing": "Sincronizando com {peer}",

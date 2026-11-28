@@ -53,7 +53,7 @@ describe('landing +page', () => {
 
 		expect(screen.getByRole('link', { name: /get started|começar/i })).toHaveAttribute(
 			'href',
-			'/docs/getting-started'
+			'/pt-br/docs/getting-started'
 		);
 		expect(screen.getByRole('link', { name: /github/i })).toHaveAttribute(
 			'href',

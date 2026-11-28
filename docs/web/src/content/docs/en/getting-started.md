@@ -42,7 +42,7 @@ Pick the platform you use:
 
 <Callout type="note" title="Downloading outside the Microsoft Store">
 
-The Microsoft Store package is the only one signed with a trusted certificate. If you download the installer (`.exe`/`.msi`/`.msix`) directly from [GitHub Releases](https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader/releases) instead of using the Store, Windows SmartScreen will warn that the executable isn't recognized — that's expected, not a sign of malware. The Android APK is always signed, even downloaded straight from GitHub Releases; it just isn't published on the Play Store yet, so Android will also ask you to confirm installing from an unknown source.
+The Microsoft Store package is the only one signed with a trusted certificate. If you download the installer (`.exe`/`.msi`/`.msix`) directly from [GitHub Releases](https://github.com/acerola-labs/acerola-reader/releases) instead of using the Store, Windows SmartScreen will warn that the executable isn't recognized — that's expected, not a sign of malware. The Android APK is always signed, even downloaded straight from GitHub Releases; it just isn't published on the Play Store yet, so Android will also ask you to confirm installing from an unknown source.
 
 </Callout>
 
@@ -51,7 +51,7 @@ The Microsoft Store package is the only one signed with a trusted certificate. I
 Prefer to build it yourself, or need macOS/Linux? Acerola Desktop is a Tauri app — clone the repo and run it directly:
 
 ```bash
-git clone https://github.com/Vinicius-Gabriel-P-Leitao/acerola-reader
+git clone https://github.com/acerola-labs/acerola-reader
 cd acerola-reader/acerola/desktop
 npm install
 npm run tauri dev

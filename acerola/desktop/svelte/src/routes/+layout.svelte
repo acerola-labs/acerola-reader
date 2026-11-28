@@ -58,6 +58,9 @@
 	import AcerolaSonner from '#lib/components/acerola-sonner/acerola-sonner.svelte';
 	import AcerolaDialog from '#lib/components/acerola-dialog/acerola-dialog.svelte';
 	import AcerolaCommand from '#lib/components/acerola-command/acerola-command.svelte';
+	import AcerolaCardImage from '#lib/components/acerola-card/acerola-card-image.svelte';
+	import AcerolaBookmarkRibbon from '#lib/components/acerola-bookmark-ribbon/acerola-bookmark-ribbon.svelte';
+	import PlaceholderManga from '#lib/assets/placeholder/placeholder_manga.svg?component';
 	import * as Command from '#lib/components/ui/command/index.ts';
 	import { Command as CommandPrimitive } from 'bits-ui';
 
@@ -414,8 +417,8 @@
 					heading={m['layout.command.libraryGroup']()}
 					class="px-2 text-muted-foreground"
 				>
-					<!-- Compact list row: small cover, title, chapter count and the bookmark dot. -->
-					<div class="flex flex-col gap-1">
+					<!-- Same cover card as the Home grid, just smaller; the item handles click and Enter. -->
+					<div class="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2 pt-2">
 						{#each summary.comics.comics as comic (comic.relations.directoryId)}
 							{@const cover = resolveCover(comic.artwork)}
 							{@const comicBookmark = bookmarkStore.getBookmarkForComic(
@@ -429,38 +432,40 @@
 										n.goto(`/comic/${comic.filesystem.folderName}`)
 									);
 								}}
-								class="flex cursor-pointer items-center gap-4 rounded-tile p-2 pr-4 transition-colors data-[selected=true]:bg-surface"
+								class="block cursor-pointer rounded-tile p-2 text-foreground transition-colors data-[selected=true]:bg-surface [&_.cn-command-item-indicator]:hidden"
 							>
-								<span
-									class="flex aspect-2/3 w-10 shrink-0 items-center justify-center overflow-hidden rounded-inner bg-surface text-muted-foreground"
+								<AcerolaCardImage
+									data={{
+										title: comic.metadata.title || comic.filesystem.folderName,
+										cover
+									}}
+									ui={{ class: 'w-full', interactive: false }}
 								>
-									{#if cover}
-										<img src={cover} alt="" class="size-full object-cover" />
-									{:else}
-										<BookOpenIcon size={16} />
-									{/if}
-								</span>
-								<span class="flex min-w-0 flex-1 flex-col">
-									<span
-										class="truncate text-sm font-black tracking-tight text-foreground"
-									>
-										{comic.metadata.title || comic.filesystem.folderName}
-									</span>
-									<span class="text-xs text-muted-foreground tabular-nums">
-										{m['layout.command.chapterCount']({
-											count: comic.metadata.chapterCount
-										})}
-									</span>
-								</span>
-								{#if comicBookmark != null}
-									<span
-										class="size-2.5 shrink-0 rounded-full"
-										style="background-color: #{(comicBookmark.color & 0xffffff)
-											.toString(16)
-											.padStart(6, '0')}"
-										title={comicBookmark.name}
-									></span>
-								{/if}
+									{#snippet floatingBadge()}
+										{#if comicBookmark != null}
+											<AcerolaBookmarkRibbon
+												color={comicBookmark.color}
+												name={comicBookmark.name}
+												class="-top-1.5 left-4 h-6 w-3.5"
+											/>
+										{/if}
+									{/snippet}
+
+									{#snippet footer()}
+										<span
+											class="flex items-center gap-1 text-[10px] font-black tracking-wider text-muted-foreground uppercase"
+										>
+											<BookOpenIcon class="size-2.5" />
+											{comic.metadata.chapterCount}
+										</span>
+									{/snippet}
+
+									{#snippet placeholder()}
+										<div class="h-full w-full bg-surface">
+											<PlaceholderManga class="size-full" />
+										</div>
+									{/snippet}
+								</AcerolaCardImage>
 							</Command.Item>
 						{/each}
 					</div>
