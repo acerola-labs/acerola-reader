@@ -13,7 +13,7 @@ concurrency:
 
 # The docs site goes out with the release merge on main: Komodo deploys it through the webhook of the
 # hetzner_acerola-reader-docs Procedure (Pull -> Build -> Deploy). The version is written in the
-# release PR (release/docs-X.Y.Z, CLAUDE.md). The tag docs/<channel>/vX.Y.Z, made on that merge:
+# release PR (release/X.Y.Z, CLAUDE.md). The tag docs/<channel>/vX.Y.Z, made on that merge:
 # 1. release: checks that it is on main and matches docs/web/package.json, and creates the GitHub
 #    release with the tag message as its notes;
 # 2. the Storybooks go to Cloudflare Workers.
@@ -50,7 +50,7 @@ jobs:
           echo "CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      # The version comes in the release PR (release/docs-X.Y.Z, CLAUDE.md): the tag must match it.
+      # The version comes in the release PR (release/X.Y.Z, CLAUDE.md): the tag must match it.
       - name: Check the tag against package.json
         run: |
           pkg=$(node -p "require('./docs/web/package.json').version")
@@ -65,9 +65,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --title "Docs $VERSION" --notes-from-tag
+            gh release edit "$GITHUB_REF_NAME" --title "Versão $VERSION" --notes-from-tag
           else
-            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Docs $VERSION" --notes-from-tag
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Versão $VERSION" --notes-from-tag
           fi
 
   deploy-storybook-web:

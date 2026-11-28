@@ -11,7 +11,7 @@ concurrency:
   group: android-release-${{ github.ref }}
   cancel-in-progress: false
 
-# The version is written in the release PR (release/android-X.Y.Z, CLAUDE.md): the tag
+# The version is written in the release PR (release/X.Y.Z, CLAUDE.md): the tag
 # android/<channel>/vX.Y.Z, made on that merge on main, must match build.gradle.kts.
 # Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
@@ -128,5 +128,5 @@ jobs:
             gh release upload "$GITHUB_REF_NAME" "$apk" --clobber
           else
             gh release create "$GITHUB_REF_NAME" "$apk" --verify-tag $prerelease \
-              --title "Acerola Android $VERSION" --notes-from-tag
+              --title "Versão $VERSION" --notes-from-tag
           fi

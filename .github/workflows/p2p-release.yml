@@ -11,7 +11,7 @@ concurrency:
   group: p2p-release-${{ github.ref }}
   cancel-in-progress: false
 
-# The version is written in the release PR (release/p2p-X.Y.Z, CLAUDE.md): the tag p2p/<channel>/vX.Y.Z,
+# The version is written in the release PR (release/X.Y.Z, CLAUDE.md): the tag p2p/<channel>/vX.Y.Z,
 # made on that merge on main, must match lib/p2p/Cargo.toml.
 # Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
