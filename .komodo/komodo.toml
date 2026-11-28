@@ -20,6 +20,7 @@ description = "Aplica o deploy dos apps do acerola-reader (.komodo/komodo.toml)"
 tags = ["env:hetzner", "app:acerola-reader-relay", "app:acerola-reader-docs"]
 [resource_sync.config]
 git_provider = "github.com"
+git_account = "acerola-labs"
 repo = "acerola-labs/acerola-reader"
 branch = "main"
 resource_path = [".komodo/komodo.toml"]
@@ -32,6 +33,7 @@ tags = ["env:hetzner", "app:acerola-reader-relay"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
+git_account = "acerola-labs"
 repo = "acerola-labs/acerola-reader"
 branch = "main"
 webhook_enabled = false
@@ -132,6 +134,7 @@ tags = ["env:hetzner", "app:acerola-reader-docs"]
 [repo.config]
 server = "hetzner"
 git_provider = "github.com"
+git_account = "acerola-labs"
 repo = "acerola-labs/acerola-reader"
 branch = "main"
 webhook_enabled = false
@@ -186,7 +189,8 @@ name = "hetzner_acerola-reader-docs"
 description = "Publica a main do site de docs no hetzner: Pull, Build e Deploy"
 tags = ["env:hetzner", "app:acerola-reader-docs"]
 [procedure.config]
-webhook_enabled = true
+# No webhook: the docs/<channel>/vX.Y.Z tag publishes, through web-deploy.yml (acerola-git).
+webhook_enabled = false
 
 [[procedure.config.stage]]
 name = "Pull"
