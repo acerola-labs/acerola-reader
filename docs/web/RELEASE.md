@@ -3,6 +3,11 @@
 Cada versão é uma seção `## X.Y.Z · data`, escrita na `release/X.Y.Z` junto com o bump. O
 `web-deploy.yml` publica essa seção como texto da release do GitHub; sem ela, a release não sai.
 
+## 1.3.0 · 28 nov 2026
+
+- **Tema em tempo real:** trocou para claro ou escuro em outra aba ou em outro site Acerola, as
+  docs abertas trocam na hora, sem recarregar.
+
 ## 1.2.1 · 28 nov 2026
 
 - **Idioma na URL:** as docs ficam em `/pt-br` e `/en`.
