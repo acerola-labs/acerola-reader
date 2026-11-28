@@ -15,14 +15,14 @@
 </script>
 
 <!-- Acerola card (brand book `.ac-card`): solid block, rounded-card, no border, shadow-lift;
-     round icon in primary-soft, font-black title, one muted phrase. -->
+     the platform's logo in a neutral icon block (`.ac-icon-tile`: a logo keeps its own colors),
+     font-black title, one muted phrase. -->
 <article data-slot="card" class="grid content-start gap-4 rounded-card bg-card p-5 shadow-lift">
 	{#if icon}
 		{@const Icon = icon}
-		<span
-			class="flex size-11 items-center justify-center rounded-full bg-primary-soft text-primary"
-		>
-			<Icon size={20} />
+		<span class="ac-icon-tile">
+			<!-- class sizes both a .svg logo (?component) and a Lucide icon. -->
+			<Icon class="size-6" aria-hidden="true" />
 		</span>
 	{/if}
 
