@@ -24,6 +24,32 @@ export function cookieDomain(hostname = location.hostname): string | undefined {
 		: undefined;
 }
 
+/**
+ * Calls onChange as soon as the cookie changes, even when another tab or another Acerola site
+ * changed it: the cookieStore change event where the browser has it, and a new read whenever the
+ * tab comes back to the front. Returns the function that stops watching.
+ */
+export function watchCookie(name: string, onChange: (value: string | undefined) => void) {
+	let last = readCookie(name);
+	const check = () => {
+		const value = readCookie(name);
+		if (value === last) return;
+		last = value;
+		onChange(value);
+	};
+
+	const store = (globalThis as unknown as { cookieStore?: EventTarget }).cookieStore;
+	store?.addEventListener('change', check);
+	document.addEventListener('visibilitychange', check);
+	window.addEventListener('focus', check);
+
+	return () => {
+		store?.removeEventListener('change', check);
+		document.removeEventListener('visibilitychange', check);
+		window.removeEventListener('focus', check);
+	};
+}
+
 /** Saves the value for every Acerola site. */
 export function writeCookie(name: string, value: string, hostname = location.hostname) {
 	const domain = cookieDomain(hostname);
