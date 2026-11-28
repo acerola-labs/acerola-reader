@@ -11,6 +11,9 @@ concurrency:
   group: desktop-release-${{ github.ref }}
   cancel-in-progress: false
 
+# The version is written in the release PR (release/X.Y.Z, CLAUDE.md): the tag
+# desktop/<channel>/vX.Y.Z, made on that merge on main, must match tauri.conf.json, Cargo.toml and
+# package.json. Only GitHub's own actions, pinned by SHA (acerola-labs refuses any other).
 jobs:
   release:
     name: Build & Release (Windows)
@@ -23,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -41,18 +44,47 @@ jobs:
             exit 1
           fi
 
+      - name: Extract version
+        shell: bash
+        run: |
+          CHANNEL=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f2)
+          VERSION=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f3 | sed 's/^v//')
+          echo "CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Check the tag against the manifests
+        shell: bash
+        run: |
+          tauri=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          pkg=$(node -p "require('./package.json').version")
+          cargo=$(sed -n 's/^version = "\(.*\)"/\1/p' src-tauri/Cargo.toml | head -n 1)
+          for found in "$tauri" "$pkg" "$cargo"; do
+            if [ "$found" != "$VERSION" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME differs from the manifests (tauri $tauri, package $pkg, cargo $cargo)."
+              exit 1
+            fi
+          done
+
+      # The release text is the version's section in acerola/desktop/RELEASE.md (acerola-git 5):
+      # without it the release stops here, before the build.
+      - name: Read the release notes
+        shell: bash
+        run: node ../../scripts/release/release-notes.mjs "$VERSION" RELEASE.md > release-notes.md
+
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.20.0
           cache: npm
           cache-dependency-path: acerola/desktop/package-lock.json
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
 
       - name: Cache Cargo
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: |
             ~/.cargo/registry
@@ -64,25 +96,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Extract version
-        shell: bash
-        run: |
-          CHANNEL=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f2)
-          VERSION=$(echo "$GITHUB_REF_NAME" | cut -d'/' -f3 | sed 's/^v//')
-          TAG_NAME="desktop/${CHANNEL}/v${VERSION}"
-          echo "CHANNEL=$CHANNEL" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Update versions (tauri.conf.json, Cargo.toml, package.json)
-        working-directory: ${{ github.workspace }}
-        run: cargo make --makefile makefile.toml bump-desktop
-        env:
-          VERSION: ${{ env.VERSION }}
 
       - name: Install winapp
         run: npm install -g @microsoft/winappcli
@@ -106,56 +119,22 @@ jobs:
           Rename-Item (Get-Item ".bin\windows\msi\*.msi").FullName "acerola-x64-${{ env.VERSION }}.msi"
           Rename-Item (Get-Item ".bin\windows\exe\*.exe").FullName "acerola-x64-${{ env.VERSION }}.exe"
 
-      - name: Commit version bump
+      - name: Publish the GitHub release
         shell: bash
-        working-directory: ${{ github.workspace }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add acerola/desktop/src-tauri/tauri.conf.json acerola/desktop/src-tauri/Cargo.toml acerola/desktop/package.json
-          if ! git diff --staged --quiet; then
-            git commit -m "[build](desktop): Versão ${{ env.VERSION }} [skip ci]"
-            git checkout -- .
-
-            # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-            for attempt in 1 2 3 4 5; do
-              git push origin HEAD:main && break
-              if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to main."; exit 1; fi
-              git fetch origin main
-              git checkout -- .
-              git rebase origin/main
-            done
-            BUMP_SHA=$(git rev-parse HEAD)
-
-            # develop gets the very same commit when it has nothing main lacks, so both stay
-            # identical; only when develop is ahead the bump is cherry-picked on top of it.
-            git fetch origin develop
-            if git merge-base --is-ancestor origin/develop "$BUMP_SHA"; then
-              git push origin "$BUMP_SHA:refs/heads/develop"
-            else
-              git checkout -B develop origin/develop
-              git cherry-pick "$BUMP_SHA"
-              git checkout -- .
-              # Up to 5 tries (main or develop may move meanwhile); a refused push fails instead of looping.
-              for attempt in 1 2 3 4 5; do
-                git push origin develop && break
-                if [ "$attempt" = 5 ]; then echo "::error::Could not push the version bump to develop."; exit 1; fi
-                git fetch origin develop
-                git checkout -- .
-                git rebase origin/develop
-              done
-            fi
+          files=(
+            ".bin/windows/msix/acerola-x64-$VERSION.msix"
+            ".bin/windows/msi/acerola-x64-$VERSION.msi"
+            ".bin/windows/exe/acerola-x64-$VERSION.exe"
+          )
+          prerelease=""
+          if [ "$CHANNEL" != "prod" ]; then prerelease="--prerelease"; fi
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --title "Versão $VERSION" --notes-file release-notes.md
+            gh release upload "$GITHUB_REF_NAME" "${files[@]}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" --verify-tag $prerelease \
+              --title "Versão $VERSION" --notes-file release-notes.md
           fi
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          name: Acerola Desktop v${{ env.VERSION }}
-          draft: false
-          prerelease: ${{ env.CHANNEL != 'prod' }}
-          files: |
-            acerola/desktop/.bin/windows/msix/acerola-x64-${{ env.VERSION }}.msix
-            acerola/desktop/.bin/windows/msi/acerola-x64-${{ env.VERSION }}.msi
-            acerola/desktop/.bin/windows/exe/acerola-x64-${{ env.VERSION }}.exe
-          generate_release_notes: true

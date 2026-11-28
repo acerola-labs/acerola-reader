@@ -1,5 +1,57 @@
-import { describe, expect, it } from 'vitest';
-import { cookieDomain, LOCALE_COOKIE, readCookie, writeCookie } from './preference.util';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+	cookieDomain,
+	LOCALE_COOKIE,
+	readCookie,
+	THEME_COOKIE,
+	watchCookie,
+	writeCookie
+} from './preference.util';
+
+describe('watchCookie', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		writeCookie(THEME_COOKIE, 'dark');
+	});
+
+	it('reports the new value when another site changes the cookie', () => {
+		const cookieStore = new EventTarget();
+		vi.stubGlobal('cookieStore', cookieStore);
+		writeCookie(THEME_COOKIE, 'dark');
+		const onChange = vi.fn();
+		watchCookie(THEME_COOKIE, onChange);
+
+		writeCookie(THEME_COOKIE, 'light');
+		cookieStore.dispatchEvent(new Event('change'));
+
+		expect(onChange).toHaveBeenCalledExactlyOnceWith('light');
+	});
+
+	it('reads again when the tab comes back, and stays quiet when nothing changed', () => {
+		writeCookie(THEME_COOKIE, 'dark');
+		const onChange = vi.fn();
+		const stop = watchCookie(THEME_COOKIE, onChange);
+
+		document.dispatchEvent(new Event('visibilitychange'));
+		expect(onChange).not.toHaveBeenCalled();
+
+		writeCookie(THEME_COOKIE, 'light');
+		window.dispatchEvent(new Event('focus'));
+		expect(onChange).toHaveBeenCalledExactlyOnceWith('light');
+		stop();
+	});
+
+	it('stops watching', () => {
+		writeCookie(THEME_COOKIE, 'dark');
+		const onChange = vi.fn();
+		watchCookie(THEME_COOKIE, onChange)();
+
+		writeCookie(THEME_COOKIE, 'light');
+		document.dispatchEvent(new Event('visibilitychange'));
+
+		expect(onChange).not.toHaveBeenCalled();
+	});
+});
 
 describe('readCookie', () => {
 	it('finds a cookie among others', () => {

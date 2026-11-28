@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { THEME_COOKIE, writeCookie } from '#lib/utils/preference.util.ts';
+import { THEME_COOKIE, watchCookie, writeCookie } from '#lib/utils/preference.util.ts';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -16,6 +16,11 @@ function applyTheme() {
 
 if (browser) {
 	mode = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+	// Switched on another tab or Acerola site: this page follows right away.
+	watchCookie(THEME_COOKIE, (value) => {
+		mode = value === 'light' ? 'light' : 'dark';
+		applyTheme();
+	});
 }
 
 /** Page theme, shared by every Acerola site through the acerola-theme cookie. */
